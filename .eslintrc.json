@@ -1,0 +1,79 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "import",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "warn",
+    "react/jsx-props-no-spreading": "off",
+    "react/function-component-definition": "off",
+    "react/button-has-type": "off",
+    "react/self-closing-comp": "off",
+    "import/prefer-default-export": "off",
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
+    "import/no-extraneous-dependencies": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "no-console": "warn",
+    "no-unused-vars": "warn",
+    "no-param-reassign": "off",
+    "no-else-return": "off",
+    "no-useless-catch": "off",
+    "no-restricted-syntax": "off",
+    "no-restricted-properties": "off",
+    "no-return-assign": "off",
+    "prefer-const": "off",
+    "prefer-template": "off",
+    "prefer-destructuring": "off",
+    "prefer-exponentiation-operator": "off",
+    "prefer-promise-reject-errors": "off",
+    "arrow-body-style": "off",
+    "class-methods-use-this": "off",
+    "max-classes-per-file": "off",
+    "no-useless-constructor": "off",
+    "no-empty-function": "off",
+    "lines-between-class-members": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  },
+  "globals": {
+    "vi": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx"]
+      }
+    }
+  }
+}

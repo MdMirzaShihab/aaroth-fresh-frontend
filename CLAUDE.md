@@ -87,7 +87,7 @@ React JavaScript frontend for Aaroth Fresh B2B marketplace - connecting local ve
 - **Login Method**: Phone number + password (not email)
 - **Phone Format**: Must include country code (e.g., `+8801234567890`)
 - **Token Storage**: localStorage for persistence, memory for active session
-- **Token Refresh**: Automatic refresh on 401 responses
+- **Token Handling**: Simple JWT storage and validation
 - **Role-based Access**: Routes and features based on user role
 
 ### User Roles & Permissions
@@ -101,7 +101,6 @@ React JavaScript frontend for Aaroth Fresh B2B marketplace - connecting local ve
 ### Authentication (`/api/v1/auth`)
 - `POST /login` - Phone-based login
 - `POST /register` - Multi-role registration
-- `POST /refresh` - Token refresh
 - `POST /logout` - Logout and token invalidation
 - `GET /me` - Get current user profile
 
@@ -645,52 +644,6 @@ className="motion-reduce:transform-none motion-reduce:hover:scale-100"
 // Use @media (prefers-reduced-motion: reduce) in CSS for critical animations
 ```
 
-### PWA-Specific UI Guidelines (App-like Fluidity)
-
-#### Offline Indicators (Graceful Degradation)
-```javascript
-// Offline Banner - Subtle notification
-className="fixed top-0 left-0 right-0 bg-amber-100/90 backdrop-blur-sm text-amber-800 py-3 px-6 text-center text-sm font-medium z-50 animate-slide-up"
-
-// Cached Content Badge - Transparency indicator
-className="inline-flex items-center gap-1 bg-mint-fresh/20 text-bottle-green px-2 py-1 rounded-full text-xs font-medium"
-
-// Sync Status - Real-time feedback
-className="flex items-center gap-2 text-sm text-text-muted"
-// Syncing: "animate-spin w-4 h-4 text-bottle-green"
-// Synced: "w-4 h-4 text-mint-fresh"
-// Error: "w-4 h-4 text-tomato-red"
-```
-
-#### Install Prompt (Native App Feel)
-```javascript
-// Custom Install Banner - Brand aligned
-className="fixed bottom-4 left-4 right-4 bg-gradient-glass backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl animate-slide-up z-50"
-
-// Install Button - Compelling action
-className="bg-gradient-secondary text-white px-8 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-3"
-
-// Dismiss Button - Respectful exit
-className="text-text-muted hover:text-text-dark p-2 rounded-xl hover:bg-black/5 transition-colors duration-200"
-
-// App Icon Preview - Visual context
-className="w-16 h-16 rounded-2xl shadow-lg bg-gradient-primary p-3"
-```
-
-#### Native-like Navigation
-```javascript
-// Tab Bar - iOS/Android inspired
-className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 px-2 py-2 safe-area-pb z-50"
-
-// Tab Item - Touch optimized
-className="flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl min-h-[64px] transition-all duration-200 active:scale-95"
-
-// Status Bar - Respects safe areas
-className="pt-safe-top bg-gradient-to-r from-earthy-beige to-white"
-
-// Pull-to-Refresh - Native gesture
-className="flex items-center justify-center py-12 text-bottle-green"
-```
 
 ## Development Guidelines
 
@@ -749,7 +702,7 @@ className="flex items-center justify-center py-12 text-bottle-green"
 
 ### Authentication Security
 - **JWT Storage**: Secure storage with httpOnly cookies (if possible)
-- **Token Expiration**: Short-lived access tokens with refresh mechanism
+- **Token Expiration**: Standard JWT expiration handling
 - **Route Protection**: Client-side and server-side validation
 - **Role Validation**: Verify user permissions on each protected action
 
@@ -761,15 +714,110 @@ className="flex items-center justify-center py-12 text-bottle-green"
 
 ## Testing Strategy
 
+### Testing Stack
+- **Test Runner**: Vitest (optimized for Vite projects)
+- **Testing Library**: React Testing Library + @testing-library/jest-dom
+- **Environment**: jsdom for browser simulation
+- **Coverage**: Built-in c8 coverage reporting
+- **Redux Testing**: Redux Testing Library for state management tests
+
+### Vitest Configuration
+```javascript
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+    css: true,
+    coverage: {
+      provider: 'c8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+      ],
+    },
+  },
+})
+```
+
+### Test Setup
+```javascript
+// src/test/setup.js
+import '@testing-library/jest-dom'
+
+// Mock IntersectionObserver
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+}
+```
+
+### Redux Testing Utilities
+```javascript
+// src/test/test-utils.jsx
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { render } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import authReducer from '../store/slices/authSlice';
+import cartReducer from '../store/slices/cartSlice';
+
+const createTestStore = (preloadedState = {}) => {
+  return configureStore({
+    reducer: {
+      auth: authReducer,
+      cart: cartReducer,
+    },
+    preloadedState,
+  });
+};
+
+export const renderWithProviders = (ui, options = {}) => {
+  const {
+    preloadedState = {},
+    store = createTestStore(preloadedState),
+    ...renderOptions
+  } = options;
+
+  const Wrapper = ({ children }) => (
+    <Provider store={store}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </Provider>
+  );
+
+  return {
+    store,
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+  };
+};
+
+// Mock RTK Query hooks for testing
+export const createMockRTKQuery = (data, isLoading = false, error = null) => ({
+  data,
+  isLoading,
+  error,
+  refetch: vi.fn(),
+});
+```
+
 ### Unit Tests
-- **Components**: Test component behavior and props
-- **Hooks**: Test custom hooks in isolation
-- **Utilities**: Test utility functions thoroughly
+- **Components**: Test component behavior and props with React Testing Library
+- **Hooks**: Test custom hooks in isolation using @testing-library/react-hooks
+- **Utilities**: Test utility functions thoroughly with Vitest
 - **Redux Slices**: Test Redux Toolkit slice reducers and actions
 
 ### Integration Tests
-- **User Flows**: Test complete user workflows
-- **API Integration**: Test API service functions
+- **User Flows**: Test complete user workflows with Redux Testing Library
+- **API Integration**: Test API service functions with Vitest mocks
 - **Form Validation**: Test form submission and validation
 - **Error Handling**: Test error scenarios and recovery
 
@@ -778,7 +826,6 @@ className="flex items-center justify-center py-12 text-bottle-green"
 ### Build Configuration
 - **Environment Variables**: Different configs for dev/staging/production
 - **Asset Optimization**: Minification, compression, caching headers
-- **PWA Features**: Service worker, offline support, app manifest
 - **Bundle Analysis**: Monitor bundle size and dependencies
 
 ### Production Checklist
@@ -822,12 +869,9 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   user: null,
   token: localStorage.getItem('token'),
-  refreshToken: localStorage.getItem('refreshToken'),
   isAuthenticated: !!localStorage.getItem('token'),
   loading: false,
   error: null,
-  tokenExpiry: localStorage.getItem('tokenExpiry') ? parseInt(localStorage.getItem('tokenExpiry')) : null,
-  isRefreshing: false,
 };
 
 const authSlice = createSlice({
@@ -839,64 +883,27 @@ const authSlice = createSlice({
       state.error = null;
     },
     loginSuccess: (state, action) => {
-      const { user, token, refreshToken, expiresIn } = action.payload;
+      const { user, token } = action.payload;
       state.loading = false;
       state.user = user;
       state.token = token;
-      state.refreshToken = refreshToken;
       state.isAuthenticated = true;
-      state.tokenExpiry = Date.now() + (expiresIn * 1000); // Convert to milliseconds
       
       // Store in localStorage
       localStorage.setItem('token', token);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('tokenExpiry', state.tokenExpiry.toString());
     },
     loginFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.isAuthenticated = false;
     },
-    refreshTokenStart: (state) => {
-      state.isRefreshing = true;
-      state.error = null;
-    },
-    refreshTokenSuccess: (state, action) => {
-      const { token, expiresIn } = action.payload;
-      state.token = token;
-      state.tokenExpiry = Date.now() + (expiresIn * 1000);
-      state.isRefreshing = false;
-      
-      // Update localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('tokenExpiry', state.tokenExpiry.toString());
-    },
-    refreshTokenFailure: (state) => {
-      // If refresh fails, logout user
-      state.user = null;
-      state.token = null;
-      state.refreshToken = null;
-      state.isAuthenticated = false;
-      state.isRefreshing = false;
-      state.tokenExpiry = null;
-      
-      // Clear localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('tokenExpiry');
-    },
     logout: (state) => {
       state.user = null;
       state.token = null;
-      state.refreshToken = null;
       state.isAuthenticated = false;
-      state.tokenExpiry = null;
-      state.isRefreshing = false;
       
       // Clear localStorage
       localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('tokenExpiry');
     },
     updateUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };
@@ -911,9 +918,6 @@ export const {
   loginStart, 
   loginSuccess, 
   loginFailure, 
-  refreshTokenStart, 
-  refreshTokenSuccess, 
-  refreshTokenFailure, 
   logout, 
   updateUser, 
   clearError 
@@ -921,64 +925,16 @@ export const {
 
 // Selectors
 export const selectAuth = (state) => state.auth;
-export const selectIsTokenExpired = (state) => {
-  const { tokenExpiry } = state.auth;
-  return tokenExpiry ? Date.now() >= (tokenExpiry - 60000) : false; // Check if token expires in 1 minute
-};
-export const selectShouldRefresh = (state) => {
-  const { isAuthenticated, isRefreshing, tokenExpiry } = state.auth;
-  return isAuthenticated && !isRefreshing && tokenExpiry && Date.now() >= (tokenExpiry - 120000); // Refresh 2 minutes before expiry
-};
 
 export default authSlice.reducer;
 ```
 
-### Token Management Middleware
-```javascript
-// store/middleware/authMiddleware.js
-import { refreshTokenStart, refreshTokenSuccess, refreshTokenFailure, logout } from '../slices/authSlice';
 
-const authMiddleware = (store) => (next) => (action) => {
-  // Check if we need to refresh token before any API call
-  const state = store.getState();
-  const { isAuthenticated, isRefreshing, tokenExpiry, refreshToken } = state.auth;
-  
-  // Auto refresh token if it's about to expire (within 2 minutes)
-  if (isAuthenticated && !isRefreshing && refreshToken && tokenExpiry && Date.now() >= (tokenExpiry - 120000)) {
-    store.dispatch(refreshTokenStart());
-    
-    // Call refresh token API
-    fetch('/api/v1/auth/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${refreshToken}`,
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        store.dispatch(refreshTokenSuccess(data));
-      } else {
-        store.dispatch(refreshTokenFailure());
-      }
-    })
-    .catch(() => {
-      store.dispatch(refreshTokenFailure());
-    });
-  }
-  
-  return next(action);
-};
-
-export default authMiddleware;
-```
-
-### Enhanced RTK Query API Slice with Token Refresh
+### RTK Query API Slice
 ```javascript
 // store/api/apiSlice.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { refreshTokenStart, refreshTokenSuccess, refreshTokenFailure, logout } from '../slices/authSlice';
+import { logout } from '../slices/authSlice';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_API_BASE_URL || '/api/v1',
@@ -992,41 +948,13 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// Enhanced base query with automatic token refresh
-const baseQueryWithReauth = async (args, api, extraOptions) => {
+// Base query with simple 401 handling
+const baseQueryWithAuth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
   
   if (result.error && result.error.status === 401) {
-    const refreshToken = api.getState().auth.refreshToken;
-    
-    if (refreshToken && !api.getState().auth.isRefreshing) {
-      // Try to refresh token
-      api.dispatch(refreshTokenStart());
-      
-      const refreshResult = await baseQuery(
-        {
-          url: '/auth/refresh',
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${refreshToken}`,
-          },
-        },
-        api,
-        extraOptions
-      );
-      
-      if (refreshResult.data) {
-        // Successfully refreshed token
-        api.dispatch(refreshTokenSuccess(refreshResult.data));
-        
-        // Retry the original request with new token
-        result = await baseQuery(args, api, extraOptions);
-      } else {
-        // Refresh failed, logout user
-        api.dispatch(refreshTokenFailure());
-        api.dispatch(logout());
-      }
-    }
+    // Token expired or invalid, logout user
+    api.dispatch(logout());
   }
   
   return result;
@@ -1034,7 +962,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: baseQueryWithReauth,
+  baseQuery: baseQueryWithAuth,
   tagTypes: ['User', 'Product', 'Order', 'Listing', 'Category', 'Vendor', 'Restaurant'],
   endpoints: (builder) => ({
     // Authentication endpoints
@@ -1179,37 +1107,14 @@ export const ProductList = () => {
 - **Graceful Degradation**: App remains functional during errors
 - **Clear Error Messages**: Actionable error messages for users
 - **Retry Mechanisms**: Allow users to retry failed operations
-- **Offline Support**: Handle offline scenarios gracefully
 
-### Advanced Authentication Service
+### Simple Authentication Service
 ```javascript
 // services/authService.js
 import { store } from '../store';
-import { loginStart, loginSuccess, loginFailure, refreshTokenSuccess, logout } from '../store/slices/authSlice';
+import { loginStart, loginSuccess, loginFailure, logout } from '../store/slices/authSlice';
 
 class AuthService {
-  constructor() {
-    this.refreshPromise = null;
-    this.initializeFromStorage();
-  }
-
-  initializeFromStorage() {
-    const token = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refreshToken');
-    const tokenExpiry = localStorage.getItem('tokenExpiry');
-    
-    if (token && refreshToken && tokenExpiry) {
-      const expiryTime = parseInt(tokenExpiry);
-      if (Date.now() < expiryTime) {
-        // Token is still valid, we can continue with stored session
-        console.log('Session restored from localStorage');
-      } else {
-        // Token expired, clear storage
-        this.clearStorage();
-      }
-    }
-  }
-
   async login(phone, password) {
     store.dispatch(loginStart());
     
@@ -1228,8 +1133,6 @@ class AuthService {
         store.dispatch(loginSuccess({
           user: data.user,
           token: data.token,
-          refreshToken: data.refreshToken,
-          expiresIn: data.expiresIn || 3600, // Default 1 hour
         }));
         
         return { success: true, user: data.user };
@@ -1242,51 +1145,6 @@ class AuthService {
       store.dispatch(loginFailure(errorMessage));
       return { success: false, message: errorMessage };
     }
-  }
-
-  async refreshToken() {
-    // Prevent multiple concurrent refresh requests
-    if (this.refreshPromise) {
-      return this.refreshPromise;
-    }
-
-    const state = store.getState();
-    const { refreshToken } = state.auth;
-    
-    if (!refreshToken) {
-      store.dispatch(logout());
-      return { success: false };
-    }
-
-    this.refreshPromise = fetch('/api/v1/auth/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${refreshToken}`,
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-      this.refreshPromise = null;
-      
-      if (data.success) {
-        store.dispatch(refreshTokenSuccess({
-          token: data.token,
-          expiresIn: data.expiresIn || 3600,
-        }));
-        return { success: true, token: data.token };
-      } else {
-        store.dispatch(logout());
-        return { success: false };
-      }
-    })
-    .catch(() => {
-      this.refreshPromise = null;
-      store.dispatch(logout());
-      return { success: false };
-    });
-
-    return this.refreshPromise;
   }
 
   async logout() {
@@ -1307,15 +1165,8 @@ class AuthService {
       }
     }
     
-    // Clear frontend state regardless of backend response
+    // Clear frontend state
     store.dispatch(logout());
-    this.clearStorage();
-  }
-
-  clearStorage() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('tokenExpiry');
   }
 
   getToken() {
@@ -1345,161 +1196,20 @@ class AuthService {
 export default new AuthService();
 ```
 
-### Real-time Features Foundation
+
+### Application Bootstrap
 ```javascript
-// services/websocketService.js
-import { store } from '../store';
-import authService from './authService';
-
-class WebSocketService {
-  constructor() {
-    this.socket = null;
-    this.reconnectAttempts = 0;
-    this.maxReconnectAttempts = 5;
-    this.reconnectInterval = 5000; // 5 seconds
-    this.heartbeatInterval = null;
-  }
-
-  connect() {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      return;
-    }
-
-    const token = authService.getToken();
-    if (!token) {
-      console.warn('No auth token available for WebSocket connection');
-      return;
-    }
-
-    const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:5000';
-    this.socket = new WebSocket(`${wsUrl}?token=${token}`);
-
-    this.socket.onopen = () => {
-      console.log('WebSocket connected');
-      this.reconnectAttempts = 0;
-      this.startHeartbeat();
-    };
-
-    this.socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        this.handleMessage(data);
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
-    };
-
-    this.socket.onclose = () => {
-      console.log('WebSocket disconnected');
-      this.stopHeartbeat();
-      this.attemptReconnect();
-    };
-
-    this.socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-  }
-
-  handleMessage(data) {
-    const { type, payload } = data;
-
-    switch (type) {
-      case 'order:updated':
-        // Invalidate RTK Query cache for orders
-        store.dispatch(store.getState().api.endpoints.getOrders.util.invalidateQueries());
-        break;
-        
-      case 'listing:updated':
-        // Invalidate RTK Query cache for listings
-        store.dispatch(store.getState().api.endpoints.getListings.util.invalidateQueries());
-        break;
-        
-      case 'notification:new':
-        // Add notification to store
-        console.log('New notification:', payload);
-        break;
-        
-      default:
-        console.log('Unknown message type:', type, payload);
-    }
-  }
-
-  startHeartbeat() {
-    this.heartbeatInterval = setInterval(() => {
-      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-        this.socket.send(JSON.stringify({ type: 'heartbeat' }));
-      }
-    }, 30000); // Send heartbeat every 30 seconds
-  }
-
-  stopHeartbeat() {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-      this.heartbeatInterval = null;
-    }
-  }
-
-  attemptReconnect() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts && authService.isAuthenticated()) {
-      this.reconnectAttempts++;
-      console.log(`Attempting to reconnect WebSocket (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
-      setTimeout(() => {
-        this.connect();
-      }, this.reconnectInterval * this.reconnectAttempts); // Exponential backoff
-    }
-  }
-
-  disconnect() {
-    if (this.socket) {
-      this.socket.close();
-      this.socket = null;
-    }
-    this.stopHeartbeat();
-  }
-
-  send(data) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(data));
-    } else {
-      console.warn('WebSocket not connected');
-    }
-  }
-
-  // Subscribe to specific events
-  subscribeToUserEvents(userId) {
-    this.send({
-      type: 'subscribe',
-      channel: `user:${userId}`,
-    });
-  }
-
-  subscribeToOrderUpdates(orderId) {
-    this.send({
-      type: 'subscribe',
-      channel: `order:${orderId}`,
-    });
-  }
-}
-
-export default new WebSocketService();
-```
-
-### Application Bootstrap with Token Validation
-```javascript
-// App.jsx - Enhanced with authentication and real-time features
+// App.jsx - Simple authentication setup
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useGetCurrentUserQuery } from './store/api/apiSlice';
-import { selectAuth, selectIsTokenExpired } from './store/slices/authSlice';
-import websocketService from './services/websocketService';
+import { selectAuth } from './store/slices/authSlice';
 import authService from './services/authService';
 
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, user, token } = useSelector(selectAuth);
-  const isTokenExpired = useSelector(selectIsTokenExpired);
   
   // Validate current user on app start if token exists
   const { 
@@ -1509,32 +1219,6 @@ function App() {
   } = useGetCurrentUserQuery(undefined, {
     skip: !isAuthenticated || !token,
   });
-
-  useEffect(() => {
-    // Initialize authentication from localStorage
-    authService.initializeFromStorage();
-    
-    // Connect to WebSocket if authenticated
-    if (isAuthenticated && token) {
-      websocketService.connect();
-      
-      if (user?.id) {
-        websocketService.subscribeToUserEvents(user.id);
-      }
-    }
-    
-    return () => {
-      websocketService.disconnect();
-    };
-  }, [isAuthenticated, token, user?.id]);
-
-  // Handle token expiration
-  useEffect(() => {
-    if (isTokenExpired && isAuthenticated) {
-      console.log('Token expired, attempting refresh...');
-      authService.refreshToken();
-    }
-  }, [isTokenExpired, isAuthenticated]);
 
   // Handle authentication errors
   useEffect(() => {
@@ -1578,7 +1262,6 @@ export default App;
 - **Mobile-First**: Always prioritize mobile user experience
 - **Touch Optimization**: All interactions must be touch-friendly
 - **Performance**: Mobile users have slower connections and less powerful devices
-- **Offline Support**: Consider offline functionality for critical features
 
 ### Development Workflow
 - **Use TodoWrite**: For complex multi-step tasks

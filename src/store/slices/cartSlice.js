@@ -1,0 +1,95 @@
+import { createSlice } from '@reduxjs/toolkit';
+
+const initialState = {
+  items: [],
+  total: 0,
+  itemCount: 0,
+  isOpen: false,
+};
+
+const cartSlice = createSlice({
+  name: 'cart',
+  initialState,
+  reducers: {
+    addToCart: (state, action) => {
+      const item = action.payload;
+      const existingItem = state.items.find((i) => i.id === item.id);
+
+      if (existingItem) {
+        existingItem.quantity += item.quantity || 1;
+      } else {
+        state.items.push({
+          ...item,
+          quantity: item.quantity || 1,
+        });
+      }
+
+      cartSlice.caseReducers.calculateTotals(state);
+    },
+    removeFromCart: (state, action) => {
+      const itemId = action.payload;
+      state.items = state.items.filter((item) => item.id !== itemId);
+      cartSlice.caseReducers.calculateTotals(state);
+    },
+    updateQuantity: (state, action) => {
+      const { id, quantity } = action.payload;
+      const item = state.items.find((i) => i.id === id);
+
+      if (item) {
+        if (quantity <= 0) {
+          state.items = state.items.filter((i) => i.id !== id);
+        } else {
+          item.quantity = quantity;
+        }
+      }
+
+      cartSlice.caseReducers.calculateTotals(state);
+    },
+    clearCart: (state) => {
+      state.items = [];
+      state.total = 0;
+      state.itemCount = 0;
+    },
+    toggleCart: (state) => {
+      state.isOpen = !state.isOpen;
+    },
+    openCart: (state) => {
+      state.isOpen = true;
+    },
+    closeCart: (state) => {
+      state.isOpen = false;
+    },
+    calculateTotals: (state) => {
+      let total = 0;
+      let itemCount = 0;
+
+      state.items.forEach((item) => {
+        total += item.price * item.quantity;
+        itemCount += item.quantity;
+      });
+
+      state.total = Math.round(total * 100) / 100; // Round to 2 decimal places
+      state.itemCount = itemCount;
+    },
+  },
+});
+
+export const {
+  addToCart,
+  removeFromCart,
+  updateQuantity,
+  clearCart,
+  toggleCart,
+  openCart,
+  closeCart,
+  calculateTotals,
+} = cartSlice.actions;
+
+// Selectors
+export const selectCart = (state) => state.cart;
+export const selectCartItems = (state) => state.cart.items;
+export const selectCartTotal = (state) => state.cart.total;
+export const selectCartItemCount = (state) => state.cart.itemCount;
+export const selectCartIsOpen = (state) => state.cart.isOpen;
+
+export default cartSlice.reducer;

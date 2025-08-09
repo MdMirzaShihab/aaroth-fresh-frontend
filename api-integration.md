@@ -50,57 +50,33 @@ const wrongData = {
    }
    ```
 
-### Advanced JWT Token Management
+### Simple JWT Token Management
 
 #### Token Storage Strategy
 ```javascript
-// Enhanced token storage with security considerations
+// Simple token storage
 class TokenStorage {
-  // Store tokens securely
-  static setTokens(accessToken, refreshToken, expiresIn) {
-    const expiryTime = Date.now() + (expiresIn * 1000);
-    
-    // Store in localStorage (consider httpOnly cookies for production)
+  static setToken(accessToken) {
     localStorage.setItem('token', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('tokenExpiry', expiryTime.toString());
   }
 
-  static getAccessToken() {
+  static getToken() {
     return localStorage.getItem('token');
   }
 
-  static getRefreshToken() {
-    return localStorage.getItem('refreshToken');
-  }
-
-  static getTokenExpiry() {
-    const expiry = localStorage.getItem('tokenExpiry');
-    return expiry ? parseInt(expiry) : null;
-  }
-
-  static isTokenExpired() {
-    const expiry = this.getTokenExpiry();
-    return expiry ? Date.now() >= expiry : true;
-  }
-
-  static shouldRefreshToken() {
-    const expiry = this.getTokenExpiry();
-    // Refresh if token expires within 2 minutes
-    return expiry ? Date.now() >= (expiry - 120000) : false;
-  }
-
-  static clearTokens() {
+  static clearToken() {
     localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('tokenExpiry');
+  }
+
+  static hasToken() {
+    return !!this.getToken();
   }
 }
 ```
 
-#### Automatic Token Refresh Implementation
+#### Simple Token Authentication
 ```javascript
-// Advanced axios interceptor with token refresh
+// Simple axios interceptor matching backend capabilities
 import axios from 'axios';
 
 class ApiService {
@@ -109,9 +85,6 @@ class ApiService {
       baseURL: process.env.REACT_APP_API_BASE_URL || '/api/v1',
     });
     
-    this.isRefreshing = false;
-    this.failedQueue = [];
-    
     this.setupInterceptors();
   }
 
@@ -119,7 +92,7 @@ class ApiService {
     // Request interceptor - add token to requests
     this.api.interceptors.request.use(
       (config) => {
-        const token = TokenStorage.getAccessToken();
+        const token = TokenStorage.getToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -128,79 +101,21 @@ class ApiService {
       (error) => Promise.reject(error)
     );
 
-    // Response interceptor - handle token refresh
+    // Response interceptor - handle 401 errors with logout
     this.api.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          if (this.isRefreshing) {
-            // Add request to queue while refresh is in progress
-            return new Promise((resolve, reject) => {
-              this.failedQueue.push({ resolve, reject });
-            }).then(token => {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-              return this.api(originalRequest);
-            }).catch(err => Promise.reject(err));
-          }
-
-          originalRequest._retry = true;
-          this.isRefreshing = true;
-
-          try {
-            const refreshToken = TokenStorage.getRefreshToken();
-            if (!refreshToken) {
-              throw new Error('No refresh token available');
-            }
-
-            const response = await axios.post('/api/v1/auth/refresh', {}, {
-              headers: {
-                'Authorization': `Bearer ${refreshToken}`,
-              },
-            });
-
-            const { token, expiresIn } = response.data;
-            
-            // Update stored tokens
-            TokenStorage.setTokens(token, refreshToken, expiresIn);
-            
-            // Process queued requests
-            this.processQueue(null, token);
-            
-            // Retry original request
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return this.api(originalRequest);
-
-          } catch (refreshError) {
-            // Refresh failed - logout user
-            this.processQueue(refreshError, null);
-            TokenStorage.clearTokens();
-            
-            // Redirect to login or dispatch logout action
-            window.location.href = '/login';
-            
-            return Promise.reject(refreshError);
-          } finally {
-            this.isRefreshing = false;
-          }
+        // If 401 error, clear token and redirect to login
+        if (error.response?.status === 401) {
+          TokenStorage.clearToken();
+          
+          // Redirect to login or dispatch logout action
+          window.location.href = '/login';
         }
 
         return Promise.reject(error);
       }
     );
-  }
-
-  processQueue(error, token = null) {
-    this.failedQueue.forEach(({ resolve, reject }) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(token);
-      }
-    });
-    
-    this.failedQueue = [];
   }
 }
 
@@ -208,72 +123,6 @@ export const apiService = new ApiService();
 export const api = apiService.api;
 ```
 
-#### Concurrent Request Handling
-```javascript
-// Utility to handle multiple concurrent requests during token refresh
-class TokenManager {
-  constructor() {
-    this.refreshPromise = null;
-  }
-
-  async getValidToken() {
-    const currentToken = TokenStorage.getAccessToken();
-    
-    // Return current token if it's valid
-    if (currentToken && !TokenStorage.shouldRefreshToken()) {
-      return currentToken;
-    }
-
-    // If refresh is already in progress, wait for it
-    if (this.refreshPromise) {
-      await this.refreshPromise;
-      return TokenStorage.getAccessToken();
-    }
-
-    // Start token refresh
-    this.refreshPromise = this.refreshToken();
-    
-    try {
-      await this.refreshPromise;
-      return TokenStorage.getAccessToken();
-    } finally {
-      this.refreshPromise = null;
-    }
-  }
-
-  async refreshToken() {
-    const refreshToken = TokenStorage.getRefreshToken();
-    
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
-    }
-
-    try {
-      const response = await fetch('/api/v1/auth/refresh', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${refreshToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Token refresh failed');
-      }
-
-      const data = await response.json();
-      TokenStorage.setTokens(data.token, refreshToken, data.expiresIn);
-      
-      return data.token;
-    } catch (error) {
-      TokenStorage.clearTokens();
-      throw error;
-    }
-  }
-}
-
-export const tokenManager = new TokenManager();
-```
 
 #### Production Security Considerations
 ```javascript
@@ -432,34 +281,6 @@ Authorization: Bearer {token}
 // Note: Frontend should clear token from localStorage
 ```
 
-#### Refresh Token
-```javascript
-POST /api/v1/auth/refresh
-Authorization: Bearer {refresh_token}
-Content-Type: application/json
-
-// Success Response (200)
-{
-  "success": true,
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // New access token
-  "expiresIn": 3600, // Token expiry time in seconds
-  "message": "Token refreshed successfully"
-}
-
-// Error Response (401) - Refresh token expired or invalid
-{
-  "success": false,
-  "message": "Invalid or expired refresh token",
-  "code": "REFRESH_TOKEN_EXPIRED"
-}
-
-// Error Response (403) - User deactivated
-{
-  "success": false,
-  "message": "User account is deactivated",
-  "code": "USER_DEACTIVATED"
-}
-```
 
 #### Get Current User Profile
 ```javascript
@@ -2460,31 +2281,6 @@ const handleFileSelect = async (file) => {
 };
 ```
 
-## Real-time Features (Future)
-
-### WebSocket Integration Preparation
-```javascript
-// Socket.io client setup for real-time features
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:5000', {
-  auth: {
-    token: authService.getToken()
-  }
-});
-
-// Listen for order updates
-socket.on('order:updated', (orderData) => {
-  // Update order in state management
-  queryClient.invalidateQueries(['orders']);
-});
-
-// Listen for new notifications
-socket.on('notification:new', (notification) => {
-  // Add to notification store
-  notificationStore.addNotification(notification);
-});
-```
 
 ## API Service Implementation Pattern
 
@@ -2629,9 +2425,11 @@ export const useListingsWithToast = () => {
 5. **Handle Errors**: Implement comprehensive error handling
 6. **Test Integration**: Test with real backend API
 
-### Testing API Integration
+### Testing API Integration with Vitest
+
 ```javascript
-// Example RTK Query integration test
+// Example RTK Query integration test with Vitest
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -2639,17 +2437,20 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { apiSlice } from '../store/api/apiSlice';
 import { useGetListingsQuery } from '../store/api/listingsApiSlice';
 
-const createWrapper = () => {
-  const store = configureStore({
+// Mock fetch for API calls
+global.fetch = vi.fn();
+
+const createTestStore = () => {
+  return configureStore({
     reducer: {
       api: apiSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(apiSlice.middleware),
   });
-  
-  setupListeners(store.dispatch);
-  
+};
+
+const createWrapper = (store) => {
   return ({ children }) => (
     <Provider store={store}>
       {children}
@@ -2657,16 +2458,93 @@ const createWrapper = () => {
   );
 };
 
-test('should fetch listings successfully', async () => {
-  const { result } = renderHook(() => useGetListingsQuery(), {
-    wrapper: createWrapper(),
+describe('RTK Query API Integration', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  await waitFor(() => {
-    expect(result.current.isSuccess).toBe(true);
+  it('should fetch listings successfully', async () => {
+    // Mock successful API response
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          listings: [
+            { id: '1', title: 'Test Listing', price: 100 }
+          ]
+        }
+      }),
+    });
+
+    const store = createTestStore();
+    setupListeners(store.dispatch);
+
+    const { result } = renderHook(() => useGetListingsQuery(), {
+      wrapper: createWrapper(store),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toBeDefined();
+    expect(fetch).toHaveBeenCalledWith('/api/v1/listings', expect.any(Object));
   });
 
-  expect(result.current.data).toBeDefined();
+  it('should handle API errors gracefully', async () => {
+    // Mock API error
+    fetch.mockRejectedValueOnce(new Error('Network error'));
+
+    const store = createTestStore();
+    const { result } = renderHook(() => useGetListingsQuery(), {
+      wrapper: createWrapper(store),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect(result.current.error).toBeDefined();
+  });
+});
+
+// Example Redux slice test with Vitest
+import authReducer, { loginSuccess, logout } from '../store/slices/authSlice';
+
+describe('Auth Slice', () => {
+  it('should handle login success', () => {
+    const initialState = {
+      user: null,
+      token: null,
+      isAuthenticated: false,
+    };
+
+    const action = loginSuccess({
+      user: { id: '1', name: 'Test User' },
+      token: 'test-token',
+    });
+
+    const newState = authReducer(initialState, action);
+
+    expect(newState.isAuthenticated).toBe(true);
+    expect(newState.user.name).toBe('Test User');
+    expect(newState.token).toBe('test-token');
+  });
+
+  it('should handle logout', () => {
+    const initialState = {
+      user: { id: '1', name: 'Test User' },
+      token: 'test-token',
+      isAuthenticated: true,
+    };
+
+    const newState = authReducer(initialState, logout());
+
+    expect(newState.isAuthenticated).toBe(false);
+    expect(newState.user).toBe(null);
+    expect(newState.token).toBe(null);
+  });
 });
 ```
 
@@ -2824,7 +2702,6 @@ class HealthService {
     this.healthCheckInterval = null;
     this.services = {
       api: false,
-      websocket: false,
       cloudinary: false,
     };
   }
@@ -2984,11 +2861,11 @@ export const cdnManager = new CDNManager();
 ## Troubleshooting Common Issues
 
 ### Authentication Issues
-- **Token Expiration**: Implement automatic token refresh
+- **Token Expiration**: Handle token expiration with logout
 - **CORS Errors**: Ensure backend CORS is configured for frontend domain
 - **Phone Format**: Always include country code in phone numbers
 
-### Enhanced Error Recovery & Offline Support
+### Error Recovery
 
 #### Offline Queue Management
 ```javascript
@@ -3307,14 +3184,11 @@ class ProgressiveEnhancementService {
   }
 
   detectFeatures() {
-    // WebSocket support
-    this.features.webSocket = typeof WebSocket !== 'undefined';
+    // Basic feature detection for MVP
+    this.features.localStorage = typeof Storage !== 'undefined';
     
-    // Background Sync support
-    this.features.backgroundSync = 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype;
-    
-    // Push Notifications support
-    this.features.pushNotifications = 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
+    // Network status
+    this.features.onlineStatus = 'navigator' in window && 'onLine' in navigator;
     
     // Offline storage support
     this.features.offlineStorage = 'indexedDB' in window && 'caches' in window;
@@ -3480,7 +3354,7 @@ export const networkQualityManager = new NetworkQualityManager();
 - **Network Errors**: Enhanced retry logic with exponential backoff and jitter
 - **Data Mismatch**: Ensure frontend types match backend models exactly  
 - **Caching Issues**: Use proper cache invalidation strategies
-- **Offline Handling**: Queue operations and sync when online
+- **Network Errors**: Provide user-friendly error messages
 - **Rate Limiting**: Implement client-side rate limiting and respect server limits
 - **Background Sync**: Use Service Workers for reliable data synchronization
 
