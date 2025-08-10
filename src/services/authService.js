@@ -1,85 +1,68 @@
 import { store } from '../store';
-import {
-  loginStart,
-  loginSuccess,
-  loginFailure,
-  logout,
-} from '../store/slices/authSlice';
-import api from './api';
+import { logout } from '../store/slices/authSlice';
+import { apiSlice } from '../store/slices/apiSlice';
+import { addNotification } from '../store/slices/notificationSlice';
 
 class AuthService {
-  async login(phone, password) {
-    store.dispatch(loginStart());
+  /**
+   * Get current authentication state
+   */
+  getAuthState() {
+    return store.getState().auth;
+  }
 
+  /**
+   * Perform logout operation
+   */
+  async performLogout() {
     try {
-      const response = await api.post('/auth/login', {
-        phone,
-        password,
-      });
-
-      const { data } = response;
-
-      if (data.success) {
-        store.dispatch(
-          loginSuccess({
-            user: data.user,
-            token: data.token,
-          })
-        );
-
-        return { success: true, user: data.user };
-      } else {
-        store.dispatch(loginFailure(data.message || 'Login failed'));
-        return { success: false, message: data.message };
-      }
+      // Call logout mutation to notify backend
+      await store.dispatch(apiSlice.endpoints.logout.initiate()).unwrap();
     } catch (error) {
-      const errorMessage = error.message || 'Network error. Please try again.';
-      store.dispatch(loginFailure(errorMessage));
-      return { success: false, message: errorMessage };
+      console.error('Backend logout failed:', error);
+    } finally {
+      // Always clear frontend state
+      store.dispatch(logout());
+
+      // Show logout success message
+      store.dispatch(
+        addNotification({
+          type: 'success',
+          message: 'You have been logged out successfully',
+        })
+      );
     }
   }
 
-  async register(userData) {
-    try {
-      const response = await api.post('/auth/register', userData);
-      const { data } = response;
-
-      if (data.success) {
-        return { success: true, user: data.user, message: data.message };
-      } else {
-        return { success: false, message: data.message };
-      }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message || 'Registration failed. Please try again.',
-      };
-    }
+  /**
+   * Handle token expiration
+   */
+  handleTokenExpiration() {
+    store.dispatch(logout());
+    store.dispatch(
+      addNotification({
+        type: 'warning',
+        message: 'Your session has expired. Please log in again.',
+      })
+    );
   }
 
-  async logout() {
-    const state = store.getState();
-    const { token } = state.auth;
+  /**
+   * Initialize authentication check on app start
+   */
+  async initializeAuth() {
+    const token = this.getToken();
 
-    // Call backend logout endpoint
     if (token) {
       try {
-        await api.post('/auth/logout');
+        // Verify token with backend by fetching current user
+        await store
+          .dispatch(apiSlice.endpoints.getCurrentUser.initiate())
+          .unwrap();
       } catch (error) {
-        console.error('Logout error:', error);
+        // Token is invalid, clear auth state
+        this.handleTokenExpiration();
       }
-    }
-
-    // Clear frontend state
-    store.dispatch(logout());
-  }
-
-  async getCurrentUser() {
-    try {
-      const response = await api.get('/auth/me');
-      return response.data;
-    } catch (error) {
-      throw error;
     }
   }
 
@@ -92,8 +75,13 @@ class AuthService {
     return state.auth.isAuthenticated && state.auth.token;
   }
 
+  getCurrentUser() {
+    const { user } = this.getAuthState();
+    return user;
+  }
+
   getUser() {
-    return store.getState().auth.user;
+    return this.getCurrentUser();
   }
 
   hasRole(role) {
@@ -126,26 +114,80 @@ class AuthService {
     return this.hasAnyRole(['restaurantOwner', 'restaurantManager']);
   }
 
-  // Phone number validation helper
-  validatePhoneNumber(phone) {
-    // Basic validation for phone with country code
-    const phoneRegex = /^\+\d{10,15}$/;
-    return phoneRegex.test(phone);
+  /**
+   * Check if vendor is approved
+   */
+  isVendorApproved() {
+    const user = this.getCurrentUser();
+    if (!user || !this.isVendor()) return false;
+    return user.isApproved === true;
   }
 
-  // Format phone number for display
-  formatPhoneNumber(phone) {
-    if (!phone) return '';
+  /**
+   * Check if user account is active
+   */
+  isAccountActive() {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    return user.status === 'active';
+  }
 
-    // Remove non-digits except +
-    const cleaned = phone.replace(/[^\d+]/g, '');
+  /**
+   * Get role-based dashboard path
+   */
+  getDashboardPath() {
+    const user = this.getCurrentUser();
+    if (!user) return '/login';
 
-    // Add + if missing
-    if (!cleaned.startsWith('+')) {
-      return `+${cleaned}`;
+    switch (user.role) {
+      case 'admin':
+        return '/admin/dashboard';
+      case 'vendor':
+        return user.isApproved
+          ? '/vendor/dashboard'
+          : '/vendor/pending-approval';
+      case 'restaurantOwner':
+      case 'restaurantManager':
+        return '/restaurant/dashboard';
+      default:
+        return '/dashboard';
+    }
+  }
+
+  /**
+   * Validate user permissions for a resource
+   */
+  canAccess(requiredRoles, requireApproval = false) {
+    if (!this.isAuthenticated()) return false;
+
+    const user = this.getCurrentUser();
+    if (!user) return false;
+
+    // Check role permissions
+    if (requiredRoles) {
+      const hasRequiredRole = Array.isArray(requiredRoles)
+        ? this.hasAnyRole(requiredRoles)
+        : this.hasRole(requiredRoles);
+
+      if (!hasRequiredRole) return false;
     }
 
-    return cleaned;
+    // Check vendor approval if required
+    if (requireApproval && this.isVendor() && !this.isVendorApproved()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Get user display name
+   */
+  getUserDisplayName() {
+    const user = this.getCurrentUser();
+    if (!user) return 'Guest';
+
+    return user.name || user.email || user.phone || 'User';
   }
 }
 

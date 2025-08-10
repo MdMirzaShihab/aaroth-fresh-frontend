@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { apiSlice } from './apiSlice';
 
 const initialState = {
   user: null,
@@ -12,31 +13,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    loginSuccess: (state, action) => {
-      const { user, token } = action.payload;
-      state.loading = false;
-      state.user = user;
-      state.token = token;
-      state.isAuthenticated = true;
-      state.error = null;
-
-      // Store in localStorage
-      localStorage.setItem('token', token);
-    },
-    loginFailure: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-      state.isAuthenticated = false;
-      state.token = null;
-      state.user = null;
-
-      // Clear localStorage
-      localStorage.removeItem('token');
-    },
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -57,17 +33,101 @@ const authSlice = createSlice({
       state.loading = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    // Handle login mutation
+    builder
+      .addMatcher(apiSlice.endpoints.login.matchPending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addMatcher(apiSlice.endpoints.login.matchFulfilled, (state, action) => {
+        const { data } = action.payload;
+        if (data.success) {
+          state.loading = false;
+          state.user = data.user;
+          state.token = data.token;
+          state.isAuthenticated = true;
+          state.error = null;
+
+          // Store in localStorage
+          localStorage.setItem('token', data.token);
+        }
+      })
+      .addMatcher(apiSlice.endpoints.login.matchRejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Login failed';
+        state.isAuthenticated = false;
+        state.token = null;
+        state.user = null;
+
+        // Clear localStorage
+        localStorage.removeItem('token');
+      })
+
+      // Handle register mutation
+      .addMatcher(apiSlice.endpoints.register.matchPending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addMatcher(
+        apiSlice.endpoints.register.matchFulfilled,
+        (state, action) => {
+          const { data } = action.payload;
+          if (data.success) {
+            state.loading = false;
+            state.user = data.user;
+            state.token = data.token;
+            state.isAuthenticated = true;
+            state.error = null;
+
+            // Store in localStorage
+            localStorage.setItem('token', data.token);
+          }
+        }
+      )
+      .addMatcher(
+        apiSlice.endpoints.register.matchRejected,
+        (state, action) => {
+          state.loading = false;
+          state.error = action.error.message || 'Registration failed';
+        }
+      )
+
+      // Handle logout mutation
+      .addMatcher(apiSlice.endpoints.logout.matchFulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.error = null;
+        state.loading = false;
+
+        // Clear localStorage
+        localStorage.removeItem('token');
+      })
+
+      // Handle getCurrentUser query
+      .addMatcher(
+        apiSlice.endpoints.getCurrentUser.matchFulfilled,
+        (state, action) => {
+          const { data } = action.payload;
+          if (data.success) {
+            // Backend returns user in 'user' field per API docs
+            state.user = data.user;
+            state.isAuthenticated = true;
+          }
+        }
+      )
+      .addMatcher(apiSlice.endpoints.getCurrentUser.matchRejected, (state) => {
+        // Token is invalid, logout user
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        localStorage.removeItem('token');
+      });
+  },
 });
 
-export const {
-  loginStart,
-  loginSuccess,
-  loginFailure,
-  logout,
-  updateUser,
-  clearError,
-  setLoading,
-} = authSlice.actions;
+export const { logout, updateUser, clearError, setLoading } = authSlice.actions;
 
 // Selectors
 export const selectAuth = (state) => state.auth;

@@ -1,0 +1,55 @@
+/**
+ * Custom utility classes for Aaroth Fresh Design System
+ * Following the Organic Futurism design philosophy from CLAUDE.md
+ */
+
+/* Glassmorphism Effects - Futuristic Enhancement */
+.glass-effect {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Animation Utilities - Motion with Purpose */
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Focus Ring - Modern and Subtle */
+.focus-ring-modern {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bottle-green/40 focus-visible:ring-offset-4 focus-visible:rounded-2xl;
+}
+
+/* Touch Targets - Mobile-First 44px minimum */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px];
+}
+
+.touch-target-large {
+  @apply min-h-[48px] min-w-[48px];
+}
+
+/* Reduced Motion Support - Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-scale-in,
+  .animate-glow,
+  .animate-float,
+  .animate-shimmer {
+    animation: none;
+  }
+  
+  .transition-transform,
+  .transition-all {
+    transition: none;
+  }
+  
+  .hover\:scale-\[1\.02\]:hover,
+  .hover\:-translate-y-1:hover,
+  .hover\:-translate-y-0\.5:hover {
+    transform: none;
+  }
+}

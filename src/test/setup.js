@@ -18,10 +18,11 @@ global.ResizeObserver = class ResizeObserver {
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+  storage: new Map(),
+  getItem: vi.fn((key) => localStorageMock.storage.get(key) || null),
+  setItem: vi.fn((key, value) => localStorageMock.storage.set(key, value)),
+  removeItem: vi.fn((key) => localStorageMock.storage.delete(key)),
+  clear: vi.fn(() => localStorageMock.storage.clear()),
 };
 global.localStorage = localStorageMock;
 

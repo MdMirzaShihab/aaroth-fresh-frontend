@@ -22,7 +22,7 @@ export default {
         'text-muted': '#6B7280',
         'tomato-red': '#E94B3C',
         
-        // Enhancement Colors
+        // Futuristic Enhancement Colors
         'glass': 'rgba(255, 255, 255, 0.1)',
         'glow-green': '#006A4E20',
         'shadow-soft': 'rgba(60, 42, 31, 0.08)',
@@ -41,7 +41,6 @@ export default {
         'scale-in': 'scaleIn 0.2s ease-out',
         'glow': 'glow 2s ease-in-out infinite alternate',
         'float': 'float 3s ease-in-out infinite',
-        'shimmer': 'shimmer 1.5s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -64,18 +63,6 @@ export default {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-5px)' },
         },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        },
-      },
-      fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
-      },
-      spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '128': '32rem',
       },
     },
   },

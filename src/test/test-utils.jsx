@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import authReducer from '../store/slices/authSlice';
 import cartReducer from '../store/slices/cartSlice';
 import notificationReducer from '../store/slices/notificationSlice';
+import themeReducer from '../store/slices/themeSlice';
 import { apiSlice } from '../store/slices/apiSlice';
 
 const createTestStore = (preloadedState = {}) => {
@@ -13,6 +14,7 @@ const createTestStore = (preloadedState = {}) => {
       auth: authReducer,
       cart: cartReducer,
       notification: notificationReducer,
+      theme: themeReducer,
       api: apiSlice.reducer,
     },
     preloadedState,

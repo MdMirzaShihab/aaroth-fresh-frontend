@@ -1,3 +1,6 @@
+/* Import custom utilities for Aaroth Fresh Design System */
+@import './styles/utilities.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

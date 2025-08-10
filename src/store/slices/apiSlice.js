@@ -12,7 +12,8 @@ const baseQuery = fetchBaseQuery({
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
-    headers.set('content-type', 'application/json');
+    // Don't set content-type here - let it be set per request
+    // FormData requests need different content-type
     return headers;
   },
 });
@@ -75,6 +76,49 @@ export const apiSlice = createApi({
       providesTags: ['User'],
     }),
 
+    // Profile management endpoints
+    updateUserProfile: builder.mutation({
+      query: (profileData) => ({
+        url: '/auth/me',
+        method: 'PUT',
+        body: profileData,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    changePassword: builder.mutation({
+      query: (passwordData) => ({
+        url: '/auth/change-password',
+        method: 'PUT',
+        body: passwordData,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    // Restaurant Manager endpoints (Restaurant Owner Only)
+    createManager: builder.mutation({
+      query: (managerData) => ({
+        url: '/auth/create-manager',
+        method: 'POST',
+        body: managerData,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    getManagers: builder.query({
+      query: () => '/auth/managers',
+      providesTags: ['User'],
+    }),
+
+    deactivateManager: builder.mutation({
+      query: ({ id, isActive }) => ({
+        url: `/auth/managers/${id}/deactivate`,
+        method: 'PUT',
+        body: { isActive },
+      }),
+      invalidatesTags: ['User'],
+    }),
+
     // Public endpoints
     getCategories: builder.query({
       query: () => '/public/categories',
@@ -84,6 +128,19 @@ export const apiSlice = createApi({
     getFeaturedProducts: builder.query({
       query: () => '/public/featured-products',
       providesTags: ['Product'],
+    }),
+
+    getPublicProducts: builder.query({
+      query: (params = {}) => ({
+        url: '/public/products',
+        params,
+      }),
+      providesTags: ['Product'],
+    }),
+
+    getPublicProduct: builder.query({
+      query: (id) => `/public/products/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Product', id }],
     }),
 
     // Listings endpoints
@@ -101,29 +158,55 @@ export const apiSlice = createApi({
       ],
     }),
 
+    getVendorListings: builder.query({
+      query: (params = {}) => ({
+        url: '/listings/vendor',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'Listing', id: 'VENDOR_LIST' },
+        ...(result?.data?.listings || []).map(({ id }) => ({
+          type: 'Listing',
+          id,
+        })),
+      ],
+    }),
+
     getListing: builder.query({
       query: (id) => `/listings/${id}`,
       providesTags: (result, error, id) => [{ type: 'Listing', id }],
     }),
 
     createListing: builder.mutation({
-      query: (newListing) => ({
-        url: '/listings',
-        method: 'POST',
-        body: newListing,
-      }),
-      invalidatesTags: [{ type: 'Listing', id: 'LIST' }],
+      query: (listingFormData) => {
+        // Handle FormData for file uploads integrated with listing creation
+        return {
+          url: '/listings',
+          method: 'POST',
+          body: listingFormData, // This should be FormData object
+          // Don't set Content-Type header - let browser set it for FormData
+        };
+      },
+      invalidatesTags: [
+        { type: 'Listing', id: 'LIST' },
+        { type: 'Listing', id: 'VENDOR_LIST' }
+      ],
     }),
 
     updateListing: builder.mutation({
-      query: ({ id, ...listing }) => ({
-        url: `/listings/${id}`,
-        method: 'PUT',
-        body: listing,
-      }),
+      query: ({ id, formData }) => {
+        // Handle FormData for file uploads integrated with listing updates
+        return {
+          url: `/listings/${id}`,
+          method: 'PUT',
+          body: formData, // This should be FormData object
+          // Don't set Content-Type header - let browser set it for FormData
+        };
+      },
       invalidatesTags: (result, error, { id }) => [
         { type: 'Listing', id },
         { type: 'Listing', id: 'LIST' },
+        { type: 'Listing', id: 'VENDOR_LIST' },
       ],
     }),
 
@@ -135,6 +218,7 @@ export const apiSlice = createApi({
       invalidatesTags: (result, error, id) => [
         { type: 'Listing', id },
         { type: 'Listing', id: 'LIST' },
+        { type: 'Listing', id: 'VENDOR_LIST' },
       ],
     }),
 
@@ -168,10 +252,10 @@ export const apiSlice = createApi({
     }),
 
     updateOrderStatus: builder.mutation({
-      query: ({ id, status }) => ({
+      query: ({ id, status, notes }) => ({
         url: `/orders/${id}/status`,
         method: 'PUT',
-        body: { status },
+        body: { status, notes },
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: 'Order', id },
@@ -179,51 +263,227 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Admin endpoints
-    getAllUsers: builder.query({
+    // Admin endpoints - User Management
+    getAdminUsers: builder.query({
       query: (params = {}) => ({
         url: '/admin/users',
         params,
       }),
-      providesTags: ['User'],
+      providesTags: (result) => [
+        { type: 'User', id: 'LIST' },
+        ...(result?.data?.users || []).map(({ id }) => ({ type: 'User', id }))
+      ],
     }),
 
-    approveVendor: builder.mutation({
-      query: (id) => ({
+    getAdminUser: builder.query({
+      query: (id) => `/admin/users/${id}`,
+      providesTags: (result, error, id) => [{ type: 'User', id }],
+    }),
+
+    approveUser: builder.mutation({
+      query: ({ id, isApproved }) => ({
         url: `/admin/users/${id}/approve`,
         method: 'PUT',
+        body: { isApproved },
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'User', id },
+        { type: 'User', id: 'LIST' },
+      ],
     }),
 
-    getAnalytics: builder.query({
+    updateAdminUser: builder.mutation({
+      query: ({ id, ...userData }) => ({
+        url: `/admin/users/${id}`,
+        method: 'PUT',
+        body: userData,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'User', id },
+        { type: 'User', id: 'LIST' },
+      ],
+    }),
+
+    deleteAdminUser: builder.mutation({
+      query: (id) => ({
+        url: `/admin/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'User', id },
+        { type: 'User', id: 'LIST' },
+      ],
+    }),
+
+    // Admin Analytics - correct endpoint is /admin/dashboard
+    getAdminDashboard: builder.query({
+      query: () => '/admin/dashboard',
+      providesTags: ['Admin'],
+    }),
+
+    // Admin Product Management
+    getAdminProducts: builder.query({
       query: (params = {}) => ({
-        url: '/admin/analytics',
+        url: '/admin/products',
         params,
       }),
-      providesTags: ['Admin'],
+      providesTags: (result) => [
+        { type: 'Product', id: 'ADMIN_LIST' },
+        ...(result?.data?.products || []).map(({ id }) => ({ type: 'Product', id }))
+      ],
+    }),
+
+    getAdminProduct: builder.query({
+      query: (id) => `/admin/products/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Product', id }],
+    }),
+
+    createAdminProduct: builder.mutation({
+      query: (productData) => ({
+        url: '/admin/products',
+        method: 'POST',
+        body: productData,
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'ADMIN_LIST' }],
+    }),
+
+    updateAdminProduct: builder.mutation({
+      query: ({ id, ...productData }) => ({
+        url: `/admin/products/${id}`,
+        method: 'PUT',
+        body: productData,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Product', id },
+        { type: 'Product', id: 'ADMIN_LIST' },
+      ],
+    }),
+
+    deleteAdminProduct: builder.mutation({
+      query: (id) => ({
+        url: `/admin/products/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Product', id },
+        { type: 'Product', id: 'ADMIN_LIST' },
+      ],
+    }),
+
+    // Admin Category Management
+    getAdminCategories: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/categories',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'Category', id: 'ADMIN_LIST' },
+        ...(result?.data?.categories || []).map(({ id }) => ({ type: 'Category', id }))
+      ],
+    }),
+
+    getAdminCategory: builder.query({
+      query: (id) => `/admin/categories/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Category', id }],
+    }),
+
+    createAdminCategory: builder.mutation({
+      query: (categoryData) => ({
+        url: '/admin/categories',
+        method: 'POST',
+        body: categoryData,
+      }),
+      invalidatesTags: [
+        { type: 'Category', id: 'ADMIN_LIST' },
+        'Category', // Also invalidate public categories
+      ],
+    }),
+
+    updateAdminCategory: builder.mutation({
+      query: ({ id, ...categoryData }) => ({
+        url: `/admin/categories/${id}`,
+        method: 'PUT',
+        body: categoryData,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Category', id },
+        { type: 'Category', id: 'ADMIN_LIST' },
+        'Category', // Also invalidate public categories
+      ],
+    }),
+
+    deleteAdminCategory: builder.mutation({
+      query: (id) => ({
+        url: `/admin/categories/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Category', id },
+        { type: 'Category', id: 'ADMIN_LIST' },
+        'Category', // Also invalidate public categories
+      ],
     }),
   }),
 });
 
 // Export hooks
 export const {
+  // Authentication
   useLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
   useGetCurrentUserQuery,
+  
+  // Profile Management
+  useUpdateUserProfileMutation,
+  useChangePasswordMutation,
+  
+  // Manager Management (Restaurant Owner Only)
+  useCreateManagerMutation,
+  useGetManagersQuery,
+  useDeactivateManagerMutation,
+  
+  // Public endpoints
   useGetCategoriesQuery,
   useGetFeaturedProductsQuery,
+  useGetPublicProductsQuery,
+  useGetPublicProductQuery,
+  
+  // Listings
   useGetListingsQuery,
+  useGetVendorListingsQuery,
   useGetListingQuery,
   useCreateListingMutation,
   useUpdateListingMutation,
   useDeleteListingMutation,
+  
+  // Orders
   useGetOrdersQuery,
   useGetOrderQuery,
   useCreateOrderMutation,
   useUpdateOrderStatusMutation,
-  useGetAllUsersQuery,
-  useApproveVendorMutation,
-  useGetAnalyticsQuery,
+  
+  // Admin - User Management
+  useGetAdminUsersQuery,
+  useGetAdminUserQuery,
+  useApproveUserMutation,
+  useUpdateAdminUserMutation,
+  useDeleteAdminUserMutation,
+  
+  // Admin - Analytics
+  useGetAdminDashboardQuery,
+  
+  // Admin - Product Management
+  useGetAdminProductsQuery,
+  useGetAdminProductQuery,
+  useCreateAdminProductMutation,
+  useUpdateAdminProductMutation,
+  useDeleteAdminProductMutation,
+  
+  // Admin - Category Management
+  useGetAdminCategoriesQuery,
+  useGetAdminCategoryQuery,
+  useCreateAdminCategoryMutation,
+  useUpdateAdminCategoryMutation,
+  useDeleteAdminCategoryMutation,
 } = apiSlice;

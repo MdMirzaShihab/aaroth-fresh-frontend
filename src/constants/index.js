@@ -56,14 +56,55 @@ export const API_ENDPOINTS = {
   },
 };
 
-// App configuration
+// App configuration from environment variables
 export const APP_CONFIG = {
-  APP_NAME: 'Aaroth Fresh',
-  ITEMS_PER_PAGE: 20,
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-  ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+  APP_NAME: import.meta.env.VITE_APP_NAME || 'Aaroth Fresh',
+  APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
+  APP_DESCRIPTION:
+    import.meta.env.VITE_APP_DESCRIPTION || 'B2B Fresh Produce Marketplace',
+
+  // API Configuration
+  API_BASE_URL:
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1',
+  API_TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT) || 10000,
+
+  // UI Configuration
+  ITEMS_PER_PAGE: parseInt(import.meta.env.VITE_ITEMS_PER_PAGE) || 20,
+  DEBOUNCE_DELAY: parseInt(import.meta.env.VITE_DEBOUNCE_DELAY) || 300,
+  DEFAULT_THEME: import.meta.env.VITE_DEFAULT_THEME || 'light',
+
+  // File Upload
+  MAX_FILE_SIZE:
+    parseInt(import.meta.env.VITE_MAX_FILE_SIZE) || 5 * 1024 * 1024, // 5MB
+  ALLOWED_IMAGE_TYPES: import.meta.env.VITE_ALLOWED_IMAGE_TYPES?.split(',') || [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+  ],
+
+  // Authentication
+  TOKEN_STORAGE_KEY: import.meta.env.VITE_TOKEN_STORAGE_KEY || 'token',
+  SESSION_TIMEOUT: parseInt(import.meta.env.VITE_SESSION_TIMEOUT) || 24, // hours
+
+  // Validation
   PHONE_REGEX: /^\+\d{10,15}$/,
   PASSWORD_MIN_LENGTH: 6,
+
+  // Feature Flags
+  ENABLE_DEV_TOOLS: import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true',
+  ENABLE_MOCK_API: import.meta.env.VITE_ENABLE_MOCK_API === 'true',
+  ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
+  ENABLE_ERROR_REPORTING:
+    import.meta.env.VITE_ENABLE_ERROR_REPORTING === 'true',
+
+  // Development
+  SHOW_DEBUG_INFO: import.meta.env.VITE_SHOW_DEBUG_INFO === 'true',
+  LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || 'info',
+
+  // Environment
+  IS_DEVELOPMENT: import.meta.env.MODE === 'development',
+  IS_PRODUCTION: import.meta.env.MODE === 'production',
 };
 
 // Navigation routes

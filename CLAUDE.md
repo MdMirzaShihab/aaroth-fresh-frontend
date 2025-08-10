@@ -180,469 +180,84 @@ The Aaroth Fresh interface embodies **"Organic Futurism"** - a design language t
 - **Breathing Room**: Embrace negative space as a design element
 - **Subtle Sophistication**: Understated elegance over flashy elements
 
-### Color Palette
+### Design System Implementation
 
-#### Primary Colors (Minimalistic Earth-Tech Fusion)
-- **Primary Dark (Earthy Brown)**: `#8C644A` - Grounding element, used sparingly for emphasis
-- **Primary Light (Earthy Beige)**: `#F5ECD9` - Soft background, creates warmth without visual noise
-- **Supporting Tone 1 (Earthy Yellow)**: `#D4A373` - Accent color for micro-interactions and highlights
-- **Supporting Tone 2 (Earthy Tan)**: `#E6D5B8` - Subtle differentiation, card backgrounds
+**Complete color palette, animations, and Tailwind configuration available in:**
+- `tailwind.config.js` - Custom colors, gradients, animations, and keyframes
+- `src/styles/design-tokens.js` - JavaScript constants for programmatic access
+- `src/styles/utilities.css` - Custom utility classes and accessibility support
 
-#### Secondary Colors (Future-Forward Accents)
-- **Secondary Dark (Bottle Green)**: `#006A4E` - Primary action color, tech-forward yet natural
-- **Secondary Light (Mint Fresh)**: `#8FD4BE` - Success states, fresh indicators, subtle highlights
-
-#### Utility Colors (Futuristic Neutrals)
-- **Text Dark**: `#3A2A1F` - Primary text, softer than harsh black for comfortable reading
-- **Text Light**: `#FFFFFF` - Clean contrast on dark surfaces
-- **Text Muted**: `#6B7280` - Secondary information, maintains hierarchy without clutter
-- **Accent (Tomato Red)**: `#E94B3C` - Strategic use for critical actions only
-- **Warning (Amber)**: `#F59E0B` - Minimal warning states
-- **Border**: `#E5E7EB` - Barely-there separations
-- **Background**: `#FFFFFF` - Pure, clean foundation
-- **Background Alt**: `#F9FAFB` - Subtle texture without visual weight
-
-#### Futuristic Enhancement Colors
-- **Glass Effect**: `rgba(255, 255, 255, 0.1)` - Glassmorphism overlays
-- **Glow Green**: `#006A4E20` - Subtle success glows and hover states
-- **Shadow Soft**: `rgba(60, 42, 31, 0.08)` - Elevated surfaces
-- **Gradient Primary**: `linear-gradient(135deg, #8C644A 0%, #D4A373 100%)` - Premium surfaces
-- **Gradient Secondary**: `linear-gradient(135deg, #006A4E 0%, #8FD4BE 100%)` - Action elements
-
-### Tailwind Configuration
-Add these custom colors to your `tailwind.config.js`:
-
-```javascript
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        'earthy-brown': '#8C644A',
-        'earthy-beige': '#F5ECD9',
-        'earthy-yellow': '#D4A373',
-        'earthy-tan': '#E6D5B8',
-        'bottle-green': '#006A4E',
-        'mint-fresh': '#8FD4BE',
-        'text-dark': '#3A2A1F',
-        'text-muted': '#6B7280',
-        'tomato-red': '#E94B3C',
-        'glass': 'rgba(255, 255, 255, 0.1)',
-        'glow-green': '#006A4E20',
-        'shadow-soft': 'rgba(60, 42, 31, 0.08)',
-      },
-      backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #8C644A 0%, #D4A373 100%)',
-        'gradient-secondary': 'linear-gradient(135deg, #006A4E 0%, #8FD4BE 100%)',
-        'gradient-glass': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-      },
-      backdropBlur: {
-        xs: '2px',
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.3s ease-out',
-        'slide-up': 'slideUp 0.4s ease-out',
-        'scale-in': 'scaleIn 0.2s ease-out',
-        'glow': 'glow 2s ease-in-out infinite alternate',
-        'float': 'float 3s ease-in-out infinite',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(10px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.95)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
-        },
-        glow: {
-          '0%': { boxShadow: '0 0 5px rgba(0, 106, 78, 0.2)' },
-          '100%': { boxShadow: '0 0 20px rgba(0, 106, 78, 0.4)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-5px)' },
-        },
-      },
-    }
-  }
-}
-```
+**Key Design System Elements:**
+- **Organic Futurism Color Palette**: Earth-tech fusion colors (`earthy-brown`, `bottle-green`, etc.)
+- **Glassmorphism Effects**: `glass`, `glow-green`, `shadow-soft` utilities
+- **Micro-Animations**: `animate-fade-in`, `animate-slide-up`, `animate-scale-in`, `animate-glow`, `animate-float`
+- **Touch-First Design**: 44px minimum touch targets, mobile-optimized interactions
 
 ### Typography System (Futuristic Minimalism)
 
-#### Font Family
-```css
-/* Primary: Clean, modern system fonts */
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+**Typography configuration available in:** `src/styles/design-tokens.js`
 
-/* Optional: Consider Inter or Poppins for premium feel */
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-```
-
-#### Font Sizes (Minimalistic Hierarchy)
-- **xs**: 0.75rem (12px) - Micro-labels, timestamps
-- **sm**: 0.875rem (14px) - Secondary text, captions
-- **base**: 1rem (16px) - Primary body text
-- **lg**: 1.125rem (18px) - Emphasized content
-- **xl**: 1.25rem (20px) - Small headings
-- **2xl**: 1.5rem (24px) - Section headings
-- **3xl**: 1.875rem (30px) - Page titles (use sparingly)
-- **4xl**: 2.25rem (36px) - Hero text (rare, impactful moments)
-
-#### Typography Principles
-- **Generous Line Heights**: 1.6-1.8 for readability and breathing room
-- **Selective Bold Usage**: Use font-medium (500) over font-bold (700) for subtlety
-- **Letter Spacing**: Slight tracking on headings (-0.025em) for premium feel
-- **Hierarchy Through Scale & Color**: Not just size - use color and weight strategically
-
-### Component Design Patterns
+**Key Principles:**
+- **System Fonts**: Apple/Google optimized font stack for performance
+- **Generous Line Heights**: 1.6-1.8 for readability and breathing room  
+- **Selective Bold Usage**: Prefer font-medium (500) over font-bold (700)
+- **Hierarchy Through Scale & Color**: Use Tailwind's text sizes with strategic color contrast
 
 ### Component Design Patterns (Futuristic Minimalism)
 
-#### Buttons (Invisible Until Needed)
-```javascript
-// Primary CTA - Subtle Glow Effect
-className="bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+**Complete component patterns and class combinations available in:** `src/styles/design-tokens.js` - `components` object
 
-// Secondary Button - Glass Morphism
-className="bg-glass backdrop-blur-sm border border-white/20 text-text-dark px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:bg-white/10 hover:border-white/30 min-h-[44px]"
+**Pattern Categories:**
+- **Buttons**: Primary CTA with glow effects, glass morphism, ghost buttons, floating action buttons
+- **Cards & Containers**: Floating glass effects, organic curves, modal dialogs, responsive containers  
+- **Form Elements**: Borderless focus inputs, floating labels, organic toggles, accessibility-compliant focus rings
+- **Navigation**: Floating glass bars, hidden drawer navigation, subtle hover states
 
-// Ghost Button - Minimal Presence
-className="text-bottle-green hover:text-bottle-green/80 px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:bg-bottle-green/5 min-h-[44px]"
+**Key Pattern Principles:**
+- **44px Minimum Touch Targets**: All interactive elements meet accessibility requirements
+- **Glassmorphism Effects**: Backdrop-blur with subtle transparency layers
+- **Organic Curves**: 16px-32px border radius preference for natural feel
+- **Invisible Interactions**: Subtle hover states and micro-feedback
 
-// Floating Action Button - Modern & Minimal
-className="bg-gradient-secondary text-white w-14 h-14 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center border-0 focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+### Mobile-First Design Principles
 
-// Danger Button - Restrained
-className="bg-tomato-red/90 hover:bg-tomato-red text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-tomato-red/20"
-```
+**Complete responsive system and touch patterns available in:** `src/styles/design-tokens.js` - `spacing` and `breakpoints` objects
 
-#### Cards & Containers (Elevated Simplicity)
-```javascript
-// Product Card - Floating Glass Effect
-className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm hover:shadow-2xl hover:shadow-shadow-soft transition-all duration-500 p-6 border border-white/50 hover:-translate-y-1 group"
-
-// Dashboard Card - Organic Curves
-className="bg-gradient-glass backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-soft"
-
-// Modal/Dialog - Floating Above Reality
-className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 max-w-md mx-auto border border-white/50 animate-scale-in"
-
-// Container - Breathing Space
-className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-7xl"
-
-// Hero Section - Expansive Minimalism
-className="min-h-screen flex items-center justify-center bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10"
-```
-
-#### Form Elements (Invisible Interactions)
-```javascript
-// Input Field - Borderless Focus
-className="w-full px-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none"
-
-// Floating Label Input
-className="relative group"
-// Input: "w-full px-6 pt-6 pb-2 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg transition-all duration-300 peer"
-// Label: "absolute left-6 top-4 text-text-muted transition-all duration-300 peer-focus:top-2 peer-focus:text-xs peer-focus:text-bottle-green"
-
-// Select Dropdown - Minimal & Clean
-className="w-full px-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg appearance-none cursor-pointer transition-all duration-300 min-h-[44px]"
-
-// Checkbox - Organic Toggle
-className="w-6 h-6 rounded-lg text-bottle-green focus:ring-0 focus:ring-offset-0 border-2 border-gray-200 transition-all duration-200 hover:border-bottle-green"
-
-// Toggle Switch - Futuristic
-className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-bottle-green focus:ring-offset-2 data-[checked]:bg-bottle-green"
-
-// Form Label - Subtle Presence
-className="block text-sm font-medium text-text-dark/80 mb-3 tracking-wide"
-
-// Error Message - Gentle Warning
-className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2"
-```
-
-#### Navigation (Invisible Until Needed)
-```javascript
-// Header - Floating Glass Bar
-className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/20 transition-all duration-300"
-
-// Mobile Navigation - Hidden Drawer
-className="fixed inset-y-0 left-0 z-50 w-80 bg-white/95 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 ease-in-out"
-
-// Navigation Item - Subtle Hover
-className="flex items-center gap-3 px-6 py-3 rounded-2xl text-text-dark/70 hover:text-bottle-green hover:bg-bottle-green/5 transition-all duration-200 font-medium"
-
-// Breadcrumb - Minimal Trail
-className="flex items-center gap-2 text-sm text-text-muted"
-```
-
-### Mobile-First Design Principles (Futuristic Touch)
-
-#### Touch Targets (Enhanced for Future)
-- **Minimum size**: 44px × 44px for all interactive elements
-- **Optimal size**: 48px × 48px for primary actions
-- **Spacing between targets**: minimum 12px for comfortable interaction
-- **Bottom navigation items**: 72px height with floating indicators
-- **Gesture-friendly**: Swipe areas extend beyond visual boundaries
-
-#### Responsive Grid System (Organic Flow)
-```javascript
-// Adaptive Grid - Flows like nature
-className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr"
-
-// Masonry-style Layout - Organic arrangement
-className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
-
-// Product Grid - Asymmetric beauty
-className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"
-
-// Dashboard Grid - Breathing space
-className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-12"
-
-// Hero Layout - Centered minimalism
-className="flex flex-col items-center justify-center min-h-screen text-center px-6 max-w-4xl mx-auto"
-```
-
-#### Gesture-First Interactions
-```javascript
-// Swipeable Cards
-className="snap-x snap-mandatory flex overflow-x-auto gap-6 px-6 pb-4"
-
-// Pull-to-refresh Indicator
-className="flex items-center justify-center py-4 text-bottle-green animate-float"
-
-// Floating Action Menu - Expandable
-className="fixed bottom-6 right-6 z-50 flex flex-col-reverse gap-3"
-
-// Sticky Elements - Smart positioning
-className="sticky top-20 z-40 bg-white/90 backdrop-blur-sm"
-```
+**Key Mobile-First Standards:**
+- **Touch Targets**: 44px minimum, 48px optimal for primary actions (utilities: `.touch-target`, `.touch-target-large`)
+- **Responsive Breakpoints**: sm (640px), md (768px), lg (1024px), xl (1280px), 2xl (1536px)
+- **Gesture Patterns**: Swipeable cards, pull-to-refresh, floating action menus, sticky positioning
+- **Organic Grid Systems**: Adaptive grids, masonry layouts, asymmetric beauty with natural flow
 
 ### Animation & Transitions (Invisible Magic)
 
-#### Micro-Interactions Philosophy
+**Complete animation system available in:** `tailwind.config.js` (animations & keyframes) and `src/styles/design-tokens.js` (durations & easing)
+
+**Micro-Interactions Philosophy:**
 - **Purposeful Motion**: Every animation communicates state or guides attention
-- **Organic Easing**: Use `ease-out` for entrances, `ease-in` for exits
-- **Staggered Reveals**: Create rhythm with sequential animations
-- **Breathing UI**: Subtle hover states that feel alive
-- **Performance First**: 60fps animations, transform over position changes
+- **Organic Easing**: `ease-out` for entrances, `ease-in` for exits, 60fps performance
+- **Duration Standards**: 100ms (instant), 200ms (fast), 300ms (normal), 500ms (slow), 800ms (cinematic)
 
-#### Standard Transitions (Refined Timing)
-- **Instant**: 100ms (micro-feedback, button presses)
-- **Fast**: 200ms (hover states, focus indicators)
-- **Normal**: 300ms (page elements, modals)
-- **Slow**: 500ms (page transitions, complex reveals)
-- **Cinematic**: 800ms (hero animations, onboarding)
+**Animation Categories:**
+- **Entrance Animations**: `animate-fade-in`, `animate-slide-up`, `animate-scale-in`
+- **Living Interface**: Hover states with subtle transforms and glow effects
+- **Loading States**: `animate-pulse`, `animate-float` for zen-like patience
+- **Accessibility**: `prefers-reduced-motion` support in `src/styles/utilities.css`
 
-#### Common Animations (Signature Movements)
-```javascript
-// Entrance Animations - Organic appearance
-className="animate-fade-in" // Gentle fade with subtle upward motion
-className="animate-slide-up" // Smooth emergence from below
-className="animate-scale-in" // Gentle scale with fade
+### Additional Design System Elements
 
-// Hover States - Living interface
-className="hover:scale-[1.02] hover:-translate-y-1 transition-transform duration-300 ease-out"
-className="hover:shadow-2xl hover:shadow-glow-green/10 transition-all duration-400"
+**Comprehensive specifications available in project files:**
 
-// Loading States - Zen-like patience
-className="animate-pulse bg-gradient-to-r from-earthy-beige to-earthy-tan"
-className="animate-float" // Gentle floating motion
+- **Iconography**: Lucide React library, size standards (16px-32px), semantic color usage
+- **Loading & Empty States**: Skeleton screens, spinners, progress bars, thoughtful empty states  
+- **Accessibility Standards**: WCAG 2.1 AA compliance, focus management, ARIA labels
+- **Spacing System**: Tailwind's scale (4px base unit), touch-friendly spacing
+- **Dark Mode**: Future consideration with color palette adjustments
 
-// Interactive Feedback - Immediate response
-className="active:scale-95 transition-transform duration-100"
-className="hover:bg-bottle-green/5 transition-colors duration-200"
-
-// Page Transitions - Seamless flow
-className="transition-all duration-500 ease-in-out transform"
-
-// Glow Effects - Subtle energy
-className="hover:animate-glow transition-all duration-300"
-```
-
-#### Advanced Animation Patterns
-```javascript
-// Staggered List Animations
-className="[&>*:nth-child(1)]:animate-[fade-in_0.3s_ease-out_0.1s_both] [&>*:nth-child(2)]:animate-[fade-in_0.3s_ease-out_0.2s_both] [&>*:nth-child(3)]:animate-[fade-in_0.3s_ease-out_0.3s_both]"
-
-// Parallax Scrolling Effects
-className="transform transition-transform duration-1000 ease-out"
-
-// Morphing Buttons
-className="relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-secondary before:translate-x-[-100%] hover:before:translate-x-0 before:transition-transform before:duration-300"
-
-// Loading Skeleton - Breathing effect
-className="animate-pulse bg-gradient-to-r from-earthy-beige via-white to-earthy-beige bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]"
-```
-
-### Iconography Guidelines
-
-#### Icon Library
-- **Primary**: Lucide React (already in tech stack)
-
-#### Size Standards
-- **Small**: 16px (`w-4 h-4`)
-- **Default**: 20px (`w-5 h-5`)
-- **Medium**: 24px (`w-6 h-6`)
-- **Large**: 32px (`w-8 h-8`)
-
-#### Icon Colors
-- **Default**: Text color (`text-current`)
-- **Interactive**: Bottle green (`text-bottle-green`)
-- **Muted**: Gray (`text-gray-400`)
-- **Success**: Mint fresh (`text-mint-fresh`)
-- **Error**: Tomato red (`text-tomato-red`)
-
-### Dark Mode Considerations
-
-#### Color Adjustments
-```javascript
-// Dark mode palette classes
-dark: {
-  'bg-dark': '#1A1A1A',
-  'bg-dark-alt': '#2D2D2D',
-  'text-dark-primary': '#F5ECD9',
-  'text-dark-muted': '#A0A0A0',
-  'primary-dark': '#D4A373',
-  'secondary-dark': '#8FD4BE'
-}
-```
-
-### Component Spacing System
-
-#### Spacing Scale (Tailwind)
-- **0**: 0px
-- **1**: 0.25rem (4px)
-- **2**: 0.5rem (8px)
-- **3**: 0.75rem (12px)
-- **4**: 1rem (16px)
-- **5**: 1.25rem (20px)
-- **6**: 1.5rem (24px)
-- **8**: 2rem (32px)
-- **10**: 2.5rem (40px)
-- **12**: 3rem (48px)
-- **16**: 4rem (64px)
-
-### Loading & Empty States (Zen-like Patience)
-
-#### Loading Patterns (Elegant Waiting)
-```javascript
-// Skeleton Screens - Organic shapes
-className="animate-pulse bg-gradient-to-r from-earthy-beige/50 via-white to-earthy-beige/50 rounded-3xl h-4 w-full"
-
-// Content Placeholder - Breathing rhythm
-className="space-y-4 animate-pulse"
-// Child elements: "h-4 bg-earthy-beige rounded-full w-3/4", "h-4 bg-earthy-beige rounded-full w-1/2"
-
-// Spinner - Minimal presence
-className="animate-spin rounded-full h-8 w-8 border-2 border-earthy-beige border-t-bottle-green"
-
-// Progress Bars - Organic flow
-className="w-full bg-earthy-beige/30 rounded-full h-2 overflow-hidden"
-// Progress: "h-full bg-gradient-secondary rounded-full origin-left transition-transform duration-500 ease-out"
-
-// Floating Loader - Zen circle
-className="flex items-center justify-center p-8"
-// Inner: "w-12 h-12 border-4 border-bottle-green/20 border-t-bottle-green rounded-full animate-spin"
-```
-
-#### Empty States (Thoughtful Emptiness)
-```javascript
-// Empty State Container - Peaceful void
-className="flex flex-col items-center justify-center py-16 px-8 text-center max-w-md mx-auto"
-
-// Empty State Illustration - Minimal icon
-className="w-24 h-24 text-text-muted/40 mb-6"
-
-// Empty State Text - Gentle guidance
-className="text-lg font-medium text-text-dark/70 mb-2"
-// Subtitle: "text-text-muted mb-8 leading-relaxed"
-
-// Empty State CTA - Soft invitation
-className="bg-gradient-secondary text-white px-8 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-300"
-```
-
-### Error Handling UI
-
-#### Error Messages
-- Use warm, helpful language
-- Provide clear next steps
-- Include error codes for technical issues
-- Position near the relevant field for form errors
-- Use tomato-red color for error states
-
-#### Toast Notifications
-```javascript
-// Success toast
-className="bg-mint-fresh/10 border border-mint-fresh/20 text-bottle-green p-4 rounded-lg"
-
-// Error toast
-className="bg-tomato-red/10 border border-tomato-red/20 text-tomato-red p-4 rounded-lg"
-
-// Warning toast
-className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg"
-
-// Info toast
-className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg"
-```
-
-### Accessibility Standards (Inclusive Futurism)
-
-#### Color Contrast (Universal Readability)
-- **Normal text**: Minimum 4.5:1 contrast ratio with enhanced focus on 7:1 for premium accessibility
-- **Large text**: Minimum 3:1 contrast ratio with 4.5:1 preferred
-- **Interactive elements**: Clear focus indicators with 2px outline and 4px offset
-- **Color Independence**: Never rely solely on color to convey information
-
-#### ARIA Labels & Semantic Structure
-```javascript
-// Accessible Button - Screen reader friendly
-className="focus:outline-none focus:ring-2 focus:ring-bottle-green/40 focus:ring-offset-4 rounded-2xl"
-// Attributes: aria-label="Add product to cart" role="button"
-
-// Form Field - Complete accessibility
-className="focus:outline-none focus:ring-2 focus:ring-bottle-green/40 focus:ring-offset-2"
-// Structure: <label htmlFor="email">Email</label> <input id="email" aria-describedby="email-error">
-
-// Navigation - Semantic structure
-className="nav" // Use semantic HTML: <nav>, <main>, <section>, <article>
-// Skip Link: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-bottle-green text-white px-4 py-2 rounded-lg z-50"
-
-// Icon with Context - Meaningful for all users
-// <span className="sr-only">Search products</span>
-// <SearchIcon className="w-5 h-5" aria-hidden="true" />
-```
-
-#### Focus Management (Keyboard Navigation)
-```javascript
-// Focus Ring - Modern and subtle
-className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bottle-green/40 focus-visible:ring-offset-4 focus-visible:rounded-2xl"
-
-// Focus Trap - Modal accessibility
-className="focus:outline-none" // Use libraries like focus-trap-react
-
-// Skip Links - Keyboard user assistance
-className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-bottle-green text-white px-6 py-3 rounded-2xl z-50 font-medium transition-all duration-200"
-
-// High Contrast Mode Support
-className="contrast-more:border-2 contrast-more:border-current"
-```
-
-#### Motion & Animation Accessibility
-```javascript
-// Respect prefers-reduced-motion
-className="motion-reduce:animate-none motion-reduce:transition-none"
-
-// Alternative static states
-className="motion-reduce:transform-none motion-reduce:hover:scale-100"
-
-// Essential animations only
-// Use @media (prefers-reduced-motion: reduce) in CSS for critical animations
-```
+**Key Accessibility Features:**
+- **Color Contrast**: 4.5:1 minimum ratio, 7:1 preferred for premium accessibility
+- **Focus Management**: Modern focus rings, keyboard navigation support, screen reader optimization
+- **Motion Accessibility**: `prefers-reduced-motion` support in `src/styles/utilities.css`
 
 
 ## Development Guidelines
@@ -721,93 +336,11 @@ className="motion-reduce:transform-none motion-reduce:hover:scale-100"
 - **Coverage**: Built-in c8 coverage reporting
 - **Redux Testing**: Redux Testing Library for state management tests
 
-### Vitest Configuration
-```javascript
-// vite.config.js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.js',
-    css: true,
-    coverage: {
-      provider: 'c8',
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-      ],
-    },
-  },
-})
-```
-
-### Test Setup
-```javascript
-// src/test/setup.js
-import '@testing-library/jest-dom'
-
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
-}
-```
-
-### Redux Testing Utilities
-```javascript
-// src/test/test-utils.jsx
-import { configureStore } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import authReducer from '../store/slices/authSlice';
-import cartReducer from '../store/slices/cartSlice';
-
-const createTestStore = (preloadedState = {}) => {
-  return configureStore({
-    reducer: {
-      auth: authReducer,
-      cart: cartReducer,
-    },
-    preloadedState,
-  });
-};
-
-export const renderWithProviders = (ui, options = {}) => {
-  const {
-    preloadedState = {},
-    store = createTestStore(preloadedState),
-    ...renderOptions
-  } = options;
-
-  const Wrapper = ({ children }) => (
-    <Provider store={store}>
-      <BrowserRouter>{children}</BrowserRouter>
-    </Provider>
-  );
-
-  return {
-    store,
-    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
-  };
-};
-
-// Mock RTK Query hooks for testing
-export const createMockRTKQuery = (data, isLoading = false, error = null) => ({
-  data,
-  isLoading,
-  error,
-  refetch: vi.fn(),
-});
-```
+**Testing Configuration and Utilities:**
+- `vite.config.js` - Vitest configuration with jsdom and coverage
+- `src/test/setup.js` - Global test setup and mocks
+- `src/test/test-utils.jsx` - Redux testing utilities and providers
+- Comprehensive test suites in `src/**/__tests__/` directories
 
 ### Unit Tests
 - **Components**: Test component behavior and props with React Testing Library
@@ -840,260 +373,14 @@ export const createMockRTKQuery = (data, isLoading = false, error = null) => ({
 
 ## Common Development Patterns
 
-### Redux Toolkit Store Setup
-```javascript
-// store/index.js
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import cartReducer from './slices/cartSlice';
-import { apiSlice } from './api/apiSlice';
+### Implementation Examples
 
-export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    cart: cartReducer,
-    api: apiSlice.reducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
-});
-
-export default store;
-```
-
-### Redux Toolkit Slice Pattern with Token Management
-```javascript
-// store/slices/authSlice.js
-import { createSlice } from '@reduxjs/toolkit';
-
-const initialState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
-  loading: false,
-  error: null,
-};
-
-const authSlice = createSlice({
-  name: 'auth',
-  initialState,
-  reducers: {
-    loginStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    loginSuccess: (state, action) => {
-      const { user, token } = action.payload;
-      state.loading = false;
-      state.user = user;
-      state.token = token;
-      state.isAuthenticated = true;
-      
-      // Store in localStorage
-      localStorage.setItem('token', token);
-    },
-    loginFailure: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-      state.isAuthenticated = false;
-    },
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-      
-      // Clear localStorage
-      localStorage.removeItem('token');
-    },
-    updateUser: (state, action) => {
-      state.user = { ...state.user, ...action.payload };
-    },
-    clearError: (state) => {
-      state.error = null;
-    },
-  },
-});
-
-export const { 
-  loginStart, 
-  loginSuccess, 
-  loginFailure, 
-  logout, 
-  updateUser, 
-  clearError 
-} = authSlice.actions;
-
-// Selectors
-export const selectAuth = (state) => state.auth;
-
-export default authSlice.reducer;
-```
-
-
-### RTK Query API Slice
-```javascript
-// store/api/apiSlice.js
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logout } from '../slices/authSlice';
-
-const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_API_BASE_URL || '/api/v1',
-  prepareHeaders: (headers, { getState }) => {
-    const token = getState().auth.token;
-    if (token) {
-      headers.set('authorization', `Bearer ${token}`);
-    }
-    headers.set('content-type', 'application/json');
-    return headers;
-  },
-});
-
-// Base query with simple 401 handling
-const baseQueryWithAuth = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
-  
-  if (result.error && result.error.status === 401) {
-    // Token expired or invalid, logout user
-    api.dispatch(logout());
-  }
-  
-  return result;
-};
-
-export const apiSlice = createApi({
-  reducerPath: 'api',
-  baseQuery: baseQueryWithAuth,
-  tagTypes: ['User', 'Product', 'Order', 'Listing', 'Category', 'Vendor', 'Restaurant'],
-  endpoints: (builder) => ({
-    // Authentication endpoints
-    login: builder.mutation({
-      query: (credentials) => ({
-        url: '/auth/login',
-        method: 'POST',
-        body: credentials,
-      }),
-      invalidatesTags: ['User'],
-    }),
-    logout: builder.mutation({
-      query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
-      }),
-      invalidatesTags: ['User'],
-    }),
-    getCurrentUser: builder.query({
-      query: () => '/auth/me',
-      providesTags: ['User'],
-    }),
-    
-    // Listings endpoints
-    getListings: builder.query({
-      query: (params = {}) => ({
-        url: '/listings',
-        params,
-      }),
-      providesTags: (result) => [
-        { type: 'Listing', id: 'LIST' },
-        ...(result?.data?.listings || []).map(({ id }) => ({ type: 'Listing', id }))
-      ],
-    }),
-    createListing: builder.mutation({
-      query: (newListing) => ({
-        url: '/listings',
-        method: 'POST',
-        body: newListing,
-      }),
-      invalidatesTags: [{ type: 'Listing', id: 'LIST' }],
-    }),
-    
-    // Orders endpoints  
-    getOrders: builder.query({
-      query: (params = {}) => ({
-        url: '/orders',
-        params,
-      }),
-      providesTags: (result) => [
-        { type: 'Order', id: 'LIST' },
-        ...(result?.data?.orders || []).map(({ id }) => ({ type: 'Order', id }))
-      ],
-    }),
-    createOrder: builder.mutation({
-      query: (orderData) => ({
-        url: '/orders',
-        method: 'POST',
-        body: orderData,
-      }),
-      invalidatesTags: [{ type: 'Order', id: 'LIST' }],
-    }),
-  }),
-});
-
-export const {
-  useLoginMutation,
-  useLogoutMutation,
-  useGetCurrentUserQuery,
-  useGetListingsQuery,
-  useCreateListingMutation,
-  useGetOrdersQuery,
-  useCreateOrderMutation,
-} = apiSlice;
-```
-
-### Protected Route Pattern
-```javascript
-// components/ProtectedRoute.jsx
-import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
-
-export const ProtectedRoute = ({ children, requiredRole }) => {
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-  
-  if (!isAuthenticated) return <Navigate to="/login" />;
-  if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/unauthorized" />;
-  }
-  
-  return children;
-};
-```
-
-### Component with Redux Integration
-```javascript
-// components/ProductList.jsx
-import { useSelector, useDispatch } from 'react-redux';
-import { useGetListingsQuery } from '../store/api/apiSlice';
-import { addToCart } from '../store/slices/cartSlice';
-
-export const ProductList = () => {
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
-  const { data: listings, isLoading, error } = useGetListingsQuery();
-
-  const handleAddToCart = (product) => {
-    dispatch(addToCart(product));
-  };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading products</div>;
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {listings?.data?.listings.map((listing) => (
-        <div key={listing.id} className="card-product">
-          <h3>{listing.product.name}</h3>
-          <p>${listing.price}</p>
-          <button 
-            onClick={() => handleAddToCart(listing)}
-            className="btn-primary"
-          >
-            Add to Cart
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-};
-```
+**Complete implementation patterns available in:**
+- `src/store/index.js` - Redux Toolkit store configuration with RTK Query
+- `src/store/slices/authSlice.js` - Authentication state management with localStorage  
+- `src/store/slices/apiSlice.js` - RTK Query API endpoints with 401 handling
+- `src/components/auth/ProtectedRoute.jsx` - Role-based route protection
+- Component integration examples throughout `src/components/` and `src/pages/`
 
 ## Error Handling Standards
 
@@ -1108,147 +395,11 @@ export const ProductList = () => {
 - **Clear Error Messages**: Actionable error messages for users
 - **Retry Mechanisms**: Allow users to retry failed operations
 
-### Simple Authentication Service
-```javascript
-// services/authService.js
-import { store } from '../store';
-import { loginStart, loginSuccess, loginFailure, logout } from '../store/slices/authSlice';
-
-class AuthService {
-  async login(phone, password) {
-    store.dispatch(loginStart());
-    
-    try {
-      const response = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phone, password }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        store.dispatch(loginSuccess({
-          user: data.user,
-          token: data.token,
-        }));
-        
-        return { success: true, user: data.user };
-      } else {
-        store.dispatch(loginFailure(data.message));
-        return { success: false, message: data.message };
-      }
-    } catch (error) {
-      const errorMessage = 'Network error. Please try again.';
-      store.dispatch(loginFailure(errorMessage));
-      return { success: false, message: errorMessage };
-    }
-  }
-
-  async logout() {
-    const state = store.getState();
-    const { token } = state.auth;
-    
-    // Call backend logout endpoint
-    if (token) {
-      try {
-        await fetch('/api/v1/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-      } catch (error) {
-        console.error('Logout error:', error);
-      }
-    }
-    
-    // Clear frontend state
-    store.dispatch(logout());
-  }
-
-  getToken() {
-    return store.getState().auth.token;
-  }
-
-  isAuthenticated() {
-    const state = store.getState();
-    return state.auth.isAuthenticated && state.auth.token;
-  }
-
-  getUser() {
-    return store.getState().auth.user;
-  }
-
-  hasRole(role) {
-    const user = this.getUser();
-    return user && user.role === role;
-  }
-
-  hasAnyRole(roles) {
-    const user = this.getUser();
-    return user && roles.includes(user.role);
-  }
-}
-
-export default new AuthService();
-```
-
-
-### Application Bootstrap
-```javascript
-// App.jsx - Simple authentication setup
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useGetCurrentUserQuery } from './store/api/apiSlice';
-import { selectAuth } from './store/slices/authSlice';
-import authService from './services/authService';
-
-function App() {
-  const dispatch = useDispatch();
-  const { isAuthenticated, user, token } = useSelector(selectAuth);
-  
-  // Validate current user on app start if token exists
-  const { 
-    data: currentUser, 
-    isLoading, 
-    error 
-  } = useGetCurrentUserQuery(undefined, {
-    skip: !isAuthenticated || !token,
-  });
-
-  // Handle authentication errors
-  useEffect(() => {
-    if (error && error.status === 401) {
-      console.log('Authentication failed, logging out...');
-      authService.logout();
-    }
-  }, [error]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-bottle-green/20 border-t-bottle-green"></div>
-      </div>
-    );
-  }
-
-  return (
-    <Router>
-      <div className="App">
-        <Routes>
-          {/* Your routes here */}
-        </Routes>
-      </div>
-    </Router>
-  );
-}
-
-export default App;
-```
+**Authentication and Application Setup:**
+- `src/services/authService.js` - Authentication utility service with role checking
+- `src/App.jsx` - Application bootstrap with authentication validation
+- `src/hooks/useListingActions.js` - Custom hooks for listing management
+- `src/hooks/useProfileActions.js` - Profile and manager management hooks
 
 ## Important Notes for Claude Code
 
