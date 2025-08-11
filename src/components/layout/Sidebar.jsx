@@ -1,18 +1,69 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronRight, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, X, Crown, Shield, Store } from 'lucide-react';
 import { selectAuth } from '../../store/slices/authSlice';
+import { selectCartItemCount } from '../../store/slices/cartSlice';
+import { selectUnreadNotificationCount } from '../../store/slices/notificationSlice';
 import { getNavigationForRole, hasAccessToNavItem } from '../../constants/navigation';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector(selectAuth);
+  const cartItemCount = useSelector(selectCartItemCount) || 0;
+  const unreadNotifications = useSelector(selectUnreadNotificationCount) || 0;
   
   const [expandedItems, setExpandedItems] = useState(new Set());
   
   const navigationItems = getNavigationForRole(user?.role);
+
+  // Function to get badge count for specific navigation items
+  const getBadgeCount = (itemId) => {
+    switch (itemId) {
+      case 'cart':
+        return cartItemCount > 0 ? cartItemCount : null;
+      case 'notifications':
+        return unreadNotifications > 0 ? unreadNotifications : null;
+      case 'orders':
+        // Could show pending orders count here
+        return null;
+      default:
+        return null;
+    }
+  };
+
+  // Function to get role icon
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case 'admin':
+        return Crown;
+      case 'vendor':
+        return Store;
+      case 'restaurantOwner':
+        return Shield;
+      case 'restaurantManager':
+        return Shield;
+      default:
+        return null;
+    }
+  };
+
+  // Function to get role display name
+  const getRoleDisplayName = (role) => {
+    switch (role) {
+      case 'admin':
+        return 'Administrator';
+      case 'vendor':
+        return 'Vendor';
+      case 'restaurantOwner':
+        return 'Restaurant Owner';
+      case 'restaurantManager':
+        return 'Restaurant Manager';
+      default:
+        return 'User';
+    }
+  };
 
   const toggleExpanded = (itemId) => {
     setExpandedItems(prev => {
@@ -55,6 +106,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     const isExpanded = expandedItems.has(item.id);
     const isActive = isActivePath(item.path);
     const isParentActive = isActiveParent(item);
+    const badgeCount = getBadgeCount(item.id);
 
     return (
       <div key={item.id} className="mb-1">
@@ -77,20 +129,36 @@ const Sidebar = ({ isOpen, onClose }) => {
           }`}
         >
           {item.icon && (
-            <item.icon className={`flex-shrink-0 ${
-              level > 0 ? 'w-4 h-4' : 'w-5 h-5'
-            } ${
-              isActive 
-                ? 'text-white' 
-                : isParentActive
-                ? 'text-bottle-green'
-                : 'text-text-muted group-hover:text-bottle-green'
-            }`} />
+            <div className="relative flex-shrink-0">
+              <item.icon className={`${
+                level > 0 ? 'w-4 h-4' : 'w-5 h-5'
+              } ${
+                isActive 
+                  ? 'text-white' 
+                  : isParentActive
+                  ? 'text-bottle-green'
+                  : 'text-text-muted group-hover:text-bottle-green'
+              }`} />
+              
+              {/* Badge Count */}
+              {badgeCount && (
+                <div className="absolute -top-1 -right-1 min-w-[16px] h-[16px] bg-tomato-red text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+                  {badgeCount > 99 ? '99+' : badgeCount}
+                </div>
+              )}
+            </div>
           )}
           
           <span className="flex-1 text-left font-medium truncate">
             {item.label}
           </span>
+          
+          {/* Badge Count (alternative position) */}
+          {badgeCount && !item.icon && (
+            <div className="bg-tomato-red text-white text-xs font-bold rounded-full px-2 py-1 min-w-[20px] h-[20px] flex items-center justify-center">
+              {badgeCount > 99 ? '99+' : badgeCount}
+            </div>
+          )}
           
           {hasChildren && (
             <div className="flex-shrink-0">
@@ -159,9 +227,17 @@ const Sidebar = ({ isOpen, onClose }) => {
               <h2 className="text-lg font-semibold text-text-dark dark:text-white">
                 Aaroth Fresh
               </h2>
-              <p className="text-xs text-text-muted capitalize">
-                {user?.role || 'Dashboard'}
-              </p>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const RoleIcon = getRoleIcon(user?.role);
+                  return RoleIcon ? (
+                    <RoleIcon className="w-3 h-3 text-bottle-green" />
+                  ) : null;
+                })()}
+                <p className="text-xs text-text-muted">
+                  {getRoleDisplayName(user?.role)}
+                </p>
+              </div>
             </div>
           </div>
 

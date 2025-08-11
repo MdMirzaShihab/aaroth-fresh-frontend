@@ -2,12 +2,16 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { selectAuth } from '../../store/slices/authSlice';
+import { selectCartItemCount } from '../../store/slices/cartSlice';
+import { selectUnreadNotificationCount } from '../../store/slices/notificationSlice';
 import { getMobileNavigationForRole } from '../../constants/navigation';
 
 const MobileNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated } = useSelector(selectAuth);
+  const cartItemCount = useSelector(selectCartItemCount) || 0;
+  const unreadNotifications = useSelector(selectUnreadNotificationCount) || 0;
   
   // Don't show mobile navigation if user is not authenticated
   if (!isAuthenticated) {
@@ -15,6 +19,21 @@ const MobileNavigation = () => {
   }
 
   const navigationItems = getMobileNavigationForRole(user?.role);
+
+  // Function to get badge count for specific navigation items
+  const getBadgeCount = (itemId) => {
+    switch (itemId) {
+      case 'cart':
+        return cartItemCount > 0 ? cartItemCount : null;
+      case 'notifications':
+        return unreadNotifications > 0 ? unreadNotifications : null;
+      case 'orders':
+        // Could show pending orders count here
+        return null;
+      default:
+        return null;
+    }
+  };
 
   const isActivePath = (path) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
@@ -29,6 +48,7 @@ const MobileNavigation = () => {
       <div className="flex items-center justify-around py-2 px-4">
         {navigationItems.map((item) => {
           const isActive = isActivePath(item.path);
+          const badgeCount = getBadgeCount(item.id);
           
           return (
             <button
@@ -39,7 +59,7 @@ const MobileNavigation = () => {
                   ? 'bg-bottle-green/10 text-bottle-green'
                   : 'text-text-muted hover:text-bottle-green hover:bg-bottle-green/5'
               }`}
-              aria-label={item.label}
+              aria-label={`${item.label}${badgeCount ? ` (${badgeCount})` : ''}`}
             >
               {/* Icon */}
               <div className={`relative mb-1 transition-all duration-200 ${
@@ -53,8 +73,15 @@ const MobileNavigation = () => {
                     : 'text-text-muted group-hover:text-bottle-green'
                 }`} />
                 
-                {/* Active Indicator Dot */}
-                {isActive && (
+                {/* Badge Count */}
+                {badgeCount && (
+                  <div className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-tomato-red text-white text-xs font-bold rounded-full flex items-center justify-center px-1 animate-scale-in border-2 border-white dark:border-gray-900">
+                    {badgeCount > 99 ? '99+' : badgeCount}
+                  </div>
+                )}
+                
+                {/* Active Indicator Dot (only if no badge) */}
+                {isActive && !badgeCount && (
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-bottle-green rounded-full animate-scale-in" />
                 )}
               </div>

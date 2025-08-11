@@ -6,7 +6,7 @@ This guide provides exact prompts and workflow to build the Aaroth Fresh MVP fro
 
 1. **Copy context files** to your new frontend project directory:
    - `CLAUDE.md`
-   - `api-integration.md` 
+   - `api-integration-guide.md and api-endpoints.md` 
    - `guide.md` (this file)
 
 2. **Backend running** at `http://localhost:5000`
@@ -31,7 +31,7 @@ Create a new Aaroth Fresh B2B marketplace frontend project. The innitial Vite-re
 7. TESTING: Create basic test setup and run initial tests
 8. MOBILE-FIRST: Test responsive design on mobile devices immediately
 
-Use Redux Toolkit + RTK Query for state management (NOT TypeScript, NOT Zustand). Follow CLAUDE.md and api-integration.md files for exact specifications. Use TodoWrite to track all setup tasks.
+Use Redux Toolkit + RTK Query for state management (NOT TypeScript, NOT Zustand). Follow CLAUDE.md and api-integration-guide.md and api-endpoints.md files for exact specifications. Use TodoWrite to track all setup tasks.
 ```
 
 **Expected Outcome:** Complete project setup with all dependencies and configuration files.
@@ -44,7 +44,7 @@ Set up the core infrastructure for Aaroth Fresh frontend based on CLAUDE.md spec
 
 1. Configure Redux Toolkit store with RTK Query API slice for the backend at http://localhost:5000/api/v1
 2. Set up RTK Query with automatic caching and background updates
-3. Create JavaScript object structures matching the backend models (User, Product, Listing, Order) from api-integration.md
+3. Create JavaScript object structures matching the backend models (User, Product, Listing, Order) from api-integration-guide.md and api-endpoints.md
 4. Initialize Redux slices: authSlice, cartSlice, notificationSlice, themeSlice
 5. Create utility functions for token management and phone number validation
 6. Set up error handling patterns and toast notifications
@@ -63,7 +63,7 @@ This is phone-based authentication (not email). Use Redux Toolkit + RTK Query (J
 
 **Prompt to use with Claude Code:**
 ```
-Implement the complete authentication system for Aaroth Fresh following the phone-based authentication from api-integration.md:
+Implement the complete authentication system for Aaroth Fresh following the phone-based authentication from api-integration-guide.md and api-endpoints.md:
 
 1. Create Redux auth slice with RTK Query mutations (login, register, logout)
 2. Build LoginForm and RegisterForm components using React Hook Form with custom validation
@@ -75,7 +75,7 @@ Implement the complete authentication system for Aaroth Fresh following the phon
 8. TESTING: Write component tests for forms, integration tests for auth flow, test error scenarios
 9. MOBILE-FIRST: Test touch targets (44px min), mobile keyboard behavior, test on real devices
 
-CRITICAL: Use phone numbers, NOT emails. Use Redux Toolkit + RTK Query (JavaScript). Follow the exact API endpoints from api-integration.md. Use TodoWrite for task tracking.
+CRITICAL: Use phone numbers, NOT emails. Use Redux Toolkit + RTK Query (JavaScript). Follow the exact API endpoints from api-integration-guide.md and api-endpoints.md. Use TodoWrite for task tracking.
 ```
 
 **Expected Outcome:** Complete working authentication system with phone-based login.
@@ -142,7 +142,7 @@ Build the admin dashboard and user management features for Aaroth Fresh:
 8. TESTING: Test admin workflows, data fetching, mutations, role-based access, error handling
 9. MOBILE-FIRST: Ensure admin interface works on tablets/mobile, test touch interactions, responsive tables
 
-Use Redux Toolkit + RTK Query for data management. Follow the admin API endpoints from api-integration.md. Use TodoWrite for task tracking.
+Use Redux Toolkit + RTK Query for data management. Follow the admin API endpoints from api-integration-guide.md and api-endpoints.md. Use TodoWrite for task tracking.
 ```
 
 **Expected Outcome:** Complete admin panel with user management and analytics.
@@ -186,7 +186,7 @@ Build the vendor dashboard and listing management system:
 8. TESTING: Test listing CRUD, form validation, bulk operations, periodic updates, analytics
 9. MOBILE-FIRST: Test vendor interface on mobile devices, ensure touch-friendly listing management
 
-Use Redux Toolkit + RTK Query. Use the listings API endpoints from api-integration.md. Ensure mobile optimization. Use TodoWrite for tracking.
+Use Redux Toolkit + RTK Query. Use the listings API endpoints from api-integration-guide.md and api-endpoints.md. Ensure mobile optimization. Use TodoWrite for tracking.
 ```
 
 **Expected Outcome:** Complete vendor dashboard with listing management capabilities.
@@ -207,7 +207,7 @@ Implement order processing features for vendors:
 8. TESTING: Test order workflows, status updates, notification polling, analytics, error handling
 9. MOBILE-FIRST: Ensure order management works on mobile, test notifications, responsive order details
 
-Use Redux Toolkit + RTK Query. Follow the orders API from api-integration.md. Focus on efficient order processing UX. Use TodoWrite for progress tracking.
+Use Redux Toolkit + RTK Query. Follow the orders API from api-integration-guide.md and api-endpoints.md. Focus on efficient order processing UX. Use TodoWrite for progress tracking.
 ```
 
 **Expected Outcome:** Complete vendor order management system.
@@ -251,7 +251,7 @@ Implement order placement and management for restaurants:
 8. TESTING: Test checkout flow, order placement, tracking, reorder functionality, analytics, error scenarios
 9. MOBILE-FIRST: Test order placement on mobile, validate checkout UX, ensure responsive order tracking
 
-Use Redux Toolkit + RTK Query. Follow the orders API from api-integration.md. Focus on restaurant business needs. Use TodoWrite for progress.
+Use Redux Toolkit + RTK Query. Follow the orders API from api-integration-guide.md and api-endpoints.md. Focus on restaurant business needs. Use TodoWrite for progress.
 ```
 
 **Expected Outcome:** Complete restaurant ordering system with order management.
@@ -497,7 +497,7 @@ export const renderWithProviders = (ui, options = {}) => {
 ### Using Claude Code Efficiently
 
 1. **Always use TodoWrite** for multi-step tasks
-2. **Reference context files** in every prompt (CLAUDE.md, api-integration.md)
+2. **Reference context files** in every prompt (CLAUDE.md, api-integration-guide.md and api-endpoints.md)
 3. **Be specific** about phone-based authentication and Redux Toolkit + RTK Query usage
 4. **Emphasize mobile-first** approach and real device testing in all prompts
 5. **Include testing requirements** in every feature request
@@ -514,7 +514,7 @@ I'm building the Aaroth Fresh frontend following the guide.md step-by-step. Curr
 
 #### Feature-Specific Sessions
 ```
-Implement [specific feature] for Aaroth Fresh B2B marketplace. This is a React JavaScript project with Redux Toolkit + RTK Query, connecting to Express.js backend. Follow the specifications in CLAUDE.md and api-integration.md. Focus on mobile-first responsive design and phone-based authentication. Include comprehensive testing and mobile device validation. Use TodoWrite to track implementation steps.
+Implement [specific feature] for Aaroth Fresh B2B marketplace. This is a React JavaScript project with Redux Toolkit + RTK Query, connecting to Express.js backend. Follow the specifications in CLAUDE.md and api-integration-guide.md and api-endpoints.md. Focus on mobile-first responsive design and phone-based authentication. Include comprehensive testing and mobile device validation. Use TodoWrite to track implementation steps.
 ```
 
 ### Quality Checkpoints
@@ -535,7 +535,7 @@ After each phase, verify:
 
 ### If Authentication Fails
 1. Verify phone number format includes country code
-2. Check API endpoints match api-integration.md exactly
+2. Check API endpoints match api-integration-guide.md and api-endpoints.md exactly
 3. Ensure JWT token handling is correct
 4. Verify CORS configuration on backend
 

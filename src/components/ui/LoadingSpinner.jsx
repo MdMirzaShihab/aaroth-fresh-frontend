@@ -46,6 +46,7 @@ const LoadingSpinner = ({
   const spinnerContent = (
     <div
       className={cn('flex flex-col items-center justify-center gap-4', className)}
+      data-testid="loading-spinner"
       {...props}
     >
       {/* Enhanced Zen Circle Spinner */}

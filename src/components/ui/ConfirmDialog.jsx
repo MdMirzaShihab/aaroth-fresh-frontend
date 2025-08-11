@@ -3,7 +3,7 @@ import { AlertTriangle, AlertCircle, Info, CheckCircle, Trash2, Save, X } from '
 import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
 import Button from './Button';
-import Modal from './Modal';
+import { Modal } from './Modal';
 
 // ConfirmDialog variants for different confirmation types
 const confirmDialogVariants = cva(
