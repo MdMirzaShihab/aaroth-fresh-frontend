@@ -55,6 +55,8 @@ const AdminLayout = () => {
       categories: { label: 'Categories', path: '/admin/products/categories' },
       analytics: { label: 'Analytics', path: '/admin/analytics' },
       settings: { label: 'Settings', path: '/admin/settings' },
+      'create-restaurant-owner': { label: 'Create Restaurant Owner', path: '/admin/create-restaurant-owner' },
+      'create-restaurant-manager': { label: 'Create Restaurant Manager', path: '/admin/create-restaurant-manager' },
     };
 
     return pathSegments.map((segment, index) => {

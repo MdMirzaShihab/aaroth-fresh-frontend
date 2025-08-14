@@ -11,11 +11,11 @@ import {
   Mail,
   Building2,
   ChevronDown,
+  MapPin,
 } from 'lucide-react';
 import { useRegisterMutation } from '../../store/slices/apiSlice';
 import { validateBangladeshPhone, formatPhoneForDisplay } from '../../utils';
 import { addNotification } from '../../store/slices/notificationSlice';
-import { USER_ROLES } from '../../constants/models';
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +40,13 @@ const RegisterForm = () => {
       confirmPassword: '',
       role: 'restaurantOwner',
       businessName: '',
-      businessAddress: '',
+      // Structured address fields
+      address: {
+        street: '',
+        city: '',
+        area: '',
+        postalCode: '',
+      },
     },
     mode: 'onBlur',
   });
@@ -48,6 +54,31 @@ const RegisterForm = () => {
   const phoneValue = watch('phone');
   const selectedRole = watch('role');
   const passwordValue = watch('password');
+
+  // Password strength calculation
+  const getPasswordStrength = (password) => {
+    if (!password) return { score: 0, text: '', color: '' };
+
+    let score = 0;
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[a-z]/.test(password)) score += 1;
+    if (/\d/.test(password)) score += 1;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 1;
+
+    if (score === 0) return { score: 0, text: '', color: '' };
+    if (score === 1)
+      return { score: 1, text: 'Very Weak', color: 'text-tomato-red' };
+    if (score === 2)
+      return { score: 2, text: 'Weak', color: 'text-orange-500' };
+    if (score === 3)
+      return { score: 3, text: 'Fair', color: 'text-earthy-yellow' };
+    if (score === 4)
+      return { score: 4, text: 'Good', color: 'text-mint-fresh' };
+    return { score: 5, text: 'Strong', color: 'text-bottle-green' };
+  };
+
+  const passwordStrength = getPasswordStrength(passwordValue);
 
   const roleOptions = [
     {
@@ -59,11 +90,6 @@ const RegisterForm = () => {
       value: 'restaurantOwner',
       label: 'Restaurant Owner',
       description: 'Purchase fresh ingredients',
-    },
-    {
-      value: 'restaurantManager',
-      label: 'Restaurant Manager',
-      description: 'Manage restaurant orders',
     },
   ];
 
@@ -89,14 +115,15 @@ const RegisterForm = () => {
         role: data.role,
       };
 
-      // Add business details for vendors and restaurant roles
-      if (
-        data.role === 'vendor' ||
-        data.role === 'restaurantOwner' ||
-        data.role === 'restaurantManager'
-      ) {
+      // Add business details for vendors and restaurant owners
+      if (data.role === 'vendor' || data.role === 'restaurantOwner') {
         registerData.businessName = data.businessName.trim();
-        registerData.businessAddress = data.businessAddress.trim();
+        registerData.address = {
+          street: data.address.street.trim(),
+          city: data.address.city.trim(),
+          area: data.address.area.trim(),
+          postalCode: data.address.postalCode.trim(),
+        };
       }
 
       const result = await register(registerData).unwrap();
@@ -118,7 +145,6 @@ const RegisterForm = () => {
               navigate('/vendor/dashboard');
               break;
             case 'restaurantOwner':
-            case 'restaurantManager':
               navigate('/restaurant/dashboard');
               break;
             default:
@@ -205,13 +231,19 @@ const RegisterForm = () => {
                 }`}
                 {...registerField('name', {
                   required: 'Full name is required',
-                  minLength: {
-                    value: 2,
-                    message: 'Name must be at least 2 characters',
-                  },
-                  maxLength: {
-                    value: 50,
-                    message: 'Name must be less than 50 characters',
+                  validate: (value) => {
+                    if (!value.trim()) return 'Full name is required';
+
+                    if (value.trim().length < 2) {
+                      return 'Name must be at least 2 characters';
+                    }
+                    if (value.length > 50) {
+                      return 'Name must be less than 50 characters';
+                    }
+                    if (!/^[a-zA-Z\s.-]+$/.test(value.trim())) {
+                      return 'Name can only contain letters, spaces, dots, and hyphens';
+                    }
+                    return true;
                   },
                 })}
               />
@@ -250,7 +282,13 @@ const RegisterForm = () => {
                 {...registerField('phone', {
                   required: 'Phone number is required',
                   validate: (value) => {
+                    if (!value.trim()) return 'Phone number is required';
+
                     const cleanPhone = value.replace(/\D/g, '');
+                    if (cleanPhone.length < 11) {
+                      return 'Phone number must be at least 11 digits';
+                    }
+
                     const phoneWithCountryCode = cleanPhone.startsWith('88')
                       ? `+${cleanPhone}`
                       : `+88${cleanPhone}`;
@@ -293,9 +331,20 @@ const RegisterForm = () => {
                 }`}
                 {...registerField('email', {
                   required: 'Email address is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Please enter a valid email address',
+                  validate: (value) => {
+                    if (!value.trim()) return 'Email address is required';
+
+                    const emailPattern =
+                      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+                    if (!emailPattern.test(value)) {
+                      return 'Please enter a valid email address';
+                    }
+
+                    if (value.length > 100) {
+                      return 'Email address must be less than 100 characters';
+                    }
+
+                    return true;
                   },
                 })}
               />
@@ -308,10 +357,9 @@ const RegisterForm = () => {
             )}
           </div>
 
-          {/* Business Information - Show for vendors and restaurant roles */}
+          {/* Business Information - Show for vendors and restaurant owners */}
           {(selectedRole === 'vendor' ||
-            selectedRole === 'restaurantOwner' ||
-            selectedRole === 'restaurantManager') && (
+            selectedRole === 'restaurantOwner') && (
             <>
               {/* Business Name */}
               <div className="space-y-3">
@@ -338,9 +386,17 @@ const RegisterForm = () => {
                     }`}
                     {...registerField('businessName', {
                       required: `${selectedRole === 'vendor' ? 'Business' : 'Restaurant'} name is required`,
-                      minLength: {
-                        value: 2,
-                        message: 'Name must be at least 2 characters',
+                      validate: (value) => {
+                        if (!value.trim()) {
+                          return `${selectedRole === 'vendor' ? 'Business' : 'Restaurant'} name is required`;
+                        }
+                        if (value.trim().length < 2) {
+                          return 'Name must be at least 2 characters';
+                        }
+                        if (value.length > 100) {
+                          return 'Name must be less than 100 characters';
+                        }
+                        return true;
                       },
                     })}
                   />
@@ -353,39 +409,154 @@ const RegisterForm = () => {
                 )}
               </div>
 
-              {/* Business Address */}
-              <div className="space-y-3">
-                <label
-                  htmlFor="businessAddress"
-                  className="block text-sm font-medium text-text-dark/80 tracking-wide"
-                >
+              {/* Address Information */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-text-dark/80 tracking-wide border-b border-earthy-beige/50 pb-2">
                   {selectedRole === 'vendor'
                     ? 'Business Address'
                     : 'Restaurant Address'}
-                </label>
-                <textarea
-                  id="businessAddress"
-                  rows={3}
-                  placeholder={`Enter your ${selectedRole === 'vendor' ? 'business' : 'restaurant'} address`}
-                  className={`w-full px-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 resize-none focus:outline-none ${
-                    errors.businessAddress
-                      ? 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : ''
-                  }`}
-                  {...registerField('businessAddress', {
-                    required: `${selectedRole === 'vendor' ? 'Business' : 'Restaurant'} address is required`,
-                    minLength: {
-                      value: 10,
-                      message: 'Address must be at least 10 characters',
-                    },
-                  })}
-                />
-                {errors.businessAddress && (
-                  <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
-                    <span className="w-4 h-4 text-tomato-red/60">⚠</span>
-                    {errors.businessAddress.message}
-                  </p>
-                )}
+                </h3>
+
+                {/* Street Address */}
+                <div className="space-y-3">
+                  <label
+                    htmlFor="street"
+                    className="block text-sm font-medium text-text-dark/80 tracking-wide"
+                  >
+                    Street Address
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-text-muted/60">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <input
+                      id="street"
+                      type="text"
+                      placeholder="Enter street address"
+                      className={`w-full pl-14 pr-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none ${
+                        errors.address?.street
+                          ? 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
+                          : ''
+                      }`}
+                      {...registerField('address.street', {
+                        required: 'Street address is required',
+                        minLength: {
+                          value: 5,
+                          message:
+                            'Street address must be at least 5 characters',
+                        },
+                      })}
+                    />
+                  </div>
+                  {errors.address?.street && (
+                    <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
+                      <span className="w-4 h-4 text-tomato-red/60">⚠</span>
+                      {errors.address.street.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* City and Area Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* City */}
+                  <div className="space-y-3">
+                    <label
+                      htmlFor="city"
+                      className="block text-sm font-medium text-text-dark/80 tracking-wide"
+                    >
+                      City
+                    </label>
+                    <input
+                      id="city"
+                      type="text"
+                      placeholder="Enter city"
+                      className={`w-full px-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none ${
+                        errors.address?.city
+                          ? 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
+                          : ''
+                      }`}
+                      {...registerField('address.city', {
+                        required: 'City is required',
+                        minLength: {
+                          value: 2,
+                          message: 'City must be at least 2 characters',
+                        },
+                      })}
+                    />
+                    {errors.address?.city && (
+                      <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
+                        <span className="w-4 h-4 text-tomato-red/60">⚠</span>
+                        {errors.address.city.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Area */}
+                  <div className="space-y-3">
+                    <label
+                      htmlFor="area"
+                      className="block text-sm font-medium text-text-dark/80 tracking-wide"
+                    >
+                      Area/District
+                    </label>
+                    <input
+                      id="area"
+                      type="text"
+                      placeholder="Enter area/district"
+                      className={`w-full px-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none ${
+                        errors.address?.area
+                          ? 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
+                          : ''
+                      }`}
+                      {...registerField('address.area', {
+                        required: 'Area/District is required',
+                        minLength: {
+                          value: 2,
+                          message: 'Area must be at least 2 characters',
+                        },
+                      })}
+                    />
+                    {errors.address?.area && (
+                      <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
+                        <span className="w-4 h-4 text-tomato-red/60">⚠</span>
+                        {errors.address.area.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Postal Code */}
+                <div className="space-y-3">
+                  <label
+                    htmlFor="postalCode"
+                    className="block text-sm font-medium text-text-dark/80 tracking-wide"
+                  >
+                    Postal Code
+                  </label>
+                  <input
+                    id="postalCode"
+                    type="text"
+                    placeholder="Enter postal code (e.g., 1000)"
+                    className={`w-full px-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none ${
+                      errors.address?.postalCode
+                        ? 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
+                        : ''
+                    }`}
+                    {...registerField('address.postalCode', {
+                      required: 'Postal code is required',
+                      pattern: {
+                        value: /^\d{4}$/,
+                        message: 'Postal code must be 4 digits',
+                      },
+                    })}
+                  />
+                  {errors.address?.postalCode && (
+                    <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
+                      <span className="w-4 h-4 text-tomato-red/60">⚠</span>
+                      {errors.address.postalCode.message}
+                    </p>
+                  )}
+                </div>
               </div>
             </>
           )}
@@ -417,10 +588,20 @@ const RegisterForm = () => {
                     value: 8,
                     message: 'Password must be at least 8 characters',
                   },
-                  pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                    message:
-                      'Password must contain at least one uppercase letter, lowercase letter, and number',
+                  validate: (value) => {
+                    if (!/(?=.*[a-z])/.test(value)) {
+                      return 'Password must contain at least one lowercase letter';
+                    }
+                    if (!/(?=.*[A-Z])/.test(value)) {
+                      return 'Password must contain at least one uppercase letter';
+                    }
+                    if (!/(?=.*\d)/.test(value)) {
+                      return 'Password must contain at least one number';
+                    }
+                    if (passwordStrength.score < 3) {
+                      return 'Password strength is too weak. Please improve it.';
+                    }
+                    return true;
                   },
                 })}
               />
@@ -441,6 +622,73 @@ const RegisterForm = () => {
                 <span className="w-4 h-4 text-tomato-red/60">⚠</span>
                 {errors.password.message}
               </p>
+            )}
+
+            {/* Password Strength Indicator */}
+            {passwordValue && (
+              <div className="mt-3 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-text-muted">
+                    Password Strength
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${passwordStrength.color}`}
+                  >
+                    {passwordStrength.text}
+                  </span>
+                </div>
+                <div className="w-full bg-earthy-beige/30 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      passwordStrength.score === 1
+                        ? 'bg-tomato-red w-1/5'
+                        : passwordStrength.score === 2
+                          ? 'bg-orange-500 w-2/5'
+                          : passwordStrength.score === 3
+                            ? 'bg-earthy-yellow w-3/5'
+                            : passwordStrength.score === 4
+                              ? 'bg-mint-fresh w-4/5'
+                              : passwordStrength.score === 5
+                                ? 'bg-bottle-green w-full'
+                                : 'w-0'
+                    }`}
+                  ></div>
+                </div>
+                <ul className="text-xs text-text-muted/80 space-y-1">
+                  <li
+                    className={`flex items-center gap-2 ${passwordValue.length >= 8 ? 'text-bottle-green' : ''}`}
+                  >
+                    <span>{passwordValue.length >= 8 ? '✓' : '○'}</span>
+                    At least 8 characters
+                  </li>
+                  <li
+                    className={`flex items-center gap-2 ${/[A-Z]/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                  >
+                    <span>{/[A-Z]/.test(passwordValue) ? '✓' : '○'}</span>
+                    Uppercase letter
+                  </li>
+                  <li
+                    className={`flex items-center gap-2 ${/[a-z]/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                  >
+                    <span>{/[a-z]/.test(passwordValue) ? '✓' : '○'}</span>
+                    Lowercase letter
+                  </li>
+                  <li
+                    className={`flex items-center gap-2 ${/\d/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                  >
+                    <span>{/\d/.test(passwordValue) ? '✓' : '○'}</span>
+                    Number
+                  </li>
+                  <li
+                    className={`flex items-center gap-2 ${/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                  >
+                    <span>
+                      {/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? '✓' : '○'}
+                    </span>
+                    Special character
+                  </li>
+                </ul>
+              </div>
             )}
           </div>
 

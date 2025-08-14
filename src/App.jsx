@@ -51,6 +51,12 @@ const ProductApproval = lazy(() => import('./pages/admin/ProductApproval'));
 const AnalyticsDashboard = lazy(
   () => import('./pages/admin/AnalyticsDashboard')
 );
+const CreateRestaurantOwner = lazy(
+  () => import('./pages/admin/CreateRestaurantOwner')
+);
+const CreateRestaurantManager = lazy(
+  () => import('./pages/admin/CreateRestaurantManager')
+);
 
 // Vendor Pages
 const VendorDashboard = lazy(() => import('./pages/vendor/VendorDashboard'));
@@ -234,6 +240,14 @@ const App = () => {
                       <Route
                         path="analytics/products"
                         element={<ProductAnalytics />}
+                      />
+                      <Route
+                        path="create-restaurant-owner"
+                        element={<CreateRestaurantOwner />}
+                      />
+                      <Route
+                        path="create-restaurant-manager"
+                        element={<CreateRestaurantManager />}
                       />
                     </Routes>
                   </Suspense>

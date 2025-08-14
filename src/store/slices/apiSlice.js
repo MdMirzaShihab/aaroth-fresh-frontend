@@ -126,7 +126,7 @@ export const apiSlice = createApi({
     }),
 
     getFeaturedProducts: builder.query({
-      query: () => '/public/featured-products',
+      query: () => '/public/featured-listings',
       providesTags: ['Product'],
     }),
 
@@ -189,7 +189,7 @@ export const apiSlice = createApi({
       },
       invalidatesTags: [
         { type: 'Listing', id: 'LIST' },
-        { type: 'Listing', id: 'VENDOR_LIST' }
+        { type: 'Listing', id: 'VENDOR_LIST' },
       ],
     }),
 
@@ -257,25 +257,32 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: { status, notes },
       }),
-      onQueryStarted: async ({ id, status, notes }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, status, notes },
+        { dispatch, queryFulfilled }
+      ) => {
         // Optimistic update for vendor orders
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getVendorOrders', undefined, (draft) => {
-            const order = draft?.data?.orders?.find(o => o.id === id);
-            if (order) {
-              order.status = status;
-              order.statusHistory = order.statusHistory || [];
-              order.statusHistory.push({
-                status,
-                notes,
-                timestamp: new Date().toISOString(),
-                updatedBy: 'vendor'
-              });
-              order.updatedAt = new Date().toISOString();
+          apiSlice.util.updateQueryData(
+            'getVendorOrders',
+            undefined,
+            (draft) => {
+              const order = draft?.data?.orders?.find((o) => o.id === id);
+              if (order) {
+                order.status = status;
+                order.statusHistory = order.statusHistory || [];
+                order.statusHistory.push({
+                  status,
+                  notes,
+                  timestamp: new Date().toISOString(),
+                  updatedBy: 'vendor',
+                });
+                order.updatedAt = new Date().toISOString();
+              }
             }
-          })
+          )
         );
-        
+
         // Also update single order if cached
         dispatch(
           apiSlice.util.updateQueryData('getOrder', id, (draft) => {
@@ -286,13 +293,13 @@ export const apiSlice = createApi({
                 status,
                 notes,
                 timestamp: new Date().toISOString(),
-                updatedBy: 'vendor'
+                updatedBy: 'vendor',
               });
               draft.data.updatedAt = new Date().toISOString();
             }
           })
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -340,39 +347,46 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: { status, notes, estimatedTime, deliveryDetails },
       }),
-      onQueryStarted: async ({ id, status, notes, estimatedTime }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, status, notes, estimatedTime },
+        { dispatch, queryFulfilled }
+      ) => {
         // Optimistic update with workflow tracking
         const timestamp = new Date().toISOString();
-        
+
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getVendorOrders', undefined, (draft) => {
-            const order = draft?.data?.orders?.find(o => o.id === id);
-            if (order) {
-              const previousStatus = order.status;
-              order.status = status;
-              order.statusHistory = order.statusHistory || [];
-              order.statusHistory.push({
-                status,
-                previousStatus,
-                notes,
-                estimatedTime,
-                timestamp,
-                updatedBy: 'vendor'
-              });
-              order.updatedAt = timestamp;
-              
-              // Update workflow tracking
-              if (status === 'confirmed') {
-                order.confirmedAt = timestamp;
-              } else if (status === 'prepared') {
-                order.preparedAt = timestamp;
-              } else if (status === 'delivered') {
-                order.deliveredAt = timestamp;
+          apiSlice.util.updateQueryData(
+            'getVendorOrders',
+            undefined,
+            (draft) => {
+              const order = draft?.data?.orders?.find((o) => o.id === id);
+              if (order) {
+                const previousStatus = order.status;
+                order.status = status;
+                order.statusHistory = order.statusHistory || [];
+                order.statusHistory.push({
+                  status,
+                  previousStatus,
+                  notes,
+                  estimatedTime,
+                  timestamp,
+                  updatedBy: 'vendor',
+                });
+                order.updatedAt = timestamp;
+
+                // Update workflow tracking
+                if (status === 'confirmed') {
+                  order.confirmedAt = timestamp;
+                } else if (status === 'prepared') {
+                  order.preparedAt = timestamp;
+                } else if (status === 'delivered') {
+                  order.deliveredAt = timestamp;
+                }
               }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -392,43 +406,50 @@ export const apiSlice = createApi({
         method: 'POST',
         body: { orderIds, status, notes },
       }),
-      onQueryStarted: async ({ orderIds, status, notes }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { orderIds, status, notes },
+        { dispatch, queryFulfilled }
+      ) => {
         const timestamp = new Date().toISOString();
-        
+
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getVendorOrders', undefined, (draft) => {
-            if (draft?.data?.orders) {
-              draft.data.orders = draft.data.orders.map(order =>
-                orderIds.includes(order.id) ? {
-                  ...order,
-                  status,
-                  statusHistory: [
-                    ...(order.statusHistory || []),
-                    {
-                      status,
-                      previousStatus: order.status,
-                      notes,
-                      timestamp,
-                      updatedBy: 'vendor',
-                      bulkUpdate: true
-                    }
-                  ],
-                  updatedAt: timestamp
-                } : order
-              );
+          apiSlice.util.updateQueryData(
+            'getVendorOrders',
+            undefined,
+            (draft) => {
+              if (draft?.data?.orders) {
+                draft.data.orders = draft.data.orders.map((order) =>
+                  orderIds.includes(order.id)
+                    ? {
+                        ...order,
+                        status,
+                        statusHistory: [
+                          ...(order.statusHistory || []),
+                          {
+                            status,
+                            previousStatus: order.status,
+                            notes,
+                            timestamp,
+                            updatedBy: 'vendor',
+                            bulkUpdate: true,
+                          },
+                        ],
+                        updatedAt: timestamp,
+                      }
+                    : order
+                );
+              }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
           patchResult.undo();
         }
       },
-      invalidatesTags: [
-        { type: 'Order', id: 'VENDOR_LIST' },
-      ],
+      invalidatesTags: [{ type: 'Order', id: 'VENDOR_LIST' }],
     }),
 
     // Order Notifications
@@ -450,7 +471,9 @@ export const apiSlice = createApi({
     // Order Fulfillment Workflow
     getOrderWorkflowSteps: builder.query({
       query: (orderId) => `/orders/${orderId}/workflow`,
-      providesTags: (result, error, orderId) => [{ type: 'Order', id: orderId }],
+      providesTags: (result, error, orderId) => [
+        { type: 'Order', id: orderId },
+      ],
     }),
 
     updateOrderFulfillmentStep: builder.mutation({
@@ -459,18 +482,25 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: { completed, notes, attachments },
       }),
-      onQueryStarted: async ({ orderId, stepId, completed, notes }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { orderId, stepId, completed, notes },
+        { dispatch, queryFulfilled }
+      ) => {
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getOrderWorkflowSteps', orderId, (draft) => {
-            const step = draft?.data?.steps?.find(s => s.id === stepId);
-            if (step) {
-              step.completed = completed;
-              step.completedAt = completed ? new Date().toISOString() : null;
-              step.notes = notes;
+          apiSlice.util.updateQueryData(
+            'getOrderWorkflowSteps',
+            orderId,
+            (draft) => {
+              const step = draft?.data?.steps?.find((s) => s.id === stepId);
+              if (step) {
+                step.completed = completed;
+                step.completedAt = completed ? new Date().toISOString() : null;
+                step.notes = notes;
+              }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -490,7 +520,7 @@ export const apiSlice = createApi({
       }),
       providesTags: (result) => [
         { type: 'User', id: 'LIST' },
-        ...(result?.data?.users || []).map(({ id }) => ({ type: 'User', id }))
+        ...(result?.data?.users || []).map(({ id }) => ({ type: 'User', id })),
       ],
     }),
 
@@ -548,7 +578,10 @@ export const apiSlice = createApi({
       }),
       providesTags: (result) => [
         { type: 'Product', id: 'ADMIN_LIST' },
-        ...(result?.data?.products || []).map(({ id }) => ({ type: 'Product', id }))
+        ...(result?.data?.products || []).map(({ id }) => ({
+          type: 'Product',
+          id,
+        })),
       ],
     }),
 
@@ -597,7 +630,10 @@ export const apiSlice = createApi({
       }),
       providesTags: (result) => [
         { type: 'Category', id: 'ADMIN_LIST' },
-        ...(result?.data?.categories || []).map(({ id }) => ({ type: 'Category', id }))
+        ...(result?.data?.categories || []).map(({ id }) => ({
+          type: 'Category',
+          id,
+        })),
       ],
     }),
 
@@ -656,15 +692,15 @@ export const apiSlice = createApi({
         const patchResult = dispatch(
           apiSlice.util.updateQueryData('getAdminUsers', undefined, (draft) => {
             if (draft?.data?.users) {
-              draft.data.users = draft.data.users.map(user => 
-                userIds.includes(user.id) 
+              draft.data.users = draft.data.users.map((user) =>
+                userIds.includes(user.id)
                   ? { ...user, isApproved: true, status: 'active' }
                   : user
               );
             }
           })
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -685,15 +721,15 @@ export const apiSlice = createApi({
         const patchResult = dispatch(
           apiSlice.util.updateQueryData('getAdminUsers', undefined, (draft) => {
             if (draft?.data?.users) {
-              draft.data.users = draft.data.users.map(user => 
-                userIds.includes(user.id) 
+              draft.data.users = draft.data.users.map((user) =>
+                userIds.includes(user.id)
                   ? { ...user, isApproved: false, status: 'rejected' }
                   : user
               );
             }
           })
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -714,14 +750,16 @@ export const apiSlice = createApi({
         const patchResult = dispatch(
           apiSlice.util.updateQueryData('getAdminUsers', undefined, (draft) => {
             if (draft?.data?.users) {
-              draft.data.users = draft.data.users.filter(user => !userIds.includes(user.id));
+              draft.data.users = draft.data.users.filter(
+                (user) => !userIds.includes(user.id)
+              );
               if (draft.data.pagination) {
                 draft.data.pagination.totalUsers -= userIds.length;
               }
             }
           })
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -738,20 +776,27 @@ export const apiSlice = createApi({
         body: { productIds, updates },
       }),
       invalidatesTags: [{ type: 'Product', id: 'ADMIN_LIST' }],
-      onQueryStarted: async ({ productIds, updates }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { productIds, updates },
+        { dispatch, queryFulfilled }
+      ) => {
         // Optimistic update
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getAdminProducts', undefined, (draft) => {
-            if (draft?.data?.products) {
-              draft.data.products = draft.data.products.map(product => 
-                productIds.includes(product.id) 
-                  ? { ...product, ...updates }
-                  : product
-              );
+          apiSlice.util.updateQueryData(
+            'getAdminProducts',
+            undefined,
+            (draft) => {
+              if (draft?.data?.products) {
+                draft.data.products = draft.data.products.map((product) =>
+                  productIds.includes(product.id)
+                    ? { ...product, ...updates }
+                    : product
+                );
+              }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -768,7 +813,7 @@ export const apiSlice = createApi({
         body: formData,
         // FormData sets its own content-type
       }),
-      invalidatesTags: (result, error, { productId }) => 
+      invalidatesTags: (result, error, { productId }) =>
         productId ? [{ type: 'Product', id: productId }] : [],
     }),
 
@@ -778,7 +823,7 @@ export const apiSlice = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, { productId }) => [
-        { type: 'Product', id: productId }
+        { type: 'Product', id: productId },
       ],
     }),
 
@@ -794,7 +839,7 @@ export const apiSlice = createApi({
     getProductPerformance: builder.query({
       query: (productId) => `/admin/products/${productId}/performance`,
       providesTags: (result, error, productId) => [
-        { type: 'Product', id: productId }
+        { type: 'Product', id: productId },
       ],
     }),
 
@@ -837,18 +882,27 @@ export const apiSlice = createApi({
         method: 'POST',
         body: { listingIds, updates },
       }),
-      onQueryStarted: async ({ listingIds, updates }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { listingIds, updates },
+        { dispatch, queryFulfilled }
+      ) => {
         // Optimistic update
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getVendorListings', undefined, (draft) => {
-            if (draft?.data?.listings) {
-              draft.data.listings = draft.data.listings.map(listing => 
-                listingIds.includes(listing.id) ? { ...listing, ...updates } : listing
-              );
+          apiSlice.util.updateQueryData(
+            'getVendorListings',
+            undefined,
+            (draft) => {
+              if (draft?.data?.listings) {
+                draft.data.listings = draft.data.listings.map((listing) =>
+                  listingIds.includes(listing.id)
+                    ? { ...listing, ...updates }
+                    : listing
+                );
+              }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -870,15 +924,19 @@ export const apiSlice = createApi({
       onQueryStarted: async (listingIds, { dispatch, queryFulfilled }) => {
         // Optimistic update
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getVendorListings', undefined, (draft) => {
-            if (draft?.data?.listings) {
-              draft.data.listings = draft.data.listings.filter(
-                listing => !listingIds.includes(listing.id)
-              );
+          apiSlice.util.updateQueryData(
+            'getVendorListings',
+            undefined,
+            (draft) => {
+              if (draft?.data?.listings) {
+                draft.data.listings = draft.data.listings.filter(
+                  (listing) => !listingIds.includes(listing.id)
+                );
+              }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -901,15 +959,19 @@ export const apiSlice = createApi({
       onQueryStarted: async ({ id, status }, { dispatch, queryFulfilled }) => {
         // Optimistic update
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getVendorListings', undefined, (draft) => {
-            const listing = draft?.data?.listings?.find(l => l.id === id);
-            if (listing) {
-              listing.status = status;
-              listing.updatedAt = new Date().toISOString();
+          apiSlice.util.updateQueryData(
+            'getVendorListings',
+            undefined,
+            (draft) => {
+              const listing = draft?.data?.listings?.find((l) => l.id === id);
+              if (listing) {
+                listing.status = status;
+                listing.updatedAt = new Date().toISOString();
+              }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -929,18 +991,28 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: inventory,
       }),
-      onQueryStarted: async ({ id, inventory }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, inventory },
+        { dispatch, queryFulfilled }
+      ) => {
         // Optimistic update
         const patchResult = dispatch(
-          apiSlice.util.updateQueryData('getVendorListings', undefined, (draft) => {
-            const listing = draft?.data?.listings?.find(l => l.id === id);
-            if (listing) {
-              listing.availability = { ...listing.availability, ...inventory };
-              listing.updatedAt = new Date().toISOString();
+          apiSlice.util.updateQueryData(
+            'getVendorListings',
+            undefined,
+            (draft) => {
+              const listing = draft?.data?.listings?.find((l) => l.id === id);
+              if (listing) {
+                listing.availability = {
+                  ...listing.availability,
+                  ...inventory,
+                };
+                listing.updatedAt = new Date().toISOString();
+              }
             }
-          })
+          )
         );
-        
+
         try {
           await queryFulfilled;
         } catch {
@@ -1027,6 +1099,33 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['User'],
     }),
+
+    // Admin Restaurant Management Endpoints
+    createAdminRestaurantOwner: builder.mutation({
+      query: (ownerData) => ({
+        url: '/admin/restaurant-owners',
+        method: 'POST',
+        body: ownerData,
+      }),
+      invalidatesTags: ['User', 'Restaurant'],
+    }),
+
+    createAdminRestaurantManager: builder.mutation({
+      query: (managerData) => ({
+        url: '/admin/restaurant-managers',
+        method: 'POST',
+        body: managerData,
+      }),
+      invalidatesTags: ['User', 'Restaurant'],
+    }),
+
+    getRestaurantsList: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/restaurants',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+    }),
   }),
 });
 
@@ -1037,19 +1136,19 @@ export const {
   useRegisterMutation,
   useLogoutMutation,
   useGetCurrentUserQuery,
-  
+
   // Profile Management
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
-  
+
   // Manager Management (Restaurant Owner Only) - replaced by restaurant-specific ones below
-  
+
   // Public endpoints
   useGetCategoriesQuery,
   useGetFeaturedProductsQuery,
   useGetPublicProductsQuery,
   useGetPublicProductQuery,
-  
+
   // Listings
   useGetListingsQuery,
   useGetVendorListingsQuery,
@@ -1057,65 +1156,65 @@ export const {
   useCreateListingMutation,
   useUpdateListingMutation,
   useDeleteListingMutation,
-  
+
   // Orders
   useGetOrdersQuery,
   useGetOrderQuery,
   useCreateOrderMutation,
   useUpdateOrderStatusMutation,
-  
+
   // Admin - User Management
   useGetAdminUsersQuery,
   useGetAdminUserQuery,
   useApproveUserMutation,
   useUpdateAdminUserMutation,
   useDeleteAdminUserMutation,
-  
+
   // Admin - Bulk Operations
   useBulkApproveUsersMutation,
   useBulkRejectUsersMutation,
   useBulkDeleteUsersMutation,
   useBulkUpdateProductsMutation,
-  
+
   // Admin - Image Management
   useUploadProductImageMutation,
   useDeleteProductImageMutation,
-  
+
   // Admin - Product Analytics
   useGetProductAnalyticsQuery,
   useGetProductPerformanceQuery,
-  
+
   // Admin - Analytics
   useGetAdminDashboardQuery,
-  
+
   // Admin - Product Management
   useGetAdminProductsQuery,
   useGetAdminProductQuery,
   useCreateAdminProductMutation,
   useUpdateAdminProductMutation,
   useDeleteAdminProductMutation,
-  
+
   // Admin - Category Management
   useGetAdminCategoriesQuery,
   useGetAdminCategoryQuery,
   useCreateAdminCategoryMutation,
   useUpdateAdminCategoryMutation,
   useDeleteAdminCategoryMutation,
-  
+
   // Vendor - Dashboard & Analytics
   useGetVendorDashboardQuery,
   useGetVendorAnalyticsQuery,
   useGetVendorOrdersQuery,
   useGetListingPerformanceQuery,
-  
+
   // Vendor - Bulk Operations
   useBulkUpdateListingsMutation,
   useBulkDeleteListingsMutation,
-  
+
   // Vendor - Listing Management
   useUpdateListingStatusMutation,
   useUpdateListingInventoryMutation,
-  
+
   // Vendor - Order Management
   useGetVendorOrderAnalyticsQuery,
   useUpdateOrderStatusWorkflowMutation,
@@ -1138,4 +1237,9 @@ export const {
   useCreateManagerMutation,
   useUpdateManagerMutation,
   useDeleteManagerMutation,
+
+  // Admin - Restaurant Management
+  useCreateAdminRestaurantOwnerMutation,
+  useCreateAdminRestaurantManagerMutation,
+  useGetRestaurantsListQuery,
 } = apiSlice;

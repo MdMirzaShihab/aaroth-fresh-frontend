@@ -51,6 +51,25 @@ export const NAVIGATION_ITEMS = {
       ],
     },
     {
+      id: 'restaurant-management',
+      label: 'Restaurant Management',
+      icon: Utensils,
+      path: '/admin/restaurants',
+      roles: ['admin'],
+      children: [
+        {
+          id: 'create-owner',
+          label: 'Create Restaurant Owner',
+          path: '/admin/create-restaurant-owner',
+        },
+        {
+          id: 'create-manager',
+          label: 'Create Restaurant Manager',
+          path: '/admin/create-restaurant-manager',
+        },
+      ],
+    },
+    {
       id: 'products',
       label: 'Product Management',
       icon: Package,
