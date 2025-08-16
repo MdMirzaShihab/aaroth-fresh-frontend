@@ -46,11 +46,11 @@ const ChartContainer = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="min-w-0 flex-1 mr-4">
-          <h3 className="text-base sm:text-lg font-semibold text-text-dark truncate">
+          <h3 className="text-base sm:text-lg font-semibold text-text-dark dark:text-white truncate">
             {title}
           </h3>
           {subtitle && (
-            <p className="text-text-muted text-xs sm:text-sm mt-1 leading-tight">
+            <p className="text-text-muted dark:text-gray-300 text-xs sm:text-sm mt-1 leading-tight">
               {subtitle}
             </p>
           )}
@@ -65,10 +65,10 @@ const ChartContainer = ({
           {onRefresh && (
             <button
               onClick={handleRefresh}
-              className="p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
+              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
               title="Refresh data"
             >
-              <RefreshCw className="w-4 h-4 text-text-muted" />
+              <RefreshCw className="w-4 h-4 text-text-muted dark:text-gray-300" />
             </button>
           )}
 
@@ -84,20 +84,20 @@ const ChartContainer = ({
               onExportStart={() => setIsExporting(true)}
               onExportComplete={() => setIsExporting(false)}
               onExportError={() => setIsExporting(false)}
-              className="p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl touch-target"
+              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl touch-target"
             />
           )}
 
           {/* Fullscreen Toggle */}
           <button
             onClick={toggleFullscreen}
-            className="p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
+            className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? (
-              <Minimize2 className="w-4 h-4 text-text-muted" />
+              <Minimize2 className="w-4 h-4 text-text-muted dark:text-gray-300" />
             ) : (
-              <Maximize2 className="w-4 h-4 text-text-muted" />
+              <Maximize2 className="w-4 h-4 text-text-muted dark:text-gray-300" />
             )}
           </button>
         </div>
@@ -111,7 +111,7 @@ const ChartContainer = ({
           <div className="flex items-center justify-center h-full p-4">
             <div className="flex flex-col items-center gap-3 sm:gap-4">
               <div className="w-8 h-8 sm:w-12 sm:h-12 border-4 border-bottle-green/20 border-t-bottle-green rounded-full animate-spin"></div>
-              <p className="text-text-muted text-xs sm:text-sm text-center">
+              <p className="text-text-muted dark:text-gray-300 text-xs sm:text-sm text-center">
                 Loading chart data...
               </p>
             </div>
@@ -122,10 +122,10 @@ const ChartContainer = ({
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-tomato-red/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8 text-tomato-red" />
               </div>
-              <p className="text-text-dark font-medium mb-2 text-sm sm:text-base">
+              <p className="text-text-dark dark:text-white font-medium mb-2 text-sm sm:text-base">
                 Failed to load chart
               </p>
-              <p className="text-text-muted text-xs sm:text-sm mb-4 leading-relaxed">
+              <p className="text-text-muted dark:text-gray-300 text-xs sm:text-sm mb-4 leading-relaxed">
                 {error}
               </p>
               {onRefresh && (

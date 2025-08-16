@@ -13,6 +13,13 @@ const AppLayout = ({ children }) => {
   const location = useLocation();
   const { isAuthenticated } = useSelector(selectAuth);
 
+  // Debug logging (can be removed in production)
+  // console.log('AppLayout Debug:', {
+  //   path: location.pathname,
+  //   isAuthenticated,
+  //   hasChildren: !!children
+  // });
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Initialize theme on component mount
@@ -56,7 +63,7 @@ const AppLayout = ({ children }) => {
   ].includes(location.pathname);
 
   return (
-    <div className="min-h-screen bg-background dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-earthy-beige/20 via-white to-mint-fresh/10 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
       {/* Header */}
       {!hideNavigation && (
         <Header

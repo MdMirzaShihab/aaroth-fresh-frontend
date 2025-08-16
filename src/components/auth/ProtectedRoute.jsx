@@ -27,6 +27,17 @@ const ProtectedRoute = ({
   const { user, isAuthenticated, loading } = useSelector(selectAuth);
   const location = useLocation();
 
+  // Debug logging (can be removed in production)
+  // console.log('ProtectedRoute Debug:', {
+  //   path: location.pathname,
+  //   isAuthenticated,
+  //   user: user ? { role: user.role, name: user.name } : null,
+  //   loading,
+  //   requiredRoles: roles,
+  //   requireAuth,
+  //   requireApproval
+  // });
+
   // Show loading spinner while checking authentication
   if (loading) {
     return (
@@ -129,11 +140,14 @@ export const VendorRoute = ({ children, requireApproval = true, ...props }) => (
   </ProtectedRoute>
 );
 
-export const RestaurantRoute = ({ children, ...props }) => (
-  <ProtectedRoute roles={['restaurantOwner', 'restaurantManager']} {...props}>
-    {children}
-  </ProtectedRoute>
-);
+export const RestaurantRoute = ({ children, ...props }) => {
+  // console.log('RestaurantRoute: Wrapping with restaurant roles protection');
+  return (
+    <ProtectedRoute roles={['restaurantOwner', 'restaurantManager']} {...props}>
+      {children}
+    </ProtectedRoute>
+  );
+};
 
 export const RestaurantOwnerRoute = ({ children, ...props }) => (
   <ProtectedRoute roles={['restaurantOwner']} {...props}>

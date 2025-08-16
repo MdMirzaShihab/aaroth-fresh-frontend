@@ -108,10 +108,10 @@ const PlaceOrder = () => {
       <div className="max-w-2xl mx-auto text-center py-12">
         <div className="glass rounded-3xl p-12">
           <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-text-dark mb-4">
+          <h2 className="text-2xl font-bold text-text-dark dark:text-white mb-4">
             Your cart is empty
           </h2>
-          <p className="text-text-muted mb-8">
+          <p className="text-text-muted dark:text-gray-300 mb-8">
             Add some fresh products to get started
           </p>
           <button
@@ -129,8 +129,8 @@ const PlaceOrder = () => {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-dark">Place Order</h1>
-        <p className="text-text-muted mt-2">Review and confirm your order</p>
+        <h1 className="text-3xl font-bold text-text-dark dark:text-white">Place Order</h1>
+        <p className="text-text-muted dark:text-gray-300 mt-2">Review and confirm your order</p>
       </div>
 
       {/* Step Progress */}
@@ -158,7 +158,7 @@ const PlaceOrder = () => {
               </div>
               <span
                 className={`ml-3 font-medium hidden sm:inline ${
-                  step >= stepNum ? 'text-text-dark' : 'text-text-muted'
+                  step >= stepNum ? 'text-text-dark dark:text-white' : 'text-text-muted dark:text-gray-300'
                 }`}
               >
                 {title}
@@ -182,10 +182,10 @@ const PlaceOrder = () => {
           {step === 1 && (
             <div className="glass rounded-3xl p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-text-dark">
+                <h2 className="text-xl font-semibold text-text-dark dark:text-white">
                   Cart Review
                 </h2>
-                <span className="text-text-muted">
+                <span className="text-text-muted dark:text-gray-300">
                   {cartItems.length} items
                 </span>
               </div>
@@ -214,13 +214,13 @@ const PlaceOrder = () => {
 
                       {/* Product Details */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-text-dark truncate">
+                        <h3 className="font-semibold text-text-dark dark:text-white truncate">
                           {item.name}
                         </h3>
-                        <p className="text-sm text-text-muted">
+                        <p className="text-sm text-text-muted dark:text-gray-300">
                           {item.vendorName}
                         </p>
-                        <p className="text-sm font-medium text-text-dark">
+                        <p className="text-sm font-medium text-text-dark dark:text-white">
                           {formatCurrency(item.price)} per {item.unit}
                         </p>
                       </div>
@@ -235,7 +235,7 @@ const PlaceOrder = () => {
                         >
                           <Minus className="w-4 h-4" />
                         </button>
-                        <span className="font-semibold text-text-dark min-w-8 text-center">
+                        <span className="font-semibold text-text-dark dark:text-white min-w-8 text-center">
                           {item.quantity}
                         </span>
                         <button
@@ -250,7 +250,7 @@ const PlaceOrder = () => {
 
                       {/* Total Price */}
                       <div className="text-right">
-                        <p className="font-semibold text-text-dark">
+                        <p className="font-semibold text-text-dark dark:text-white">
                           {formatCurrency(item.price * item.quantity)}
                         </p>
                       </div>
@@ -270,7 +270,7 @@ const PlaceOrder = () => {
               <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => navigate('/restaurant/browse')}
-                  className="text-bottle-green hover:text-bottle-green/80 font-medium transition-colors"
+                  className="text-bottle-green dark:text-green-400 hover:text-bottle-green/80 dark:hover:text-green-300 font-medium transition-colors"
                 >
                   Continue Shopping
                 </button>
@@ -287,14 +287,14 @@ const PlaceOrder = () => {
           {/* Step 2: Delivery Details */}
           {step === 2 && (
             <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark mb-6">
+              <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6">
                 Delivery Details
               </h2>
 
               <div className="space-y-6">
                 {/* Delivery Address */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
+                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                     Delivery Address
                   </label>
                   <textarea
@@ -314,7 +314,7 @@ const PlaceOrder = () => {
 
                 {/* Phone Number */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
+                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                     Contact Phone
                   </label>
                   <input
@@ -334,7 +334,7 @@ const PlaceOrder = () => {
 
                 {/* Delivery Time */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
+                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                     Preferred Delivery Time
                   </label>
                   <div className="space-y-3">
@@ -352,7 +352,7 @@ const PlaceOrder = () => {
                         }
                         className="text-bottle-green focus:ring-bottle-green/20"
                       />
-                      <span className="text-text-dark">
+                      <span className="text-text-dark dark:text-white">
                         As soon as possible
                       </span>
                     </label>
@@ -372,7 +372,7 @@ const PlaceOrder = () => {
                         }
                         className="text-bottle-green focus:ring-bottle-green/20"
                       />
-                      <span className="text-text-dark">Schedule for later</span>
+                      <span className="text-text-dark dark:text-white">Schedule for later</span>
                     </label>
                     {deliveryInfo.preferredDeliveryTime === 'custom' && (
                       <input
@@ -393,7 +393,7 @@ const PlaceOrder = () => {
 
                 {/* Special Instructions */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
+                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                     Special Instructions (Optional)
                   </label>
                   <textarea
@@ -432,7 +432,7 @@ const PlaceOrder = () => {
           {/* Step 3: Payment Method */}
           {step === 3 && (
             <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark mb-6">
+              <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6">
                 Payment Method
               </h2>
 
@@ -451,11 +451,11 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-green-600" />
                       </div>
-                      <span className="font-medium text-text-dark">
+                      <span className="font-medium text-text-dark dark:text-white">
                         Cash on Delivery
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted mt-1">
+                    <p className="text-sm text-text-muted dark:text-gray-300 mt-1">
                       Pay when your order arrives
                     </p>
                   </div>
@@ -474,14 +474,14 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-blue-600" />
                       </div>
-                      <span className="font-medium text-text-dark">
+                      <span className="font-medium text-text-dark dark:text-white">
                         Credit/Debit Card
                       </span>
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
                         Coming Soon
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted mt-1">
+                    <p className="text-sm text-text-muted dark:text-gray-300 mt-1">
                       Secure online payment
                     </p>
                   </div>
@@ -500,14 +500,14 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-purple-600" />
                       </div>
-                      <span className="font-medium text-text-dark">
+                      <span className="font-medium text-text-dark dark:text-white">
                         Mobile Banking
                       </span>
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
                         Coming Soon
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted mt-1">
+                    <p className="text-sm text-text-muted dark:text-gray-300 mt-1">
                       bKash, Rocket, Nagad
                     </p>
                   </div>
@@ -534,7 +534,7 @@ const PlaceOrder = () => {
           {/* Step 4: Final Review */}
           {step === 4 && (
             <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark mb-6">
+              <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6">
                 Order Confirmation
               </h2>
 
@@ -542,12 +542,12 @@ const PlaceOrder = () => {
                 {/* Delivery Details Summary */}
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-text-dark">
+                    <h3 className="font-medium text-text-dark dark:text-white">
                       Delivery Details
                     </h3>
                     <button
                       onClick={() => setStep(2)}
-                      className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium"
+                      className="text-bottle-green dark:text-green-400 hover:text-bottle-green/80 dark:hover:text-green-300 text-sm font-medium"
                     >
                       <Edit className="w-4 h-4 inline mr-1" />
                       Edit
@@ -556,13 +556,13 @@ const PlaceOrder = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-start gap-2">
                       <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-text-muted">
+                      <span className="text-text-muted dark:text-gray-300">
                         {deliveryInfo.address}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-text-muted">
+                      <span className="text-text-muted dark:text-gray-300">
                         {deliveryInfo.preferredDeliveryTime === 'asap'
                           ? 'As soon as possible'
                           : `Scheduled for ${new Date(deliveryInfo.customDeliveryTime).toLocaleDateString()} at ${new Date(deliveryInfo.customDeliveryTime).toLocaleTimeString()}`}
@@ -572,14 +572,14 @@ const PlaceOrder = () => {
                       <span className="w-4 h-4 text-center text-gray-400">
                         📞
                       </span>
-                      <span className="text-text-muted">
+                      <span className="text-text-muted dark:text-gray-300">
                         {formatPhoneForDisplay(deliveryInfo.phone)}
                       </span>
                     </div>
                     {deliveryInfo.notes && (
                       <div className="flex items-start gap-2">
                         <AlertCircle className="w-4 h-4 text-gray-400 mt-0.5" />
-                        <span className="text-text-muted">
+                        <span className="text-text-muted dark:text-gray-300">
                           {deliveryInfo.notes}
                         </span>
                       </div>
@@ -590,12 +590,12 @@ const PlaceOrder = () => {
                 {/* Payment Method Summary */}
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-text-dark">
+                    <h3 className="font-medium text-text-dark dark:text-white">
                       Payment Method
                     </h3>
                     <button
                       onClick={() => setStep(3)}
-                      className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium"
+                      className="text-bottle-green dark:text-green-400 hover:text-bottle-green/80 dark:hover:text-green-300 text-sm font-medium"
                     >
                       <Edit className="w-4 h-4 inline mr-1" />
                       Change
@@ -603,7 +603,7 @@ const PlaceOrder = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-5 h-5 text-gray-400" />
-                    <span className="text-text-muted">Cash on Delivery</span>
+                    <span className="text-text-muted dark:text-gray-300">Cash on Delivery</span>
                   </div>
                 </div>
               </div>
@@ -640,42 +640,42 @@ const PlaceOrder = () => {
         {/* Order Summary Sidebar */}
         <div className="lg:col-span-1">
           <div className="glass rounded-3xl p-6 sticky top-6">
-            <h3 className="text-lg font-semibold text-text-dark mb-4">
+            <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
               Order Summary
             </h3>
 
             <div className="space-y-3 pb-4 border-b border-gray-100">
               <div className="flex justify-between">
-                <span className="text-text-muted">
+                <span className="text-text-muted dark:text-gray-300">
                   Subtotal ({cartItems.length} items)
                 </span>
-                <span className="font-medium text-text-dark">
+                <span className="font-medium text-text-dark dark:text-white">
                   {formatCurrency(subtotal)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-muted">Delivery Fee</span>
-                <span className="font-medium text-text-dark">
+                <span className="text-text-muted dark:text-gray-300">Delivery Fee</span>
+                <span className="font-medium text-text-dark dark:text-white">
                   {deliveryFee === 0 ? (
-                    <span className="text-mint-fresh">Free</span>
+                    <span className="text-mint-fresh dark:text-green-400">Free</span>
                   ) : (
                     formatCurrency(deliveryFee)
                   )}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-muted">Tax</span>
-                <span className="font-medium text-text-dark">
+                <span className="text-text-muted dark:text-gray-300">Tax</span>
+                <span className="font-medium text-text-dark dark:text-white">
                   {formatCurrency(tax)}
                 </span>
               </div>
             </div>
 
             <div className="flex justify-between pt-4 mb-6">
-              <span className="text-lg font-semibold text-text-dark">
+              <span className="text-lg font-semibold text-text-dark dark:text-white">
                 Total
               </span>
-              <span className="text-lg font-bold text-text-dark">
+              <span className="text-lg font-bold text-text-dark dark:text-white">
                 {formatCurrency(finalTotal)}
               </span>
             </div>
@@ -687,7 +687,7 @@ const PlaceOrder = () => {
               </div>
             )}
 
-            <div className="text-xs text-text-muted space-y-1">
+            <div className="text-xs text-text-muted dark:text-gray-300 space-y-1">
               <p>• Estimated delivery: 30-60 minutes</p>
               <p>• Fresh vegetables from local vendors</p>
               <p>• Quality guaranteed or money back</p>

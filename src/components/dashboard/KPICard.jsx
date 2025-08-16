@@ -100,20 +100,20 @@ const KPICard = ({
       <div className="space-y-1.5 sm:space-y-2">
         {loading ? (
           <div className="space-y-2">
-            <div className="h-6 sm:h-8 bg-gray-200 rounded-xl animate-pulse"></div>
-            <div className="h-3 sm:h-4 bg-gray-200 rounded-lg animate-pulse w-3/4"></div>
+            <div className="h-6 sm:h-8 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+            <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse w-3/4"></div>
           </div>
         ) : (
           <>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-dark leading-tight">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-dark dark:text-white leading-tight">
               {formatValue(value)}
             </p>
             <div className="space-y-0.5 sm:space-y-1">
-              <p className="text-text-muted text-xs sm:text-sm font-medium leading-tight">
+              <p className="text-text-muted dark:text-gray-300 text-xs sm:text-sm font-medium leading-tight">
                 {title}
               </p>
               {subtitle && (
-                <p className="text-text-muted/70 text-xs leading-tight">
+                <p className="text-text-muted/70 dark:text-gray-400 text-xs leading-tight">
                   {subtitle}
                 </p>
               )}
@@ -125,7 +125,7 @@ const KPICard = ({
       {/* Progress Bar (Optional) */}
       {typeof value === 'number' && format === 'percentage' && !loading && (
         <div className="mt-4">
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all duration-500 ${
                 trend === 'up'

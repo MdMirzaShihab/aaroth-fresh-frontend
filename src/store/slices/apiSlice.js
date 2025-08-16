@@ -180,6 +180,11 @@ export const apiSlice = createApi({
       ],
     }),
 
+    getListingById: builder.query({
+      query: (id) => `/listings/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Listing', id }],
+    }),
+
     getVendorListings: builder.query({
       query: (params = {}) => ({
         url: '/listings/vendor',
@@ -1466,6 +1471,7 @@ export const {
 
   // Listings
   useGetListingsQuery,
+  useGetListingByIdQuery,
   useGetVendorListingsQuery,
   useGetListingQuery,
   useCreateListingMutation,

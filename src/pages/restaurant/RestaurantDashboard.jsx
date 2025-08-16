@@ -42,37 +42,115 @@ const RestaurantDashboard = () => {
     dateRange: { type: 'month' },
   });
 
-  // Fetch comprehensive dashboard data with new APIs
-  const { data: overview = {}, isLoading: overviewLoading } =
-    useGetRestaurantDashboardOverviewQuery({
+  // Fetch comprehensive dashboard data with new APIs (with error handling)
+  const {
+    data: overview = {},
+    isLoading: overviewLoading,
+    error: overviewError,
+  } = useGetRestaurantDashboardOverviewQuery(
+    {
       ...filters,
-    });
+    },
+    {
+      // Add error handling to prevent crashes
+      skip: false,
+      pollingInterval: 0,
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-  const { data: spendingData = {}, isLoading: spendingLoading } =
-    useGetRestaurantSpendingQuery({
+  const {
+    data: spendingData = {},
+    isLoading: spendingLoading,
+    error: spendingError,
+  } = useGetRestaurantSpendingQuery(
+    {
       ...filters,
-    });
+    },
+    {
+      skip: false,
+      pollingInterval: 0,
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-  const { data: budgetData = {}, isLoading: budgetLoading } =
-    useGetRestaurantBudgetQuery();
+  const {
+    data: budgetData = {},
+    isLoading: budgetLoading,
+    error: budgetError,
+  } = useGetRestaurantBudgetQuery(undefined, {
+    skip: false,
+    pollingInterval: 0,
+    refetchOnMountOrArgChange: true,
+  });
 
-  const { data: vendorInsights = {}, isLoading: vendorLoading } =
-    useGetRestaurantVendorInsightsQuery({
+  const {
+    data: vendorInsights = {},
+    isLoading: vendorLoading,
+    error: vendorError,
+  } = useGetRestaurantVendorInsightsQuery(
+    {
       ...filters,
-    });
+    },
+    {
+      skip: false,
+      pollingInterval: 0,
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-  const { data: recentOrders = [], isLoading: ordersLoading } =
-    useGetRestaurantOrderHistoryQuery({
+  const {
+    data: recentOrders = [],
+    isLoading: ordersLoading,
+    error: ordersError,
+  } = useGetRestaurantOrderHistoryQuery(
+    {
       limit: 5,
       sort: 'createdAt',
       order: 'desc',
-    });
+    },
+    {
+      skip: false,
+      pollingInterval: 0,
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-  const { data: notifications = [], isLoading: notificationsLoading } =
-    useGetRestaurantNotificationsQuery({
+  const {
+    data: notifications = [],
+    isLoading: notificationsLoading,
+    error: notificationsError,
+  } = useGetRestaurantNotificationsQuery(
+    {
       limit: 5,
       unreadOnly: true,
-    });
+    },
+    {
+      skip: false,
+      pollingInterval: 0,
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  // Log any API errors for debugging
+  React.useEffect(() => {
+    if (overviewError)
+      console.warn('Restaurant Overview API Error:', overviewError);
+    if (spendingError)
+      console.warn('Restaurant Spending API Error:', spendingError);
+    if (budgetError) console.warn('Restaurant Budget API Error:', budgetError);
+    if (vendorError) console.warn('Restaurant Vendor API Error:', vendorError);
+    if (ordersError) console.warn('Restaurant Orders API Error:', ordersError);
+    if (notificationsError)
+      console.warn('Restaurant Notifications API Error:', notificationsError);
+  }, [
+    overviewError,
+    spendingError,
+    budgetError,
+    vendorError,
+    ordersError,
+    notificationsError,
+  ]);
 
   // Enhanced KPI data from new dashboard APIs
   const kpiData = [
@@ -139,14 +217,14 @@ const RestaurantDashboard = () => {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 px-4 sm:px-0">
+    <div className="space-y-6 sm:space-y-8 px-4 sm:px-0 min-h-screen">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-text-dark">
+          <h1 className="text-3xl font-bold text-text-dark dark:text-white">
             Welcome back, {user?.restaurantId?.name || user?.name}
           </h1>
-          <p className="text-text-muted mt-2">
+          <p className="text-text-muted dark:text-gray-300 mt-2">
             Track your spending, manage orders, and optimize your procurement
           </p>
         </div>
@@ -154,8 +232,8 @@ const RestaurantDashboard = () => {
         <div className="flex items-center gap-4">
           {/* Notifications */}
           <div className="relative">
-            <button className="p-3 bg-white border border-gray-200 rounded-2xl hover:border-bottle-green/30 transition-all duration-200">
-              <Bell className="w-5 h-5 text-text-muted" />
+            <button className="p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-bottle-green/30 dark:hover:border-mint-fresh/30 transition-all duration-200">
+              <Bell className="w-5 h-5 text-text-muted dark:text-gray-300" />
               {notifications.length > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-tomato-red text-white text-xs rounded-full flex items-center justify-center">
                   {notifications.length}
@@ -235,6 +313,7 @@ const RestaurantDashboard = () => {
             yAxisKey="amount"
             formatTooltip={formatCurrency}
             formatYAxis={formatCurrency}
+            className="text-text-muted dark:text-gray-300"
           />
         </ChartContainer>
       </div>
@@ -263,9 +342,9 @@ const RestaurantDashboard = () => {
         </div>
 
         {/* Recent Orders */}
-        <div className="lg:col-span-2 glass rounded-3xl p-6">
+        <div className="lg:col-span-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 dark:border-gray-700/50 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-text-dark">
+            <h2 className="text-xl font-semibold text-text-dark dark:text-white">
               Recent Orders
             </h2>
             <Link
@@ -290,7 +369,7 @@ const RestaurantDashboard = () => {
               recentOrders.map((order) => (
                 <div
                   key={order._id}
-                  className="bg-white/50 border border-gray-100 rounded-2xl p-4 hover:border-bottle-green/20 transition-all duration-200"
+                  className="bg-white/70 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-2xl p-4 hover:border-bottle-green/20 dark:hover:border-mint-fresh/20 transition-all duration-200"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -298,10 +377,10 @@ const RestaurantDashboard = () => {
                         <ShoppingCart className="w-5 h-5 text-bottle-green" />
                       </div>
                       <div>
-                        <p className="font-medium text-text-dark">
+                        <p className="font-medium text-text-dark dark:text-white">
                           Order #{order.orderNumber || order._id?.slice(-6)}
                         </p>
-                        <p className="text-text-muted text-sm">
+                        <p className="text-text-muted dark:text-gray-300 text-sm">
                           {order.items?.length || 0} items •{' '}
                           {timeAgo(order.createdAt)}
                         </p>
@@ -311,7 +390,7 @@ const RestaurantDashboard = () => {
                       <span className="px-3 py-1 rounded-xl text-sm font-medium bg-mint-fresh/20 text-bottle-green">
                         {order.status || 'Processing'}
                       </span>
-                      <p className="font-semibold text-text-dark">
+                      <p className="font-semibold text-text-dark dark:text-white">
                         {formatCurrency(order.totalAmount || 0)}
                       </p>
                     </div>
@@ -320,9 +399,11 @@ const RestaurantDashboard = () => {
               ))
             ) : (
               <div className="text-center py-12">
-                <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-text-muted">No recent orders</p>
-                <p className="text-sm text-text-muted/70 mt-1">
+                <ShoppingCart className="w-12 h-12 text-gray-300 dark:text-gray-500 mx-auto mb-4" />
+                <p className="text-text-muted dark:text-gray-300">
+                  No recent orders
+                </p>
+                <p className="text-sm text-text-muted/70 dark:text-gray-400 mt-1">
                   Start by browsing our fresh products
                 </p>
               </div>
@@ -334,8 +415,8 @@ const RestaurantDashboard = () => {
       {/* Budget and Vendor Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Budget Status */}
-        <div className="glass rounded-3xl p-6">
-          <h3 className="text-lg font-semibold text-text-dark mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 dark:border-gray-700/50 shadow-lg">
+          <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-6">
             Budget Overview
           </h3>
           {budgetLoading ? (
@@ -346,24 +427,28 @@ const RestaurantDashboard = () => {
           ) : (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-text-muted">Monthly Budget</span>
-                <span className="font-semibold text-text-dark">
+                <span className="text-text-muted dark:text-gray-300">
+                  Monthly Budget
+                </span>
+                <span className="font-semibold text-text-dark dark:text-white">
                   {formatCurrency(budgetData.total || 0)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-text-muted">Used</span>
+                <span className="text-text-muted dark:text-gray-300">Used</span>
                 <span className="font-semibold text-tomato-red">
                   {formatCurrency(budgetData.used || 0)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-text-muted">Remaining</span>
+                <span className="text-text-muted dark:text-gray-300">
+                  Remaining
+                </span>
                 <span className="font-semibold text-mint-fresh">
                   {formatCurrency(budgetData.remaining || 0)}
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mt-4">
+              <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3 mt-4">
                 <div
                   className="bg-gradient-primary h-3 rounded-full transition-all duration-500"
                   style={{
@@ -376,8 +461,8 @@ const RestaurantDashboard = () => {
         </div>
 
         {/* Top Vendors */}
-        <div className="glass rounded-3xl p-6">
-          <h3 className="text-lg font-semibold text-text-dark mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 dark:border-gray-700/50 shadow-lg">
+          <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-6">
             Top Vendors
           </h3>
           {vendorLoading ? (
@@ -398,15 +483,15 @@ const RestaurantDashboard = () => {
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-text-dark text-sm">
+                    <p className="font-medium text-text-dark dark:text-white text-sm">
                       {vendor.name || 'Unknown Vendor'}
                     </p>
-                    <p className="text-text-muted text-xs">
+                    <p className="text-text-muted dark:text-gray-300 text-xs">
                       {vendor.orderCount || 0} orders
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-text-dark">
+                    <p className="text-sm font-medium text-text-dark dark:text-white">
                       {formatCurrency(vendor.totalSpent || 0)}
                     </p>
                   </div>
@@ -415,8 +500,8 @@ const RestaurantDashboard = () => {
             </div>
           ) : (
             <div className="text-center py-8">
-              <Users className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-              <p className="text-text-muted text-sm">
+              <Users className="w-8 h-8 text-gray-300 dark:text-gray-500 mx-auto mb-2" />
+              <p className="text-text-muted dark:text-gray-300 text-sm">
                 No vendor data available
               </p>
             </div>

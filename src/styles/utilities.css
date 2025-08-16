@@ -10,6 +10,21 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Enhanced Glass Effect for Light and Dark Mode */
+.glass {
+  @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/50 dark:border-gray-700/50 shadow-lg;
+}
+
+/* Improved Skeleton Loading for Dark Mode */
+.skeleton {
+  @apply bg-gray-200 dark:bg-gray-700 rounded animate-pulse;
+}
+
+/* Better Focus States for Dark Mode */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-bottle-green/40 dark:focus:ring-mint-fresh/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+}
+
 /* Animation Utilities - Motion with Purpose */
 .animate-shimmer {
   background: linear-gradient(
@@ -36,6 +51,29 @@
   @apply min-h-[48px] min-w-[48px];
 }
 
+/* Responsive Utilities - Mobile-First Enhancement */
+.responsive-grid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+.responsive-padding {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+.responsive-margin {
+  @apply mx-4 sm:mx-6 lg:mx-8;
+}
+
+/* Smooth Theme Transitions */
+.theme-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Improved Card Hover Effects */
+.card-hover {
+  @apply hover:shadow-xl hover:shadow-glow-green/10 dark:hover:shadow-mint-fresh/10 hover:-translate-y-1 transition-all duration-300;
+}
+
 /* Reduced Motion Support - Accessibility */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
@@ -48,13 +86,15 @@
   }
 
   .transition-transform,
-  .transition-all {
+  .transition-all,
+  .theme-transition {
     transition: none;
   }
 
   .hover\:scale-\[1\.02\]:hover,
   .hover\:-translate-y-1:hover,
-  .hover\:-translate-y-0\.5:hover {
+  .hover\:-translate-y-0\.5:hover,
+  .card-hover:hover {
     transform: none;
   }
 }

@@ -15,7 +15,7 @@ import {
   Info,
 } from 'lucide-react';
 import {
-  useGetProductListingsQuery,
+  useGetListingsQuery,
   useGetCategoriesQuery,
 } from '../../store/slices/apiSlice';
 import { addToCart } from '../../store/slices/cartSlice';
@@ -41,10 +41,10 @@ const ProductBrowsing = () => {
 
   // API queries
   const {
-    data: listings = [],
+    data: listingsResponse,
     isLoading: listingsLoading,
     error,
-  } = useGetProductListingsQuery({
+  } = useGetListingsQuery({
     search: searchQuery,
     category: selectedCategory,
     sortBy,
@@ -52,7 +52,94 @@ const ProductBrowsing = () => {
     limit: 50,
   });
 
-  const { data: categories = [] } = useGetCategoriesQuery();
+  // Handle listings data structure - backend returns nested objects
+  const listings = useMemo(() => {
+    if (!listingsResponse) return [];
+    
+    // Extract data array from API response
+    const rawListings = Array.isArray(listingsResponse)
+      ? listingsResponse
+      : Array.isArray(listingsResponse?.data)
+        ? listingsResponse.data
+        : [];
+
+    // Transform nested API response to flat structure expected by components
+    const transformedListings = rawListings.map((listing) => {
+      const product = listing.product || {};
+      const vendor = listing.vendor || {};
+      
+      // Handle pricing structure - extract from pricing array
+      const pricing = listing.pricing?.[0] || {};
+      const price = pricing.pricePerUnit || listing.price || 0;
+      const unit = pricing.unit || listing.availability?.unit || 'unit';
+      
+      // Handle availability object - convert to status string
+      const availabilityObj = listing.availability || {};
+      const quantityAvailable = availabilityObj.quantityAvailable || 0;
+      const isInSeason = availabilityObj.isInSeason;
+      
+      let availabilityStatus = 'available';
+      if (quantityAvailable === 0) {
+        availabilityStatus = 'out-of-stock';
+      } else if (quantityAvailable < 10) {
+        availabilityStatus = 'low-stock';
+      } else {
+        availabilityStatus = 'in-stock';
+      }
+      
+      // Handle images structure - extract URLs from image objects
+      const imageUrls = listing.images?.map(img => img.url || img) || 
+                       product.images?.map(img => img.url || img) || [];
+      
+      // Handle rating structure
+      const rating = listing.rating?.average || product.rating?.average || 0;
+      
+      const transformed = {
+        // Listing properties
+        _id: listing._id,
+        vendorId: listing.vendorId,
+        productId: listing.productId,
+        price: price,
+        quantity: quantityAvailable,
+        unit: unit,
+        availability: availabilityStatus,
+        
+        // Product properties (from nested object)
+        name: product.name,
+        description: product.description,
+        images: imageUrls,
+        category: product.category,
+        rating: rating,
+        
+        // Vendor properties (from nested object)
+        vendorName: vendor.businessName || vendor.name || listing.vendorName,
+        vendorLocation: vendor.address?.city || vendor.location,
+        vendorRating: vendor.rating?.average || 0,
+        
+        // Additional useful properties
+        qualityGrade: listing.qualityGrade,
+        isInSeason: isInSeason,
+        minimumOrderValue: listing.minimumOrderValue || vendor.minimumOrderValue,
+        deliveryOptions: listing.deliveryOptions,
+        featured: listing.featured,
+      };
+      
+      return transformed;
+    });
+
+    return transformedListings;
+  }, [listingsResponse]);
+
+  const { data: categoriesData = [], isLoading: categoriesLoading, error: categoriesError } = useGetCategoriesQuery();
+  
+  // Handle categories data structure safely
+  const categories = Array.isArray(categoriesData) 
+    ? categoriesData 
+    : Array.isArray(categoriesData?.data) 
+      ? categoriesData.data 
+      : Array.isArray(categoriesData?.categories)
+        ? categoriesData.categories
+        : [];
 
   // Debounced search
   const debouncedSearch = useMemo(
@@ -75,21 +162,36 @@ const ProductBrowsing = () => {
         vendorName: product.vendorName,
         unit: product.unit,
         quantity,
+        // Add additional fields for better cart management
+        productId: product.productId,
+        availability: product.availability,
       })
     );
   };
 
   const getAvailabilityColor = (availability) => {
     const colors = {
-      'in-stock': 'bg-mint-fresh/20 text-bottle-green',
+      'in-stock': 'bg-mint-fresh/20 text-bottle-green dark:text-green-400',
       'low-stock': 'bg-amber-100 text-amber-800',
       'out-of-stock': 'bg-tomato-red/10 text-tomato-red',
     };
     return colors[availability] || 'bg-gray-100 text-gray-600';
   };
 
+  const getAvailabilityText = (availability) => {
+    const texts = {
+      'in-stock': 'In Stock',
+      'low-stock': 'Low Stock',
+      'out-of-stock': 'Out of Stock',
+    };
+    return texts[availability] || 'Available';
+  };
+
   const ProductCard = ({ product }) => (
-    <div className="glass rounded-3xl p-4 hover:shadow-soft transition-all duration-200">
+    <div 
+      onClick={() => navigate(`/restaurant/browse/${product._id}`)}
+      className="glass rounded-3xl p-4 hover:shadow-soft transition-all duration-200 cursor-pointer group"
+    >
       {/* Product Image */}
       <div className="relative mb-4">
         <div className="aspect-square bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-2xl overflow-hidden">
@@ -113,11 +215,14 @@ const ProductBrowsing = () => {
         <span
           className={`absolute top-3 right-3 px-2 py-1 rounded-xl text-xs font-medium ${getAvailabilityColor(product.availability)}`}
         >
-          {product.availability?.replace('-', ' ') || 'Available'}
+          {getAvailabilityText(product.availability)}
         </span>
 
         {/* Favorite Button */}
-        <button className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
+        <button 
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors"
+        >
           <Heart className="w-4 h-4 text-gray-600 hover:text-tomato-red transition-colors" />
         </button>
       </div>
@@ -125,16 +230,19 @@ const ProductBrowsing = () => {
       {/* Product Info */}
       <div className="space-y-2">
         <div className="flex items-start justify-between">
-          <h3 className="font-semibold text-text-dark text-sm line-clamp-2">
+          <h3 className="font-semibold text-text-dark dark:text-white text-sm line-clamp-2">
             {product.name}
           </h3>
-          <button className="text-gray-400 hover:text-gray-600 ml-2">
+          <button 
+            onClick={(e) => e.stopPropagation()}
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 ml-2"
+          >
             <Info className="w-4 h-4" />
           </button>
         </div>
 
         {/* Vendor Info */}
-        <div className="flex items-center gap-1 text-xs text-text-muted">
+        <div className="flex items-center gap-1 text-xs text-text-muted dark:text-gray-300">
           <MapPin className="w-3 h-3" />
           <span className="truncate">{product.vendorName}</span>
         </div>
@@ -143,7 +251,7 @@ const ProductBrowsing = () => {
         {product.rating && (
           <div className="flex items-center gap-1">
             <Star className="w-3 h-3 text-earthy-yellow fill-current" />
-            <span className="text-xs text-text-muted">
+            <span className="text-xs text-text-muted dark:text-gray-300">
               {product.rating.toFixed(1)}
             </span>
           </div>
@@ -152,16 +260,19 @@ const ProductBrowsing = () => {
         {/* Price and Add to Cart */}
         <div className="flex items-center justify-between mt-4">
           <div>
-            <p className="font-bold text-text-dark">
+            <p className="font-bold text-text-dark dark:text-white">
               {formatCurrency(product.price)}
             </p>
-            <p className="text-xs text-text-muted">
+            <p className="text-xs text-text-muted dark:text-gray-300">
               per {product.unit || 'unit'}
             </p>
           </div>
 
           <button
-            onClick={() => handleAddToCart(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart(product);
+            }}
             disabled={product.availability === 'out-of-stock'}
             className="bg-gradient-primary text-white p-2 rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
           >
@@ -173,7 +284,10 @@ const ProductBrowsing = () => {
   );
 
   const ProductListItem = ({ product }) => (
-    <div className="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-soft transition-all duration-200">
+    <div 
+      onClick={() => navigate(`/restaurant/browse/${product._id}`)}
+      className="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-soft transition-all duration-200 cursor-pointer group"
+    >
       {/* Product Image */}
       <div className="w-20 h-20 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
         {product.images && product.images[0] ? (
@@ -193,17 +307,17 @@ const ProductBrowsing = () => {
       {/* Product Details */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-text-dark truncate pr-2">
+          <h3 className="font-semibold text-text-dark dark:text-white truncate pr-2">
             {product.name}
           </h3>
           <span
             className={`px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${getAvailabilityColor(product.availability)}`}
           >
-            {product.availability?.replace('-', ' ') || 'Available'}
+            {getAvailabilityText(product.availability)}
           </span>
         </div>
 
-        <div className="flex items-center gap-3 text-sm text-text-muted mb-2">
+        <div className="flex items-center gap-3 text-sm text-text-muted dark:text-gray-300 mb-2">
           <div className="flex items-center gap-1">
             <MapPin className="w-3 h-3" />
             <span className="truncate">{product.vendorName}</span>
@@ -218,16 +332,19 @@ const ProductBrowsing = () => {
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-bold text-text-dark">
+            <p className="font-bold text-text-dark dark:text-white">
               {formatCurrency(product.price)}
             </p>
-            <p className="text-xs text-text-muted">
+            <p className="text-xs text-text-muted dark:text-gray-300">
               per {product.unit || 'unit'}
             </p>
           </div>
 
           <button
-            onClick={() => handleAddToCart(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart(product);
+            }}
             disabled={product.availability === 'out-of-stock'}
             className="bg-gradient-primary text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target flex items-center gap-2"
           >
@@ -244,13 +361,13 @@ const ProductBrowsing = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-dark">Browse Products</h1>
-          <p className="text-text-muted mt-2">
+          <h1 className="text-3xl font-bold text-text-dark dark:text-white">Browse Products</h1>
+          <p className="text-text-muted dark:text-gray-300 mt-2">
             Fresh vegetables from local vendors
           </p>
         </div>
         <button
-          onClick={() => navigate('/restaurant/order')}
+          onClick={() => navigate('/restaurant/cart')}
           className="bg-gradient-secondary text-white px-6 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 touch-target"
         >
           View Cart
@@ -280,11 +397,19 @@ const ProductBrowsing = () => {
               className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
             >
               <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
+              {categories && categories.length > 0 ? (
+                categories.map((category) => (
+                  <option key={category._id || category.id} value={category._id || category.id}>
+                    {category.name}
+                  </option>
+                ))
+              ) : (
+                categoriesLoading ? (
+                  <option disabled>Loading categories...</option>
+                ) : (
+                  <option disabled>No categories available</option>
+                )
+              )}
             </select>
 
             {/* Sort By */}
@@ -305,8 +430,8 @@ const ProductBrowsing = () => {
               onClick={() => setShowFilters(!showFilters)}
               className={`p-3 rounded-2xl border transition-all duration-200 touch-target ${
                 showFilters
-                  ? 'bg-bottle-green text-white border-bottle-green'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30'
+                  ? 'bg-bottle-green text-white border-bottle-green dark:bg-green-600 dark:border-green-600'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:border-green-500/30'
               }`}
             >
               <Filter className="w-5 h-5" />
@@ -318,8 +443,8 @@ const ProductBrowsing = () => {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
                   viewMode === 'grid'
-                    ? 'bg-white shadow-sm text-bottle-green'
-                    : 'text-gray-600 hover:text-bottle-green'
+                    ? 'bg-white shadow-sm text-bottle-green dark:text-green-400'
+                    : 'text-gray-600 hover:text-bottle-green dark:text-gray-300 dark:hover:text-green-400'
                 }`}
               >
                 <Grid3X3 className="w-4 h-4" />
@@ -328,8 +453,8 @@ const ProductBrowsing = () => {
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
                   viewMode === 'list'
-                    ? 'bg-white shadow-sm text-bottle-green'
-                    : 'text-gray-600 hover:text-bottle-green'
+                    ? 'bg-white shadow-sm text-bottle-green dark:text-green-400'
+                    : 'text-gray-600 hover:text-bottle-green dark:text-gray-300 dark:hover:text-green-400'
                 }`}
               >
                 <List className="w-4 h-4" />
@@ -343,7 +468,7 @@ const ProductBrowsing = () => {
           <div className="mt-6 pt-6 border-t border-gray-100">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
+                <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                   Min Price
                 </label>
                 <input
@@ -360,7 +485,7 @@ const ProductBrowsing = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
+                <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                   Max Price
                 </label>
                 <input
@@ -377,7 +502,7 @@ const ProductBrowsing = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
+                <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                   Location
                 </label>
                 <input
@@ -394,7 +519,7 @@ const ProductBrowsing = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
+                <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
                   Minimum Rating
                 </label>
                 <select
@@ -432,7 +557,7 @@ const ProductBrowsing = () => {
             <div className="text-tomato-red mb-4">
               <ShoppingCart className="w-12 h-12 mx-auto" />
             </div>
-            <p className="text-text-muted">Failed to load products</p>
+            <p className="text-text-muted dark:text-gray-300">Failed to load products</p>
             <button
               onClick={() => window.location.reload()}
               className="mt-4 bg-gradient-primary text-white px-6 py-2 rounded-xl hover:shadow-lg transition-all duration-200"
@@ -457,8 +582,8 @@ const ProductBrowsing = () => {
         ) : (
           <div className="text-center py-12">
             <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-text-muted">No products found</p>
-            <p className="text-sm text-text-muted/70 mt-1">
+            <p className="text-text-muted dark:text-gray-300">No products found</p>
+            <p className="text-sm text-text-muted/70 dark:text-gray-400 mt-1">
               Try adjusting your search or filters
             </p>
           </div>

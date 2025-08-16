@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Toast from '../ui/Toast';
+import AarothLogo from '../../assets/AarothLogo.png';
 
 /**
  * AuthLayout Component
@@ -55,8 +56,12 @@ const AuthLayout = ({
             to="/"
             className="inline-flex items-center gap-3 mb-8 group focus:outline-none focus:ring-2 focus:ring-bottle-green/40 focus:ring-offset-4 rounded-2xl"
           >
-            <div className="bg-gradient-secondary p-3 rounded-2xl shadow-lg group-hover:shadow-xl group-hover:shadow-glow-green/20 transition-all duration-300 group-hover:scale-105">
-              <Leaf className="w-8 h-8 text-white" />
+            <div className="p-3 rounded-2xl shadow-lg group-hover:shadow-xl group-hover:shadow-glow-green/20 transition-all duration-300 group-hover:scale-105">
+              <img 
+                src={AarothLogo} 
+                alt="Aaroth Fresh" 
+                className="w-12 h-12 object-contain"
+              />
             </div>
             <div className="text-left">
               <h1 className="text-2xl font-medium text-text-dark group-hover:text-bottle-green transition-colors duration-300">

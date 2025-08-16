@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
       colors: {
@@ -26,6 +27,11 @@ export default {
         'glass': 'rgba(255, 255, 255, 0.1)',
         'glow-green': '#006A4E20',
         'shadow-soft': 'rgba(60, 42, 31, 0.08)',
+        
+        // Dark Mode Optimized Colors
+        'dark-card': 'rgba(55, 65, 81, 0.8)',
+        'dark-surface': 'rgba(31, 41, 55, 0.9)',
+        'dark-border': 'rgba(75, 85, 99, 0.5)',
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #8C644A 0%, #D4A373 100%)',

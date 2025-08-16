@@ -9,6 +9,7 @@ import {
   Shield,
   Store,
 } from 'lucide-react';
+import AarothLogo from '../../assets/AarothLogo.png';
 import { selectAuth } from '../../store/slices/authSlice';
 import { selectCartItemCount } from '../../store/slices/cartSlice';
 import { selectUnreadNotificationCount } from '../../store/slices/notificationSlice';
@@ -236,8 +237,12 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-secondary rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <img 
+                src={AarothLogo} 
+                alt="Aaroth Fresh" 
+                className="w-8 h-8 object-contain"
+              />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-text-dark dark:text-white">

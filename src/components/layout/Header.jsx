@@ -12,6 +12,7 @@ import {
   User,
   Settings,
 } from 'lucide-react';
+import AarothLogo from '../../assets/AarothLogo.png';
 import { selectAuth } from '../../store/slices/authSlice';
 import { selectThemeMode, toggleTheme } from '../../store/slices/themeSlice';
 import authService from '../../services/authService';
@@ -45,7 +46,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
     setIsUserMenuOpen(false);
 
     if (item.action === 'logout') {
-      await authService.logout();
+      await authService.performLogout();
       navigate('/login');
     } else if (item.action === 'navigate') {
       navigate(item.path);
@@ -79,8 +80,12 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
           )}
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-secondary rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <img 
+                src={AarothLogo} 
+                alt="Aaroth Fresh" 
+                className="w-8 h-8 object-contain"
+              />
             </div>
             <span className="text-lg font-semibold text-text-dark dark:text-white hidden sm:block">
               Aaroth Fresh
@@ -92,13 +97,13 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
         {isAuthenticated && (
           <div className="hidden md:flex flex-1 max-w-md mx-8">
             <form onSubmit={handleSearch} className="relative w-full">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted dark:text-gray-300" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products, vendors..."
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-earthy-beige/30 dark:bg-gray-800/50 border-0 focus:bg-white dark:focus:bg-gray-800 focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none"
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-earthy-beige/30 dark:bg-gray-800/50 border-0 focus:bg-white dark:focus:bg-gray-800 focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 dark:placeholder:text-gray-400 text-text-dark dark:text-white min-h-[44px] focus:outline-none"
               />
             </form>
           </div>
@@ -146,7 +151,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                         <p className="text-sm text-text-dark dark:text-white font-medium">
                           New order received
                         </p>
-                        <p className="text-xs text-text-muted mt-1">
+                        <p className="text-xs text-text-muted dark:text-gray-300 mt-1">
                           2 minutes ago
                         </p>
                       </div>
@@ -154,7 +159,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                         <p className="text-sm text-text-dark dark:text-white font-medium">
                           Product approved
                         </p>
-                        <p className="text-xs text-text-muted mt-1">
+                        <p className="text-xs text-text-muted dark:text-gray-300 mt-1">
                           1 hour ago
                         </p>
                       </div>
@@ -162,7 +167,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                         <p className="text-sm text-text-dark dark:text-white font-medium">
                           Payment received
                         </p>
-                        <p className="text-xs text-text-muted mt-1">
+                        <p className="text-xs text-text-muted dark:text-gray-300 mt-1">
                           3 hours ago
                         </p>
                       </div>
@@ -198,7 +203,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                     <span className="text-sm font-medium text-text-dark dark:text-white truncate max-w-24">
                       {user?.name || user?.phone}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-text-muted" />
+                    <ChevronDown className="w-4 h-4 text-text-muted dark:text-gray-300" />
                   </div>
                 </button>
 
@@ -223,7 +228,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                           <p className="text-sm font-medium text-text-dark dark:text-white">
                             {user?.name || 'User'}
                           </p>
-                          <p className="text-xs text-text-muted capitalize">
+                          <p className="text-xs text-text-muted dark:text-gray-300 capitalize">
                             {user?.role || 'Member'}
                           </p>
                         </div>

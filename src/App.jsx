@@ -4,6 +4,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useGetCurrentUserQuery } from './store/slices/apiSlice';
 import { selectAuth } from './store/slices/authSlice';
 import authService from './services/authService';
+import AarothLogo from './assets/AarothLogo.png';
+
+// Debug Component (temporary)
+import TokenDiagnosticPanel from './components/debug/TokenDiagnosticPanel';
 
 // Layout Components
 import AppLayout from './components/layout/AppLayout';
@@ -76,6 +80,7 @@ const RestaurantDashboard = lazy(
 const ProductBrowsing = lazy(
   () => import('./pages/restaurant/ProductBrowsing')
 );
+const ProductDetail = lazy(() => import('./pages/restaurant/ProductDetail'));
 const PlaceOrder = lazy(() => import('./pages/restaurant/PlaceOrder'));
 const OrderHistory = lazy(() => import('./pages/restaurant/OrderHistory'));
 const RestaurantProfile = lazy(
@@ -101,7 +106,14 @@ const MaintenancePage = lazy(() => import('./pages/error/MaintenancePage'));
 // Loading Fallback Component
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[50vh]">
-    <LoadingSpinner size="large" />
+    <div className="text-center">
+      <img 
+        src={AarothLogo} 
+        alt="Aaroth Fresh" 
+        className="w-12 h-12 mx-auto mb-4 animate-pulse"
+      />
+      <LoadingSpinner size="large" />
+    </div>
   </div>
 );
 
@@ -117,7 +129,7 @@ const App = () => {
   useEffect(() => {
     if (error && error.status === 401) {
       console.log('Authentication failed, logging out...');
-      authService.logout();
+      authService.performLogout();
     }
   }, [error]);
 
@@ -126,7 +138,14 @@ const App = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-bottle-green/20 border-t-bottle-green rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="relative mb-8">
+            <img 
+              src={AarothLogo} 
+              alt="Aaroth Fresh" 
+              className="w-24 h-24 mx-auto mb-4 animate-pulse"
+            />
+            <div className="w-16 h-16 border-4 border-bottle-green/20 border-t-bottle-green rounded-full animate-spin mx-auto"></div>
+          </div>
           <p className="text-text-muted font-medium">Loading Aaroth Fresh...</p>
         </div>
       </div>
@@ -261,68 +280,154 @@ const App = () => {
             path="/vendor"
             element={
               <VendorRoute>
-                <AppLayout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Routes>
-                      <Route
-                        index
-                        element={<Navigate to="dashboard" replace />}
-                      />
-                      <Route path="dashboard" element={<VendorDashboard />} />
-                      <Route path="listings" element={<ListingManagement />} />
-                      <Route
-                        path="listings/create"
-                        element={<CreateListing />}
-                      />
-                      <Route
-                        path="listings/:id/edit"
-                        element={<EditListing />}
-                      />
-                      <Route path="orders" element={<OrderManagement />} />
-                      <Route path="orders/:orderId" element={<OrderDetail />} />
-                      <Route path="analytics" element={<VendorAnalytics />} />
-                    </Routes>
-                  </Suspense>
-                </AppLayout>
+                <AppLayout />
               </VendorRoute>
             }
-          />
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorDashboard />
+                </Suspense>
+              }
+            />
+            <Route
+              path="listings"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ListingManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="listings/create"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CreateListing />
+                </Suspense>
+              }
+            />
+            <Route
+              path="listings/:id/edit"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <EditListing />
+                </Suspense>
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <OrderManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="orders/:orderId"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <OrderDetail />
+                </Suspense>
+              }
+            />
+            <Route
+              path="analytics"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorAnalytics />
+                </Suspense>
+              }
+            />
+          </Route>
 
           {/* Restaurant Routes - Protected with AppLayout */}
           <Route
             path="/restaurant"
             element={
               <RestaurantRoute>
-                <AppLayout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Routes>
-                      <Route
-                        index
-                        element={<Navigate to="dashboard" replace />}
-                      />
-                      <Route
-                        path="dashboard"
-                        element={<RestaurantDashboard />}
-                      />
-                      <Route path="browse" element={<ProductBrowsing />} />
-                      <Route path="order" element={<PlaceOrder />} />
-                      <Route path="orders" element={<OrderHistory />} />
-                      <Route path="orders/:orderId" element={<OrderDetail />} />
-                      <Route path="profile" element={<RestaurantProfile />} />
-                      <Route
-                        path="managers"
-                        element={
-                          <RestaurantOwnerRoute>
-                            <ManagerManagement />
-                          </RestaurantOwnerRoute>
-                        }
-                      />
-                    </Routes>
-                  </Suspense>
-                </AppLayout>
+                <AppLayout />
               </RestaurantRoute>
             }
-          />
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <RestaurantDashboard />
+                </Suspense>
+              }
+            />
+            <Route
+              path="browse"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductBrowsing />
+                </Suspense>
+              }
+            />
+            <Route
+              path="browse/:productId"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductDetail />
+                </Suspense>
+              }
+            />
+            <Route
+              path="cart"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <PlaceOrder />
+                </Suspense>
+              }
+            />
+            <Route
+              path="order"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <PlaceOrder />
+                </Suspense>
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <OrderHistory />
+                </Suspense>
+              }
+            />
+            <Route
+              path="orders/:orderId"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <OrderDetail />
+                </Suspense>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <RestaurantProfile />
+                </Suspense>
+              }
+            />
+            <Route
+              path="managers"
+              element={
+                <RestaurantOwnerRoute>
+                  <Suspense fallback={<PageLoader />}>
+                    <ManagerManagement />
+                  </Suspense>
+                </RestaurantOwnerRoute>
+              }
+            />
+          </Route>
 
           {/* Shared Protected Routes - All authenticated users */}
           <Route
@@ -361,6 +466,9 @@ const App = () => {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
+
+      {/* Token Diagnostic Panel - Remove this in production */}
+      {/* {process.env.NODE_ENV === 'development' && <TokenDiagnosticPanel />} */}
     </div>
   );
 };

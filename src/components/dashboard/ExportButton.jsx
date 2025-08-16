@@ -135,8 +135,8 @@ const ExportButton = ({
   const buttonVariants = {
     primary: 'bg-gradient-primary text-white hover:shadow-lg',
     secondary: 'bg-gradient-secondary text-white hover:shadow-lg',
-    outline: 'border border-gray-300 text-text-dark hover:bg-gray-50',
-    ghost: 'text-text-muted hover:text-text-dark hover:bg-gray-100',
+    outline: 'border border-gray-300 dark:border-gray-600 text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700',
+    ghost: 'text-text-muted dark:text-gray-300 hover:text-text-dark dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700',
   };
 
   const sizeVariants = {
@@ -228,9 +228,9 @@ const ExportButton = ({
           />
 
           {/* Dropdown Content */}
-          <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 z-20 overflow-hidden">
+          <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 z-20 overflow-hidden">
             <div className="p-2">
-              <div className="px-3 py-2 text-xs font-medium text-text-muted uppercase tracking-wide border-b border-gray-100 mb-2">
+              <div className="px-3 py-2 text-xs font-medium text-text-muted dark:text-gray-300 uppercase tracking-wide border-b border-gray-100 dark:border-gray-600 mb-2">
                 Export Options
               </div>
 
@@ -238,12 +238,12 @@ const ExportButton = ({
                 <button
                   key={format.value}
                   onClick={() => handleExport(format.value)}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-left text-text-dark hover:bg-gray-50 rounded-xl transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-left text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
                 >
                   {getFormatIcon(format.value)}
                   <div className="flex-1">
                     <div className="font-medium">{format.label}</div>
-                    <div className="text-xs text-text-muted">
+                    <div className="text-xs text-text-muted dark:text-gray-300">
                       {format.description}
                     </div>
                   </div>
@@ -251,7 +251,7 @@ const ExportButton = ({
               ))}
             </div>
 
-            <div className="bg-gray-50 px-3 py-2 text-xs text-text-muted">
+            <div className="bg-gray-50 dark:bg-gray-700 px-3 py-2 text-xs text-text-muted dark:text-gray-300">
               {data && Array.isArray(data)
                 ? `${data.length} records ready for export`
                 : 'Dashboard data ready for export'}
@@ -265,7 +265,7 @@ const ExportButton = ({
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-bottle-green border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <div className="text-xs text-text-muted">
+            <div className="text-xs text-text-muted dark:text-gray-300">
               {exportProgress.message}
             </div>
             {exportProgress.progress > 0 && (
@@ -369,19 +369,19 @@ export const ExportModal = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl shadow-xl max-w-md w-full mx-4 p-6">
-        <h2 className="text-xl font-semibold text-text-dark mb-4">{title}</h2>
+      <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl max-w-md w-full mx-4 p-6">
+        <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-4">{title}</h2>
 
         <div className="space-y-4">
           {/* Format Selection */}
           <div>
-            <label className="block text-sm font-medium text-text-dark mb-2">
+            <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
               Export Format
             </label>
             <select
               value={selectedFormat}
               onChange={(e) => setSelectedFormat(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bottle-green focus:border-bottle-green"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-bottle-green focus:border-bottle-green"
             >
               <option value="csv">CSV (Spreadsheet)</option>
               <option value="pdf">PDF (Report)</option>
@@ -391,13 +391,13 @@ export const ExportModal = ({
 
           {/* Date Range */}
           <div>
-            <label className="block text-sm font-medium text-text-dark mb-2">
+            <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
               Date Range
             </label>
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bottle-green focus:border-bottle-green"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-bottle-green focus:border-bottle-green"
             >
               <option value="all">All Time</option>
               <option value="week">Last 7 Days</option>
@@ -416,7 +416,7 @@ export const ExportModal = ({
                   onChange={(e) => setIncludeHeaders(e.target.checked)}
                   className="rounded text-bottle-green focus:ring-bottle-green"
                 />
-                <span className="text-sm text-text-dark">
+                <span className="text-sm text-text-dark dark:text-white">
                   Include column headers
                 </span>
               </label>
@@ -428,7 +428,7 @@ export const ExportModal = ({
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 text-text-dark rounded-xl hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-text-dark dark:text-white dark:bg-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
             disabled={isExporting}
           >
             Cancel

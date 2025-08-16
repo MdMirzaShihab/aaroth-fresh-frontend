@@ -85,15 +85,6 @@ const LoginForm = () => {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-shadow-soft transition-all duration-500 p-8 border border-white/50">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-medium text-text-dark/80 mb-4">
-            Welcome Back
-          </h2>
-          <p className="text-text-muted leading-relaxed">
-            Sign in to your Aaroth Fresh account
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Phone Number Field */}
           <div className="space-y-3">
