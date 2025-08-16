@@ -6,7 +6,7 @@ import {
   validateImageFile,
   getPlaceholderImageUrl,
   batchUploadImages,
-  TRANSFORMATION_PRESETS
+  TRANSFORMATION_PRESETS,
 } from '../cloudinaryService';
 
 // Mock fetch globally
@@ -25,17 +25,18 @@ describe('cloudinaryService', () => {
     it('uploads image successfully', async () => {
       const mockResponse = {
         public_id: 'test-image-123',
-        secure_url: 'https://res.cloudinary.com/test/image/upload/test-image-123.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/test-image-123.jpg',
         width: 800,
         height: 600,
         format: 'jpg',
         bytes: 102400,
-        created_at: '2024-01-15T10:00:00Z'
+        created_at: '2024-01-15T10:00:00Z',
       };
 
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       });
 
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
@@ -45,21 +46,24 @@ describe('cloudinaryService', () => {
       expect(result.data).toEqual({
         id: 'test-image-123',
         url: 'https://res.cloudinary.com/test/image/upload/test-image-123.jpg',
-        originalUrl: 'https://res.cloudinary.com/test/image/upload/test-image-123.jpg',
-        thumbnailUrl: 'https://res.cloudinary.com/test/image/upload/w_300,h_300,c_fill/test-image-123.jpg',
-        mediumUrl: 'https://res.cloudinary.com/test/image/upload/w_800,h_800,c_fit/test-image-123.jpg',
+        originalUrl:
+          'https://res.cloudinary.com/test/image/upload/test-image-123.jpg',
+        thumbnailUrl:
+          'https://res.cloudinary.com/test/image/upload/w_300,h_300,c_fill/test-image-123.jpg',
+        mediumUrl:
+          'https://res.cloudinary.com/test/image/upload/w_800,h_800,c_fit/test-image-123.jpg',
         width: 800,
         height: 600,
         format: 'jpg',
         size: 102400,
-        createdAt: '2024-01-15T10:00:00Z'
+        createdAt: '2024-01-15T10:00:00Z',
       });
 
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining('api.cloudinary.com'),
         expect.objectContaining({
           method: 'POST',
-          body: expect.any(FormData)
+          body: expect.any(FormData),
         })
       );
     });
@@ -67,7 +71,7 @@ describe('cloudinaryService', () => {
     it('handles upload failure', async () => {
       fetch.mockResolvedValue({
         ok: false,
-        statusText: 'Bad Request'
+        statusText: 'Bad Request',
       });
 
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
@@ -90,24 +94,25 @@ describe('cloudinaryService', () => {
     it('applies custom options', async () => {
       const mockResponse = {
         public_id: 'custom-image',
-        secure_url: 'https://res.cloudinary.com/test/image/upload/custom-image.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/custom-image.jpg',
         width: 400,
         height: 400,
         format: 'jpg',
         bytes: 51200,
-        created_at: '2024-01-15T10:00:00Z'
+        created_at: '2024-01-15T10:00:00Z',
       };
 
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       });
 
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
       const options = {
         folder: 'custom-folder',
         publicId: 'custom-id',
-        transformation: { width: 400, height: 400 }
+        transformation: { width: 400, height: 400 },
       };
 
       await uploadImageToCloudinary(file, options);
@@ -117,7 +122,7 @@ describe('cloudinaryService', () => {
         expect.stringContaining('api.cloudinary.com'),
         expect.objectContaining({
           method: 'POST',
-          body: expect.any(FormData)
+          body: expect.any(FormData),
         })
       );
     });
@@ -130,7 +135,7 @@ describe('cloudinaryService', () => {
         width: 800,
         height: 600,
         crop: 'fill',
-        quality: 80
+        quality: 80,
       };
 
       const url = getOptimizedImageUrl(publicId, transformations);
@@ -201,7 +206,9 @@ describe('cloudinaryService', () => {
       const result = validateImageFile(file);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Invalid format. Allowed formats: jpeg, jpg, png, webp');
+      expect(result.errors).toContain(
+        'Invalid format. Allowed formats: jpeg, jpg, png, webp'
+      );
     });
 
     it('rejects oversized files', () => {
@@ -221,7 +228,7 @@ describe('cloudinaryService', () => {
 
       const constraints = {
         maxSizeInMB: 1,
-        allowedFormats: ['png']
+        allowedFormats: ['png'],
       };
 
       const result = validateImageFile(file, constraints);
@@ -253,22 +260,23 @@ describe('cloudinaryService', () => {
     it('uploads multiple images successfully', async () => {
       const mockResponse = {
         public_id: 'test-image',
-        secure_url: 'https://res.cloudinary.com/test/image/upload/test-image.jpg',
+        secure_url:
+          'https://res.cloudinary.com/test/image/upload/test-image.jpg',
         width: 800,
         height: 600,
         format: 'jpg',
         bytes: 102400,
-        created_at: '2024-01-15T10:00:00Z'
+        created_at: '2024-01-15T10:00:00Z',
       };
 
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       });
 
       const files = [
         new File(['test1'], 'test1.jpg', { type: 'image/jpeg' }),
-        new File(['test2'], 'test2.jpg', { type: 'image/jpeg' })
+        new File(['test2'], 'test2.jpg', { type: 'image/jpeg' }),
       ];
 
       const mockProgress = vi.fn();
@@ -281,13 +289,13 @@ describe('cloudinaryService', () => {
       expect(mockProgress).toHaveBeenCalledWith({
         completed: 2,
         total: 2,
-        percentage: 100
+        percentage: 100,
       });
     });
 
     it('handles validation failures', async () => {
       const files = [
-        new File(['test'], 'test.pdf', { type: 'application/pdf' }) // Invalid format
+        new File(['test'], 'test.pdf', { type: 'application/pdf' }), // Invalid format
       ];
 
       const results = await batchUploadImages(files);
@@ -302,21 +310,22 @@ describe('cloudinaryService', () => {
       fetch
         .mockResolvedValueOnce({
           ok: true,
-          json: () => Promise.resolve({
-            public_id: 'success',
-            secure_url: 'https://example.com/success.jpg',
-            width: 800,
-            height: 600,
-            format: 'jpg',
-            bytes: 102400,
-            created_at: '2024-01-15T10:00:00Z'
-          })
+          json: () =>
+            Promise.resolve({
+              public_id: 'success',
+              secure_url: 'https://example.com/success.jpg',
+              width: 800,
+              height: 600,
+              format: 'jpg',
+              bytes: 102400,
+              created_at: '2024-01-15T10:00:00Z',
+            }),
         })
         .mockRejectedValueOnce(new Error('Upload failed'));
 
       const files = [
         new File(['test1'], 'test1.jpg', { type: 'image/jpeg' }),
-        new File(['test2'], 'test2.jpg', { type: 'image/jpeg' })
+        new File(['test2'], 'test2.jpg', { type: 'image/jpeg' }),
       ];
 
       const results = await batchUploadImages(files);
@@ -340,7 +349,7 @@ describe('cloudinaryService', () => {
 
     it('has valid transformation parameters', () => {
       const preset = TRANSFORMATION_PRESETS.productThumbnail;
-      
+
       expect(preset).toHaveProperty('width');
       expect(preset).toHaveProperty('height');
       expect(preset).toHaveProperty('crop');
@@ -352,7 +361,7 @@ describe('cloudinaryService', () => {
     it('handles JSON parsing errors', async () => {
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.reject(new Error('Invalid JSON'))
+        json: () => Promise.reject(new Error('Invalid JSON')),
       });
 
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
@@ -365,7 +374,7 @@ describe('cloudinaryService', () => {
     it('handles missing response data gracefully', async () => {
       fetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({}) // Empty response object
+        json: () => Promise.resolve({}), // Empty response object
       });
 
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
@@ -397,7 +406,9 @@ describe('cloudinaryService', () => {
       const result = validateImageFile(file);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Invalid format. Allowed formats: jpeg, jpg, png, webp');
+      expect(result.errors).toContain(
+        'Invalid format. Allowed formats: jpeg, jpg, png, webp'
+      );
     });
   });
 });

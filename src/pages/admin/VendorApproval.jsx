@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
-import { 
-  useGetAdminUsersQuery, 
+import {
+  UserCheck,
+  UserX,
+  Clock,
+  Phone,
+  Calendar,
+  MapPin,
+  Store,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Eye,
+} from 'lucide-react';
+import {
+  useGetAdminUsersQuery,
   useApproveUserMutation,
-  useDeleteAdminUserMutation 
+  useDeleteAdminUserMutation,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -11,19 +24,6 @@ import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import EmptyState from '../../components/ui/EmptyState';
-import { 
-  UserCheck, 
-  UserX, 
-  Clock, 
-  Phone, 
-  Calendar,
-  MapPin,
-  Store,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Eye
-} from 'lucide-react';
 
 const VendorApproval = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,22 +31,22 @@ const VendorApproval = () => {
   const [selectedVendors, setSelectedVendors] = useState(new Set());
   const [confirmAction, setConfirmAction] = useState(null);
   const [viewingVendor, setViewingVendor] = useState(null);
-  
+
   const itemsPerPage = 12;
 
   // Query for pending vendor approvals
-  const { 
-    data: vendorsData, 
-    isLoading, 
+  const {
+    data: vendorsData,
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useGetAdminUsersQuery({
     page: currentPage,
     limit: itemsPerPage,
     search: searchTerm || undefined,
     role: 'vendor',
     status: 'pending',
-    isApproved: false
+    isApproved: false,
   });
 
   const [approveUser] = useApproveUserMutation();
@@ -60,7 +60,7 @@ const VendorApproval = () => {
     try {
       await approveUser({ id: vendorId, isApproved, reason }).unwrap();
       setConfirmAction(null);
-      setSelectedVendors(prev => {
+      setSelectedVendors((prev) => {
         const newSet = new Set(prev);
         newSet.delete(vendorId);
         return newSet;
@@ -73,7 +73,7 @@ const VendorApproval = () => {
   // Handle bulk approvals
   const handleBulkApproval = async (isApproved) => {
     try {
-      const promises = Array.from(selectedVendors).map(vendorId =>
+      const promises = Array.from(selectedVendors).map((vendorId) =>
         approveUser({ id: vendorId, isApproved }).unwrap()
       );
       await Promise.all(promises);
@@ -89,12 +89,12 @@ const VendorApproval = () => {
     if (selectedVendors.size === vendors.length) {
       setSelectedVendors(new Set());
     } else {
-      setSelectedVendors(new Set(vendors.map(vendor => vendor.id)));
+      setSelectedVendors(new Set(vendors.map((vendor) => vendor.id)));
     }
   };
 
   const handleSelectVendor = (vendorId) => {
-    setSelectedVendors(prev => {
+    setSelectedVendors((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(vendorId)) {
         newSet.delete(vendorId);
@@ -110,7 +110,7 @@ const VendorApproval = () => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 24) {
       return `${diffInHours}h ago`;
     } else {
@@ -134,8 +134,8 @@ const VendorApproval = () => {
         title="Failed to load vendor applications"
         description="There was an error loading vendor data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -170,13 +170,15 @@ const VendorApproval = () => {
             </span>
             <Button
               variant="outline"
-              onClick={() => setConfirmAction({
-                type: 'bulk-approve',
-                title: 'Bulk Approve Vendors',
-                message: `Are you sure you want to approve ${selectedVendors.size} vendors? They will gain access to create listings.`,
-                confirmText: 'Approve All',
-                onConfirm: () => handleBulkApproval(true)
-              })}
+              onClick={() =>
+                setConfirmAction({
+                  type: 'bulk-approve',
+                  title: 'Bulk Approve Vendors',
+                  message: `Are you sure you want to approve ${selectedVendors.size} vendors? They will gain access to create listings.`,
+                  confirmText: 'Approve All',
+                  onConfirm: () => handleBulkApproval(true),
+                })
+              }
               className="flex items-center gap-2 text-bottle-green border-bottle-green hover:bg-bottle-green hover:text-white"
             >
               <UserCheck className="w-4 h-4" />
@@ -184,14 +186,16 @@ const VendorApproval = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={() => setConfirmAction({
-                type: 'bulk-reject',
-                title: 'Bulk Reject Vendors',
-                message: `Are you sure you want to reject ${selectedVendors.size} vendors? This action cannot be undone.`,
-                confirmText: 'Reject All',
-                isDangerous: true,
-                onConfirm: () => handleBulkApproval(false)
-              })}
+              onClick={() =>
+                setConfirmAction({
+                  type: 'bulk-reject',
+                  title: 'Bulk Reject Vendors',
+                  message: `Are you sure you want to reject ${selectedVendors.size} vendors? This action cannot be undone.`,
+                  confirmText: 'Reject All',
+                  isDangerous: true,
+                  onConfirm: () => handleBulkApproval(false),
+                })
+              }
               className="flex items-center gap-2 text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"
             >
               <UserX className="w-4 h-4" />
@@ -212,13 +216,16 @@ const VendorApproval = () => {
               className="w-full"
             />
           </div>
-          
+
           {vendors.length > 0 && (
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={selectedVendors.size === vendors.length && vendors.length > 0}
+                  checked={
+                    selectedVendors.size === vendors.length &&
+                    vendors.length > 0
+                  }
                   onChange={handleSelectAll}
                   className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
                 />
@@ -243,8 +250,8 @@ const VendorApproval = () => {
               <Card
                 key={vendor.id}
                 className={`p-6 hover:shadow-lg transition-all duration-300 ${
-                  selectedVendors.has(vendor.id) 
-                    ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' 
+                  selectedVendors.has(vendor.id)
+                    ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5'
                     : ''
                 }`}
               >
@@ -323,32 +330,36 @@ const VendorApproval = () => {
                     <Eye className="w-4 h-4" />
                     View
                   </button>
-                  
+
                   <button
-                    onClick={() => setConfirmAction({
-                      type: 'approve',
-                      vendor,
-                      title: 'Approve Vendor',
-                      message: `Approve ${vendor.name || vendor.phone}? They will be able to create and manage listings.`,
-                      confirmText: 'Approve',
-                      onConfirm: () => handleApproval(vendor.id, true)
-                    })}
+                    onClick={() =>
+                      setConfirmAction({
+                        type: 'approve',
+                        vendor,
+                        title: 'Approve Vendor',
+                        message: `Approve ${vendor.name || vendor.phone}? They will be able to create and manage listings.`,
+                        confirmText: 'Approve',
+                        onConfirm: () => handleApproval(vendor.id, true),
+                      })
+                    }
                     className="flex-1 px-3 py-2 text-sm bg-bottle-green text-white hover:bg-bottle-green/90 rounded-xl transition-colors min-h-[36px] flex items-center justify-center gap-1"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     Approve
                   </button>
-                  
+
                   <button
-                    onClick={() => setConfirmAction({
-                      type: 'reject',
-                      vendor,
-                      title: 'Reject Vendor',
-                      message: `Reject ${vendor.name || vendor.phone}? This will deny their application.`,
-                      confirmText: 'Reject',
-                      isDangerous: true,
-                      onConfirm: () => handleApproval(vendor.id, false)
-                    })}
+                    onClick={() =>
+                      setConfirmAction({
+                        type: 'reject',
+                        vendor,
+                        title: 'Reject Vendor',
+                        message: `Reject ${vendor.name || vendor.phone}? This will deny their application.`,
+                        confirmText: 'Reject',
+                        isDangerous: true,
+                        onConfirm: () => handleApproval(vendor.id, false),
+                      })
+                    }
                     className="px-3 py-2 text-sm text-tomato-red hover:bg-tomato-red hover:text-white border border-tomato-red rounded-xl transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                   >
                     <XCircle className="w-4 h-4" />
@@ -376,7 +387,7 @@ const VendorApproval = () => {
       {/* Confirmation Dialog */}
       {confirmAction && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => setConfirmAction(null)}
           title={confirmAction.title}
           message={confirmAction.message}
@@ -389,7 +400,10 @@ const VendorApproval = () => {
       {/* Vendor Details Modal */}
       {viewingVendor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setViewingVendor(null)} />
+          <div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setViewingVendor(null)}
+          />
           <Card className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
@@ -407,16 +421,22 @@ const VendorApproval = () => {
               <div className="space-y-6">
                 {/* Basic Info */}
                 <div>
-                  <h3 className="font-medium text-text-dark dark:text-white mb-3">Basic Information</h3>
+                  <h3 className="font-medium text-text-dark dark:text-white mb-3">
+                    Basic Information
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm text-text-muted">Full Name</label>
+                      <label className="text-sm text-text-muted">
+                        Full Name
+                      </label>
                       <p className="font-medium text-text-dark dark:text-white">
                         {viewingVendor.name || 'Not provided'}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm text-text-muted">Phone Number</label>
+                      <label className="text-sm text-text-muted">
+                        Phone Number
+                      </label>
                       <p className="font-medium text-text-dark dark:text-white">
                         {viewingVendor.phone}
                       </p>
@@ -426,16 +446,22 @@ const VendorApproval = () => {
 
                 {/* Business Info */}
                 <div>
-                  <h3 className="font-medium text-text-dark dark:text-white mb-3">Business Information</h3>
+                  <h3 className="font-medium text-text-dark dark:text-white mb-3">
+                    Business Information
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm text-text-muted">Business Name</label>
+                      <label className="text-sm text-text-muted">
+                        Business Name
+                      </label>
                       <p className="font-medium text-text-dark dark:text-white">
                         {viewingVendor.businessName || 'Not provided'}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm text-text-muted">Business Type</label>
+                      <label className="text-sm text-text-muted">
+                        Business Type
+                      </label>
                       <p className="font-medium text-text-dark dark:text-white">
                         {viewingVendor.businessType || 'Not provided'}
                       </p>
@@ -445,9 +471,14 @@ const VendorApproval = () => {
 
                 {/* Application Timeline */}
                 <div>
-                  <h3 className="font-medium text-text-dark dark:text-white mb-3">Application Timeline</h3>
+                  <h3 className="font-medium text-text-dark dark:text-white mb-3">
+                    Application Timeline
+                  </h3>
                   <div className="text-sm text-text-muted">
-                    <p>Submitted: {new Date(viewingVendor.createdAt).toLocaleString()}</p>
+                    <p>
+                      Submitted:{' '}
+                      {new Date(viewingVendor.createdAt).toLocaleString()}
+                    </p>
                     <p>Time since: {getTimeSince(viewingVendor.createdAt)}</p>
                   </div>
                 </div>
@@ -466,7 +497,7 @@ const VendorApproval = () => {
                       onConfirm: () => {
                         handleApproval(viewingVendor.id, true);
                         setViewingVendor(null);
-                      }
+                      },
                     });
                   }}
                   className="flex-1"
@@ -487,7 +518,7 @@ const VendorApproval = () => {
                       onConfirm: () => {
                         handleApproval(viewingVendor.id, false);
                         setViewingVendor(null);
-                      }
+                      },
                     });
                   }}
                   className="text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"

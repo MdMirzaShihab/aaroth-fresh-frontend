@@ -7,14 +7,10 @@
 export { default as Button } from './Button';
 export { Input } from './Input';
 export { default as Modal } from './Modal';
-export { 
-  Card, 
-  ProductCard, 
-  StatCard 
-} from './Card';
+export { Card, ProductCard, StatCard } from './Card';
 
 // Loading Components
-export { 
+export {
   default as LoadingSpinner,
   DotsSpinner,
   PulseSpinner,
@@ -26,11 +22,11 @@ export {
   CardSkeleton,
   SkeletonTable,
   ProgressBar,
-  FloatingLoader
+  FloatingLoader,
 } from './LoadingSpinner';
 
 // Form Components
-export { 
+export {
   default as FormField,
   ErrorMessage,
   SuccessMessage,
@@ -39,16 +35,13 @@ export {
   FormActions,
   HelpText,
   FormSection,
-  FieldArray
+  FieldArray,
 } from './FormField';
 
-export { 
-  default as FileUpload,
-  CompactFileUpload
-} from './FileUpload';
+export { default as FileUpload, CompactFileUpload } from './FileUpload';
 
 // Data Display Components
-export { 
+export {
   Table,
   TableHeader,
   TableBody,
@@ -58,19 +51,19 @@ export {
   TableCell,
   DataTable,
   MobileTable,
-  TableSkeleton
+  TableSkeleton,
 } from './Table';
 
-export { 
+export {
   default as Pagination,
   SimplePagination,
   MobilePagination,
   CompactPagination,
   LoadMore,
-  InfiniteScrollTrigger
+  InfiniteScrollTrigger,
 } from './Pagination';
 
-export { 
+export {
   default as EmptyState,
   NoSearchResults,
   EmptyCart,
@@ -82,16 +75,13 @@ export {
   ProductsEmptyState,
   OrdersEmptyState,
   ErrorEmptyState,
-  CreateEmptyState
+  CreateEmptyState,
 } from './EmptyState';
 
-export { 
-  default as SearchBar,
-  CompactSearchBar
-} from './SearchBar';
+export { default as SearchBar, CompactSearchBar } from './SearchBar';
 
 // Feedback Components
-export { 
+export {
   Toast,
   ToastContainer,
   SuccessToast,
@@ -100,10 +90,10 @@ export {
   InfoToast,
   LoadingToast,
   toast,
-  promiseToast
+  promiseToast,
 } from './Toast';
 
-export { 
+export {
   default as ConfirmDialog,
   DeleteConfirmDialog,
   SaveConfirmDialog,
@@ -112,10 +102,10 @@ export {
   ResetConfirmDialog,
   PublishConfirmDialog,
   useConfirmDialog,
-  useDeleteConfirm
+  useDeleteConfirm,
 } from './ConfirmDialog';
 
-export { 
+export {
   default as AlertBanner,
   MaintenanceBanner,
   UpdateBanner,
@@ -123,11 +113,11 @@ export {
   OfflineBanner,
   CookieBanner,
   FeatureBanner,
-  useAlertBanner
+  useAlertBanner,
 } from './AlertBanner';
 
 // Navigation Components
-export { 
+export {
   Tabs,
   TabsList,
   TabsTrigger,
@@ -137,10 +127,10 @@ export {
   SettingsTabs,
   CardTabs,
   AnimatedTabsContent,
-  useTabs
+  useTabs,
 } from './Tabs';
 
-export { 
+export {
   Dropdown,
   DropdownTrigger,
   DropdownContent,
@@ -152,7 +142,7 @@ export {
   ProfileDropdown,
   FilterDropdown,
   useDropdown,
-  useSelectDropdown
+  useSelectDropdown,
 } from './Dropdown';
 
 // Utility exports
@@ -285,36 +275,36 @@ export const DesignSystem = {
   // Color variants for consistent theming
   variants: {
     success: 'mint-fresh',
-    error: 'tomato-red', 
+    error: 'tomato-red',
     warning: 'earthy-yellow',
     info: 'blue',
     primary: 'bottle-green',
     secondary: 'earthy-brown',
     default: 'text-dark',
   },
-  
+
   // Common sizes
   sizes: {
     xs: 'extra small',
-    sm: 'small', 
+    sm: 'small',
     default: 'default',
     md: 'medium',
     lg: 'large',
     xl: 'extra large',
     '2xl': 'double extra large',
   },
-  
+
   // Touch targets (mobile-first)
   touchTargets: {
     minimum: '44px', // Mobile minimum
     recommended: '48px', // Comfortable touch
     large: '56px', // Easy interaction
   },
-  
+
   // Animation durations
   animations: {
     instant: '100ms',
-    fast: '200ms', 
+    fast: '200ms',
     normal: '300ms',
     slow: '500ms',
     cinematic: '800ms',
@@ -333,7 +323,7 @@ export const A11y = {
     document.body.appendChild(announcement);
     setTimeout(() => document.body.removeChild(announcement), 1000);
   },
-  
+
   // Focus management
   trapFocus: (element) => {
     const focusableElements = element.querySelectorAll(
@@ -341,7 +331,7 @@ export const A11y = {
     );
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
-    
+
     return {
       focusFirst: () => firstElement?.focus(),
       focusLast: () => lastElement?.focus(),
@@ -350,13 +340,13 @@ export const A11y = {
   },
 };
 
-// Performance utilities  
+// Performance utilities
 export const Performance = {
   // Lazy loading wrapper
   lazy: (importFunc, fallback = null) => {
     return React.lazy(importFunc);
   },
-  
+
   // Debounce utility
   debounce: (func, wait) => {
     let timeout;
@@ -369,15 +359,15 @@ export const Performance = {
       timeout = setTimeout(later, wait);
     };
   },
-  
-  // Throttle utility  
+
+  // Throttle utility
   throttle: (func, limit) => {
     let inThrottle;
-    return function(...args) {
+    return function (...args) {
       if (!inThrottle) {
         func.apply(this, args);
         inThrottle = true;
-        setTimeout(() => inThrottle = false, limit);
+        setTimeout(() => (inThrottle = false), limit);
       }
     };
   },

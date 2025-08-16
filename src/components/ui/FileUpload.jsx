@@ -23,11 +23,11 @@ const FileUpload = ({
     if (file.size > maxSize) {
       return `File size must be less than ${(maxSize / 1024 / 1024).toFixed(1)}MB`;
     }
-    
+
     if (accept !== '*' && !file.type.match(accept.replace('*', '.*'))) {
       return 'File type not supported';
     }
-    
+
     return null;
   };
 
@@ -35,15 +35,19 @@ const FileUpload = ({
     const validFiles = [];
     let errorMessage = '';
 
-    for (let i = 0; i < Math.min(newFiles.length, maxFiles - files.length); i++) {
+    for (
+      let i = 0;
+      i < Math.min(newFiles.length, maxFiles - files.length);
+      i++
+    ) {
       const file = newFiles[i];
       const validation = validateFile(file);
-      
+
       if (validation) {
         errorMessage = validation;
         break;
       }
-      
+
       validFiles.push(file);
     }
 
@@ -55,7 +59,7 @@ const FileUpload = ({
     const updatedFiles = multiple ? [...files, ...validFiles] : validFiles;
     setFiles(updatedFiles);
     setError('');
-    
+
     if (onFileSelect) {
       onFileSelect(multiple ? updatedFiles : validFiles[0]);
     }
@@ -71,16 +75,19 @@ const FileUpload = ({
     }
   }, []);
 
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (disabled) return;
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
 
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    handleFiles(droppedFiles);
-  }, [disabled, files.length, maxFiles]);
+      if (disabled) return;
+
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      handleFiles(droppedFiles);
+    },
+    [disabled, files.length, maxFiles]
+  );
 
   const handleFileInput = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -90,7 +97,7 @@ const FileUpload = ({
   const removeFile = (index) => {
     const updatedFiles = files.filter((_, i) => i !== index);
     setFiles(updatedFiles);
-    
+
     if (onFileSelect) {
       onFileSelect(multiple ? updatedFiles : null);
     }
@@ -109,7 +116,8 @@ const FileUpload = ({
         className={cn(
           'relative border-2 border-dashed rounded-3xl p-8 text-center transition-all duration-300 cursor-pointer min-h-[200px] flex flex-col items-center justify-center',
           dragActive && 'border-bottle-green bg-bottle-green/5 scale-[1.02]',
-          !dragActive && 'border-gray-300 hover:border-bottle-green hover:bg-bottle-green/5',
+          !dragActive &&
+            'border-gray-300 hover:border-bottle-green hover:bg-bottle-green/5',
           disabled && 'opacity-50 cursor-not-allowed',
           error && 'border-tomato-red/50 bg-tomato-red/5'
         )}
@@ -131,10 +139,14 @@ const FileUpload = ({
 
         {children || (
           <>
-            <div className={cn(
-              'w-16 h-16 mb-4 rounded-2xl flex items-center justify-center transition-colors duration-300',
-              dragActive ? 'bg-bottle-green text-white' : 'bg-earthy-beige/30 text-text-muted'
-            )}>
+            <div
+              className={cn(
+                'w-16 h-16 mb-4 rounded-2xl flex items-center justify-center transition-colors duration-300',
+                dragActive
+                  ? 'bg-bottle-green text-white'
+                  : 'bg-earthy-beige/30 text-text-muted'
+              )}
+            >
               <Upload className="w-8 h-8" />
             </div>
 
@@ -167,7 +179,7 @@ const FileUpload = ({
       {files.length > 0 && (
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-text-dark">Selected Files</h4>
-          
+
           <div className="space-y-2">
             {files.map((file, index) => (
               <FilePreview
@@ -195,7 +207,7 @@ const FilePreview = ({ file, onRemove, disabled }) => {
       reader.onload = (e) => setPreview(e.target.result);
       reader.readAsDataURL(file);
     }
-    
+
     return () => setPreview(null);
   }, [file]);
 
@@ -233,9 +245,7 @@ const FilePreview = ({ file, onRemove, disabled }) => {
         <p className="text-sm font-medium text-text-dark truncate">
           {file.name}
         </p>
-        <p className="text-xs text-text-muted">
-          {formatFileSize(file.size)}
-        </p>
+        <p className="text-xs text-text-muted">{formatFileSize(file.size)}</p>
       </div>
 
       {/* Remove Button */}
@@ -271,11 +281,11 @@ export const CompactFileUpload = ({
     if (file.size > maxSize) {
       return `File size must be less than ${(maxSize / 1024 / 1024).toFixed(1)}MB`;
     }
-    
+
     if (accept !== '*' && !file.type.match(accept.replace('*', '.*'))) {
       return 'File type not supported';
     }
-    
+
     return null;
   };
 
@@ -291,7 +301,7 @@ export const CompactFileUpload = ({
 
     setFile(selectedFile);
     setError('');
-    
+
     if (onFileSelect) {
       onFileSelect(selectedFile);
     }
@@ -319,7 +329,7 @@ export const CompactFileUpload = ({
           className="hidden"
           disabled={disabled}
         />
-        
+
         <Button
           variant="outline"
           onClick={() => fileInputRef.current?.click()}

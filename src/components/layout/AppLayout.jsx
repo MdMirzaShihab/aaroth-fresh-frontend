@@ -12,7 +12,7 @@ const AppLayout = ({ children }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { isAuthenticated } = useSelector(selectAuth);
-  
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Initialize theme on component mount
@@ -48,13 +48,18 @@ const AppLayout = ({ children }) => {
   };
 
   // Check if current route should hide navigation (login, register, etc.)
-  const hideNavigation = ['/login', '/register', '/forgot-password', '/reset-password'].includes(location.pathname);
+  const hideNavigation = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+  ].includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-background dark:bg-gray-900 transition-colors duration-300">
       {/* Header */}
       {!hideNavigation && (
-        <Header 
+        <Header
           onMenuToggle={handleSidebarToggle}
           isSidebarOpen={isSidebarOpen}
         />
@@ -63,17 +68,14 @@ const AppLayout = ({ children }) => {
       <div className="flex">
         {/* Sidebar */}
         {!hideNavigation && isAuthenticated && (
-          <Sidebar 
-            isOpen={isSidebarOpen}
-            onClose={handleSidebarClose}
-          />
+          <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarClose} />
         )}
 
         {/* Main Content */}
-        <main 
+        <main
           className={`flex-1 transition-all duration-300 ${
-            !hideNavigation 
-              ? isAuthenticated 
+            !hideNavigation
+              ? isAuthenticated
                 ? 'pt-16 lg:pt-16 pb-20 lg:pb-6 lg:ml-80' // Account for mobile nav height
                 : 'pt-16'
               : ''
@@ -83,11 +85,9 @@ const AppLayout = ({ children }) => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {/* Breadcrumb */}
             {!hideNavigation && isAuthenticated && <Breadcrumb />}
-            
+
             {/* Page Content */}
-            <div className="animate-fade-in">
-              {children || <Outlet />}
-            </div>
+            <div className="animate-fade-in">{children || <Outlet />}</div>
           </div>
         </main>
       </div>

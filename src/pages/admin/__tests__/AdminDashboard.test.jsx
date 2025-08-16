@@ -9,7 +9,7 @@ vi.mock('../../../store/slices/apiSlice', async () => {
   const actual = await vi.importActual('../../../store/slices/apiSlice');
   return {
     ...actual,
-    useGetAdminDashboardQuery: vi.fn()
+    useGetAdminDashboardQuery: vi.fn(),
   };
 });
 
@@ -31,19 +31,19 @@ const mockDashboardData = {
     systemHealth: {
       apiHealth: 'healthy',
       databaseHealth: 'healthy',
-      storageHealth: 'warning'
+      storageHealth: 'warning',
     },
     recentActivity: [
       {
         description: 'New vendor approved: Fresh Greens Co.',
-        timestamp: '2024-01-15T10:30:00Z'
+        timestamp: '2024-01-15T10:30:00Z',
       },
       {
         description: '15 new orders received',
-        timestamp: '2024-01-15T09:15:00Z'
-      }
-    ]
-  }
+        timestamp: '2024-01-15T09:15:00Z',
+      },
+    ],
+  },
 };
 
 describe('AdminDashboard', () => {
@@ -52,12 +52,12 @@ describe('AdminDashboard', () => {
       data: mockDashboardData,
       isLoading: false,
       error: null,
-      refetch: vi.fn()
+      refetch: vi.fn(),
     };
 
     apiSlice.useGetAdminDashboardQuery.mockReturnValue({
       ...defaultQueryResult,
-      ...queryResult
+      ...queryResult,
     });
 
     return renderWithProviders(<AdminDashboard />, {
@@ -68,12 +68,12 @@ describe('AdminDashboard', () => {
             id: '1',
             role: 'admin',
             name: 'Admin User',
-            phone: '+1234567890'
+            phone: '+1234567890',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -85,12 +85,14 @@ describe('AdminDashboard', () => {
     renderDashboard();
 
     expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Monitor and manage your Aaroth Fresh platform')).toBeInTheDocument();
+    expect(
+      screen.getByText('Monitor and manage your Aaroth Fresh platform')
+    ).toBeInTheDocument();
   });
 
   it('displays loading state initially', () => {
     renderDashboard({ isLoading: true });
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
@@ -116,8 +118,8 @@ describe('AdminDashboard', () => {
       ...mockDashboardData,
       data: {
         ...mockDashboardData.data,
-        pendingApprovals: 15 // Above threshold
-      }
+        pendingApprovals: 15, // Above threshold
+      },
     };
 
     renderDashboard({ data: highApprovalData });
@@ -144,7 +146,9 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Recent Activity')).toBeInTheDocument();
-      expect(screen.getByText('New vendor approved: Fresh Greens Co.')).toBeInTheDocument();
+      expect(
+        screen.getByText('New vendor approved: Fresh Greens Co.')
+      ).toBeInTheDocument();
       expect(screen.getByText('15 new orders received')).toBeInTheDocument();
     });
   });
@@ -159,13 +163,17 @@ describe('AdminDashboard', () => {
   });
 
   it('handles API error gracefully', async () => {
-    renderDashboard({ 
-      error: { status: 500, data: { error: 'Internal server error' } }
+    renderDashboard({
+      error: { status: 500, data: { error: 'Internal server error' } },
     });
 
     await waitFor(() => {
       expect(screen.getByText('Failed to load dashboard')).toBeInTheDocument();
-      expect(screen.getByText('There was an error loading the dashboard data. Please try again.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'There was an error loading the dashboard data. Please try again.'
+        )
+      ).toBeInTheDocument();
       expect(screen.getByText('Retry')).toBeInTheDocument();
     });
   });
@@ -184,8 +192,10 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       // Check for proper heading hierarchy
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Admin Dashboard');
-      
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        'Admin Dashboard'
+      );
+
       // Check for accessible metric cards
       const metricsRegion = screen.getByText('Total Users').closest('div');
       expect(metricsRegion).toBeInTheDocument();

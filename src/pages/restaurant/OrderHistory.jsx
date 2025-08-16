@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Search, 
-  Filter, 
-  Calendar, 
+import {
+  Search,
+  Filter,
+  Calendar,
   Download,
   Eye,
   Clock,
@@ -13,7 +13,7 @@ import {
   Truck,
   ShoppingCart,
   MapPin,
-  Repeat
+  Repeat,
 } from 'lucide-react';
 import { useGetRestaurantOrdersQuery } from '../../store/slices/apiSlice';
 import { formatCurrency, formatDate, timeAgo, debounce } from '../../utils';
@@ -29,12 +29,17 @@ const OrderHistory = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   // API query
-  const { data: orders = [], isLoading, error, refetch } = useGetRestaurantOrdersQuery({
+  const {
+    data: orders = [],
+    isLoading,
+    error,
+    refetch,
+  } = useGetRestaurantOrdersQuery({
     search: searchQuery,
     status: statusFilter,
     dateRange,
     sortBy,
-    limit: 100
+    limit: 100,
   });
 
   // Debounced search
@@ -52,33 +57,33 @@ const OrderHistory = () => {
       pending: {
         color: 'bg-amber-100 text-amber-800 border-amber-200',
         icon: Clock,
-        label: 'Pending'
+        label: 'Pending',
       },
       confirmed: {
         color: 'bg-blue-100 text-blue-800 border-blue-200',
         icon: CheckCircle,
-        label: 'Confirmed'
+        label: 'Confirmed',
       },
       processing: {
         color: 'bg-purple-100 text-purple-800 border-purple-200',
         icon: Package,
-        label: 'Processing'
+        label: 'Processing',
       },
       shipped: {
         color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
         icon: Truck,
-        label: 'Shipped'
+        label: 'Shipped',
       },
       delivered: {
         color: 'bg-mint-fresh/20 text-bottle-green border-mint-fresh/30',
         icon: CheckCircle,
-        label: 'Delivered'
+        label: 'Delivered',
       },
       cancelled: {
         color: 'bg-tomato-red/10 text-tomato-red border-tomato-red/30',
         icon: AlertCircle,
-        label: 'Cancelled'
-      }
+        label: 'Cancelled',
+      },
     };
     return configs[status] || configs.pending;
   };
@@ -100,7 +105,9 @@ const OrderHistory = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className={`px-3 py-1 rounded-xl text-sm font-medium border flex items-center gap-1 ${statusConfig.color}`}>
+            <span
+              className={`px-3 py-1 rounded-xl text-sm font-medium border flex items-center gap-1 ${statusConfig.color}`}
+            >
               <StatusIcon className="w-3 h-3" />
               {statusConfig.label}
             </span>
@@ -117,11 +124,14 @@ const OrderHistory = () => {
               {order.vendorsCount > 1 && `from ${order.vendorsCount} vendors`}
             </span>
           </div>
-          
+
           {order.items && order.items.length > 0 && (
             <div className="space-y-2">
               {order.items.slice(0, 3).map((item, index) => (
-                <div key={index} className="flex items-center justify-between text-sm">
+                <div
+                  key={index}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-text-muted truncate">
                     {item.quantity}x {item.productName}
                   </span>
@@ -161,7 +171,7 @@ const OrderHistory = () => {
               </p>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
             {order.status === 'delivered' && (
               <button className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium flex items-center gap-1 transition-colors">
@@ -194,7 +204,9 @@ const OrderHistory = () => {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => {/* Export functionality */}}
+            onClick={() => {
+              /* Export functionality */
+            }}
             className="bg-white border border-gray-200 text-text-dark px-4 py-2 rounded-2xl font-medium hover:border-bottle-green/30 transition-all duration-200 flex items-center gap-2 touch-target"
           >
             <Download className="w-4 h-4" />
@@ -269,8 +281,8 @@ const OrderHistory = () => {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`p-3 rounded-2xl border transition-all duration-200 touch-target ${
-                showFilters 
-                  ? 'bg-bottle-green text-white border-bottle-green' 
+                showFilters
+                  ? 'bg-bottle-green text-white border-bottle-green'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30'
               }`}
             >
@@ -287,19 +299,23 @@ const OrderHistory = () => {
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-text-dark">
-              {orders.filter(o => o.status === 'delivered').length}
+              {orders.filter((o) => o.status === 'delivered').length}
             </p>
             <p className="text-sm text-text-muted">Delivered</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-text-dark">
-              {formatCurrency(orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0))}
+              {formatCurrency(
+                orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0)
+              )}
             </p>
             <p className="text-sm text-text-muted">Total Spent</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-mint-fresh">
-              {formatCurrency(orders.reduce((sum, o) => sum + (o.savedAmount || 0), 0))}
+              {formatCurrency(
+                orders.reduce((sum, o) => sum + (o.savedAmount || 0), 0)
+              )}
             </p>
             <p className="text-sm text-text-muted">Total Saved</p>
           </div>
@@ -322,7 +338,7 @@ const OrderHistory = () => {
               <AlertCircle className="w-12 h-12 mx-auto" />
             </div>
             <p className="text-text-muted mb-4">Failed to load orders</p>
-            <button 
+            <button
               onClick={() => refetch()}
               className="bg-gradient-primary text-white px-6 py-2 rounded-xl hover:shadow-lg transition-all duration-200"
             >
@@ -343,10 +359,9 @@ const OrderHistory = () => {
                 No orders found
               </h3>
               <p className="text-text-muted mb-8">
-                {searchQuery || statusFilter || dateRange !== 'all' 
+                {searchQuery || statusFilter || dateRange !== 'all'
                   ? 'Try adjusting your search or filters'
-                  : "You haven't placed any orders yet"
-                }
+                  : "You haven't placed any orders yet"}
               </p>
               <button
                 onClick={() => navigate('/restaurant/browse')}

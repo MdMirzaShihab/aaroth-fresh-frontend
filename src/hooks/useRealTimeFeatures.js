@@ -21,11 +21,11 @@ export const useRealTimeFeatures = () => {
 
     try {
       performanceService.startMark('websocket-connection');
-      
+
       await websocketService.connect(token);
-      
+
       performanceService.endMark('websocket-connection');
-      
+
       // Join role-specific room
       if (user?.role) {
         websocketService.joinRoom(user.role);
@@ -36,25 +36,27 @@ export const useRealTimeFeatures = () => {
 
       connectionRef.current = {
         connected: true,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       console.log('Real-time features initialized successfully');
     } catch (error) {
       console.error('Failed to initialize real-time features:', error);
-      
-      dispatch(addNotification({
-        type: 'warning',
-        title: 'Connection Issue',
-        message: 'Some real-time features may not work properly. Retrying...',
-        duration: 5000
-      }));
+
+      dispatch(
+        addNotification({
+          type: 'warning',
+          title: 'Connection Issue',
+          message: 'Some real-time features may not work properly. Retrying...',
+          duration: 5000,
+        })
+      );
 
       // Retry connection after delay
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
       }
-      
+
       reconnectTimeoutRef.current = setTimeout(() => {
         initializeConnection();
       }, 5000);
@@ -66,9 +68,9 @@ export const useRealTimeFeatures = () => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
     }
-    
+
     websocketService.disconnect();
-    
+
     connectionRef.current = null;
   }, []);
 
@@ -92,14 +94,17 @@ export const useRealTimeFeatures = () => {
       } else {
         // Page is visible, ensure full connectivity
         console.log('Page visible - resuming full real-time activity');
-        if (isAuthenticated && !websocketService.getConnectionStatus().connected) {
+        if (
+          isAuthenticated &&
+          !websocketService.getConnectionStatus().connected
+        ) {
           initializeConnection();
         }
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -112,29 +117,33 @@ export const useRealTimeFeatures = () => {
       if (isAuthenticated) {
         initializeConnection();
       }
-      
-      dispatch(addNotification({
-        type: 'success',
-        title: 'Back Online',
-        message: 'Connection restored. Real-time features are now active.',
-        duration: 3000
-      }));
+
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: 'Back Online',
+          message: 'Connection restored. Real-time features are now active.',
+          duration: 3000,
+        })
+      );
     };
 
     const handleOffline = () => {
       console.log('Gone offline');
-      
-      dispatch(addNotification({
-        type: 'warning',
-        title: 'Connection Lost',
-        message: 'You are currently offline. Some features may be limited.',
-        duration: 5000
-      }));
+
+      dispatch(
+        addNotification({
+          type: 'warning',
+          title: 'Connection Lost',
+          message: 'You are currently offline. Some features may be limited.',
+          duration: 5000,
+        })
+      );
     };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -158,7 +167,7 @@ export const useRealTimeFeatures = () => {
   // Add custom event listener
   const addEventListener = useCallback((type, callback) => {
     websocketService.addEventListener(type, callback);
-    
+
     return () => {
       websocketService.removeEventListener(type, callback);
     };
@@ -186,18 +195,18 @@ export const useRealTimeFeatures = () => {
     // Connection management
     connectionStatus: getConnectionStatus(),
     reconnect,
-    
+
     // Order subscriptions
     subscribeToOrder,
     unsubscribeFromOrder,
-    
+
     // Custom events
     addEventListener,
     sendMessage,
-    
+
     // Utilities
     isConnected: connectionRef.current?.connected || false,
-    connectionTimestamp: connectionRef.current?.timestamp
+    connectionTimestamp: connectionRef.current?.timestamp,
   };
 };
 
@@ -260,7 +269,7 @@ export const usePerformanceMonitoring = () => {
     optimizeImage,
     prefetchResource,
     observeElement,
-    getPerformanceSummary
+    getPerformanceSummary,
   };
 };
 
@@ -279,12 +288,12 @@ export const useLazyImage = (src, options = {}) => {
     img.dataset.lazy = performanceService.optimizeImageUrl(src, {
       width,
       height,
-      quality
+      quality,
     });
 
     // Add loading placeholder
     img.style.backgroundColor = '#f3f4f6';
-    
+
     // Observe for lazy loading
     performanceService.observeElement(img);
 
@@ -299,5 +308,5 @@ export const useLazyImage = (src, options = {}) => {
 export default {
   useRealTimeFeatures,
   usePerformanceMonitoring,
-  useLazyImage
+  useLazyImage,
 };

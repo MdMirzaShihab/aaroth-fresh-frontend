@@ -1,16 +1,22 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { 
-  Toast, 
-  ToastContainer, 
-  SuccessToast, 
+import {
+  Toast,
+  ToastContainer,
+  SuccessToast,
   ErrorToast,
   toast,
-  promiseToast 
+  promiseToast,
 } from './Toast';
 import { setupGlobalMocks } from './test-utils';
 
@@ -25,9 +31,9 @@ const createMockNotificationSlice = () => ({
       case 'notifications/add':
         return { ...state, items: [...state.items, action.payload] };
       case 'notifications/remove':
-        return { 
-          ...state, 
-          items: state.items.filter(item => item.id !== action.payload) 
+        return {
+          ...state,
+          items: state.items.filter((item) => item.id !== action.payload),
         };
       default:
         return state;
@@ -36,12 +42,12 @@ const createMockNotificationSlice = () => ({
   actions: {
     add: (payload) => ({ type: 'notifications/add', payload }),
     remove: (payload) => ({ type: 'notifications/remove', payload }),
-  }
+  },
 });
 
 const createTestStore = (initialState = {}) => {
   const notificationSlice = createMockNotificationSlice();
-  
+
   return configureStore({
     reducer: {
       notifications: notificationSlice.reducer,
@@ -56,11 +62,7 @@ const createTestStore = (initialState = {}) => {
 const renderWithStore = (component, initialState = {}) => {
   const store = createTestStore(initialState);
   return {
-    ...render(
-      <Provider store={store}>
-        {component}
-      </Provider>
-    ),
+    ...render(<Provider store={store}>{component}</Provider>),
     store,
   };
 };
@@ -78,7 +80,7 @@ describe('Toast Component', () => {
   describe('Toast Individual Component', () => {
     it('renders toast with message', () => {
       const handleClose = vi.fn();
-      
+
       render(
         <Toast
           id="test-toast"
@@ -87,7 +89,7 @@ describe('Toast Component', () => {
           onClose={handleClose}
         />
       );
-      
+
       expect(screen.getByRole('alert')).toBeInTheDocument();
       expect(screen.getByText('Success message')).toBeInTheDocument();
     });
@@ -101,9 +103,9 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
+
       expect(screen.getByRole('alert')).toHaveClass('bg-mint-fresh/10');
-      
+
       rerender(
         <Toast
           id="test-toast"
@@ -112,7 +114,7 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
+
       expect(screen.getByRole('alert')).toHaveClass('bg-tomato-red/5');
     });
 
@@ -125,7 +127,7 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
+
       // CheckCircle icon should be present for success variant
       expect(screen.getByRole('alert')).toContainHTML('CheckCircle');
     });
@@ -139,7 +141,7 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
+
       expect(screen.getByText('Success Title')).toBeInTheDocument();
     });
 
@@ -149,37 +151,39 @@ describe('Toast Component', () => {
           id="test-toast"
           message="Progress toast"
           duration={5000}
-          showProgress={true}
+          showProgress
           onClose={vi.fn()}
         />
       );
-      
-      const progressBar = screen.getByRole('alert').querySelector('[style*="width"]');
+
+      const progressBar = screen
+        .getByRole('alert')
+        .querySelector('[style*="width"]');
       expect(progressBar).toBeInTheDocument();
     });
 
     it('calls onClose when close button is clicked', async () => {
       const handleClose = vi.fn();
       const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-      
+
       render(
         <Toast
           id="test-toast"
           message="Closeable toast"
-          showCloseButton={true}
+          showCloseButton
           onClose={handleClose}
         />
       );
-      
+
       const closeButton = screen.getByRole('button', { name: /close/i });
       await user.click(closeButton);
-      
+
       expect(handleClose).toHaveBeenCalledWith('test-toast');
     });
 
     it('auto-closes after duration', async () => {
       const handleClose = vi.fn();
-      
+
       render(
         <Toast
           id="test-toast"
@@ -188,12 +192,12 @@ describe('Toast Component', () => {
           onClose={handleClose}
         />
       );
-      
+
       // Fast-forward time
       act(() => {
         vi.advanceTimersByTime(1000);
       });
-      
+
       await waitFor(() => {
         expect(handleClose).toHaveBeenCalledWith('test-toast');
       });
@@ -202,38 +206,38 @@ describe('Toast Component', () => {
     it('pauses auto-close on hover', async () => {
       const handleClose = vi.fn();
       const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-      
+
       render(
         <Toast
           id="test-toast"
           message="Pausable toast"
           duration={1000}
-          pauseOnHover={true}
+          pauseOnHover
           onClose={handleClose}
         />
       );
-      
+
       const toast = screen.getByRole('alert');
-      
+
       // Hover over toast
       await user.hover(toast);
-      
+
       // Advance time while hovered
       act(() => {
         vi.advanceTimersByTime(1000);
       });
-      
+
       // Should not have closed
       expect(handleClose).not.toHaveBeenCalled();
-      
+
       // Unhover
       await user.unhover(toast);
-      
+
       // Now it should close
       act(() => {
         vi.advanceTimersByTime(1000);
       });
-      
+
       await waitFor(() => {
         expect(handleClose).toHaveBeenCalledWith('test-toast');
       });
@@ -242,7 +246,7 @@ describe('Toast Component', () => {
     it('shows action button when provided', async () => {
       const handleAction = vi.fn();
       const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-      
+
       render(
         <Toast
           id="test-toast"
@@ -252,10 +256,10 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
+
       const actionButton = screen.getByRole('button', { name: /undo/i });
       await user.click(actionButton);
-      
+
       expect(handleAction).toHaveBeenCalled();
     });
 
@@ -268,8 +272,10 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
-      expect(screen.queryByRole('button', { name: /close/i })).not.toBeInTheDocument();
+
+      expect(
+        screen.queryByRole('button', { name: /close/i })
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -279,12 +285,11 @@ describe('Toast Component', () => {
         { id: '1', type: 'success', message: 'Success 1' },
         { id: '2', type: 'error', message: 'Error 1' },
       ];
-      
-      renderWithStore(
-        <ToastContainer />,
-        { notifications: { items: notifications } }
-      );
-      
+
+      renderWithStore(<ToastContainer />, {
+        notifications: { items: notifications },
+      });
+
       expect(screen.getByText('Success 1')).toBeInTheDocument();
       expect(screen.getByText('Error 1')).toBeInTheDocument();
     });
@@ -295,12 +300,11 @@ describe('Toast Component', () => {
         type: 'info',
         message: `Message ${i}`,
       }));
-      
-      renderWithStore(
-        <ToastContainer maxToasts={3} />,
-        { notifications: { items: notifications } }
-      );
-      
+
+      renderWithStore(<ToastContainer maxToasts={3} />, {
+        notifications: { items: notifications },
+      });
+
       // Should only show first 3 toasts
       expect(screen.getByText('Message 0')).toBeInTheDocument();
       expect(screen.getByText('Message 1')).toBeInTheDocument();
@@ -313,7 +317,7 @@ describe('Toast Component', () => {
         <ToastContainer position="bottom-left" />,
         { notifications: { items: [{ id: '1', message: 'Test' }] } }
       );
-      
+
       const toastContainer = container.firstChild;
       expect(toastContainer).toHaveClass('bottom-4', 'left-4');
     });
@@ -323,14 +327,15 @@ describe('Toast Component', () => {
         { id: '1', type: 'info', message: 'First' },
         { id: '2', type: 'info', message: 'Second' },
       ];
-      
-      renderWithStore(
-        <ToastContainer />,
-        { notifications: { items: notifications } }
-      );
-      
-      const toastWrappers = screen.getAllByRole('alert').map(alert => alert.parentElement);
-      
+
+      renderWithStore(<ToastContainer />, {
+        notifications: { items: notifications },
+      });
+
+      const toastWrappers = screen
+        .getAllByRole('alert')
+        .map((alert) => alert.parentElement);
+
       expect(toastWrappers[0]).toHaveStyle('animation-delay: 0ms');
       expect(toastWrappers[1]).toHaveStyle('animation-delay: 100ms');
     });
@@ -339,7 +344,7 @@ describe('Toast Component', () => {
   describe('Toast Variants', () => {
     it('renders SuccessToast correctly', () => {
       render(<SuccessToast message="Success!" onClose={vi.fn()} />);
-      
+
       const toast = screen.getByRole('alert');
       expect(toast).toHaveClass('bg-mint-fresh/10');
       expect(screen.getByText('Success!')).toBeInTheDocument();
@@ -347,7 +352,7 @@ describe('Toast Component', () => {
 
     it('renders ErrorToast correctly', () => {
       render(<ErrorToast message="Error occurred!" onClose={vi.fn()} />);
-      
+
       const toast = screen.getByRole('alert');
       expect(toast).toHaveClass('bg-tomato-red/5');
       expect(screen.getByText('Error occurred!')).toBeInTheDocument();
@@ -355,25 +360,25 @@ describe('Toast Component', () => {
 
     it('renders LoadingToast without auto-close', () => {
       const handleClose = vi.fn();
-      
+
       render(<LoadingToast message="Loading..." onClose={handleClose} />);
-      
+
       // Should not auto-close
       act(() => {
         vi.advanceTimersByTime(5000);
       });
-      
+
       expect(handleClose).not.toHaveBeenCalled();
     });
   });
 
   describe('Toast Utility Functions', () => {
     it('creates success toast with correct properties', () => {
-      const successToast = toast.success('Operation successful', { 
+      const successToast = toast.success('Operation successful', {
         title: 'Success',
-        duration: 3000 
+        duration: 3000,
       });
-      
+
       expect(successToast).toMatchObject({
         variant: 'success',
         message: 'Operation successful',
@@ -385,7 +390,7 @@ describe('Toast Component', () => {
 
     it('creates error toast with longer duration', () => {
       const errorToast = toast.error('Something went wrong');
-      
+
       expect(errorToast).toMatchObject({
         variant: 'error',
         message: 'Something went wrong',
@@ -395,7 +400,7 @@ describe('Toast Component', () => {
 
     it('creates loading toast without close button', () => {
       const loadingToast = toast.loading('Processing...');
-      
+
       expect(loadingToast).toMatchObject({
         variant: 'loading',
         message: 'Processing...',
@@ -409,12 +414,12 @@ describe('Toast Component', () => {
   describe('Promise Toast', () => {
     it('shows loading then success for resolved promise', async () => {
       const promise = Promise.resolve('Success result');
-      
+
       const result = await promiseToast(promise, {
         loading: 'Processing...',
         success: 'Completed!',
       });
-      
+
       expect(result).toMatchObject({
         variant: 'success',
         message: 'Completed!',
@@ -424,12 +429,12 @@ describe('Toast Component', () => {
 
     it('shows loading then error for rejected promise', async () => {
       const promise = Promise.reject(new Error('Failed'));
-      
+
       const result = await promiseToast(promise, {
         loading: 'Processing...',
         error: 'Failed to complete',
       });
-      
+
       expect(result).toMatchObject({
         variant: 'error',
         message: 'Failed to complete',
@@ -439,12 +444,12 @@ describe('Toast Component', () => {
 
     it('supports function-based success and error messages', async () => {
       const promise = Promise.resolve({ name: 'John' });
-      
+
       const result = await promiseToast(promise, {
         loading: 'Loading user...',
         success: (data) => `Welcome, ${data.name}!`,
       });
-      
+
       expect(result.message).toBe('Welcome, John!');
     });
   });
@@ -452,13 +457,9 @@ describe('Toast Component', () => {
   describe('Accessibility', () => {
     it('has proper ARIA attributes', () => {
       render(
-        <Toast
-          id="test-toast"
-          message="Accessible toast"
-          onClose={vi.fn()}
-        />
+        <Toast id="test-toast" message="Accessible toast" onClose={vi.fn()} />
       );
-      
+
       const toast = screen.getByRole('alert');
       expect(toast).toHaveAttribute('aria-live', 'polite');
       expect(toast).toHaveAttribute('role', 'alert');
@@ -473,7 +474,7 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
+
       const toast = screen.getByRole('alert');
       expect(toast).toHaveAttribute('aria-live', 'polite'); // All use polite by default
     });
@@ -483,12 +484,14 @@ describe('Toast Component', () => {
         <Toast
           id="test-toast"
           message="Closeable toast"
-          showCloseButton={true}
+          showCloseButton
           onClose={vi.fn()}
         />
       );
-      
-      const closeButton = screen.getByRole('button', { name: /close notification/i });
+
+      const closeButton = screen.getByRole('button', {
+        name: /close notification/i,
+      });
       expect(closeButton).toHaveAttribute('aria-label');
     });
 
@@ -497,11 +500,11 @@ describe('Toast Component', () => {
         <Toast
           id="test-toast"
           message="Touch-friendly toast"
-          showCloseButton={true}
+          showCloseButton
           onClose={vi.fn()}
         />
       );
-      
+
       const closeButton = screen.getByRole('button', { name: /close/i });
       expect(closeButton).toHaveClass('min-h-[24px]', 'min-w-[24px]');
     });
@@ -509,12 +512,12 @@ describe('Toast Component', () => {
 
   describe('Performance', () => {
     it('handles rapid toast creation', () => {
-      const toasts = Array.from({ length: 50 }, (_, i) => 
+      const toasts = Array.from({ length: 50 }, (_, i) =>
         toast.success(`Toast ${i}`)
       );
-      
+
       expect(toasts).toHaveLength(50);
-      toasts.forEach(t => expect(t.id).toBeDefined());
+      toasts.forEach((t) => expect(t.id).toBeDefined());
     });
 
     it('cleans up timers on unmount', () => {
@@ -526,7 +529,7 @@ describe('Toast Component', () => {
           onClose={vi.fn()}
         />
       );
-      
+
       expect(() => unmount()).not.toThrow();
     });
 
@@ -536,19 +539,20 @@ describe('Toast Component', () => {
         type: 'info',
         message: `Message ${i}`,
       }));
-      
-      const { rerender } = renderWithStore(
-        <ToastContainer />,
-        { notifications: { items: [] } }
-      );
-      
+
+      const { rerender } = renderWithStore(<ToastContainer />, {
+        notifications: { items: [] },
+      });
+
       // Add all toasts at once
       rerender(
-        <Provider store={createTestStore({ notifications: { items: notifications } })}>
+        <Provider
+          store={createTestStore({ notifications: { items: notifications } })}
+        >
           <ToastContainer />
         </Provider>
       );
-      
+
       // Should render without performance issues
       expect(screen.getAllByRole('alert')).toHaveLength(5); // Limited by maxToasts
     });
@@ -557,18 +561,13 @@ describe('Toast Component', () => {
   describe('Edge Cases', () => {
     it('handles missing onClose gracefully', () => {
       expect(() => {
-        render(
-          <Toast
-            id="test-toast"
-            message="No close handler"
-          />
-        );
+        render(<Toast id="test-toast" message="No close handler" />);
       }).not.toThrow();
     });
 
     it('handles zero duration correctly', () => {
       const handleClose = vi.fn();
-      
+
       render(
         <Toast
           id="test-toast"
@@ -577,17 +576,17 @@ describe('Toast Component', () => {
           onClose={handleClose}
         />
       );
-      
+
       act(() => {
         vi.advanceTimersByTime(10000);
       });
-      
+
       expect(handleClose).not.toHaveBeenCalled();
     });
 
     it('handles negative duration correctly', () => {
       const handleClose = vi.fn();
-      
+
       render(
         <Toast
           id="test-toast"
@@ -596,11 +595,11 @@ describe('Toast Component', () => {
           onClose={handleClose}
         />
       );
-      
+
       act(() => {
         vi.advanceTimersByTime(5000);
       });
-      
+
       expect(handleClose).not.toHaveBeenCalled();
     });
   });

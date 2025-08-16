@@ -9,7 +9,7 @@ import { cn } from '../../utils';
 
 // Screen Reader Only Text Component
 export const ScreenReaderOnly = ({ children, className, ...props }) => (
-  <span 
+  <span
     className={cn(
       'sr-only absolute left-[-10000px] top-auto w-px h-px overflow-hidden',
       className
@@ -43,12 +43,12 @@ export const SkipLinks = ({ links = [], className, ...props }) => (
 );
 
 // Focus Trap Component
-export const FocusTrap = ({ 
-  children, 
-  active = true, 
+export const FocusTrap = ({
+  children,
+  active = true,
   restoreFocus = true,
   className,
-  ...props 
+  ...props
 }) => {
   const containerRef = useRef(null);
   const previousActiveElement = useRef(null);
@@ -57,7 +57,7 @@ export const FocusTrap = ({
     if (!active) return;
 
     previousActiveElement.current = document.activeElement;
-    
+
     const getFocusableElements = () => {
       const selectors = [
         'button:not([disabled])',
@@ -66,9 +66,9 @@ export const FocusTrap = ({
         'textarea:not([disabled])',
         'a[href]',
         '[tabindex]:not([tabindex="-1"])',
-        '[contenteditable="true"]'
+        '[contenteditable="true"]',
       ];
-      
+
       return containerRef.current?.querySelectorAll(selectors.join(', ')) || [];
     };
 
@@ -86,17 +86,15 @@ export const FocusTrap = ({
           event.preventDefault();
           lastElement.focus();
         }
-      } else {
-        if (document.activeElement === lastElement) {
-          event.preventDefault();
-          firstElement.focus();
-        }
+      } else if (document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
       }
     };
 
     const container = containerRef.current;
     container?.addEventListener('keydown', handleKeyDown);
-    
+
     // Focus first focusable element
     const focusableElements = getFocusableElements();
     if (focusableElements.length > 0) {
@@ -105,7 +103,7 @@ export const FocusTrap = ({
 
     return () => {
       container?.removeEventListener('keydown', handleKeyDown);
-      
+
       if (restoreFocus && previousActiveElement.current) {
         previousActiveElement.current.focus();
       }
@@ -120,22 +118,22 @@ export const FocusTrap = ({
 };
 
 // Announcement Component for Screen Readers
-export const LiveAnnouncement = ({ 
-  message, 
+export const LiveAnnouncement = ({
+  message,
   politeness = 'polite',
-  clearAfter = 1000 
+  clearAfter = 1000,
 }) => {
   const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => {
     if (message) {
       setAnnouncement(message);
-      
+
       if (clearAfter > 0) {
         const timer = setTimeout(() => {
           setAnnouncement('');
         }, clearAfter);
-        
+
         return () => clearTimeout(timer);
       }
     }
@@ -154,11 +152,11 @@ export const LiveAnnouncement = ({
 };
 
 // Progress Announcement
-export const ProgressAnnouncement = ({ 
-  value, 
-  max = 100, 
+export const ProgressAnnouncement = ({
+  value,
+  max = 100,
   label = 'Progress',
-  announceInterval = 10 
+  announceInterval = 10,
 }) => {
   const [lastAnnounced, setLastAnnounced] = useState(-1);
   const percentage = Math.round((value / max) * 100);
@@ -170,7 +168,7 @@ export const ProgressAnnouncement = ({
   }, [percentage, lastAnnounced, announceInterval]);
 
   return (
-    <LiveAnnouncement 
+    <LiveAnnouncement
       message={
         percentage !== lastAnnounced && percentage % announceInterval === 0
           ? `${label}: ${percentage}% complete`
@@ -186,7 +184,7 @@ export const useHighContrast = () => {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-contrast: high)');
-    
+
     const handleChange = (e) => {
       setIsHighContrast(e.matches);
     };
@@ -208,7 +206,7 @@ export const useReducedMotion = () => {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    
+
     const handleChange = (e) => {
       setPrefersReducedMotion(e.matches);
     };
@@ -230,7 +228,7 @@ export const useColorScheme = () => {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = (e) => {
       setColorScheme(e.matches ? 'dark' : 'light');
     };
@@ -269,14 +267,14 @@ export const useFocusVisible = () => {
 };
 
 // Accessible Modal Wrapper
-export const AccessibleModal = ({ 
-  children, 
-  isOpen, 
-  onClose, 
+export const AccessibleModal = ({
+  children,
+  isOpen,
+  onClose,
   title,
   description,
   className,
-  ...props 
+  ...props
 }) => {
   const modalRef = useRef(null);
 
@@ -328,13 +326,13 @@ export const AccessibleModal = ({
 };
 
 // Accessible Dropdown Wrapper
-export const AccessibleDropdown = ({ 
-  children, 
-  isOpen, 
+export const AccessibleDropdown = ({
+  children,
+  isOpen,
   onClose,
   trigger,
   className,
-  ...props 
+  ...props
 }) => {
   const dropdownRef = useRef(null);
   const triggerRef = useRef(null);
@@ -343,7 +341,7 @@ export const AccessibleDropdown = ({
     if (isOpen) {
       const handleClickOutside = (event) => {
         if (
-          dropdownRef.current && 
+          dropdownRef.current &&
           !dropdownRef.current.contains(event.target) &&
           triggerRef.current &&
           !triggerRef.current.contains(event.target)
@@ -371,10 +369,8 @@ export const AccessibleDropdown = ({
 
   return (
     <div className="relative">
-      <div ref={triggerRef}>
-        {trigger}
-      </div>
-      
+      <div ref={triggerRef}>{trigger}</div>
+
       {isOpen && (
         <div
           ref={dropdownRef}
@@ -398,8 +394,9 @@ export const AccessibleDropdown = ({
 // Accessibility Utilities
 export const A11yUtils = {
   // Generate unique IDs for ARIA relationships
-  generateId: (prefix = 'a11y') => `${prefix}-${Math.random().toString(36).substr(2, 9)}`,
-  
+  generateId: (prefix = 'a11y') =>
+    `${prefix}-${Math.random().toString(36).substr(2, 9)}`,
+
   // Announce to screen readers
   announce: (message, politeness = 'polite') => {
     const announcement = document.createElement('div');
@@ -407,11 +404,11 @@ export const A11yUtils = {
     announcement.setAttribute('aria-atomic', 'true');
     announcement.setAttribute('class', 'sr-only');
     announcement.textContent = message;
-    
+
     document.body.appendChild(announcement);
     setTimeout(() => document.body.removeChild(announcement), 1000);
   },
-  
+
   // Focus management
   focus: {
     trap: (element) => {
@@ -420,108 +417,108 @@ export const A11yUtils = {
       );
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
-      
+
       return {
         focusFirst: () => firstElement?.focus(),
         focusLast: () => lastElement?.focus(),
         elements: focusableElements,
       };
     },
-    
+
     visible: (element) => {
-      element?.scrollIntoView({ 
+      element?.scrollIntoView({
         block: 'nearest',
         inline: 'nearest',
-        behavior: 'smooth' 
+        behavior: 'smooth',
       });
       element?.focus({ preventScroll: true });
-    }
+    },
   },
-  
+
   // ARIA helpers
   aria: {
     describedBy: (element, descriptionId) => {
       const existingIds = element.getAttribute('aria-describedby') || '';
       const ids = existingIds.split(' ').filter(Boolean);
-      
+
       if (!ids.includes(descriptionId)) {
         ids.push(descriptionId);
         element.setAttribute('aria-describedby', ids.join(' '));
       }
     },
-    
+
     expanded: (element, isExpanded) => {
       element.setAttribute('aria-expanded', isExpanded.toString());
     },
-    
+
     selected: (element, isSelected) => {
       element.setAttribute('aria-selected', isSelected.toString());
     },
-    
+
     pressed: (element, isPressed) => {
       element.setAttribute('aria-pressed', isPressed.toString());
-    }
+    },
   },
-  
+
   // Color contrast utilities
   contrast: {
     // Calculate contrast ratio between two colors
     ratio: (color1, color2) => {
       const getLuminance = (color) => {
         const rgb = color.match(/\d+/g).map(Number);
-        const [r, g, b] = rgb.map(c => {
-          c = c / 255;
+        const [r, g, b] = rgb.map((c) => {
+          c /= 255;
           return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
         });
         return 0.2126 * r + 0.7152 * g + 0.0722 * b;
       };
-      
+
       const l1 = getLuminance(color1);
       const l2 = getLuminance(color2);
       const lighter = Math.max(l1, l2);
       const darker = Math.min(l1, l2);
-      
+
       return (lighter + 0.05) / (darker + 0.05);
     },
-    
+
     // Check if contrast meets WCAG standards
     meetsStandard: (ratio, level = 'AA', size = 'normal') => {
       const requirements = {
-        'AA': { normal: 4.5, large: 3 },
-        'AAA': { normal: 7, large: 4.5 }
+        AA: { normal: 4.5, large: 3 },
+        AAA: { normal: 7, large: 4.5 },
       };
-      
+
       return ratio >= requirements[level][size];
-    }
+    },
   },
-  
+
   // Touch target validation
   touch: {
     // Check if element meets minimum touch target size
     validateSize: (element) => {
       const rect = element.getBoundingClientRect();
       const minSize = 44; // WCAG recommended minimum
-      
+
       return {
         width: rect.width,
         height: rect.height,
         meetsWidth: rect.width >= minSize,
         meetsHeight: rect.height >= minSize,
-        meetsRequirement: rect.width >= minSize && rect.height >= minSize
+        meetsRequirement: rect.width >= minSize && rect.height >= minSize,
       };
     },
-    
+
     // Get touch target spacing
     validateSpacing: (element) => {
       const rect = element.getBoundingClientRect();
       const siblings = Array.from(element.parentElement.children);
       const index = siblings.indexOf(element);
-      
+
       let minSpacing = Infinity;
-      
+
       siblings.forEach((sibling, siblingIndex) => {
         if (siblingIndex === index) return;
-        
+
         const siblingRect = sibling.getBoundingClientRect();
         const spacing = Math.min(
           Math.abs(rect.left - siblingRect.right),
@@ -529,16 +526,16 @@ export const A11yUtils = {
           Math.abs(rect.top - siblingRect.bottom),
           Math.abs(rect.bottom - siblingRect.top)
         );
-        
+
         minSpacing = Math.min(minSpacing, spacing);
       });
-      
+
       return {
         spacing: minSpacing,
-        meetsRequirement: minSpacing >= 8 // Recommended minimum spacing
+        meetsRequirement: minSpacing >= 8, // Recommended minimum spacing
       };
-    }
-  }
+    },
+  },
 };
 
 // HOC for adding accessibility features to components
@@ -547,13 +544,13 @@ export const withA11y = (WrappedComponent) => {
     const isHighContrast = useHighContrast();
     const prefersReducedMotion = useReducedMotion();
     const colorScheme = useColorScheme();
-    
+
     const a11yProps = {
       'data-high-contrast': isHighContrast,
       'data-reduced-motion': prefersReducedMotion,
       'data-color-scheme': colorScheme,
     };
-    
+
     return (
       <WrappedComponent
         ref={ref}
@@ -561,8 +558,10 @@ export const withA11y = (WrappedComponent) => {
         {...a11yProps}
         className={cn(
           props.className,
-          isHighContrast && 'contrast-more:border-2 contrast-more:border-current',
-          prefersReducedMotion && 'motion-reduce:animate-none motion-reduce:transition-none'
+          isHighContrast &&
+            'contrast-more:border-2 contrast-more:border-current',
+          prefersReducedMotion &&
+            'motion-reduce:animate-none motion-reduce:transition-none'
         )}
       />
     );

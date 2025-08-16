@@ -5,22 +5,28 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../../test/test-utils';
 import CreateListing from '../CreateListing';
 
+import {
+  useCreateListingMutation,
+  useGetPublicProductsQuery,
+  useGetCategoriesQuery,
+} from '../../../store/slices/apiSlice';
+
 // Mock the API slice
 vi.mock('../../../store/slices/apiSlice', () => ({
   useCreateListingMutation: vi.fn(),
   useGetPublicProductsQuery: vi.fn(),
-  useGetCategoriesQuery: vi.fn()
+  useGetCategoriesQuery: vi.fn(),
 }));
 
 // Mock the notification slice
 vi.mock('../../../store/slices/notificationSlice', () => ({
-  addNotification: vi.fn()
+  addNotification: vi.fn(),
 }));
 
 // Mock react-router-dom
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigate
+  useNavigate: () => mockNavigate,
 }));
 
 // Mock UI components that might not be available
@@ -37,14 +43,8 @@ vi.mock('../../../components/ui/FileUpload', () => ({
       />
       <span>Upload Images</span>
     </div>
-  )
+  ),
 }));
-
-import {
-  useCreateListingMutation,
-  useGetPublicProductsQuery,
-  useGetCategoriesQuery
-} from '../../../store/slices/apiSlice';
 
 const mockProductsData = {
   data: {
@@ -52,61 +52,65 @@ const mockProductsData = {
       {
         id: 'product_1',
         name: 'Tomatoes',
-        category: { id: 'cat_1', name: 'Vegetables' }
+        category: { id: 'cat_1', name: 'Vegetables' },
       },
       {
-        id: 'product_2', 
+        id: 'product_2',
         name: 'Carrots',
-        category: { id: 'cat_1', name: 'Vegetables' }
-      }
-    ]
-  }
+        category: { id: 'cat_1', name: 'Vegetables' },
+      },
+    ],
+  },
 };
 
 const mockCategoriesData = {
   categories: [
     { id: 'cat_1', name: 'Vegetables' },
-    { id: 'cat_2', name: 'Fruits' }
-  ]
+    { id: 'cat_2', name: 'Fruits' },
+  ],
 };
 
 const defaultAuthState = {
   user: {
     id: 'vendor_1',
     name: 'Test Vendor',
-    role: 'vendor'
+    role: 'vendor',
   },
-  token: 'test-token'
+  token: 'test-token',
 };
 
 describe('CreateListing', () => {
   const mockCreateListing = vi.fn();
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default successful responses
-    useCreateListingMutation.mockReturnValue([mockCreateListing, { isLoading: false }]);
-    
+    useCreateListingMutation.mockReturnValue([
+      mockCreateListing,
+      { isLoading: false },
+    ]);
+
     useGetPublicProductsQuery.mockReturnValue({
       data: mockProductsData,
-      isLoading: false
+      isLoading: false,
     });
-    
+
     useGetCategoriesQuery.mockReturnValue({
-      data: mockCategoriesData
+      data: mockCategoriesData,
     });
-    
+
     // Mock successful mutation response
     mockCreateListing.mockResolvedValue({
-      unwrap: () => Promise.resolve({
-        data: {
-          id: 'new_listing_1',
-          product: { name: 'Tomatoes' }
-        }
-      })
+      unwrap: () =>
+        Promise.resolve({
+          data: {
+            id: 'new_listing_1',
+            product: { name: 'Tomatoes' },
+          },
+        }),
     });
-    
+
     // Mock URL.createObjectURL
     global.URL.createObjectURL = vi.fn(() => 'mock-object-url');
     global.URL.revokeObjectURL = vi.fn();
@@ -115,24 +119,30 @@ describe('CreateListing', () => {
   describe('Page Layout', () => {
     it('renders page header correctly', async () => {
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       expect(screen.getByText('Create New Listing')).toBeInTheDocument();
-      expect(screen.getByText('Add a new product listing to showcase your offerings')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /back to listings/i })).toBeInTheDocument();
+      expect(
+        screen.getByText('Add a new product listing to showcase your offerings')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /back to listings/i })
+      ).toBeInTheDocument();
     });
 
     it('has navigation back to listings', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
-      const backButton = screen.getByRole('button', { name: /back to listings/i });
+      const backButton = screen.getByRole('button', {
+        name: /back to listings/i,
+      });
       await user.click(backButton);
-      
+
       expect(mockNavigate).toHaveBeenCalledWith('/vendor/listings');
     });
   });
@@ -140,7 +150,7 @@ describe('CreateListing', () => {
   describe('Form Sections', () => {
     it('renders all required form sections', async () => {
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Check section headers
@@ -154,13 +164,13 @@ describe('CreateListing', () => {
 
     it('loads products and categories', async () => {
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       await waitFor(() => {
         const productSelect = screen.getByLabelText('Select Product');
         expect(productSelect).toBeInTheDocument();
-        
+
         // Check that products are loaded
         expect(screen.getByText('Tomatoes (Vegetables)')).toBeInTheDocument();
         expect(screen.getByText('Carrots (Vegetables)')).toBeInTheDocument();
@@ -171,28 +181,32 @@ describe('CreateListing', () => {
   describe('Form Validation', () => {
     it('shows validation errors for required fields', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Try to submit without filling required fields
-      const submitButton = screen.getByRole('button', { name: /create listing/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create listing/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText('Please select a product')).toBeInTheDocument();
         expect(screen.getByText('Price is required')).toBeInTheDocument();
         expect(screen.getByText('Quantity is required')).toBeInTheDocument();
-        expect(screen.getByText('Please provide a description')).toBeInTheDocument();
+        expect(
+          screen.getByText('Please provide a description')
+        ).toBeInTheDocument();
       });
     });
 
     it('validates price must be greater than 0', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       const priceInput = screen.getByPlaceholderText('0.00');
@@ -200,15 +214,17 @@ describe('CreateListing', () => {
       await user.tab(); // Trigger validation
 
       await waitFor(() => {
-        expect(screen.getByText('Price must be greater than 0')).toBeInTheDocument();
+        expect(
+          screen.getByText('Price must be greater than 0')
+        ).toBeInTheDocument();
       });
     });
 
     it('validates quantity must be 0 or greater', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       const quantityInput = screen.getByPlaceholderText('100');
@@ -216,47 +232,57 @@ describe('CreateListing', () => {
       await user.tab(); // Trigger validation
 
       await waitFor(() => {
-        expect(screen.getByText('Quantity must be 0 or greater')).toBeInTheDocument();
+        expect(
+          screen.getByText('Quantity must be 0 or greater')
+        ).toBeInTheDocument();
       });
     });
 
     it('shows error when no images are uploaded', async () => {
       const user = userEvent.setup();
-      
+
       // Mock dispatch for notifications
       const mockDispatch = vi.fn();
-      vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(mockDispatch);
-      
+      vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+        mockDispatch
+      );
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Fill required fields except images
       const productSelect = screen.getByLabelText('Select Product');
       await user.selectOptions(productSelect, 'product_1');
-      
+
       const priceInput = screen.getByPlaceholderText('0.00');
       await user.type(priceInput, '25.50');
-      
+
       const quantityInput = screen.getByPlaceholderText('100');
       await user.type(quantityInput, '100');
-      
-      const descriptionInput = screen.getByPlaceholderText(/describe your product/i);
+
+      const descriptionInput = screen.getByPlaceholderText(
+        /describe your product/i
+      );
       await user.type(descriptionInput, 'Fresh organic tomatoes');
 
       // Submit without images
-      const submitButton = screen.getByRole('button', { name: /create listing/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create listing/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({
-          type: expect.stringContaining('notification/addNotification'),
-          payload: expect.objectContaining({
-            type: 'error',
-            title: 'Images Required',
-            message: 'Please upload at least one product image.'
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: expect.stringContaining('notification/addNotification'),
+            payload: expect.objectContaining({
+              type: 'error',
+              title: 'Images Required',
+              message: 'Please upload at least one product image.',
+            }),
           })
-        }));
+        );
       });
     });
   });
@@ -264,9 +290,9 @@ describe('CreateListing', () => {
   describe('Dynamic Form Fields', () => {
     it('allows adding and removing pricing options', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Should have one pricing option by default
@@ -274,7 +300,9 @@ describe('CreateListing', () => {
       expect(screen.queryByText('Pricing Option 2')).not.toBeInTheDocument();
 
       // Add pricing option
-      const addPricingButton = screen.getByRole('button', { name: /add pricing option/i });
+      const addPricingButton = screen.getByRole('button', {
+        name: /add pricing option/i,
+      });
       await user.click(addPricingButton);
 
       await waitFor(() => {
@@ -283,7 +311,9 @@ describe('CreateListing', () => {
 
       // Remove pricing option
       const removeButtons = screen.getAllByRole('button', { name: /remove/i });
-      const removePricingButton = removeButtons.find(btn => btn.textContent.includes('Remove'));
+      const removePricingButton = removeButtons.find((btn) =>
+        btn.textContent.includes('Remove')
+      );
       if (removePricingButton) {
         await user.click(removePricingButton);
       }
@@ -295,9 +325,9 @@ describe('CreateListing', () => {
 
     it('allows adding and removing delivery options', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Should have one delivery option by default
@@ -305,7 +335,9 @@ describe('CreateListing', () => {
       expect(screen.queryByText('Delivery Option 2')).not.toBeInTheDocument();
 
       // Add delivery option
-      const addDeliveryButton = screen.getByRole('button', { name: /add delivery option/i });
+      const addDeliveryButton = screen.getByRole('button', {
+        name: /add delivery option/i,
+      });
       await user.click(addDeliveryButton);
 
       await waitFor(() => {
@@ -317,16 +349,18 @@ describe('CreateListing', () => {
   describe('Image Upload', () => {
     it('handles image upload and preview', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       const fileInput = screen.getByTestId('file-input');
-      
+
       // Create mock file
-      const mockFile = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' });
-      
+      const mockFile = new File(['test'], 'test-image.jpg', {
+        type: 'image/jpeg',
+      });
+
       // Upload file
       await user.upload(fileInput, mockFile);
 
@@ -338,20 +372,24 @@ describe('CreateListing', () => {
 
     it('allows removing uploaded images', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       const fileInput = screen.getByTestId('file-input');
-      const mockFile = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' });
-      
+      const mockFile = new File(['test'], 'test-image.jpg', {
+        type: 'image/jpeg',
+      });
+
       // Upload file
       await user.upload(fileInput, mockFile);
 
       await waitFor(() => {
         // Should have remove button for uploaded image
-        const removeImageButton = screen.getByRole('button', { 'aria-label': /remove image/i });
+        const removeImageButton = screen.getByRole('button', {
+          'aria-label': /remove image/i,
+        });
         expect(removeImageButton).toBeInTheDocument();
       });
     });
@@ -360,36 +398,42 @@ describe('CreateListing', () => {
   describe('Form Submission', () => {
     it('submits form with valid data', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Fill required fields
       const productSelect = screen.getByLabelText('Select Product');
       await user.selectOptions(productSelect, 'product_1');
-      
+
       const priceInput = screen.getByPlaceholderText('0.00');
       await user.type(priceInput, '25.50');
-      
+
       const quantityInput = screen.getByPlaceholderText('100');
       await user.type(quantityInput, '100');
-      
-      const descriptionInput = screen.getByPlaceholderText(/describe your product/i);
+
+      const descriptionInput = screen.getByPlaceholderText(
+        /describe your product/i
+      );
       await user.type(descriptionInput, 'Fresh organic tomatoes');
 
       // Upload image
       const fileInput = screen.getByTestId('file-input');
-      const mockFile = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' });
+      const mockFile = new File(['test'], 'test-image.jpg', {
+        type: 'image/jpeg',
+      });
       await user.upload(fileInput, mockFile);
 
       // Submit form
-      const submitButton = screen.getByRole('button', { name: /create listing/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create listing/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(mockCreateListing).toHaveBeenCalled();
-        
+
         // Check FormData was created
         const call = mockCreateListing.mock.calls[0];
         expect(call[0]).toBeInstanceOf(FormData);
@@ -399,58 +443,73 @@ describe('CreateListing', () => {
     it('handles submission errors gracefully', async () => {
       const user = userEvent.setup();
       const mockDispatch = vi.fn();
-      vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(mockDispatch);
-      
+      vi.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(
+        mockDispatch
+      );
+
       // Mock failed submission
       mockCreateListing.mockRejectedValue({
-        data: { message: 'Server error' }
+        data: { message: 'Server error' },
       });
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Fill and submit form
       const productSelect = screen.getByLabelText('Select Product');
       await user.selectOptions(productSelect, 'product_1');
-      
+
       const priceInput = screen.getByPlaceholderText('0.00');
       await user.type(priceInput, '25.50');
-      
+
       const quantityInput = screen.getByPlaceholderText('100');
       await user.type(quantityInput, '100');
-      
-      const descriptionInput = screen.getByPlaceholderText(/describe your product/i);
+
+      const descriptionInput = screen.getByPlaceholderText(
+        /describe your product/i
+      );
       await user.type(descriptionInput, 'Fresh organic tomatoes');
 
       const fileInput = screen.getByTestId('file-input');
-      const mockFile = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' });
+      const mockFile = new File(['test'], 'test-image.jpg', {
+        type: 'image/jpeg',
+      });
       await user.upload(fileInput, mockFile);
 
-      const submitButton = screen.getByRole('button', { name: /create listing/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create listing/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({
-          type: expect.stringContaining('notification/addNotification'),
-          payload: expect.objectContaining({
-            type: 'error',
-            title: 'Creation Failed'
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: expect.stringContaining('notification/addNotification'),
+            payload: expect.objectContaining({
+              type: 'error',
+              title: 'Creation Failed',
+            }),
           })
-        }));
+        );
       });
     });
 
     it('shows loading state during submission', async () => {
       const user = userEvent.setup();
-      
-      useCreateListingMutation.mockReturnValue([mockCreateListing, { isLoading: true }]);
-      
+
+      useCreateListingMutation.mockReturnValue([
+        mockCreateListing,
+        { isLoading: true },
+      ]);
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
-      const submitButton = screen.getByRole('button', { name: /creating listing/i });
+      const submitButton = screen.getByRole('button', {
+        name: /creating listing/i,
+      });
       expect(submitButton).toBeInTheDocument();
       expect(submitButton).toBeDisabled();
     });
@@ -459,12 +518,12 @@ describe('CreateListing', () => {
   describe('Form Fields Content', () => {
     it('has all quality grade options', async () => {
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       const qualitySelect = screen.getByLabelText('Quality Grade');
       expect(qualitySelect).toBeInTheDocument();
-      
+
       expect(screen.getByText('Premium')).toBeInTheDocument();
       expect(screen.getByText('Standard')).toBeInTheDocument();
       expect(screen.getByText('Economy')).toBeInTheDocument();
@@ -472,7 +531,7 @@ describe('CreateListing', () => {
 
     it('has all unit options', async () => {
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       // Check that unit options are available
@@ -484,7 +543,7 @@ describe('CreateListing', () => {
 
     it('has certification options', async () => {
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       expect(screen.getByText('Organic')).toBeInTheDocument();
@@ -496,12 +555,12 @@ describe('CreateListing', () => {
 
     it('has lead time options', async () => {
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       const leadTimeSelect = screen.getByLabelText('Lead Time');
       expect(leadTimeSelect).toBeInTheDocument();
-      
+
       expect(screen.getByText('Immediate')).toBeInTheDocument();
       expect(screen.getByText('30 minutes')).toBeInTheDocument();
       expect(screen.getByText('1-2 hours')).toBeInTheDocument();
@@ -514,14 +573,14 @@ describe('CreateListing', () => {
   describe('Cancel Action', () => {
     it('navigates back to listings on cancel', async () => {
       const user = userEvent.setup();
-      
+
       renderWithProviders(<CreateListing />, {
-        preloadedState: { auth: defaultAuthState }
+        preloadedState: { auth: defaultAuthState },
       });
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
       await user.click(cancelButton);
-      
+
       expect(mockNavigate).toHaveBeenCalledWith('/vendor/listings');
     });
   });

@@ -38,10 +38,16 @@ export const createListingFormData = (listingData, imageFiles = []) => {
     listingData.pricing.forEach((price, index) => {
       formData.append(`pricing[${index}][pricePerUnit]`, price.pricePerUnit);
       formData.append(`pricing[${index}][unit]`, price.unit);
-      
+
       if (price.bulkDiscount) {
-        formData.append(`pricing[${index}][bulkDiscount][minQuantity]`, price.bulkDiscount.minQuantity);
-        formData.append(`pricing[${index}][bulkDiscount][discountPercentage]`, price.bulkDiscount.discountPercentage);
+        formData.append(
+          `pricing[${index}][bulkDiscount][minQuantity]`,
+          price.bulkDiscount.minQuantity
+        );
+        formData.append(
+          `pricing[${index}][bulkDiscount][discountPercentage]`,
+          price.bulkDiscount.discountPercentage
+        );
       }
     });
   }
@@ -49,30 +55,39 @@ export const createListingFormData = (listingData, imageFiles = []) => {
   // Add availability data
   if (listingData.availability) {
     const { availability } = listingData;
-    
+
     if (availability.quantityAvailable) {
-      formData.append('availability[quantityAvailable]', availability.quantityAvailable);
+      formData.append(
+        'availability[quantityAvailable]',
+        availability.quantityAvailable
+      );
     }
-    
+
     if (availability.harvestDate) {
       formData.append('availability[harvestDate]', availability.harvestDate);
     }
-    
+
     if (availability.expiryDate) {
       formData.append('availability[expiryDate]', availability.expiryDate);
     }
   }
 
   // Add delivery options (array of delivery option objects)
-  if (listingData.deliveryOptions && Array.isArray(listingData.deliveryOptions)) {
+  if (
+    listingData.deliveryOptions &&
+    Array.isArray(listingData.deliveryOptions)
+  ) {
     listingData.deliveryOptions.forEach((option, index) => {
       formData.append(`deliveryOptions[${index}][type]`, option.type);
       formData.append(`deliveryOptions[${index}][cost]`, option.cost);
       formData.append(`deliveryOptions[${index}][timeRange]`, option.timeRange);
-      
+
       if (option.areas && Array.isArray(option.areas)) {
         option.areas.forEach((area, areaIndex) => {
-          formData.append(`deliveryOptions[${index}][areas][${areaIndex}]`, area);
+          formData.append(
+            `deliveryOptions[${index}][areas][${areaIndex}]`,
+            area
+          );
         });
       }
     });
@@ -81,15 +96,15 @@ export const createListingFormData = (listingData, imageFiles = []) => {
   // Add discount data
   if (listingData.discount) {
     const { discount } = listingData;
-    
+
     if (discount.type) {
       formData.append('discount[type]', discount.type);
     }
-    
+
     if (discount.value) {
       formData.append('discount[value]', discount.value);
     }
-    
+
     if (discount.validUntil) {
       formData.append('discount[validUntil]', discount.validUntil);
     }
@@ -160,9 +175,17 @@ export const validateListingImages = (files, maxFiles = 5) => {
     }
 
     // Check supported formats
-    const supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const supportedFormats = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ];
     if (!supportedFormats.includes(file.type)) {
-      errors.push(`${file.name} format not supported. Use JPG, PNG, WebP, or GIF`);
+      errors.push(
+        `${file.name} format not supported. Use JPG, PNG, WebP, or GIF`
+      );
       return;
     }
 
@@ -191,10 +214,12 @@ export const createBasicListingData = ({
 } = {}) => {
   return {
     productId,
-    pricing: [{
-      pricePerUnit,
-      unit,
-    }],
+    pricing: [
+      {
+        pricePerUnit,
+        unit,
+      },
+    ],
     availability: {
       quantityAvailable,
     },
@@ -205,7 +230,7 @@ export const createBasicListingData = ({
         type: 'pickup',
         cost: 0,
         timeRange: '30 minutes',
-      }
+      },
     ],
   };
 };

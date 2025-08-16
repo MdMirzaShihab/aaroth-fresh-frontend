@@ -1,3 +1,8 @@
+/**
+ * className utility for merging Tailwind classes
+ */
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { APP_CONFIG } from '../constants';
 
 /**
@@ -15,6 +20,31 @@ export const formatCurrency = (amount, currency = 'BDT') => {
   })
     .format(amount)
     .replace('$', `${currency} `);
+};
+
+/**
+ * Format number with locale formatting
+ */
+export const formatNumber = (number, options = {}) => {
+  if (typeof number !== 'number') {
+    return '0';
+  }
+
+  return new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 0,
+    ...options,
+  }).format(number);
+};
+
+/**
+ * Format percentage value
+ */
+export const formatPercentage = (value, decimals = 1) => {
+  if (typeof value !== 'number') {
+    return '0%';
+  }
+
+  return `${value.toFixed(decimals)}%`;
 };
 
 /**
@@ -559,12 +589,6 @@ export const storageUtils = {
     }
   },
 };
-
-/**
- * className utility for merging Tailwind classes
- */
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
 export const cn = (...inputs) => {
   return twMerge(clsx(inputs));

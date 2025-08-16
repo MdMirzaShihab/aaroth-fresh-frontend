@@ -4,18 +4,18 @@ import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../test/test-utils';
 import VendorDashboard from '../VendorDashboard';
 
+import {
+  useGetVendorDashboardQuery,
+  useGetVendorOrdersQuery,
+  useGetVendorAnalyticsQuery,
+} from '../../../store/slices/apiSlice';
+
 // Mock the API slice
 vi.mock('../../../store/slices/apiSlice', () => ({
   useGetVendorDashboardQuery: vi.fn(),
   useGetVendorOrdersQuery: vi.fn(),
-  useGetVendorAnalyticsQuery: vi.fn()
+  useGetVendorAnalyticsQuery: vi.fn(),
 }));
-
-import {
-  useGetVendorDashboardQuery,
-  useGetVendorOrdersQuery,
-  useGetVendorAnalyticsQuery
-} from '../../../store/slices/apiSlice';
 
 const mockDashboardData = {
   data: {
@@ -35,9 +35,9 @@ const mockDashboardData = {
     periodOrders: 45,
     insights: [
       'Your listings have increased by 15% this month',
-      'Revenue growth is trending upward'
-    ]
-  }
+      'Revenue growth is trending upward',
+    ],
+  },
 };
 
 const mockOrdersData = {
@@ -47,9 +47,9 @@ const mockOrdersData = {
         id: 'order_1',
         restaurant: { name: 'Test Restaurant' },
         items: [{ quantity: 2 }],
-        totalAmount: 125.50,
+        totalAmount: 125.5,
         status: 'pending',
-        createdAt: '2024-01-01T00:00:00.000Z'
+        createdAt: '2024-01-01T00:00:00.000Z',
       },
       {
         id: 'order_2',
@@ -57,10 +57,10 @@ const mockOrdersData = {
         items: [{ quantity: 3 }],
         totalAmount: 250.75,
         status: 'confirmed',
-        createdAt: '2024-01-02T00:00:00.000Z'
-      }
-    ]
-  }
+        createdAt: '2024-01-02T00:00:00.000Z',
+      },
+    ],
+  },
 };
 
 const mockAnalyticsData = {
@@ -68,45 +68,45 @@ const mockAnalyticsData = {
     revenueChart: [
       { date: '2024-01-01', value: 100 },
       { date: '2024-01-02', value: 150 },
-      { date: '2024-01-03', value: 200 }
+      { date: '2024-01-03', value: 200 },
     ],
     ordersChart: [
       { date: '2024-01-01', value: 5 },
       { date: '2024-01-02', value: 8 },
-      { date: '2024-01-03', value: 12 }
-    ]
-  }
+      { date: '2024-01-03', value: 12 },
+    ],
+  },
 };
 
 const defaultAuthState = {
   user: {
     id: 'vendor_1',
     name: 'Test Vendor',
-    role: 'vendor'
+    role: 'vendor',
   },
-  token: 'test-token'
+  token: 'test-token',
 };
 
 describe('VendorDashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default successful responses
     useGetVendorDashboardQuery.mockReturnValue({
       data: mockDashboardData,
       isLoading: false,
       error: null,
-      refetch: vi.fn()
+      refetch: vi.fn(),
     });
-    
+
     useGetVendorOrdersQuery.mockReturnValue({
       data: mockOrdersData,
-      isLoading: false
+      isLoading: false,
     });
-    
+
     useGetVendorAnalyticsQuery.mockReturnValue({
       data: mockAnalyticsData,
-      isLoading: false
+      isLoading: false,
     });
   });
 
@@ -116,13 +116,13 @@ describe('VendorDashboard', () => {
         data: null,
         isLoading: true,
         error: null,
-        refetch: vi.fn()
+        refetch: vi.fn(),
       });
 
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       expect(screen.getByText('Loading dashboard...')).toBeInTheDocument();
@@ -136,18 +136,22 @@ describe('VendorDashboard', () => {
         data: null,
         isLoading: false,
         error: { message: 'Network error' },
-        refetch: mockRefetch
+        refetch: mockRefetch,
       });
 
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       expect(screen.getByText('Failed to load dashboard')).toBeInTheDocument();
-      expect(screen.getByText('There was an error loading your dashboard data. Please try again.')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText(
+          'There was an error loading your dashboard data. Please try again.'
+        )
+      ).toBeInTheDocument();
+
       const retryButton = screen.getByRole('button', { name: 'Retry' });
       expect(retryButton).toBeInTheDocument();
     });
@@ -157,21 +161,25 @@ describe('VendorDashboard', () => {
     it('renders welcome message with user name', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Welcome back, Test Vendor!')).toBeInTheDocument();
-        expect(screen.getByText('Here\'s what\'s happening with your business today')).toBeInTheDocument();
+        expect(
+          screen.getByText('Welcome back, Test Vendor!')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("Here's what's happening with your business today")
+        ).toBeInTheDocument();
       });
     });
 
     it('displays key performance metrics', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -182,7 +190,7 @@ describe('VendorDashboard', () => {
         expect(screen.getByText('৳12,500')).toBeInTheDocument(); // Revenue
         expect(screen.getByText('4.2')).toBeInTheDocument(); // Rating
         expect(screen.getByText('3')).toBeInTheDocument(); // Pending Orders
-        
+
         // Check for metric labels
         expect(screen.getByText('Total Listings')).toBeInTheDocument();
         expect(screen.getByText('Active Listings')).toBeInTheDocument();
@@ -196,8 +204,8 @@ describe('VendorDashboard', () => {
     it('shows percentage changes for metrics', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -211,14 +219,16 @@ describe('VendorDashboard', () => {
     it('displays recent orders section', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
         expect(screen.getByText('Recent Orders')).toBeInTheDocument();
-        expect(screen.getByText('Latest orders from customers')).toBeInTheDocument();
-        
+        expect(
+          screen.getByText('Latest orders from customers')
+        ).toBeInTheDocument();
+
         // Check for order data
         expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
         expect(screen.getByText('Another Restaurant')).toBeInTheDocument();
@@ -230,14 +240,18 @@ describe('VendorDashboard', () => {
     it('shows business insights when available', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
         expect(screen.getByText('Business Insights')).toBeInTheDocument();
-        expect(screen.getByText('Your listings have increased by 15% this month')).toBeInTheDocument();
-        expect(screen.getByText('Revenue growth is trending upward')).toBeInTheDocument();
+        expect(
+          screen.getByText('Your listings have increased by 15% this month')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Revenue growth is trending upward')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -246,8 +260,8 @@ describe('VendorDashboard', () => {
     it('has time range selector', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -262,13 +276,13 @@ describe('VendorDashboard', () => {
         data: mockDashboardData,
         isLoading: false,
         error: null,
-        refetch: mockRefetch
+        refetch: mockRefetch,
       });
 
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -280,8 +294,8 @@ describe('VendorDashboard', () => {
     it('has quick action buttons', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -299,8 +313,8 @@ describe('VendorDashboard', () => {
     it('renders revenue trend chart', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -312,8 +326,8 @@ describe('VendorDashboard', () => {
     it('renders orders trend chart', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -325,13 +339,13 @@ describe('VendorDashboard', () => {
     it('shows loading state for analytics charts', async () => {
       useGetVendorAnalyticsQuery.mockReturnValue({
         data: null,
-        isLoading: true
+        isLoading: true,
       });
 
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
@@ -346,18 +360,20 @@ describe('VendorDashboard', () => {
     it('shows empty state when no recent orders', async () => {
       useGetVendorOrdersQuery.mockReturnValue({
         data: { data: { orders: [] } },
-        isLoading: false
+        isLoading: false,
       });
 
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
         expect(screen.getByText('No orders yet')).toBeInTheDocument();
-        expect(screen.getByText('Your recent orders will appear here')).toBeInTheDocument();
+        expect(
+          screen.getByText('Your recent orders will appear here')
+        ).toBeInTheDocument();
       });
     });
 
@@ -365,25 +381,27 @@ describe('VendorDashboard', () => {
       const dashboardWithoutInsights = {
         data: {
           ...mockDashboardData.data,
-          insights: null
-        }
+          insights: null,
+        },
       };
-      
+
       useGetVendorDashboardQuery.mockReturnValue({
         data: dashboardWithoutInsights,
         isLoading: false,
         error: null,
-        refetch: vi.fn()
+        refetch: vi.fn(),
       });
 
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Great job! Your listings are performing well.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Great job! Your listings are performing well.')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -392,14 +410,14 @@ describe('VendorDashboard', () => {
     it('configures polling for dashboard data', () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       expect(useGetVendorDashboardQuery).toHaveBeenCalledWith(
         undefined,
         expect.objectContaining({
-          pollingInterval: 30000
+          pollingInterval: 30000,
         })
       );
     });
@@ -407,8 +425,8 @@ describe('VendorDashboard', () => {
     it('configures polling for analytics data', () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       expect(useGetVendorAnalyticsQuery).toHaveBeenCalledWith(
@@ -422,13 +440,15 @@ describe('VendorDashboard', () => {
     it('applies mobile-first responsive classes', async () => {
       renderWithProviders(<VendorDashboard />, {
         preloadedState: {
-          auth: defaultAuthState
-        }
+          auth: defaultAuthState,
+        },
       });
 
       await waitFor(() => {
         // Check for responsive grid classes
-        const metricsGrid = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2');
+        const metricsGrid = document.querySelector(
+          '.grid.grid-cols-1.sm\\:grid-cols-2'
+        );
         expect(metricsGrid).toBeInTheDocument();
       });
     });

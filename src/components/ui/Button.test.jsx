@@ -7,13 +7,15 @@ import Button from './Button';
 describe('Button Component', () => {
   it('renders button with text', () => {
     render(<Button>Click me</Button>);
-    expect(screen.getByRole('button', { name: /click me/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /click me/i })
+    ).toBeInTheDocument();
   });
 
   it('applies default variant and size classes', () => {
     render(<Button>Default Button</Button>);
     const button = screen.getByRole('button');
-    
+
     expect(button).toHaveClass('bg-gradient-secondary');
     expect(button).toHaveClass('min-h-[44px]');
   });
@@ -21,10 +23,10 @@ describe('Button Component', () => {
   it('applies different variants correctly', () => {
     const { rerender } = render(<Button variant="secondary">Secondary</Button>);
     expect(screen.getByRole('button')).toHaveClass('bg-earthy-brown');
-    
+
     rerender(<Button variant="outline">Outline</Button>);
     expect(screen.getByRole('button')).toHaveClass('border-2');
-    
+
     rerender(<Button variant="ghost">Ghost</Button>);
     expect(screen.getByRole('button')).toHaveClass('text-bottle-green');
   });
@@ -32,7 +34,7 @@ describe('Button Component', () => {
   it('applies different sizes correctly', () => {
     const { rerender } = render(<Button size="sm">Small</Button>);
     expect(screen.getByRole('button')).toHaveClass('min-h-[36px]');
-    
+
     rerender(<Button size="lg">Large</Button>);
     expect(screen.getByRole('button')).toHaveClass('min-h-[48px]');
   });
@@ -40,9 +42,9 @@ describe('Button Component', () => {
   it('handles click events', async () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();
-    
+
     render(<Button onClick={handleClick}>Clickable</Button>);
-    
+
     await user.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -50,7 +52,7 @@ describe('Button Component', () => {
   it('shows loading state', () => {
     render(<Button loading>Loading Button</Button>);
     const button = screen.getByRole('button');
-    
+
     expect(button).toBeDisabled();
     expect(screen.getByRole('status')).toBeInTheDocument(); // Loading spinner
   });
@@ -63,13 +65,13 @@ describe('Button Component', () => {
   it('does not call onClick when disabled', async () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();
-    
+
     render(
       <Button disabled onClick={handleClick}>
         Disabled Button
       </Button>
     );
-    
+
     await user.click(screen.getByRole('button'));
     expect(handleClick).not.toHaveBeenCalled();
   });
@@ -77,7 +79,7 @@ describe('Button Component', () => {
   it('renders with icon', () => {
     const TestIcon = () => <span data-testid="test-icon">Icon</span>;
     render(<Button icon={TestIcon}>Button with Icon</Button>);
-    
+
     expect(screen.getByTestId('test-icon')).toBeInTheDocument();
     expect(screen.getByText('Button with Icon')).toBeInTheDocument();
   });
@@ -85,7 +87,7 @@ describe('Button Component', () => {
   it('renders as icon-only button', () => {
     const TestIcon = () => <span data-testid="test-icon">Icon</span>;
     render(<Button icon={TestIcon} size="icon" aria-label="Icon button" />);
-    
+
     expect(screen.getByTestId('test-icon')).toBeInTheDocument();
     expect(screen.getByLabelText('Icon button')).toBeInTheDocument();
   });
@@ -93,7 +95,7 @@ describe('Button Component', () => {
   it('forwards ref correctly', () => {
     const ref = React.createRef();
     render(<Button ref={ref}>Ref Button</Button>);
-    
+
     expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
 
@@ -108,7 +110,7 @@ describe('Button Component', () => {
         <a href="/test">Link Button</a>
       </Button>
     );
-    
+
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/test');
     expect(link).toHaveClass('bg-gradient-secondary'); // Button styles applied
@@ -117,38 +119,38 @@ describe('Button Component', () => {
   it('meets minimum touch target size requirements', () => {
     render(<Button>Touch Target</Button>);
     const button = screen.getByRole('button');
-    
+
     expect(button).toHaveClass('min-h-[44px]'); // 44px minimum
   });
 
   it('supports keyboard navigation', async () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();
-    
+
     render(<Button onClick={handleClick}>Keyboard Button</Button>);
-    
+
     const button = screen.getByRole('button');
     button.focus();
-    
+
     await user.keyboard('{Enter}');
     expect(handleClick).toHaveBeenCalledTimes(1);
-    
+
     await user.keyboard(' ');
     expect(handleClick).toHaveBeenCalledTimes(2);
   });
 
   it('has proper ARIA attributes', () => {
     render(
-      <Button 
-        loading 
-        disabled 
+      <Button
+        loading
+        disabled
         aria-label="Test button"
         aria-describedby="description"
       >
         ARIA Button
       </Button>
     );
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('aria-label', 'Test button');
     expect(button).toHaveAttribute('aria-describedby', 'description');
@@ -160,7 +162,7 @@ describe('Button Component', () => {
       // This would typically use a color contrast testing library
       const { rerender } = render(<Button variant="primary">Primary</Button>);
       expect(screen.getByRole('button')).toHaveClass('text-white');
-      
+
       rerender(<Button variant="outline">Outline</Button>);
       expect(screen.getByRole('button')).toHaveClass('text-bottle-green');
     });
@@ -168,10 +170,10 @@ describe('Button Component', () => {
     it('maintains focus visibility', async () => {
       const user = userEvent.setup();
       render(<Button>Focus Button</Button>);
-      
+
       const button = screen.getByRole('button');
       await user.tab();
-      
+
       expect(button).toHaveFocus();
       expect(button).toHaveClass('focus:ring-2'); // Focus ring
     });
@@ -180,7 +182,7 @@ describe('Button Component', () => {
       // Mock prefers-reduced-motion
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: vi.fn().mockImplementation(query => ({
+        value: vi.fn().mockImplementation((query) => ({
           matches: query === '(prefers-reduced-motion: reduce)',
           media: query,
           onchange: null,
@@ -191,10 +193,10 @@ describe('Button Component', () => {
           dispatchEvent: vi.fn(),
         })),
       });
-      
+
       render(<Button>Motion Button</Button>);
       const button = screen.getByRole('button');
-      
+
       // Should have reduced motion classes when preference is set
       expect(button).toHaveClass('active:scale-95'); // Has animation by default
     });
@@ -203,7 +205,7 @@ describe('Button Component', () => {
   describe('Loading State', () => {
     it('shows loading spinner when loading', () => {
       render(<Button loading>Loading</Button>);
-      
+
       expect(screen.getByRole('status')).toBeInTheDocument();
       expect(screen.getByRole('button')).toBeDisabled();
     });
@@ -214,7 +216,7 @@ describe('Button Component', () => {
           Submit
         </Button>
       );
-      
+
       expect(screen.queryByText('Submit')).not.toBeInTheDocument();
       expect(screen.getByText('Processing...')).toBeInTheDocument();
     });
@@ -223,7 +225,7 @@ describe('Button Component', () => {
       const { rerender } = render(<Button>Normal Button</Button>);
       const button = screen.getByRole('button');
       const initialHeight = button.style.height;
-      
+
       rerender(<Button loading>Normal Button</Button>);
       expect(button.style.height).toBe(initialHeight);
     });
@@ -233,7 +235,7 @@ describe('Button Component', () => {
     it('adapts to mobile screens', () => {
       render(<Button>Mobile Button</Button>);
       const button = screen.getByRole('button');
-      
+
       // Should have mobile-friendly padding and height
       expect(button).toHaveClass('min-h-[44px]');
       expect(button).toHaveClass('px-6');
@@ -248,7 +250,7 @@ describe('Button Component', () => {
   describe('Error Handling', () => {
     it('gracefully handles missing onClick', () => {
       render(<Button>No Click Handler</Button>);
-      
+
       expect(() => {
         fireEvent.click(screen.getByRole('button'));
       }).not.toThrow();
@@ -257,12 +259,16 @@ describe('Button Component', () => {
     it('handles rapid clicking when loading', async () => {
       const handleClick = vi.fn();
       const user = userEvent.setup();
-      
-      render(<Button loading onClick={handleClick}>Loading Button</Button>);
-      
+
+      render(
+        <Button loading onClick={handleClick}>
+          Loading Button
+        </Button>
+      );
+
       await user.click(screen.getByRole('button'));
       await user.click(screen.getByRole('button'));
-      
+
       expect(handleClick).not.toHaveBeenCalled();
     });
   });

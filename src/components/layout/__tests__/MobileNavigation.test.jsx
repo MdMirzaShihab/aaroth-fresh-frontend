@@ -10,7 +10,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useLocation: () => ({ pathname: '/vendor/dashboard' })
+    useLocation: () => ({ pathname: '/vendor/dashboard' }),
   };
 });
 
@@ -24,11 +24,13 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: false,
         user: null,
-        token: null
-      }
+        token: null,
+      },
     };
 
-    const { container } = renderWithProviders(<MobileNavigation />, { preloadedState });
+    const { container } = renderWithProviders(<MobileNavigation />, {
+      preloadedState,
+    });
     expect(container.firstChild).toBeNull();
   });
 
@@ -37,8 +39,8 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Admin User', role: 'admin' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
@@ -54,8 +56,8 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
@@ -71,8 +73,8 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Restaurant User', role: 'restaurantOwner' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
@@ -88,8 +90,8 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
@@ -105,20 +107,20 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     // Mock current location as vendor dashboard
     vi.doMock('react-router-dom', () => ({
       useNavigate: () => mockNavigate,
-      useLocation: () => ({ pathname: '/vendor/dashboard' })
+      useLocation: () => ({ pathname: '/vendor/dashboard' }),
     }));
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
 
     const dashboardButton = screen.getByLabelText('Dashboard');
-    
+
     // Should have active styling classes
     expect(dashboardButton).toHaveClass('bg-bottle-green/10');
     expect(dashboardButton).toHaveClass('text-bottle-green');
@@ -129,16 +131,16 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
 
     const buttons = screen.getAllByRole('button');
-    
+
     // Check minimum touch target sizes
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       expect(button).toHaveClass('min-h-[72px]');
       expect(button).toHaveClass('min-w-[60px]');
     });
@@ -155,11 +157,13 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
-    const { container } = renderWithProviders(<MobileNavigation />, { preloadedState });
+    const { container } = renderWithProviders(<MobileNavigation />, {
+      preloadedState,
+    });
     const nav = container.querySelector('nav');
 
     expect(nav).toHaveClass('fixed');
@@ -174,15 +178,15 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
 
     const dashboardButton = screen.getByLabelText('Dashboard');
     const icon = dashboardButton.querySelector('div'); // Icon container
-    
+
     // Should have active indicator dot
     expect(icon.querySelector('.animate-scale-in')).toBeInTheDocument();
   });
@@ -192,8 +196,8 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Restaurant Manager', role: 'restaurantManager' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
@@ -210,11 +214,13 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
-    const { container } = renderWithProviders(<MobileNavigation />, { preloadedState });
+    const { container } = renderWithProviders(<MobileNavigation />, {
+      preloadedState,
+    });
     const nav = container.querySelector('nav');
 
     expect(nav).toHaveClass('bg-white/95');
@@ -227,11 +233,13 @@ describe('MobileNavigation', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Vendor User', role: 'vendor' },
-        token: 'test-token'
-      }
+        token: 'test-token',
+      },
     };
 
-    const { container } = renderWithProviders(<MobileNavigation />, { preloadedState });
+    const { container } = renderWithProviders(<MobileNavigation />, {
+      preloadedState,
+    });
     const nav = container.querySelector('nav');
 
     expect(nav).toHaveClass('z-40');

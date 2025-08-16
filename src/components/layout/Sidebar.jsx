@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronRight, X, Crown, Shield, Store } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  X,
+  Crown,
+  Shield,
+  Store,
+} from 'lucide-react';
 import { selectAuth } from '../../store/slices/authSlice';
 import { selectCartItemCount } from '../../store/slices/cartSlice';
 import { selectUnreadNotificationCount } from '../../store/slices/notificationSlice';
-import { getNavigationForRole, hasAccessToNavItem } from '../../constants/navigation';
+import {
+  getNavigationForRole,
+  hasAccessToNavItem,
+} from '../../constants/navigation';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
@@ -13,9 +23,9 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { user } = useSelector(selectAuth);
   const cartItemCount = useSelector(selectCartItemCount) || 0;
   const unreadNotifications = useSelector(selectUnreadNotificationCount) || 0;
-  
+
   const [expandedItems, setExpandedItems] = useState(new Set());
-  
+
   const navigationItems = getNavigationForRole(user?.role);
 
   // Function to get badge count for specific navigation items
@@ -66,7 +76,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const toggleExpanded = (itemId) => {
-    setExpandedItems(prev => {
+    setExpandedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(itemId)) {
         newSet.delete(itemId);
@@ -86,13 +96,17 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const isActivePath = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+    return (
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
   };
 
   const isActiveParent = (item) => {
     if (isActivePath(item.path)) return true;
     if (item.children) {
-      return item.children.some(child => isActivePath(item.path + '/' + child.id));
+      return item.children.some((child) =>
+        isActivePath(item.path + '/' + child.id)
+      );
     }
     return false;
   };
@@ -124,22 +138,22 @@ const Sidebar = ({ isOpen, onClose }) => {
             isActive
               ? 'bg-gradient-secondary text-white shadow-md'
               : isParentActive
-              ? 'bg-bottle-green/10 text-bottle-green'
-              : 'text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800'
+                ? 'bg-bottle-green/10 text-bottle-green'
+                : 'text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800'
           }`}
         >
           {item.icon && (
             <div className="relative flex-shrink-0">
-              <item.icon className={`${
-                level > 0 ? 'w-4 h-4' : 'w-5 h-5'
-              } ${
-                isActive 
-                  ? 'text-white' 
-                  : isParentActive
-                  ? 'text-bottle-green'
-                  : 'text-text-muted group-hover:text-bottle-green'
-              }`} />
-              
+              <item.icon
+                className={`${level > 0 ? 'w-4 h-4' : 'w-5 h-5'} ${
+                  isActive
+                    ? 'text-white'
+                    : isParentActive
+                      ? 'text-bottle-green'
+                      : 'text-text-muted group-hover:text-bottle-green'
+                }`}
+              />
+
               {/* Badge Count */}
               {badgeCount && (
                 <div className="absolute -top-1 -right-1 min-w-[16px] h-[16px] bg-tomato-red text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
@@ -148,18 +162,18 @@ const Sidebar = ({ isOpen, onClose }) => {
               )}
             </div>
           )}
-          
+
           <span className="flex-1 text-left font-medium truncate">
             {item.label}
           </span>
-          
+
           {/* Badge Count (alternative position) */}
           {badgeCount && !item.icon && (
             <div className="bg-tomato-red text-white text-xs font-bold rounded-full px-2 py-1 min-w-[20px] h-[20px] flex items-center justify-center">
               {badgeCount > 99 ? '99+' : badgeCount}
             </div>
           )}
-          
+
           {hasChildren && (
             <div className="flex-shrink-0">
               {isExpanded ? (
@@ -177,7 +191,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             {item.children.map((child) => {
               const childPath = `${item.path}/${child.id}`;
               const isChildActive = isActivePath(child.path || childPath);
-              
+
               return (
                 <button
                   key={child.id}
@@ -188,9 +202,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                       : 'text-text-muted hover:text-bottle-green hover:bg-bottle-green/5 dark:hover:bg-gray-800'
                   }`}
                 >
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    isChildActive ? 'bg-bottle-green' : 'bg-text-muted/30'
-                  }`} />
+                  <div
+                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      isChildActive ? 'bg-bottle-green' : 'bg-text-muted/30'
+                    }`}
+                  />
                   <span className="truncate">{child.label}</span>
                 </button>
               );
@@ -270,9 +286,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               <p className="text-sm font-medium text-text-dark dark:text-white truncate">
                 {user?.name || 'User'}
               </p>
-              <p className="text-xs text-text-muted truncate">
-                {user?.phone}
-              </p>
+              <p className="text-xs text-text-muted truncate">{user?.phone}</p>
             </div>
           </div>
         </div>

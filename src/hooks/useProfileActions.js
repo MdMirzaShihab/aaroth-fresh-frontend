@@ -16,20 +16,21 @@ import {
  * Hook for profile management actions
  */
 export const useProfileActions = () => {
-  const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateUserProfileMutation();
-  const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+  const [updateProfile, { isLoading: isUpdatingProfile }] =
+    useUpdateUserProfileMutation();
+  const [changePassword, { isLoading: isChangingPassword }] =
+    useChangePasswordMutation();
 
   const updateUserProfile = async (profileData) => {
     try {
       const result = await updateProfile(profileData).unwrap();
-      
+
       if (result.success) {
         toast.success('Profile updated successfully');
         return { success: true, user: result.user };
       }
-      
+
       return { success: false, message: result.message };
-      
     } catch (error) {
       const message = error?.data?.message || 'Failed to update profile';
       toast.error(message);
@@ -40,14 +41,13 @@ export const useProfileActions = () => {
   const updatePassword = async (passwordData) => {
     try {
       const result = await changePassword(passwordData).unwrap();
-      
+
       if (result.success) {
         toast.success('Password changed successfully');
         return { success: true };
       }
-      
+
       return { success: false, message: result.message };
-      
     } catch (error) {
       const message = error?.data?.message || 'Failed to change password';
       toast.error(message);
@@ -68,28 +68,30 @@ export const useProfileActions = () => {
  * Hook for restaurant manager management (Restaurant Owner Only)
  */
 export const useManagerActions = () => {
-  const [createManager, { isLoading: isCreatingManager }] = useCreateManagerMutation();
-  const [deactivateManager, { isLoading: isDeactivatingManager }] = useDeactivateManagerMutation();
-  const { 
-    data: managersData, 
-    isLoading: isLoadingManagers, 
-    refetch: refetchManagers 
+  const [createManager, { isLoading: isCreatingManager }] =
+    useCreateManagerMutation();
+  const [deactivateManager, { isLoading: isDeactivatingManager }] =
+    useDeactivateManagerMutation();
+  const {
+    data: managersData,
+    isLoading: isLoadingManagers,
+    refetch: refetchManagers,
   } = useGetManagersQuery();
 
   const addManager = async (managerData) => {
     try {
       const result = await createManager(managerData).unwrap();
-      
+
       if (result.success) {
         toast.success('Manager account created successfully');
         refetchManagers(); // Refresh the managers list
         return { success: true, manager: result.user };
       }
-      
+
       return { success: false, message: result.message };
-      
     } catch (error) {
-      const message = error?.data?.message || 'Failed to create manager account';
+      const message =
+        error?.data?.message || 'Failed to create manager account';
       toast.error(message);
       return { success: false, message };
     }
@@ -97,17 +99,19 @@ export const useManagerActions = () => {
 
   const toggleManagerStatus = async (managerId, isActive) => {
     try {
-      const result = await deactivateManager({ id: managerId, isActive }).unwrap();
-      
+      const result = await deactivateManager({
+        id: managerId,
+        isActive,
+      }).unwrap();
+
       if (result.success) {
         const action = isActive ? 'activated' : 'deactivated';
         toast.success(`Manager ${action} successfully`);
         refetchManagers(); // Refresh the managers list
         return { success: true };
       }
-      
+
       return { success: false, message: result.message };
-      
     } catch (error) {
       const message = error?.data?.message || 'Failed to update manager status';
       toast.error(message);

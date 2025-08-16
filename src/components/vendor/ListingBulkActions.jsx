@@ -1,56 +1,63 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  useBulkUpdateListingsMutation,
-  useBulkDeleteListingsMutation,
-  useUpdateListingInventoryMutation
-} from '../../store/slices/apiSlice';
-import { addNotification } from '../../store/slices/notificationSlice';
-import Button from '../ui/Button';
-import FormField from '../ui/FormField';
-import ConfirmDialog from '../ui/ConfirmDialog';
-import {
   CheckCircle,
   XCircle,
   Trash2,
   Package,
   Edit3,
   Zap,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
+import {
+  useBulkUpdateListingsMutation,
+  useBulkDeleteListingsMutation,
+  useUpdateListingInventoryMutation,
+} from '../../store/slices/apiSlice';
+import { addNotification } from '../../store/slices/notificationSlice';
+import Button from '../ui/Button';
+import FormField from '../ui/FormField';
+import ConfirmDialog from '../ui/ConfirmDialog';
 
-const ListingBulkActions = ({ 
-  selectedListings = [], 
+const ListingBulkActions = ({
+  selectedListings = [],
   onClearSelection,
   listings = [],
-  className = ''
+  className = '',
 }) => {
   const dispatch = useDispatch();
   const [showConfirm, setShowConfirm] = useState(null);
   const [bulkUpdateData, setBulkUpdateData] = useState({});
-  
-  const [bulkUpdateListings, { isLoading: isUpdating }] = useBulkUpdateListingsMutation();
-  const [bulkDeleteListings, { isLoading: isDeleting }] = useBulkDeleteListingsMutation();
+
+  const [bulkUpdateListings, { isLoading: isUpdating }] =
+    useBulkUpdateListingsMutation();
+  const [bulkDeleteListings, { isLoading: isDeleting }] =
+    useBulkDeleteListingsMutation();
   const [updateListingInventory] = useUpdateListingInventoryMutation();
 
   const selectedCount = selectedListings.length;
-  const selectedListingData = listings.filter(listing => selectedListings.includes(listing.id));
+  const selectedListingData = listings.filter((listing) =>
+    selectedListings.includes(listing.id)
+  );
 
   // Get statistics about selected listings
   const selectionStats = {
-    active: selectedListingData.filter(l => l.status === 'active').length,
-    inactive: selectedListingData.filter(l => l.status === 'inactive').length,
-    outOfStock: selectedListingData.filter(l => l.status === 'out_of_stock').length,
-    pending: selectedListingData.filter(l => l.status === 'pending').length
+    active: selectedListingData.filter((l) => l.status === 'active').length,
+    inactive: selectedListingData.filter((l) => l.status === 'inactive').length,
+    outOfStock: selectedListingData.filter((l) => l.status === 'out_of_stock')
+      .length,
+    pending: selectedListingData.filter((l) => l.status === 'pending').length,
   };
 
   const handleBulkStatusUpdate = (status) => {
     if (selectionStats.pending > 0 && status !== 'pending') {
-      dispatch(addNotification({
-        type: 'warning',
-        title: 'Cannot Update Pending Listings',
-        message: `${selectionStats.pending} selected listings are pending review and cannot be modified.`,
-      }));
+      dispatch(
+        addNotification({
+          type: 'warning',
+          title: 'Cannot Update Pending Listings',
+          message: `${selectionStats.pending} selected listings are pending review and cannot be modified.`,
+        })
+      );
       return;
     }
 
@@ -59,8 +66,13 @@ const ListingBulkActions = ({
       action: status,
       title: `Bulk ${status === 'active' ? 'Activate' : status === 'inactive' ? 'Deactivate' : 'Update'} Listings`,
       message: `Are you sure you want to ${status === 'active' ? 'activate' : status === 'inactive' ? 'deactivate' : 'update'} ${selectedCount} selected listings?`,
-      confirmText: status === 'active' ? 'Activate All' : status === 'inactive' ? 'Deactivate All' : 'Update All',
-      data: { status }
+      confirmText:
+        status === 'active'
+          ? 'Activate All'
+          : status === 'inactive'
+            ? 'Deactivate All'
+            : 'Update All',
+      data: { status },
     });
   };
 
@@ -71,7 +83,10 @@ const ListingBulkActions = ({
       title: 'Bulk Delete Listings',
       message: (
         <div className="space-y-3">
-          <p>Are you sure you want to permanently delete <strong>{selectedCount}</strong> selected listings?</p>
+          <p>
+            Are you sure you want to permanently delete{' '}
+            <strong>{selectedCount}</strong> selected listings?
+          </p>
           {activeListings > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
               <div className="flex items-start gap-2">
@@ -81,17 +96,20 @@ const ListingBulkActions = ({
                     Warning: {activeListings} active listings will be deleted
                   </p>
                   <p className="text-sm text-amber-700 mt-1">
-                    These listings are currently visible to customers and may have pending orders.
+                    These listings are currently visible to customers and may
+                    have pending orders.
                   </p>
                 </div>
               </div>
             </div>
           )}
-          <p className="text-sm text-text-muted">This action cannot be undone.</p>
+          <p className="text-sm text-text-muted">
+            This action cannot be undone.
+          </p>
         </div>
       ),
       confirmText: 'Delete All',
-      isDangerous: true
+      isDangerous: true,
     });
   };
 
@@ -101,8 +119,11 @@ const ListingBulkActions = ({
       title: 'Bulk Update Inventory',
       message: (
         <div className="space-y-4">
-          <p>Update inventory for <strong>{selectedCount}</strong> selected listings:</p>
-          
+          <p>
+            Update inventory for <strong>{selectedCount}</strong> selected
+            listings:
+          </p>
+
           <div className="space-y-3">
             <FormField label="Available Quantity">
               <input
@@ -110,116 +131,130 @@ const ListingBulkActions = ({
                 min="0"
                 placeholder="Leave empty to skip"
                 value={bulkUpdateData.quantityAvailable || ''}
-                onChange={(e) => setBulkUpdateData(prev => ({
-                  ...prev, 
-                  quantityAvailable: e.target.value
-                }))}
+                onChange={(e) =>
+                  setBulkUpdateData((prev) => ({
+                    ...prev,
+                    quantityAvailable: e.target.value,
+                  }))
+                }
                 className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
               />
             </FormField>
-            
+
             <div className="grid grid-cols-2 gap-3">
               <FormField label="Harvest Date">
                 <input
                   type="date"
                   value={bulkUpdateData.harvestDate || ''}
-                  onChange={(e) => setBulkUpdateData(prev => ({
-                    ...prev, 
-                    harvestDate: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setBulkUpdateData((prev) => ({
+                      ...prev,
+                      harvestDate: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                 />
               </FormField>
-              
+
               <FormField label="Expiry Date">
                 <input
                   type="date"
                   value={bulkUpdateData.expiryDate || ''}
-                  onChange={(e) => setBulkUpdateData(prev => ({
-                    ...prev, 
-                    expiryDate: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setBulkUpdateData((prev) => ({
+                      ...prev,
+                      expiryDate: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                 />
               </FormField>
             </div>
           </div>
-          
+
           <p className="text-sm text-text-muted">
             Only filled fields will be updated. Empty fields will be ignored.
           </p>
         </div>
       ),
       confirmText: 'Update Inventory',
-      data: bulkUpdateData
+      data: bulkUpdateData,
     });
   };
 
   const handleConfirmAction = async () => {
     try {
       const { type, data } = showConfirm;
-      
+
       if (type === 'status') {
         await bulkUpdateListings({
           listingIds: selectedListings,
-          updates: { status: data.status }
+          updates: { status: data.status },
         }).unwrap();
-        
-        dispatch(addNotification({
-          type: 'success',
-          title: 'Status Updated',
-          message: `${selectedCount} listings have been ${data.status === 'active' ? 'activated' : data.status === 'inactive' ? 'deactivated' : 'updated'}`,
-        }));
-      } 
-      else if (type === 'delete') {
+
+        dispatch(
+          addNotification({
+            type: 'success',
+            title: 'Status Updated',
+            message: `${selectedCount} listings have been ${data.status === 'active' ? 'activated' : data.status === 'inactive' ? 'deactivated' : 'updated'}`,
+          })
+        );
+      } else if (type === 'delete') {
         await bulkDeleteListings(selectedListings).unwrap();
-        
-        dispatch(addNotification({
-          type: 'success',
-          title: 'Listings Deleted',
-          message: `${selectedCount} listings have been permanently deleted`,
-        }));
-      }
-      else if (type === 'inventory') {
+
+        dispatch(
+          addNotification({
+            type: 'success',
+            title: 'Listings Deleted',
+            message: `${selectedCount} listings have been permanently deleted`,
+          })
+        );
+      } else if (type === 'inventory') {
         // Filter out empty values
         const inventoryUpdates = Object.entries(data)
           .filter(([key, value]) => value !== '' && value != null)
           .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
-        
+
         if (Object.keys(inventoryUpdates).length === 0) {
-          dispatch(addNotification({
-            type: 'warning',
-            title: 'No Updates',
-            message: 'Please fill at least one field to update inventory',
-          }));
+          dispatch(
+            addNotification({
+              type: 'warning',
+              title: 'No Updates',
+              message: 'Please fill at least one field to update inventory',
+            })
+          );
           return;
         }
 
         // Update each listing individually since bulk inventory update might not be available
-        const updatePromises = selectedListings.map(listingId => 
+        const updatePromises = selectedListings.map((listingId) =>
           updateListingInventory({ id: listingId, inventory: inventoryUpdates })
         );
-        
+
         await Promise.all(updatePromises);
-        
-        dispatch(addNotification({
-          type: 'success',
-          title: 'Inventory Updated',
-          message: `Inventory updated for ${selectedCount} listings`,
-        }));
+
+        dispatch(
+          addNotification({
+            type: 'success',
+            title: 'Inventory Updated',
+            message: `Inventory updated for ${selectedCount} listings`,
+          })
+        );
       }
-      
+
       onClearSelection();
       setShowConfirm(null);
       setBulkUpdateData({});
-      
     } catch (error) {
       console.error('Bulk action failed:', error);
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Action Failed',
-        message: error.data?.message || 'Bulk action failed. Please try again.',
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Action Failed',
+          message:
+            error.data?.message || 'Bulk action failed. Please try again.',
+        })
+      );
     }
   };
 
@@ -228,14 +263,16 @@ const ListingBulkActions = ({
   }
 
   return (
-    <div className={`bg-white border border-gray-200 rounded-2xl p-4 shadow-sm ${className}`}>
+    <div
+      className={`bg-white border border-gray-200 rounded-2xl p-4 shadow-sm ${className}`}
+    >
       {/* Selection Summary */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium text-text-dark">
             {selectedCount} listing{selectedCount === 1 ? '' : 's'} selected
           </span>
-          
+
           {/* Selection breakdown */}
           <div className="flex items-center gap-3 text-xs">
             {selectionStats.active > 0 && (
@@ -264,7 +301,7 @@ const ListingBulkActions = ({
             )}
           </div>
         </div>
-        
+
         <Button
           variant="outline"
           size="sm"
@@ -288,7 +325,7 @@ const ListingBulkActions = ({
           <CheckCircle className="w-4 h-4" />
           Activate ({selectedCount - selectionStats.active})
         </Button>
-        
+
         <Button
           variant="outline"
           size="sm"
@@ -299,7 +336,7 @@ const ListingBulkActions = ({
           <XCircle className="w-4 h-4" />
           Deactivate ({selectedCount - selectionStats.inactive})
         </Button>
-        
+
         <Button
           variant="outline"
           size="sm"
@@ -340,7 +377,9 @@ const ListingBulkActions = ({
       <div className="mt-3 pt-3 border-t border-gray-100">
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-text-muted" />
-          <span className="text-xs text-text-muted font-medium">Quick Actions:</span>
+          <span className="text-xs text-text-muted font-medium">
+            Quick Actions:
+          </span>
           <button
             onClick={() => handleBulkStatusUpdate('active')}
             disabled={isUpdating}
@@ -362,7 +401,7 @@ const ListingBulkActions = ({
       {/* Confirmation Dialog */}
       {showConfirm && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => {
             setShowConfirm(null);
             setBulkUpdateData({});

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  Users, 
-  UserPlus, 
-  Edit, 
-  Trash2, 
-  Shield, 
-  Mail, 
+import {
+  Users,
+  UserPlus,
+  Edit,
+  Trash2,
+  Shield,
+  Mail,
   Phone,
   Calendar,
   Search,
@@ -15,10 +15,20 @@ import {
   Key,
   Ban,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
-import { useGetRestaurantManagersQuery, useCreateManagerMutation, useUpdateManagerMutation, useDeleteManagerMutation } from '../../store/slices/apiSlice';
-import { formatPhoneForDisplay, formatDate, validateBangladeshPhone, phoneInputUtils } from '../../utils';
+import {
+  useGetRestaurantManagersQuery,
+  useCreateManagerMutation,
+  useUpdateManagerMutation,
+  useDeleteManagerMutation,
+} from '../../store/slices/apiSlice';
+import {
+  formatPhoneForDisplay,
+  formatDate,
+  validateBangladeshPhone,
+  phoneInputUtils,
+} from '../../utils';
 
 const ManagerManagement = () => {
   // State management
@@ -40,22 +50,27 @@ const ManagerManagement = () => {
       placeOrders: true,
       manageProfile: false,
       manageManagers: false,
-      viewAnalytics: true
+      viewAnalytics: true,
     },
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   // API queries and mutations
-  const { data: managers = [], isLoading, refetch } = useGetRestaurantManagersQuery();
+  const {
+    data: managers = [],
+    isLoading,
+    refetch,
+  } = useGetRestaurantManagersQuery();
   const [createManager, { isLoading: isCreating }] = useCreateManagerMutation();
   const [updateManager, { isLoading: isUpdating }] = useUpdateManagerMutation();
   const [deleteManager, { isLoading: isDeleting }] = useDeleteManagerMutation();
 
   // Filter managers based on search and status
-  const filteredManagers = managers.filter(manager => {
-    const matchesSearch = manager.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         manager.email?.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredManagers = managers.filter((manager) => {
+    const matchesSearch =
+      manager.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      manager.email?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = !statusFilter || manager.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -71,16 +86,21 @@ const ManagerManagement = () => {
         placeOrders: true,
         manageProfile: false,
         manageManagers: false,
-        viewAnalytics: true
+        viewAnalytics: true,
       },
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     });
   };
 
   const handleAddManager = async () => {
     // Validation
-    if (!managerForm.name || !managerForm.email || !managerForm.phone || !managerForm.password) {
+    if (
+      !managerForm.name ||
+      !managerForm.email ||
+      !managerForm.phone ||
+      !managerForm.password
+    ) {
       alert('Please fill all required fields');
       return;
     }
@@ -104,7 +124,7 @@ const ManagerManagement = () => {
     try {
       await createManager({
         ...managerForm,
-        phone: phoneInputUtils.getCleanValue(managerForm.phone)
+        phone: phoneInputUtils.getCleanValue(managerForm.phone),
       }).unwrap();
       setShowAddModal(false);
       resetForm();
@@ -136,8 +156,8 @@ const ManagerManagement = () => {
         id: selectedManager._id,
         data: {
           ...managerForm,
-          phone: phoneInputUtils.getCleanValue(managerForm.phone)
-        }
+          phone: phoneInputUtils.getCleanValue(managerForm.phone),
+        },
       }).unwrap();
       setShowEditModal(false);
       setSelectedManager(null);
@@ -177,10 +197,10 @@ const ManagerManagement = () => {
         placeOrders: true,
         manageProfile: false,
         manageManagers: false,
-        viewAnalytics: true
+        viewAnalytics: true,
       },
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     });
     setShowEditModal(true);
   };
@@ -189,7 +209,7 @@ const ManagerManagement = () => {
     const colors = {
       active: 'bg-mint-fresh/20 text-bottle-green border-mint-fresh/30',
       inactive: 'bg-gray-100 text-gray-600 border-gray-200',
-      suspended: 'bg-tomato-red/10 text-tomato-red border-tomato-red/30'
+      suspended: 'bg-tomato-red/10 text-tomato-red border-tomato-red/30',
     };
     return colors[status] || colors.active;
   };
@@ -198,7 +218,7 @@ const ManagerManagement = () => {
     const icons = {
       active: CheckCircle,
       inactive: User,
-      suspended: Ban
+      suspended: Ban,
     };
     const Icon = icons[status] || CheckCircle;
     return <Icon className="w-3 h-3" />;
@@ -217,7 +237,9 @@ const ManagerManagement = () => {
             <h3 className="font-semibold text-text-dark">{manager.name}</h3>
             <p className="text-sm text-text-muted">{manager.email}</p>
             <div className="flex items-center gap-2 mt-1">
-              <span className={`px-2 py-1 rounded-lg text-xs font-medium border flex items-center gap-1 ${getStatusColor(manager.status)}`}>
+              <span
+                className={`px-2 py-1 rounded-lg text-xs font-medium border flex items-center gap-1 ${getStatusColor(manager.status)}`}
+              >
                 {getStatusIcon(manager.status)}
                 {manager.status || 'Active'}
               </span>
@@ -238,31 +260,44 @@ const ManagerManagement = () => {
       <div className="space-y-2 mb-4">
         <div className="flex items-center gap-2 text-sm">
           <Phone className="w-3 h-3 text-gray-400" />
-          <span className="text-text-muted">{formatPhoneForDisplay(manager.phone)}</span>
+          <span className="text-text-muted">
+            {formatPhoneForDisplay(manager.phone)}
+          </span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Calendar className="w-3 h-3 text-gray-400" />
-          <span className="text-text-muted">Joined {formatDate(manager.createdAt)}</span>
+          <span className="text-text-muted">
+            Joined {formatDate(manager.createdAt)}
+          </span>
         </div>
       </div>
 
       {/* Permissions Summary */}
       <div className="bg-white/50 border border-gray-100 rounded-2xl p-3 mb-4">
-        <div className="text-xs font-medium text-text-dark mb-2">Permissions</div>
+        <div className="text-xs font-medium text-text-dark mb-2">
+          Permissions
+        </div>
         <div className="flex flex-wrap gap-1">
-          {Object.entries(manager.permissions || {}).map(([key, value]) => (
-            value && (
-              <span key={key} className="px-2 py-1 bg-mint-fresh/10 text-bottle-green text-xs rounded-lg">
-                {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-              </span>
-            )
-          ))}
+          {Object.entries(manager.permissions || {}).map(
+            ([key, value]) =>
+              value && (
+                <span
+                  key={key}
+                  className="px-2 py-1 bg-mint-fresh/10 text-bottle-green text-xs rounded-lg"
+                >
+                  {key
+                    .replace(/([A-Z])/g, ' $1')
+                    .replace(/^./, (str) => str.toUpperCase())}
+                </span>
+              )
+          )}
         </div>
       </div>
 
       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
         <span className="text-xs text-text-muted">
-          Last active: {manager.lastLoginAt ? formatDate(manager.lastLoginAt) : 'Never'}
+          Last active:{' '}
+          {manager.lastLoginAt ? formatDate(manager.lastLoginAt) : 'Never'}
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -313,7 +348,12 @@ const ManagerManagement = () => {
                 <input
                   type="text"
                   value={managerForm.name}
-                  onChange={(e) => setManagerForm(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setManagerForm((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                   placeholder="Enter full name"
                 />
@@ -326,7 +366,12 @@ const ManagerManagement = () => {
                 <input
                   type="email"
                   value={managerForm.email}
-                  onChange={(e) => setManagerForm(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) =>
+                    setManagerForm((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                   placeholder="Enter email address"
                 />
@@ -339,7 +384,12 @@ const ManagerManagement = () => {
                 <input
                   type="tel"
                   value={managerForm.phone}
-                  onChange={(e) => setManagerForm(prev => ({ ...prev, phone: e.target.value }))}
+                  onChange={(e) =>
+                    setManagerForm((prev) => ({
+                      ...prev,
+                      phone: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                   placeholder={phoneInputUtils.placeholder}
                 />
@@ -351,7 +401,12 @@ const ManagerManagement = () => {
                 </label>
                 <select
                   value={managerForm.role}
-                  onChange={(e) => setManagerForm(prev => ({ ...prev, role: e.target.value }))}
+                  onChange={(e) =>
+                    setManagerForm((prev) => ({
+                      ...prev,
+                      role: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                 >
                   <option value="restaurantManager">Manager</option>
@@ -369,7 +424,12 @@ const ManagerManagement = () => {
                   <input
                     type="password"
                     value={managerForm.password}
-                    onChange={(e) => setManagerForm(prev => ({ ...prev, password: e.target.value }))}
+                    onChange={(e) =>
+                      setManagerForm((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                    }
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                     placeholder="Enter password"
                   />
@@ -382,7 +442,12 @@ const ManagerManagement = () => {
                   <input
                     type="password"
                     value={managerForm.confirmPassword}
-                    onChange={(e) => setManagerForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    onChange={(e) =>
+                      setManagerForm((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
+                    }
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                     placeholder="Confirm password"
                   />
@@ -401,29 +466,40 @@ const ManagerManagement = () => {
                   placeOrders: 'Place Orders',
                   manageProfile: 'Manage Restaurant Profile',
                   manageManagers: 'Manage Other Managers',
-                  viewAnalytics: 'View Analytics'
+                  viewAnalytics: 'View Analytics',
                 }).map(([key, label]) => (
-                  <label key={key} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
+                  <label
+                    key={key}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl"
+                  >
                     <input
                       type="checkbox"
                       checked={managerForm.permissions[key] || false}
-                      onChange={(e) => setManagerForm(prev => ({
-                        ...prev,
-                        permissions: {
-                          ...prev.permissions,
-                          [key]: e.target.checked
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setManagerForm((prev) => ({
+                          ...prev,
+                          permissions: {
+                            ...prev.permissions,
+                            [key]: e.target.checked,
+                          },
+                        }))
+                      }
                       className="text-bottle-green focus:ring-bottle-green/20 rounded"
                     />
                     <div>
-                      <span className="font-medium text-text-dark">{label}</span>
+                      <span className="font-medium text-text-dark">
+                        {label}
+                      </span>
                       <p className="text-xs text-text-muted">
-                        {key === 'viewOrders' && 'Allow viewing all restaurant orders'}
+                        {key === 'viewOrders' &&
+                          'Allow viewing all restaurant orders'}
                         {key === 'placeOrders' && 'Allow placing new orders'}
-                        {key === 'manageProfile' && 'Allow editing restaurant profile'}
-                        {key === 'manageManagers' && 'Allow creating/editing other managers'}
-                        {key === 'viewAnalytics' && 'Allow viewing restaurant analytics'}
+                        {key === 'manageProfile' &&
+                          'Allow editing restaurant profile'}
+                        {key === 'manageManagers' &&
+                          'Allow creating/editing other managers'}
+                        {key === 'viewAnalytics' &&
+                          'Allow viewing restaurant analytics'}
                       </p>
                     </div>
                   </label>
@@ -450,9 +526,7 @@ const ManagerManagement = () => {
                   {showAddModal ? 'Creating...' : 'Updating...'}
                 </>
               ) : (
-                <>
-                  {showAddModal ? 'Create Manager' : 'Update Manager'}
-                </>
+                <>{showAddModal ? 'Create Manager' : 'Update Manager'}</>
               )}
             </button>
           </div>
@@ -461,7 +535,13 @@ const ManagerManagement = () => {
     );
   };
 
-  const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, isDeleting, managerName }) => {
+  const DeleteConfirmModal = ({
+    isOpen,
+    onClose,
+    onConfirm,
+    isDeleting,
+    managerName,
+  }) => {
     if (!isOpen) return null;
 
     return (
@@ -471,9 +551,12 @@ const ManagerManagement = () => {
             <div className="w-16 h-16 bg-tomato-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-8 h-8 text-tomato-red" />
             </div>
-            <h3 className="text-xl font-semibold text-text-dark mb-2">Delete Manager</h3>
+            <h3 className="text-xl font-semibold text-text-dark mb-2">
+              Delete Manager
+            </h3>
             <p className="text-text-muted mb-6">
-              Are you sure you want to delete <strong>{managerName}</strong>? This action cannot be undone.
+              Are you sure you want to delete <strong>{managerName}</strong>?
+              This action cannot be undone.
             </p>
             <div className="flex justify-center gap-3">
               <button
@@ -508,7 +591,9 @@ const ManagerManagement = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-dark">Manager Management</h1>
+          <h1 className="text-3xl font-bold text-text-dark">
+            Manager Management
+          </h1>
           <p className="text-text-muted mt-2">
             Add and manage restaurant managers
           </p>
@@ -575,10 +660,9 @@ const ManagerManagement = () => {
                 No managers found
               </h3>
               <p className="text-text-muted mb-8">
-                {searchQuery || statusFilter 
+                {searchQuery || statusFilter
                   ? 'Try adjusting your search or filters'
-                  : 'Add your first manager to help run your restaurant'
-                }
+                  : 'Add your first manager to help run your restaurant'}
               </p>
               <button
                 onClick={() => {

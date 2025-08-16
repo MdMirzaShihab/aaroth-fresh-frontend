@@ -1,4 +1,17 @@
 import React, { useState } from 'react';
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Package,
+  ShoppingCart,
+  DollarSign,
+  Calendar,
+  Download,
+  RefreshCw,
+  AlertTriangle,
+} from 'lucide-react';
 import { useGetAdminDashboardQuery } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
@@ -7,28 +20,15 @@ import Button from '../../components/ui/Button';
 import SimpleLineChart from '../../components/ui/charts/SimpleLineChart';
 import SimpleBarChart from '../../components/ui/charts/SimpleBarChart';
 import SimplePieChart from '../../components/ui/charts/SimplePieChart';
-import { 
-  BarChart3,
-  TrendingUp, 
-  TrendingDown,
-  Users, 
-  Package, 
-  ShoppingCart, 
-  DollarSign,
-  Calendar,
-  Download,
-  RefreshCw,
-  AlertTriangle
-} from 'lucide-react';
 
 const AnalyticsDashboard = () => {
   const [timeRange, setTimeRange] = useState('7d');
-  
-  const { 
-    data: analyticsData, 
-    isLoading, 
+
+  const {
+    data: analyticsData,
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useGetAdminDashboardQuery();
 
   // Mock data for demonstration (replace with actual data from API)
@@ -45,7 +45,7 @@ const AnalyticsDashboard = () => {
         { label: 'Fri', value: 9200 },
         { label: 'Sat', value: 4800 },
         { label: 'Sun', value: 3880 },
-      ]
+      ],
     },
     orders: {
       current: 1247,
@@ -59,7 +59,7 @@ const AnalyticsDashboard = () => {
         { label: 'Fri', value: 198 },
         { label: 'Sat', value: 142 },
         { label: 'Sun', value: 117 },
-      ]
+      ],
     },
     userRegistrations: [
       { label: 'Vendors', value: 342 },
@@ -78,7 +78,7 @@ const AnalyticsDashboard = () => {
       { region: 'South Region', orders: 338, revenue: 15200 },
       { region: 'East Region', orders: 289, revenue: 12800 },
       { region: 'West Region', orders: 208, revenue: 9300 },
-    ]
+    ],
   };
 
   const timeRangeOptions = [
@@ -148,8 +148,8 @@ const AnalyticsDashboard = () => {
         title="Failed to load analytics"
         description="There was an error loading analytics data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -175,7 +175,7 @@ const AnalyticsDashboard = () => {
             onChange={(e) => setTimeRange(e.target.value)}
             className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
           >
-            {timeRangeOptions.map(option => (
+            {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -201,7 +201,10 @@ const AnalyticsDashboard = () => {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {keyMetrics.map((metric) => (
-          <Card key={metric.id} className="p-6 hover:shadow-lg transition-shadow duration-300">
+          <Card
+            key={metric.id}
+            className="p-6 hover:shadow-lg transition-shadow duration-300"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-text-muted text-sm font-medium mb-1">
@@ -216,15 +219,23 @@ const AnalyticsDashboard = () => {
                   ) : (
                     <TrendingDown className="w-3 h-3 text-red-600" />
                   )}
-                  <span className={`text-sm font-medium ${
-                    metric.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <span
+                    className={`text-sm font-medium ${
+                      metric.changeType === 'positive'
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  >
                     {metric.change}
                   </span>
-                  <span className="text-text-muted text-xs">vs last period</span>
+                  <span className="text-text-muted text-xs">
+                    vs last period
+                  </span>
                 </div>
               </div>
-              <div className={`w-12 h-12 rounded-2xl ${metric.bgColor} flex items-center justify-center`}>
+              <div
+                className={`w-12 h-12 rounded-2xl ${metric.bgColor} flex items-center justify-center`}
+              >
                 <metric.icon className={`w-6 h-6 ${metric.color}`} />
               </div>
             </div>
@@ -250,8 +261,8 @@ const AnalyticsDashboard = () => {
               </p>
             </div>
           </div>
-          <SimpleLineChart 
-            data={mockData.revenue.data} 
+          <SimpleLineChart
+            data={mockData.revenue.data}
             height={250}
             color="#10B981"
           />
@@ -273,8 +284,8 @@ const AnalyticsDashboard = () => {
               </p>
             </div>
           </div>
-          <SimpleLineChart 
-            data={mockData.orders.data} 
+          <SimpleLineChart
+            data={mockData.orders.data}
             height={250}
             color="#3B82F6"
           />
@@ -292,10 +303,7 @@ const AnalyticsDashboard = () => {
             <p className="text-text-muted text-sm">Breakdown by user type</p>
           </div>
           <div className="flex justify-center">
-            <SimplePieChart 
-              data={mockData.userRegistrations}
-              size={280}
-            />
+            <SimplePieChart data={mockData.userRegistrations} size={280} />
           </div>
         </Card>
 
@@ -305,12 +313,11 @@ const AnalyticsDashboard = () => {
             <h3 className="text-lg font-semibold text-text-dark dark:text-white">
               Top Categories
             </h3>
-            <p className="text-text-muted text-sm">Most popular product categories</p>
+            <p className="text-text-muted text-sm">
+              Most popular product categories
+            </p>
           </div>
-          <SimpleBarChart 
-            data={mockData.topCategories}
-            height={280}
-          />
+          <SimpleBarChart data={mockData.topCategories} height={280} />
         </Card>
       </div>
 
@@ -320,9 +327,11 @@ const AnalyticsDashboard = () => {
           <h3 className="text-lg font-semibold text-text-dark dark:text-white">
             Regional Performance
           </h3>
-          <p className="text-text-muted text-sm">Performance breakdown by region</p>
+          <p className="text-text-muted text-sm">
+            Performance breakdown by region
+          </p>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -345,7 +354,10 @@ const AnalyticsDashboard = () => {
               {mockData.geographicData.map((region, index) => {
                 const avgOrderValue = region.revenue / region.orders;
                 return (
-                  <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <tr
+                    key={index}
+                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 bg-bottle-green rounded-full"></div>
@@ -386,7 +398,7 @@ const AnalyticsDashboard = () => {
               User registrations increased by 23% compared to last month
             </p>
           </div>
-          
+
           <div className="p-4 bg-blue-50 rounded-2xl">
             <div className="flex items-center gap-2 mb-2">
               <Package className="w-4 h-4 text-blue-600" />
@@ -396,11 +408,13 @@ const AnalyticsDashboard = () => {
               Vegetables category accounts for 45% of all orders
             </p>
           </div>
-          
+
           <div className="p-4 bg-orange-50 rounded-2xl">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="w-4 h-4 text-orange-600" />
-              <span className="text-sm font-medium text-orange-800">Peak Time</span>
+              <span className="text-sm font-medium text-orange-800">
+                Peak Time
+              </span>
             </div>
             <p className="text-xs text-orange-700">
               Thursday shows highest order volume (235 orders)

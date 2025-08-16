@@ -1,22 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { 
-  useGetAdminProductQuery,
-  useCreateAdminProductMutation,
-  useUpdateAdminProductMutation,
-  useGetAdminCategoriesQuery,
-  useUploadProductImageMutation,
-  useDeleteProductImageMutation
-} from '../../store/slices/apiSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import FormField from '../../components/ui/FormField';
-import { Input } from '../../components/ui/Input';
-import EmptyState from '../../components/ui/EmptyState';
-import FileUpload from '../../components/ui/FileUpload';
-import { 
+import {
   ArrowLeft,
   Save,
   Upload,
@@ -27,13 +12,28 @@ import {
   Trash2,
   Eye,
   Star,
-  Info
+  Info,
 } from 'lucide-react';
+import {
+  useGetAdminProductQuery,
+  useCreateAdminProductMutation,
+  useUpdateAdminProductMutation,
+  useGetAdminCategoriesQuery,
+  useUploadProductImageMutation,
+  useDeleteProductImageMutation,
+} from '../../store/slices/apiSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import FormField from '../../components/ui/FormField';
+import { Input } from '../../components/ui/Input';
+import EmptyState from '../../components/ui/EmptyState';
+import FileUpload from '../../components/ui/FileUpload';
 
 const ProductForm = ({ isEditing = false }) => {
   const navigate = useNavigate();
   const { id: productId } = useParams();
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(new Set());
   const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
@@ -41,18 +41,16 @@ const ProductForm = ({ isEditing = false }) => {
   const [showImageModal, setShowImageModal] = useState(false);
 
   // RTK Query hooks
-  const { 
-    data: productData, 
+  const {
+    data: productData,
     isLoading: productLoading,
-    error: productError 
-  } = useGetAdminProductQuery(productId, { 
-    skip: !isEditing || !productId 
+    error: productError,
+  } = useGetAdminProductQuery(productId, {
+    skip: !isEditing || !productId,
   });
 
-  const { 
-    data: categoriesData, 
-    isLoading: categoriesLoading 
-  } = useGetAdminCategoriesQuery();
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useGetAdminCategoriesQuery();
 
   const [createProduct] = useCreateAdminProductMutation();
   const [updateProduct] = useUpdateAdminProductMutation();
@@ -69,7 +67,7 @@ const ProductForm = ({ isEditing = false }) => {
     formState: { errors },
     setValue,
     watch,
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       name: '',
@@ -85,15 +83,15 @@ const ProductForm = ({ isEditing = false }) => {
         protein: '',
         carbs: '',
         fat: '',
-        fiber: ''
+        fiber: '',
       },
       storageInstructions: '',
       shelfLife: '',
       origin: '',
       isOrganic: false,
       minOrderQuantity: 1,
-      maxOrderQuantity: ''
-    }
+      maxOrderQuantity: '',
+    },
   });
 
   const watchedValues = watch();
@@ -115,83 +113,91 @@ const ProductForm = ({ isEditing = false }) => {
           protein: product.nutritionalInfo?.protein?.toString() || '',
           carbs: product.nutritionalInfo?.carbs?.toString() || '',
           fat: product.nutritionalInfo?.fat?.toString() || '',
-          fiber: product.nutritionalInfo?.fiber?.toString() || ''
+          fiber: product.nutritionalInfo?.fiber?.toString() || '',
         },
         storageInstructions: product.storageInstructions || '',
         shelfLife: product.shelfLife?.toString() || '',
         origin: product.origin || '',
         isOrganic: product.isOrganic || false,
         minOrderQuantity: product.minOrderQuantity || 1,
-        maxOrderQuantity: product.maxOrderQuantity?.toString() || ''
+        maxOrderQuantity: product.maxOrderQuantity?.toString() || '',
       };
-      
+
       reset(formData);
-      
+
       if (product.images && product.images.length > 0) {
-        setImagePreviewUrls(product.images.map(img => ({
-          id: img.id,
-          url: img.url,
-          alt: img.alt || product.name,
-          isPrimary: img.isPrimary || false
-        })));
+        setImagePreviewUrls(
+          product.images.map((img) => ({
+            id: img.id,
+            url: img.url,
+            alt: img.alt || product.name,
+            isPrimary: img.isPrimary || false,
+          }))
+        );
       }
     }
   }, [isEditing, product, reset]);
 
   // Handle image upload
-  const handleImageUpload = useCallback(async (files) => {
-    if (!files || files.length === 0) return;
+  const handleImageUpload = useCallback(
+    async (files) => {
+      if (!files || files.length === 0) return;
 
-    const uploadPromises = Array.from(files).map(async (file, index) => {
-      const uploadId = `upload-${Date.now()}-${index}`;
-      setUploadingImages(prev => new Set([...prev, uploadId]));
+      const uploadPromises = Array.from(files).map(async (file, index) => {
+        const uploadId = `upload-${Date.now()}-${index}`;
+        setUploadingImages((prev) => new Set([...prev, uploadId]));
+
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
+          if (productId) {
+            formData.append('productId', productId);
+          }
+
+          const response = await uploadImage(formData).unwrap();
+
+          setImagePreviewUrls((prev) => [
+            ...prev,
+            {
+              id: response.data.id,
+              url: response.data.url,
+              alt: file.name,
+              isPrimary: prev.length === 0, // First image is primary
+            },
+          ]);
+
+          return response.data;
+        } catch (error) {
+          console.error('Failed to upload image:', error);
+          throw error;
+        } finally {
+          setUploadingImages((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(uploadId);
+            return newSet;
+          });
+        }
+      });
 
       try {
-        const formData = new FormData();
-        formData.append('image', file);
-        if (productId) {
-          formData.append('productId', productId);
-        }
-
-        const response = await uploadImage(formData).unwrap();
-        
-        setImagePreviewUrls(prev => [...prev, {
-          id: response.data.id,
-          url: response.data.url,
-          alt: file.name,
-          isPrimary: prev.length === 0 // First image is primary
-        }]);
-
-        return response.data;
+        await Promise.all(uploadPromises);
       } catch (error) {
-        console.error('Failed to upload image:', error);
-        throw error;
-      } finally {
-        setUploadingImages(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(uploadId);
-          return newSet;
-        });
+        console.error('Some images failed to upload:', error);
       }
-    });
-
-    try {
-      await Promise.all(uploadPromises);
-    } catch (error) {
-      console.error('Some images failed to upload:', error);
-    }
-  }, [uploadImage, productId]);
+    },
+    [uploadImage, productId]
+  );
 
   // Handle image deletion
   const handleImageDelete = async (imageIndex) => {
     const image = imagePreviewUrls[imageIndex];
-    
+
     try {
       if (image.id && productId) {
         await deleteImage({ productId, imageId: image.id }).unwrap();
       }
-      
-      setImagePreviewUrls(prev => {
+
+      setImagePreviewUrls((prev) => {
         const newImages = prev.filter((_, index) => index !== imageIndex);
         // If we deleted the primary image, make the first remaining image primary
         if (image.isPrimary && newImages.length > 0) {
@@ -199,7 +205,7 @@ const ProductForm = ({ isEditing = false }) => {
         }
         return newImages;
       });
-      
+
       // Adjust selected index if necessary
       if (selectedImageIndex >= imagePreviewUrls.length - 1) {
         setSelectedImageIndex(Math.max(0, imagePreviewUrls.length - 2));
@@ -211,10 +217,10 @@ const ProductForm = ({ isEditing = false }) => {
 
   // Set primary image
   const setPrimaryImage = (index) => {
-    setImagePreviewUrls(prev => 
+    setImagePreviewUrls((prev) =>
       prev.map((img, i) => ({
         ...img,
-        isPrimary: i === index
+        isPrimary: i === index,
       }))
     );
   };
@@ -228,13 +234,18 @@ const ProductForm = ({ isEditing = false }) => {
       const processedData = {
         ...data,
         basePrice: parseFloat(data.basePrice) || 0,
-        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [],
+        tags: data.tags
+          ? data.tags
+              .split(',')
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          : [],
         nutritionalInfo: {
           calories: parseInt(data.nutritionalInfo.calories) || null,
           protein: parseFloat(data.nutritionalInfo.protein) || null,
           carbs: parseFloat(data.nutritionalInfo.carbs) || null,
           fat: parseFloat(data.nutritionalInfo.fat) || null,
-          fiber: parseFloat(data.nutritionalInfo.fiber) || null
+          fiber: parseFloat(data.nutritionalInfo.fiber) || null,
         },
         shelfLife: parseInt(data.shelfLife) || null,
         minOrderQuantity: parseInt(data.minOrderQuantity) || 1,
@@ -244,8 +255,8 @@ const ProductForm = ({ isEditing = false }) => {
           url: img.url,
           alt: img.alt,
           isPrimary: img.isPrimary,
-          order: index
-        }))
+          order: index,
+        })),
       };
 
       if (isEditing && productId) {
@@ -271,18 +282,21 @@ const ProductForm = ({ isEditing = false }) => {
     name: {
       required: 'Product name is required',
       minLength: { value: 2, message: 'Name must be at least 2 characters' },
-      maxLength: { value: 100, message: 'Name must be less than 100 characters' }
+      maxLength: {
+        value: 100,
+        message: 'Name must be less than 100 characters',
+      },
     },
     category: {
-      required: 'Category is required'
+      required: 'Category is required',
     },
     unit: {
-      required: 'Unit is required'
+      required: 'Unit is required',
     },
     basePrice: {
       required: 'Base price is required',
-      min: { value: 0.01, message: 'Price must be greater than 0' }
-    }
+      min: { value: 0.01, message: 'Price must be greater than 0' },
+    },
   };
 
   if (productLoading || categoriesLoading) {
@@ -300,8 +314,8 @@ const ProductForm = ({ isEditing = false }) => {
         title="Product not found"
         description="The product you're looking for doesn't exist or has been deleted."
         action={{
-          label: "Go back",
-          onClick: () => navigate('/admin/products')
+          label: 'Go back',
+          onClick: () => navigate('/admin/products'),
         }}
       />
     );
@@ -322,10 +336,9 @@ const ProductForm = ({ isEditing = false }) => {
             {isEditing ? 'Edit Product' : 'Create Product'}
           </h1>
           <p className="text-text-muted">
-            {isEditing 
-              ? 'Update product information and settings' 
-              : 'Add a new product to the catalog'
-            }
+            {isEditing
+              ? 'Update product information and settings'
+              : 'Add a new product to the catalog'}
           </p>
         </div>
       </div>
@@ -337,7 +350,7 @@ const ProductForm = ({ isEditing = false }) => {
             <Info className="w-5 h-5" />
             Basic Information
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField label="Product Name" error={errors.name?.message}>
               <Input
@@ -348,23 +361,20 @@ const ProductForm = ({ isEditing = false }) => {
             </FormField>
 
             <FormField label="SKU (Optional)">
-              <Input
-                {...register('sku')}
-                placeholder="Product SKU"
-              />
+              <Input {...register('sku')} placeholder="Product SKU" />
             </FormField>
 
             <FormField label="Category" error={errors.category?.message}>
               <select
                 {...register('category', validationRules.category)}
                 className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
-                  errors.category 
-                    ? 'border-tomato-red/30 bg-tomato-red/5' 
+                  errors.category
+                    ? 'border-tomato-red/30 bg-tomato-red/5'
                     : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
                 <option value="">Select category</option>
-                {categories.map(category => (
+                {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
@@ -376,8 +386,8 @@ const ProductForm = ({ isEditing = false }) => {
               <select
                 {...register('unit', validationRules.unit)}
                 className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
-                  errors.unit 
-                    ? 'border-tomato-red/30 bg-tomato-red/5' 
+                  errors.unit
+                    ? 'border-tomato-red/30 bg-tomato-red/5'
                     : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
@@ -449,8 +459,8 @@ const ProductForm = ({ isEditing = false }) => {
             <div className="space-y-4">
               {/* Main Image Preview */}
               <div className="relative aspect-video bg-gray-100 rounded-2xl overflow-hidden max-w-md mx-auto">
-                <img 
-                  src={imagePreviewUrls[selectedImageIndex]?.url} 
+                <img
+                  src={imagePreviewUrls[selectedImageIndex]?.url}
                   alt={imagePreviewUrls[selectedImageIndex]?.alt}
                   className="w-full h-full object-cover"
                 />
@@ -479,18 +489,18 @@ const ProductForm = ({ isEditing = false }) => {
                       type="button"
                       onClick={() => setSelectedImageIndex(index)}
                       className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
-                        selectedImageIndex === index 
-                          ? 'border-bottle-green shadow-lg' 
+                        selectedImageIndex === index
+                          ? 'border-bottle-green shadow-lg'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <img 
-                        src={image.url} 
+                      <img
+                        src={image.url}
                         alt={image.alt}
                         className="w-full h-full object-cover"
                       />
                     </button>
-                    
+
                     {/* Action Buttons */}
                     <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                       {!image.isPrimary && (
@@ -536,10 +546,9 @@ const ProductForm = ({ isEditing = false }) => {
               <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-bottle-green transition-colors">
                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-text-muted mb-1">
-                  {uploadingImages.size > 0 
+                  {uploadingImages.size > 0
                     ? `Uploading ${uploadingImages.size} image(s)...`
-                    : 'Click to upload or drag and drop'
-                  }
+                    : 'Click to upload or drag and drop'}
                 </p>
                 <p className="text-sm text-text-muted">
                   PNG, JPG, WebP up to 5MB (max 5 images)
@@ -554,7 +563,7 @@ const ProductForm = ({ isEditing = false }) => {
           <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
             Additional Details
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField label="Origin/Source">
               <Input
@@ -621,7 +630,7 @@ const ProductForm = ({ isEditing = false }) => {
           <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
             Nutritional Information (per 100g)
           </h2>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <FormField label="Calories">
               <Input
@@ -708,8 +717,8 @@ const ProductForm = ({ isEditing = false }) => {
             >
               <X className="w-5 h-5" />
             </button>
-            <img 
-              src={imagePreviewUrls[selectedImageIndex]?.url} 
+            <img
+              src={imagePreviewUrls[selectedImageIndex]?.url}
               alt={imagePreviewUrls[selectedImageIndex]?.alt}
               className="max-w-full max-h-full object-contain rounded-2xl"
             />

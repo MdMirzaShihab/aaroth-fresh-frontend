@@ -10,23 +10,22 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        default: 
-          'focus:bg-white focus:shadow-lg focus:ring-bottle-green/40',
-        
+        default: 'focus:bg-white focus:shadow-lg focus:ring-bottle-green/40',
+
         // Outlined variant
-        outlined: 
+        outlined:
           'bg-transparent border-2 border-gray-200 focus:border-bottle-green focus:bg-white focus:ring-bottle-green/20',
-        
+
         // Glass effect variant
-        glass: 
+        glass:
           'bg-glass backdrop-blur-sm border border-white/20 focus:bg-white/10 focus:border-white/30 focus:ring-white/50',
-        
+
         // Search variant
-        search: 
+        search:
           'pl-10 focus:bg-white focus:shadow-lg focus:ring-bottle-green/40',
-        
+
         // Floating label variant
-        floating: 
+        floating:
           'pt-6 pb-2 focus:bg-white focus:shadow-lg focus:ring-bottle-green/40',
       },
       size: {
@@ -36,9 +35,12 @@ const inputVariants = cva(
       },
       state: {
         default: '',
-        error: 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-tomato-red/10',
-        success: 'border-2 border-mint-fresh/50 bg-mint-fresh/5 focus:border-mint-fresh focus:ring-mint-fresh/20',
-        warning: 'border-2 border-earthy-yellow/50 bg-earthy-yellow/5 focus:border-earthy-yellow focus:ring-earthy-yellow/20',
+        error:
+          'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-tomato-red/10',
+        success:
+          'border-2 border-mint-fresh/50 bg-mint-fresh/5 focus:border-mint-fresh focus:ring-mint-fresh/20',
+        warning:
+          'border-2 border-earthy-yellow/50 bg-earthy-yellow/5 focus:border-earthy-yellow focus:ring-earthy-yellow/20',
       },
     },
     defaultVariants: {
@@ -50,132 +52,142 @@ const inputVariants = cva(
 );
 
 // Base Input component
-const Input = forwardRef(({
-  className,
-  type = 'text',
-  variant,
-  size,
-  state,
-  error,
-  success,
-  warning,
-  disabled,
-  leftIcon,
-  rightIcon,
-  clearable = false,
-  onClear,
-  ...props
-}, ref) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [value, setValue] = useState(props.value || props.defaultValue || '');
+const Input = forwardRef(
+  (
+    {
+      className,
+      type = 'text',
+      variant,
+      size,
+      state,
+      error,
+      success,
+      warning,
+      disabled,
+      leftIcon,
+      rightIcon,
+      clearable = false,
+      onClear,
+      ...props
+    },
+    ref
+  ) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [value, setValue] = useState(props.value || props.defaultValue || '');
 
-  // Determine validation state
-  const validationState = error ? 'error' : success ? 'success' : warning ? 'warning' : state;
+    // Determine validation state
+    const validationState = error
+      ? 'error'
+      : success
+        ? 'success'
+        : warning
+          ? 'warning'
+          : state;
 
-  // Handle password visibility toggle
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+    // Handle password visibility toggle
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
 
-  // Handle clear input
-  const handleClear = () => {
-    setValue('');
-    if (onClear) {
-      onClear();
-    }
-  };
+    // Handle clear input
+    const handleClear = () => {
+      setValue('');
+      if (onClear) {
+        onClear();
+      }
+    };
 
-  // Handle input change
-  const handleChange = (e) => {
-    setValue(e.target.value);
-    if (props.onChange) {
-      props.onChange(e);
-    }
-  };
+    // Handle input change
+    const handleChange = (e) => {
+      setValue(e.target.value);
+      if (props.onChange) {
+        props.onChange(e);
+      }
+    };
 
-  const isPassword = type === 'password';
-  const inputType = isPassword && showPassword ? 'text' : type;
-  const hasValue = value && value.length > 0;
-  const showClearButton = clearable && hasValue && !disabled;
+    const isPassword = type === 'password';
+    const inputType = isPassword && showPassword ? 'text' : type;
+    const hasValue = value && value.length > 0;
+    const showClearButton = clearable && hasValue && !disabled;
 
-  return (
-    <div className="relative">
-      {/* Left Icon */}
-      {leftIcon && (
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
-          {leftIcon}
-        </div>
-      )}
-
-      {/* Search Icon for search variant */}
-      {variant === 'search' && !leftIcon && (
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
-          <Search className="w-5 h-5" />
-        </div>
-      )}
-
-      <input
-        type={inputType}
-        className={cn(
-          inputVariants({ variant, size, state: validationState }),
-          leftIcon && 'pl-10',
-          (variant === 'search' && !leftIcon) && 'pl-10',
-          (showClearButton || rightIcon || isPassword) && 'pr-10',
-          className
-        )}
-        ref={ref}
-        disabled={disabled}
-        value={value}
-        onChange={handleChange}
-        {...props}
-      />
-
-      {/* Right Side Icons Container */}
-      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-        {/* Clear Button */}
-        {showClearButton && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="text-text-muted hover:text-text-dark transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center"
-            aria-label="Clear input"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
-
-        {/* Password Toggle */}
-        {isPassword && (
-          <button
-            type="button"
-            onClick={togglePasswordVisibility}
-            className="text-text-muted hover:text-text-dark transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center"
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
-          >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-        )}
-
-        {/* Right Icon */}
-        {rightIcon && !isPassword && !showClearButton && (
-          <div className="text-text-muted pointer-events-none">
-            {rightIcon}
+    return (
+      <div className="relative">
+        {/* Left Icon */}
+        {leftIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+            {leftIcon}
           </div>
         )}
+
+        {/* Search Icon for search variant */}
+        {variant === 'search' && !leftIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+            <Search className="w-5 h-5" />
+          </div>
+        )}
+
+        <input
+          type={inputType}
+          className={cn(
+            inputVariants({ variant, size, state: validationState }),
+            leftIcon && 'pl-10',
+            variant === 'search' && !leftIcon && 'pl-10',
+            (showClearButton || rightIcon || isPassword) && 'pr-10',
+            className
+          )}
+          ref={ref}
+          disabled={disabled}
+          value={value}
+          onChange={handleChange}
+          {...props}
+        />
+
+        {/* Right Side Icons Container */}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          {/* Clear Button */}
+          {showClearButton && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-text-muted hover:text-text-dark transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center"
+              aria-label="Clear input"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Password Toggle */}
+          {isPassword && (
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="text-text-muted hover:text-text-dark transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          )}
+
+          {/* Right Icon */}
+          {rightIcon && !isPassword && !showClearButton && (
+            <div className="text-text-muted pointer-events-none">
+              {rightIcon}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 Input.displayName = 'Input';
 
 // Floating Label Input
-const FloatingInput = forwardRef(({
-  label,
-  className,
-  id,
-  ...props
-}, ref) => {
+const FloatingInput = forwardRef(({ label, className, id, ...props }, ref) => {
   const [focused, setFocused] = useState(false);
   const [hasValue, setHasValue] = useState(false);
 
@@ -208,7 +220,7 @@ const FloatingInput = forwardRef(({
         placeholder=""
         {...props}
       />
-      
+
       {label && (
         <label
           htmlFor={id}
@@ -229,32 +241,29 @@ const FloatingInput = forwardRef(({
 FloatingInput.displayName = 'FloatingInput';
 
 // Textarea component
-const Textarea = forwardRef(({
-  className,
-  rows = 4,
-  resize = 'vertical',
-  ...props
-}, ref) => {
-  const resizeClass = {
-    none: 'resize-none',
-    vertical: 'resize-y',
-    horizontal: 'resize-x',
-    both: 'resize',
-  }[resize];
+const Textarea = forwardRef(
+  ({ className, rows = 4, resize = 'vertical', ...props }, ref) => {
+    const resizeClass = {
+      none: 'resize-none',
+      vertical: 'resize-y',
+      horizontal: 'resize-x',
+      both: 'resize',
+    }[resize];
 
-  return (
-    <textarea
-      className={cn(
-        'w-full rounded-2xl border-0 bg-earthy-beige/30 px-4 py-3 text-base text-text-dark placeholder:text-text-muted/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[88px] focus:bg-white focus:shadow-lg focus:ring-bottle-green/40 disabled:cursor-not-allowed disabled:opacity-50',
-        resizeClass,
-        className
-      )}
-      rows={rows}
-      ref={ref}
-      {...props}
-    />
-  );
-});
+    return (
+      <textarea
+        className={cn(
+          'w-full rounded-2xl border-0 bg-earthy-beige/30 px-4 py-3 text-base text-text-dark placeholder:text-text-muted/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[88px] focus:bg-white focus:shadow-lg focus:ring-bottle-green/40 disabled:cursor-not-allowed disabled:opacity-50',
+          resizeClass,
+          className
+        )}
+        rows={rows}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
 
 Textarea.displayName = 'Textarea';
 

@@ -143,6 +143,28 @@ export const apiSlice = createApi({
       providesTags: (result, error, id) => [{ type: 'Product', id }],
     }),
 
+    // Public listings endpoint
+    getPublicListings: builder.query({
+      query: (params = {}) => ({
+        url: '/public/listings',
+        params,
+      }),
+      providesTags: ['Listing'],
+    }),
+
+    getPublicListing: builder.query({
+      query: (id) => `/public/listings/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Listing', id }],
+    }),
+
+    getFeaturedListings: builder.query({
+      query: (params = {}) => ({
+        url: '/public/featured-listings',
+        params,
+      }),
+      providesTags: ['Product', 'Listing'],
+    }),
+
     // Listings endpoints
     getListings: builder.query({
       query: (params = {}) => ({
@@ -1060,6 +1082,296 @@ export const apiSlice = createApi({
       pollingInterval: 300000, // 5 minutes
     }),
 
+    // ===== VENDOR DASHBOARD ENDPOINTS =====
+    // 26+ comprehensive dashboard endpoints for advanced analytics
+
+    // Vendor Dashboard Overview - Main KPIs and summary
+    getVendorDashboardOverview: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/overview',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      pollingInterval: 300000, // 5-minute refresh
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    }),
+
+    // Vendor Revenue Analytics - Revenue trends and growth
+    getVendorRevenue: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/revenue',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 900, // 15-minute cache
+    }),
+
+    // Vendor Product Performance - Product-wise analytics
+    getVendorProductPerformance: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/products',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 900,
+    }),
+
+    // Vendor Inventory Management - Stock levels and alerts
+    getVendorInventory: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/inventory',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      pollingInterval: 600000, // 10-minute refresh for inventory
+    }),
+
+    // Vendor Order Management - Order processing interface
+    getVendorOrderManagement: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/order-management',
+        params,
+      }),
+      providesTags: ['Order', 'Vendor'],
+      pollingInterval: 120000, // 2-minute refresh for orders
+    }),
+
+    // Vendor Customer Insights - Customer loyalty and acquisition
+    getVendorCustomerInsights: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/customer-insights',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 1800, // 30-minute cache
+    }),
+
+    // Vendor Financial Reports - P&L, commission tracking
+    getVendorFinancialReports: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/financial-reports',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Vendor Notifications - Real-time alerts
+    getVendorNotifications: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/notifications',
+        params,
+      }),
+      providesTags: ['Notification'],
+      pollingInterval: 60000, // 1-minute refresh for notifications
+    }),
+
+    // Vendor Category Performance - Category-wise sales analytics
+    getVendorCategoryPerformance: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/category-performance',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 900,
+    }),
+
+    // Vendor Sales Trends - Seasonal and trend analysis
+    getVendorSalesTrends: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/sales-trends',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Vendor Commission Analytics - Commission tracking and forecasting
+    getVendorCommissionAnalytics: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/commission-analytics',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Vendor Performance Metrics - KPI tracking and benchmarking
+    getVendorPerformanceMetrics: builder.query({
+      query: (params = {}) => ({
+        url: '/vendor-dashboard/performance-metrics',
+        params,
+      }),
+      providesTags: ['Vendor'],
+      keepUnusedDataFor: 900,
+    }),
+
+    // ===== RESTAURANT DASHBOARD ENDPOINTS =====
+
+    // Restaurant Dashboard Overview - Main spending and order KPIs
+    getRestaurantDashboardOverview: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/overview',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      pollingInterval: 300000, // 5-minute refresh
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    }),
+
+    // Restaurant Spending Analytics - Spending trends by vendor/category
+    getRestaurantSpending: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/spending',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 900,
+    }),
+
+    // Restaurant Vendor Insights - Vendor performance and reliability
+    getRestaurantVendorInsights: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/vendors',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Budget Tracking - Budget limits and alerts
+    getRestaurantBudget: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/budget',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      pollingInterval: 600000, // 10-minute refresh for budget
+    }),
+
+    // Restaurant Order History - Complete order history with filtering
+    getRestaurantOrderHistory: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/order-history',
+        params,
+      }),
+      providesTags: ['Order', 'Restaurant'],
+      keepUnusedDataFor: 600,
+    }),
+
+    // Restaurant Inventory Planning - Consumption and reorder suggestions
+    getRestaurantInventoryPlanning: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/inventory-planning',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Favorite Vendors - Frequently used vendors for quick reorder
+    getRestaurantFavoriteVendors: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/favorite-vendors',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Notifications - Budget alerts and order updates
+    getRestaurantNotifications: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/notifications',
+        params,
+      }),
+      providesTags: ['Notification'],
+      pollingInterval: 60000, // 1-minute refresh for notifications
+    }),
+
+    // Restaurant Cost Analysis - Cost optimization and savings tracking
+    getRestaurantCostAnalysis: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/cost-analysis',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Purchase Patterns - Purchase behavior and forecasting
+    getRestaurantPurchasePatterns: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/purchase-patterns',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Delivery Analytics - Delivery performance and timing
+    getRestaurantDeliveryAnalytics: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/delivery-analytics',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 900,
+    }),
+
+    // Restaurant Seasonal Insights - Seasonal purchasing trends
+    getRestaurantSeasonalInsights: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/seasonal-insights',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Vendor Comparison - Side-by-side vendor performance
+    getRestaurantVendorComparison: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/vendor-comparison',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Procurement Insights - Procurement optimization recommendations
+    getRestaurantProcurementInsights: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/procurement-insights',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // ===== SHARED NOTIFICATION ENDPOINTS =====
+
+    // Mark Notifications as Read
+    markNotificationsAsRead: builder.mutation({
+      query: (notificationIds) => ({
+        url: '/notifications/mark-read',
+        method: 'POST',
+        body: { notificationIds },
+      }),
+      invalidatesTags: ['Notification'],
+    }),
+
+    // Mark All Notifications as Read
+    markAllNotificationsAsRead: builder.mutation({
+      query: () => ({
+        url: '/notifications/mark-all-read',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Notification'],
+    }),
+
     updateRestaurantProfile: builder.mutation({
       query: (profileData) => ({
         url: '/restaurant/profile',
@@ -1148,6 +1460,9 @@ export const {
   useGetFeaturedProductsQuery,
   useGetPublicProductsQuery,
   useGetPublicProductQuery,
+  useGetPublicListingsQuery,
+  useGetPublicListingQuery,
+  useGetFeaturedListingsQuery,
 
   // Listings
   useGetListingsQuery,
@@ -1207,6 +1522,20 @@ export const {
   useGetVendorOrdersQuery,
   useGetListingPerformanceQuery,
 
+  // Vendor - Advanced Dashboard Endpoints
+  useGetVendorDashboardOverviewQuery,
+  useGetVendorRevenueQuery,
+  useGetVendorProductPerformanceQuery,
+  useGetVendorInventoryQuery,
+  useGetVendorOrderManagementQuery,
+  useGetVendorCustomerInsightsQuery,
+  useGetVendorFinancialReportsQuery,
+  useGetVendorNotificationsQuery,
+  useGetVendorCategoryPerformanceQuery,
+  useGetVendorSalesTrendsQuery,
+  useGetVendorCommissionAnalyticsQuery,
+  useGetVendorPerformanceMetricsQuery,
+
   // Vendor - Bulk Operations
   useBulkUpdateListingsMutation,
   useBulkDeleteListingsMutation,
@@ -1228,6 +1557,26 @@ export const {
   useGetRestaurantOrdersQuery,
   useGetRestaurantAnalyticsQuery,
   useGetProductListingsQuery,
+
+  // Restaurant - Advanced Dashboard Endpoints
+  useGetRestaurantDashboardOverviewQuery,
+  useGetRestaurantSpendingQuery,
+  useGetRestaurantVendorInsightsQuery,
+  useGetRestaurantBudgetQuery,
+  useGetRestaurantOrderHistoryQuery,
+  useGetRestaurantInventoryPlanningQuery,
+  useGetRestaurantFavoriteVendorsQuery,
+  useGetRestaurantNotificationsQuery,
+  useGetRestaurantCostAnalysisQuery,
+  useGetRestaurantPurchasePatternsQuery,
+  useGetRestaurantDeliveryAnalyticsQuery,
+  useGetRestaurantSeasonalInsightsQuery,
+  useGetRestaurantVendorComparisonQuery,
+  useGetRestaurantProcurementInsightsQuery,
+
+  // Shared Notification Management
+  useMarkNotificationsAsReadMutation,
+  useMarkAllNotificationsAsReadMutation,
 
   // Restaurant - Profile Management
   useUpdateRestaurantProfileMutation,

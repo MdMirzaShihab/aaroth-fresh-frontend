@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { 
-  Search, 
-  Filter, 
-  Grid3X3, 
+import {
+  Search,
+  Filter,
+  Grid3X3,
   List,
   MapPin,
   Star,
@@ -12,9 +12,12 @@ import {
   Plus,
   Minus,
   Heart,
-  Info
+  Info,
 } from 'lucide-react';
-import { useGetProductListingsQuery, useGetCategoriesQuery } from '../../store/slices/apiSlice';
+import {
+  useGetProductListingsQuery,
+  useGetCategoriesQuery,
+} from '../../store/slices/apiSlice';
 import { addToCart } from '../../store/slices/cartSlice';
 import { formatCurrency, debounce } from '../../utils';
 
@@ -32,17 +35,21 @@ const ProductBrowsing = () => {
     maxPrice: '',
     location: '',
     rating: '',
-    availability: 'available'
+    availability: 'available',
   });
   const [showFilters, setShowFilters] = useState(false);
 
   // API queries
-  const { data: listings = [], isLoading: listingsLoading, error } = useGetProductListingsQuery({
+  const {
+    data: listings = [],
+    isLoading: listingsLoading,
+    error,
+  } = useGetProductListingsQuery({
     search: searchQuery,
     category: selectedCategory,
     sortBy,
     ...filters,
-    limit: 50
+    limit: 50,
   });
 
   const { data: categories = [] } = useGetCategoriesQuery();
@@ -58,23 +65,25 @@ const ProductBrowsing = () => {
   };
 
   const handleAddToCart = (product, quantity = 1) => {
-    dispatch(addToCart({
-      id: product._id,
-      name: product.name,
-      price: product.price,
-      image: product.images?.[0],
-      vendorId: product.vendorId,
-      vendorName: product.vendorName,
-      unit: product.unit,
-      quantity
-    }));
+    dispatch(
+      addToCart({
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0],
+        vendorId: product.vendorId,
+        vendorName: product.vendorName,
+        unit: product.unit,
+        quantity,
+      })
+    );
   };
 
   const getAvailabilityColor = (availability) => {
     const colors = {
       'in-stock': 'bg-mint-fresh/20 text-bottle-green',
       'low-stock': 'bg-amber-100 text-amber-800',
-      'out-of-stock': 'bg-tomato-red/10 text-tomato-red'
+      'out-of-stock': 'bg-tomato-red/10 text-tomato-red',
     };
     return colors[availability] || 'bg-gray-100 text-gray-600';
   };
@@ -99,9 +108,11 @@ const ProductBrowsing = () => {
             </div>
           )}
         </div>
-        
+
         {/* Availability Badge */}
-        <span className={`absolute top-3 right-3 px-2 py-1 rounded-xl text-xs font-medium ${getAvailabilityColor(product.availability)}`}>
+        <span
+          className={`absolute top-3 right-3 px-2 py-1 rounded-xl text-xs font-medium ${getAvailabilityColor(product.availability)}`}
+        >
           {product.availability?.replace('-', ' ') || 'Available'}
         </span>
 
@@ -132,7 +143,9 @@ const ProductBrowsing = () => {
         {product.rating && (
           <div className="flex items-center gap-1">
             <Star className="w-3 h-3 text-earthy-yellow fill-current" />
-            <span className="text-xs text-text-muted">{product.rating.toFixed(1)}</span>
+            <span className="text-xs text-text-muted">
+              {product.rating.toFixed(1)}
+            </span>
           </div>
         )}
 
@@ -142,9 +155,11 @@ const ProductBrowsing = () => {
             <p className="font-bold text-text-dark">
               {formatCurrency(product.price)}
             </p>
-            <p className="text-xs text-text-muted">per {product.unit || 'unit'}</p>
+            <p className="text-xs text-text-muted">
+              per {product.unit || 'unit'}
+            </p>
           </div>
-          
+
           <button
             onClick={() => handleAddToCart(product)}
             disabled={product.availability === 'out-of-stock'}
@@ -181,7 +196,9 @@ const ProductBrowsing = () => {
           <h3 className="font-semibold text-text-dark truncate pr-2">
             {product.name}
           </h3>
-          <span className={`px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${getAvailabilityColor(product.availability)}`}>
+          <span
+            className={`px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${getAvailabilityColor(product.availability)}`}
+          >
             {product.availability?.replace('-', ' ') || 'Available'}
           </span>
         </div>
@@ -204,9 +221,11 @@ const ProductBrowsing = () => {
             <p className="font-bold text-text-dark">
               {formatCurrency(product.price)}
             </p>
-            <p className="text-xs text-text-muted">per {product.unit || 'unit'}</p>
+            <p className="text-xs text-text-muted">
+              per {product.unit || 'unit'}
+            </p>
           </div>
-          
+
           <button
             onClick={() => handleAddToCart(product)}
             disabled={product.availability === 'out-of-stock'}
@@ -261,7 +280,7 @@ const ProductBrowsing = () => {
               className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
             >
               <option value="">All Categories</option>
-              {categories.map(category => (
+              {categories.map((category) => (
                 <option key={category._id} value={category._id}>
                   {category.name}
                 </option>
@@ -285,8 +304,8 @@ const ProductBrowsing = () => {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`p-3 rounded-2xl border transition-all duration-200 touch-target ${
-                showFilters 
-                  ? 'bg-bottle-green text-white border-bottle-green' 
+                showFilters
+                  ? 'bg-bottle-green text-white border-bottle-green'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30'
               }`}
             >
@@ -298,8 +317,8 @@ const ProductBrowsing = () => {
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
-                  viewMode === 'grid' 
-                    ? 'bg-white shadow-sm text-bottle-green' 
+                  viewMode === 'grid'
+                    ? 'bg-white shadow-sm text-bottle-green'
                     : 'text-gray-600 hover:text-bottle-green'
                 }`}
               >
@@ -308,8 +327,8 @@ const ProductBrowsing = () => {
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
-                  viewMode === 'list' 
-                    ? 'bg-white shadow-sm text-bottle-green' 
+                  viewMode === 'list'
+                    ? 'bg-white shadow-sm text-bottle-green'
                     : 'text-gray-600 hover:text-bottle-green'
                 }`}
               >
@@ -330,7 +349,12 @@ const ProductBrowsing = () => {
                 <input
                   type="number"
                   value={filters.minPrice}
-                  onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      minPrice: e.target.value,
+                    }))
+                  }
                   placeholder="0"
                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                 />
@@ -342,7 +366,12 @@ const ProductBrowsing = () => {
                 <input
                   type="number"
                   value={filters.maxPrice}
-                  onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      maxPrice: e.target.value,
+                    }))
+                  }
                   placeholder="1000"
                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                 />
@@ -354,7 +383,12 @@ const ProductBrowsing = () => {
                 <input
                   type="text"
                   value={filters.location}
-                  onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
+                  }
                   placeholder="Near me"
                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                 />
@@ -365,7 +399,9 @@ const ProductBrowsing = () => {
                 </label>
                 <select
                   value={filters.rating}
-                  onChange={(e) => setFilters(prev => ({ ...prev, rating: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, rating: e.target.value }))
+                  }
                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                 >
                   <option value="">Any Rating</option>
@@ -397,7 +433,7 @@ const ProductBrowsing = () => {
               <ShoppingCart className="w-12 h-12 mx-auto" />
             </div>
             <p className="text-text-muted">Failed to load products</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="mt-4 bg-gradient-primary text-white px-6 py-2 rounded-xl hover:shadow-lg transition-all duration-200"
             >
@@ -407,13 +443,13 @@ const ProductBrowsing = () => {
         ) : listings.length > 0 ? (
           viewMode === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {listings.map(product => (
+              {listings.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
           ) : (
             <div className="space-y-4">
-              {listings.map(product => (
+              {listings.map((product) => (
                 <ProductListItem key={product._id} product={product} />
               ))}
             </div>

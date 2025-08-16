@@ -1,10 +1,6 @@
 import React from 'react';
 import { cn } from '../../utils';
-import { 
-  SkeletonLine, 
-  SkeletonCircle, 
-  CardSkeleton 
-} from './LoadingSpinner';
+import { SkeletonLine, SkeletonCircle, CardSkeleton } from './LoadingSpinner';
 
 /**
  * Component-Specific Skeleton States
@@ -12,11 +8,11 @@ import {
  */
 
 // Button Skeleton
-export const ButtonSkeleton = ({ 
-  className, 
+export const ButtonSkeleton = ({
+  className,
   size = 'default',
   variant = 'default',
-  ...props 
+  ...props
 }) => {
   const sizeClasses = {
     sm: 'h-8 w-20',
@@ -25,50 +21,37 @@ export const ButtonSkeleton = ({
   };
 
   return (
-    <SkeletonLine 
-      className={cn(
-        'rounded-2xl',
-        sizeClasses[size],
-        className
-      )}
+    <SkeletonLine
+      className={cn('rounded-2xl', sizeClasses[size], className)}
       {...props}
     />
   );
 };
 
-// Input Skeleton  
-export const InputSkeleton = ({ 
-  className, 
-  hasLabel = false,
-  ...props 
-}) => (
+// Input Skeleton
+export const InputSkeleton = ({ className, hasLabel = false, ...props }) => (
   <div className={cn('space-y-2', className)} {...props}>
-    {hasLabel && (
-      <SkeletonLine height="h-4" width="w-20" />
-    )}
+    {hasLabel && <SkeletonLine height="h-4" width="w-20" />}
     <SkeletonLine height="h-11" width="w-full" className="rounded-2xl" />
   </div>
 );
 
 // Modal Skeleton
-export const ModalSkeleton = ({ 
-  className,
-  ...props 
-}) => (
+export const ModalSkeleton = ({ className, ...props }) => (
   <div className={cn('space-y-6', className)} {...props}>
     {/* Header */}
     <div className="space-y-3">
       <SkeletonLine height="h-6" width="w-48" />
       <SkeletonLine height="h-4" width="w-80" />
     </div>
-    
+
     {/* Content */}
     <div className="space-y-4">
       <SkeletonLine height="h-4" width="w-full" />
       <SkeletonLine height="h-4" width="w-3/4" />
       <SkeletonLine height="h-4" width="w-5/6" />
     </div>
-    
+
     {/* Actions */}
     <div className="flex justify-end gap-3">
       <ButtonSkeleton />
@@ -78,16 +61,12 @@ export const ModalSkeleton = ({
 );
 
 // Form Skeleton
-export const FormSkeleton = ({ 
-  fields = 4,
-  className,
-  ...props 
-}) => (
+export const FormSkeleton = ({ fields = 4, className, ...props }) => (
   <div className={cn('space-y-6', className)} {...props}>
     {Array.from({ length: fields }).map((_, i) => (
       <InputSkeleton key={i} hasLabel />
     ))}
-    
+
     {/* Form Actions */}
     <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
       <ButtonSkeleton variant="outline" />
@@ -97,10 +76,10 @@ export const FormSkeleton = ({
 );
 
 // Search Bar Skeleton
-export const SearchBarSkeleton = ({ 
+export const SearchBarSkeleton = ({
   showFilters = false,
   className,
-  ...props 
+  ...props
 }) => (
   <div className={cn('flex items-center gap-2', className)} {...props}>
     <SkeletonLine height="h-11" width="flex-1" className="rounded-2xl" />
@@ -112,11 +91,11 @@ export const SearchBarSkeleton = ({
 );
 
 // Pagination Skeleton
-export const PaginationSkeleton = ({ 
-  className,
-  ...props 
-}) => (
-  <div className={cn('flex items-center justify-center gap-2', className)} {...props}>
+export const PaginationSkeleton = ({ className, ...props }) => (
+  <div
+    className={cn('flex items-center justify-center gap-2', className)}
+    {...props}
+  >
     <SkeletonLine height="h-11" width="w-20" className="rounded-2xl" />
     <SkeletonLine height="h-11" width="w-11" className="rounded-2xl" />
     <SkeletonLine height="h-11" width="w-11" className="rounded-2xl" />
@@ -126,24 +105,20 @@ export const PaginationSkeleton = ({
 );
 
 // Tabs Skeleton
-export const TabsSkeleton = ({ 
-  tabs = 4,
-  className,
-  ...props 
-}) => (
+export const TabsSkeleton = ({ tabs = 4, className, ...props }) => (
   <div className={cn('space-y-4', className)} {...props}>
     {/* Tab Headers */}
     <div className="flex items-center gap-1 bg-earthy-beige/20 p-1 rounded-3xl">
       {Array.from({ length: tabs }).map((_, i) => (
-        <SkeletonLine 
+        <SkeletonLine
           key={i}
-          height="h-10" 
-          width="w-20" 
-          className="rounded-2xl" 
+          height="h-10"
+          width="w-20"
+          className="rounded-2xl"
         />
       ))}
     </div>
-    
+
     {/* Tab Content */}
     <div className="space-y-3">
       <SkeletonLine height="h-4" width="w-full" />
@@ -154,27 +129,24 @@ export const TabsSkeleton = ({
 );
 
 // Dropdown Skeleton
-export const DropdownSkeleton = ({ 
-  className,
-  ...props 
-}) => (
-  <SkeletonLine 
-    height="h-11" 
-    width="w-48" 
+export const DropdownSkeleton = ({ className, ...props }) => (
+  <SkeletonLine
+    height="h-11"
+    width="w-48"
     className={cn('rounded-2xl', className)}
     {...props}
   />
 );
 
 // Alert Banner Skeleton
-export const AlertBannerSkeleton = ({ 
-  className,
-  ...props 
-}) => (
-  <div className={cn(
-    'w-full p-4 border border-gray-200 rounded-2xl bg-earthy-beige/10 animate-pulse',
-    className
-  )} {...props}>
+export const AlertBannerSkeleton = ({ className, ...props }) => (
+  <div
+    className={cn(
+      'w-full p-4 border border-gray-200 rounded-2xl bg-earthy-beige/10 animate-pulse',
+      className
+    )}
+    {...props}
+  >
     <div className="flex items-start gap-3">
       <SkeletonCircle size="w-5 h-5" />
       <div className="flex-1 space-y-2">
@@ -186,14 +158,14 @@ export const AlertBannerSkeleton = ({
 );
 
 // Toast Skeleton
-export const ToastSkeleton = ({ 
-  className,
-  ...props 
-}) => (
-  <div className={cn(
-    'p-4 rounded-2xl shadow-lg backdrop-blur-sm border border-white/50 bg-white/90 animate-pulse max-w-sm',
-    className
-  )} {...props}>
+export const ToastSkeleton = ({ className, ...props }) => (
+  <div
+    className={cn(
+      'p-4 rounded-2xl shadow-lg backdrop-blur-sm border border-white/50 bg-white/90 animate-pulse max-w-sm',
+      className
+    )}
+    {...props}
+  >
     <div className="flex items-start gap-3">
       <SkeletonCircle size="w-5 h-5" />
       <div className="flex-1 space-y-2">
@@ -205,10 +177,10 @@ export const ToastSkeleton = ({
 );
 
 // Profile Skeleton
-export const ProfileSkeleton = ({ 
+export const ProfileSkeleton = ({
   className,
   showDetails = true,
-  ...props 
+  ...props
 }) => (
   <div className={cn('flex items-center gap-3', className)} {...props}>
     <SkeletonCircle size="w-12 h-12" />
@@ -222,11 +194,7 @@ export const ProfileSkeleton = ({
 );
 
 // Navigation Skeleton
-export const NavigationSkeleton = ({ 
-  items = 5,
-  className,
-  ...props 
-}) => (
+export const NavigationSkeleton = ({ items = 5, className, ...props }) => (
   <nav className={cn('space-y-2', className)} {...props}>
     {Array.from({ length: items }).map((_, i) => (
       <div key={i} className="flex items-center gap-3 p-3">
@@ -238,17 +206,20 @@ export const NavigationSkeleton = ({
 );
 
 // Dashboard Grid Skeleton
-export const DashboardSkeleton = ({ 
+export const DashboardSkeleton = ({
   stats = 4,
   charts = 2,
   className,
-  ...props 
+  ...props
 }) => (
   <div className={cn('space-y-8', className)} {...props}>
     {/* Stats Grid */}
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array.from({ length: stats }).map((_, i) => (
-        <div key={i} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 animate-pulse">
+        <div
+          key={i}
+          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 animate-pulse"
+        >
           <div className="space-y-3">
             <SkeletonLine height="h-4" width="w-16" />
             <SkeletonLine height="h-8" width="w-20" />
@@ -257,19 +228,26 @@ export const DashboardSkeleton = ({
         </div>
       ))}
     </div>
-    
+
     {/* Charts Grid */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {Array.from({ length: charts }).map((_, i) => (
-        <div key={i} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 animate-pulse">
+        <div
+          key={i}
+          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 animate-pulse"
+        >
           <div className="space-y-4">
             <SkeletonLine height="h-6" width="w-32" />
-            <SkeletonLine height="h-64" width="w-full" className="rounded-2xl" />
+            <SkeletonLine
+              height="h-64"
+              width="w-full"
+              className="rounded-2xl"
+            />
           </div>
         </div>
       ))}
     </div>
-    
+
     {/* Data Table */}
     <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden animate-pulse">
       <div className="p-6 border-b border-gray-200">
@@ -292,11 +270,11 @@ export const DashboardSkeleton = ({
 );
 
 // List Item Skeleton
-export const ListItemSkeleton = ({ 
+export const ListItemSkeleton = ({
   showAvatar = true,
   showActions = true,
   className,
-  ...props 
+  ...props
 }) => (
   <div className={cn('flex items-center gap-4 p-4', className)} {...props}>
     {showAvatar && <SkeletonCircle size="w-10 h-10" />}
@@ -314,17 +292,20 @@ export const ListItemSkeleton = ({
 );
 
 // Sidebar Skeleton
-export const SidebarSkeleton = ({ 
-  className,
-  ...props 
-}) => (
-  <div className={cn('w-64 bg-white border-r border-gray-200 p-4 space-y-8', className)} {...props}>
+export const SidebarSkeleton = ({ className, ...props }) => (
+  <div
+    className={cn(
+      'w-64 bg-white border-r border-gray-200 p-4 space-y-8',
+      className
+    )}
+    {...props}
+  >
     {/* Logo */}
     <SkeletonLine height="h-8" width="w-32" className="rounded-xl" />
-    
+
     {/* Navigation */}
     <NavigationSkeleton items={6} />
-    
+
     {/* Profile */}
     <div className="border-t border-gray-200 pt-4">
       <ProfileSkeleton />
@@ -333,11 +314,11 @@ export const SidebarSkeleton = ({
 );
 
 // Page Header Skeleton
-export const PageHeaderSkeleton = ({ 
+export const PageHeaderSkeleton = ({
   showBreadcrumb = true,
   showActions = true,
   className,
-  ...props 
+  ...props
 }) => (
   <div className={cn('space-y-4', className)} {...props}>
     {showBreadcrumb && (
@@ -347,13 +328,13 @@ export const PageHeaderSkeleton = ({
         <SkeletonLine height="h-3" width="w-20" />
       </div>
     )}
-    
+
     <div className="flex items-center justify-between">
       <div className="space-y-2">
         <SkeletonLine height="h-8" width="w-48" />
         <SkeletonLine height="h-4" width="w-64" />
       </div>
-      
+
       {showActions && (
         <div className="flex gap-3">
           <ButtonSkeleton variant="outline" />
@@ -365,11 +346,7 @@ export const PageHeaderSkeleton = ({
 );
 
 // Content Skeleton (Generic page content)
-export const ContentSkeleton = ({ 
-  sections = 3,
-  className,
-  ...props 
-}) => (
+export const ContentSkeleton = ({ sections = 3, className, ...props }) => (
   <div className={cn('space-y-8', className)} {...props}>
     {Array.from({ length: sections }).map((_, i) => (
       <div key={i} className="space-y-4">
@@ -385,20 +362,16 @@ export const ContentSkeleton = ({
 );
 
 // Full Page Skeleton
-export const PageSkeleton = ({ 
-  hasSidebar = true,
-  className,
-  ...props 
-}) => (
+export const PageSkeleton = ({ hasSidebar = true, className, ...props }) => (
   <div className={cn('flex min-h-screen bg-gray-50', className)} {...props}>
     {hasSidebar && <SidebarSkeleton />}
-    
+
     <div className="flex-1 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-6">
         <PageHeaderSkeleton />
       </div>
-      
+
       {/* Main Content */}
       <main className="flex-1 p-6">
         <ContentSkeleton />

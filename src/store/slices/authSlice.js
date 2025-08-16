@@ -41,16 +41,16 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addMatcher(apiSlice.endpoints.login.matchFulfilled, (state, action) => {
-        const { data } = action.payload;
-        if (data.success) {
+        const response = action.payload;
+        if (response.success) {
           state.loading = false;
-          state.user = data.user;
-          state.token = data.token;
+          state.user = response.user;
+          state.token = response.token;
           state.isAuthenticated = true;
           state.error = null;
 
           // Store in localStorage
-          localStorage.setItem('token', data.token);
+          localStorage.setItem('token', response.token);
         }
       })
       .addMatcher(apiSlice.endpoints.login.matchRejected, (state, action) => {
@@ -72,16 +72,16 @@ const authSlice = createSlice({
       .addMatcher(
         apiSlice.endpoints.register.matchFulfilled,
         (state, action) => {
-          const { data } = action.payload;
-          if (data.success) {
+          const response = action.payload;
+          if (response.success) {
             state.loading = false;
-            state.user = data.user;
-            state.token = data.token;
+            state.user = response.user;
+            state.token = response.token;
             state.isAuthenticated = true;
             state.error = null;
 
             // Store in localStorage
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('token', response.token);
           }
         }
       )
@@ -109,10 +109,10 @@ const authSlice = createSlice({
       .addMatcher(
         apiSlice.endpoints.getCurrentUser.matchFulfilled,
         (state, action) => {
-          const { data } = action.payload;
-          if (data.success) {
-            // Backend returns user in 'user' field per API docs
-            state.user = data.user;
+          const response = action.payload;
+          if (response.success) {
+            // Backend returns user in 'data' field for getCurrentUser endpoint
+            state.user = response.data;
             state.isAuthenticated = true;
           }
         }

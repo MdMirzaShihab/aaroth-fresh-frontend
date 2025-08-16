@@ -14,7 +14,8 @@ const AccountSuspendedPage = () => {
             Account Suspended
           </h1>
           <p className="text-text-muted mb-8">
-            Your account has been suspended. Please contact support for assistance.
+            Your account has been suspended. Please contact support for
+            assistance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
@@ -24,7 +25,7 @@ const AccountSuspendedPage = () => {
               <Mail className="w-5 h-5" />
               Contact Support
             </a>
-            <Link 
+            <Link
               to="/"
               className="bg-white border border-gray-200 text-text-dark px-6 py-3 rounded-2xl font-medium hover:border-bottle-green/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
             >

@@ -9,8 +9,8 @@ const SimpleLineChart = ({ data, height = 200, color = '#0EA5E9' }) => {
     );
   }
 
-  const maxValue = Math.max(...data.map(d => d.value));
-  const minValue = Math.min(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const minValue = Math.min(...data.map((d) => d.value));
   const range = maxValue - minValue || 1;
 
   const padding = 40;
@@ -18,7 +18,8 @@ const SimpleLineChart = ({ data, height = 200, color = '#0EA5E9' }) => {
   const chartHeight = height - padding * 2;
 
   const points = data.map((point, index) => {
-    const x = padding + (index / (data.length - 1)) * (chartWidth - padding * 2);
+    const x =
+      padding + (index / (data.length - 1)) * (chartWidth - padding * 2);
     const y = padding + ((maxValue - point.value) / range) * chartHeight;
     return { x, y, ...point };
   });
@@ -29,21 +30,40 @@ const SimpleLineChart = ({ data, height = 200, color = '#0EA5E9' }) => {
 
   return (
     <div className="w-full">
-      <svg width="100%" height={height} viewBox={`0 0 ${chartWidth} ${height}`} className="overflow-visible">
+      <svg
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${chartWidth} ${height}`}
+        className="overflow-visible"
+      >
         {/* Grid lines */}
         <defs>
-          <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#f3f4f6" strokeWidth="1"/>
+          <pattern
+            id="grid"
+            width="40"
+            height="30"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 40 0 L 0 0 0 30"
+              fill="none"
+              stroke="#f3f4f6"
+              strokeWidth="1"
+            />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" opacity="0.5"/>
-        
+        <rect width="100%" height="100%" fill="url(#grid)" opacity="0.5" />
+
         {/* Y-axis labels */}
         <g className="text-xs fill-current text-text-muted">
-          <text x={10} y={padding + 5} textAnchor="start">{maxValue.toLocaleString()}</text>
-          <text x={10} y={height - padding + 5} textAnchor="start">{minValue.toLocaleString()}</text>
+          <text x={10} y={padding + 5} textAnchor="start">
+            {maxValue.toLocaleString()}
+          </text>
+          <text x={10} y={height - padding + 5} textAnchor="start">
+            {minValue.toLocaleString()}
+          </text>
         </g>
-        
+
         {/* Line */}
         <path
           d={pathData}
@@ -54,7 +74,7 @@ const SimpleLineChart = ({ data, height = 200, color = '#0EA5E9' }) => {
           strokeLinejoin="round"
           className="drop-shadow-sm"
         />
-        
+
         {/* Data points */}
         {points.map((point, index) => (
           <g key={index}>
@@ -79,21 +99,22 @@ const SimpleLineChart = ({ data, height = 200, color = '#0EA5E9' }) => {
             </circle>
           </g>
         ))}
-        
+
         {/* X-axis labels */}
         <g className="text-xs fill-current text-text-muted">
-          {points.map((point, index) => (
-            index % Math.ceil(points.length / 6) === 0 && (
-              <text
-                key={index}
-                x={point.x}
-                y={height - 10}
-                textAnchor="middle"
-              >
-                {point.label}
-              </text>
-            )
-          ))}
+          {points.map(
+            (point, index) =>
+              index % Math.ceil(points.length / 6) === 0 && (
+                <text
+                  key={index}
+                  x={point.x}
+                  y={height - 10}
+                  textAnchor="middle"
+                >
+                  {point.label}
+                </text>
+              )
+          )}
         </g>
       </svg>
     </div>

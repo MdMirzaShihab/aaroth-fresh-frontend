@@ -22,7 +22,7 @@ vi.mock('../../../store/slices/apiSlice', async () => {
     useUpdateAdminCategoryMutation: vi.fn(),
     useDeleteAdminCategoryMutation: vi.fn(),
     useUploadProductImageMutation: vi.fn(),
-    useDeleteProductImageMutation: vi.fn()
+    useDeleteProductImageMutation: vi.fn(),
   };
 });
 
@@ -33,7 +33,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useParams: () => ({ id: '1' })
+    useParams: () => ({ id: '1' }),
   };
 });
 
@@ -50,9 +50,11 @@ const mockProductsData = {
         unit: 'lb',
         status: 'active',
         listingsCount: 5,
-        images: [{ url: 'https://example.com/tomato.jpg', alt: 'Organic Tomatoes' }],
+        images: [
+          { url: 'https://example.com/tomato.jpg', alt: 'Organic Tomatoes' },
+        ],
         createdAt: '2024-01-10T10:00:00Z',
-        updatedAt: '2024-01-15T10:00:00Z'
+        updatedAt: '2024-01-15T10:00:00Z',
       },
       {
         id: '2',
@@ -65,25 +67,25 @@ const mockProductsData = {
         listingsCount: 3,
         images: [],
         createdAt: '2024-01-08T10:00:00Z',
-        updatedAt: '2024-01-12T10:00:00Z'
-      }
+        updatedAt: '2024-01-12T10:00:00Z',
+      },
     ],
     pagination: {
       totalProducts: 2,
       currentPage: 1,
       totalPages: 1,
-      limit: 15
-    }
-  }
+      limit: 15,
+    },
+  },
 };
 
 const mockCategoriesData = {
   data: {
     categories: [
       { id: 'cat-1', name: 'Vegetables' },
-      { id: 'cat-2', name: 'Leafy Greens' }
-    ]
-  }
+      { id: 'cat-2', name: 'Leafy Greens' },
+    ],
+  },
 };
 
 describe('Product Management Mobile Optimization', () => {
@@ -121,24 +123,51 @@ describe('Product Management Mobile Optimization', () => {
       data: mockProductsData,
       isLoading: false,
       error: null,
-      refetch: vi.fn()
+      refetch: vi.fn(),
     });
 
     apiSlice.useGetAdminCategoriesQuery.mockReturnValue({
       data: mockCategoriesData,
       isLoading: false,
-      error: null
+      error: null,
     });
 
-    apiSlice.useCreateAdminProductMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useUpdateAdminProductMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useDeleteAdminProductMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useDeleteAdminCategoryMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useUploadProductImageMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useDeleteProductImageMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
+    apiSlice.useCreateAdminProductMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useUpdateAdminProductMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useDeleteAdminProductMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useDeleteAdminCategoryMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useUploadProductImageMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useDeleteProductImageMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
   };
 
   const renderWithMobileState = (Component) => {
@@ -149,12 +178,12 @@ describe('Product Management Mobile Optimization', () => {
           user: {
             id: 'admin-1',
             role: 'admin',
-            name: 'Admin User'
+            name: 'Admin User',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -173,7 +202,9 @@ describe('Product Management Mobile Optimization', () => {
       });
 
       // Check that table adapts to mobile
-      const tableContainer = screen.getByText('Organic Cherry Tomatoes').closest('div');
+      const tableContainer = screen
+        .getByText('Organic Cherry Tomatoes')
+        .closest('div');
       // Mobile tables should stack or use card layout
       expect(tableContainer).not.toHaveClass('table'); // Should not use standard table layout
     });
@@ -184,12 +215,15 @@ describe('Product Management Mobile Optimization', () => {
       renderWithMobileState(<ProductList />);
 
       await waitFor(() => {
-        const searchInput = screen.getByPlaceholderText('Search products by name, SKU, description...');
+        const searchInput = screen.getByPlaceholderText(
+          'Search products by name, SKU, description...'
+        );
         expect(searchInput).toBeInTheDocument();
-        
+
         // Check minimum touch target size (44px minimum)
         const inputStyles = window.getComputedStyle(searchInput);
-        const minHeight = parseFloat(inputStyles.minHeight) || parseFloat(inputStyles.height);
+        const minHeight =
+          parseFloat(inputStyles.minHeight) || parseFloat(inputStyles.height);
         expect(minHeight).toBeGreaterThanOrEqual(44);
       });
     });
@@ -204,15 +238,16 @@ describe('Product Management Mobile Optimization', () => {
       });
 
       const filtersButton = screen.getByText('Filters');
-      
+
       // Check button is touch-friendly
       const buttonStyles = window.getComputedStyle(filtersButton);
-      const minHeight = parseFloat(buttonStyles.minHeight) || parseFloat(buttonStyles.height);
+      const minHeight =
+        parseFloat(buttonStyles.minHeight) || parseFloat(buttonStyles.height);
       expect(minHeight).toBeGreaterThanOrEqual(44);
 
       // Test filter interaction
       await user.click(filtersButton);
-      
+
       // Filters should be accessible on mobile
       await waitFor(() => {
         expect(screen.getByLabelText('Category')).toBeInTheDocument();
@@ -260,7 +295,9 @@ describe('Product Management Mobile Optimization', () => {
       });
 
       // Check form uses mobile-responsive grid
-      const formContainer = screen.getByText('Basic Information').closest('div');
+      const formContainer = screen
+        .getByText('Basic Information')
+        .closest('div');
       expect(formContainer).toHaveClass('grid-cols-1', 'md:grid-cols-2');
     });
 
@@ -274,7 +311,8 @@ describe('Product Management Mobile Optimization', () => {
 
         // Check input has proper touch target size
         const inputStyles = window.getComputedStyle(nameInput);
-        const minHeight = parseFloat(inputStyles.minHeight) || parseFloat(inputStyles.height);
+        const minHeight =
+          parseFloat(inputStyles.minHeight) || parseFloat(inputStyles.height);
         expect(minHeight).toBeGreaterThanOrEqual(44);
       });
     });
@@ -282,16 +320,19 @@ describe('Product Management Mobile Optimization', () => {
     it('handles mobile image upload interface', async () => {
       mockMobileViewport();
       const user = userEvent.setup();
-      
-      const mockUploadImage = vi.fn().mockReturnValue({ 
+
+      const mockUploadImage = vi.fn().mockReturnValue({
         unwrap: vi.fn().mockResolvedValue({
           data: {
             id: 'img-new',
-            url: 'https://example.com/new-image.jpg'
-          }
-        }) 
+            url: 'https://example.com/new-image.jpg',
+          },
+        }),
       });
-      apiSlice.useUploadProductImageMutation.mockReturnValue([mockUploadImage, { isLoading: false }]);
+      apiSlice.useUploadProductImageMutation.mockReturnValue([
+        mockUploadImage,
+        { isLoading: false },
+      ]);
 
       renderWithMobileState(<ProductForm isEditing={false} />);
 
@@ -304,10 +345,12 @@ describe('Product Management Mobile Optimization', () => {
       expect(fileInput).toBeInTheDocument();
 
       // Test file upload on mobile
-      const file = new File(['test'], 'test-mobile.jpg', { type: 'image/jpeg' });
+      const file = new File(['test'], 'test-mobile.jpg', {
+        type: 'image/jpeg',
+      });
       if (fileInput) {
         await user.upload(fileInput, file);
-        
+
         await waitFor(() => {
           expect(mockUploadImage).toHaveBeenCalledWith(expect.any(FormData));
         });
@@ -319,12 +362,15 @@ describe('Product Management Mobile Optimization', () => {
       renderWithMobileState(<ProductForm isEditing={false} />);
 
       await waitFor(() => {
-        const submitButton = screen.getByText('Create Product', { selector: 'button' });
+        const submitButton = screen.getByText('Create Product', {
+          selector: 'button',
+        });
         expect(submitButton).toBeInTheDocument();
 
         // Check button meets touch target requirements
         const buttonStyles = window.getComputedStyle(submitButton);
-        const minHeight = parseFloat(buttonStyles.minHeight) || parseFloat(buttonStyles.height);
+        const minHeight =
+          parseFloat(buttonStyles.minHeight) || parseFloat(buttonStyles.height);
         expect(minHeight).toBeGreaterThanOrEqual(44);
       });
     });
@@ -359,7 +405,9 @@ describe('Product Management Mobile Optimization', () => {
       });
 
       // Categories should use responsive grid layout
-      const categoriesContainer = screen.getByText('Vegetables').closest('.grid');
+      const categoriesContainer = screen
+        .getByText('Vegetables')
+        .closest('.grid');
       if (categoriesContainer) {
         expect(categoriesContainer).toHaveClass('grid-cols-1');
       }
@@ -375,10 +423,11 @@ describe('Product Management Mobile Optimization', () => {
       });
 
       const addButton = screen.getByText('Add Category');
-      
+
       // Check button touch target
       const buttonStyles = window.getComputedStyle(addButton);
-      const minHeight = parseFloat(buttonStyles.minHeight) || parseFloat(buttonStyles.height);
+      const minHeight =
+        parseFloat(buttonStyles.minHeight) || parseFloat(buttonStyles.height);
       expect(minHeight).toBeGreaterThanOrEqual(44);
 
       await user.click(addButton);
@@ -401,9 +450,10 @@ describe('Product Management Mobile Optimization', () => {
       await user.click(addButton);
 
       await waitFor(() => {
-        const modal = screen.getByText('Create Category').closest('[role="dialog"]') || 
-                     screen.getByText('Create Category').closest('.fixed');
-        
+        const modal =
+          screen.getByText('Create Category').closest('[role="dialog"]') ||
+          screen.getByText('Create Category').closest('.fixed');
+
         if (modal) {
           // Modal should be responsive to mobile viewport
           const modalStyles = window.getComputedStyle(modal);
@@ -423,7 +473,9 @@ describe('Product Management Mobile Optimization', () => {
       });
 
       // Tablet should show more columns than mobile
-      const container = screen.getByText('Organic Cherry Tomatoes').closest('div');
+      const container = screen
+        .getByText('Organic Cherry Tomatoes')
+        .closest('div');
       // Should use md: breakpoint classes
       expect(container?.className).toMatch(/md:/);
     });
@@ -433,7 +485,9 @@ describe('Product Management Mobile Optimization', () => {
       renderWithMobileState(<ProductForm isEditing={false} />);
 
       await waitFor(() => {
-        const formContainer = screen.getByText('Basic Information').closest('div');
+        const formContainer = screen
+          .getByText('Basic Information')
+          .closest('div');
         // Should show 2 columns on tablet
         expect(formContainer).toHaveClass('md:grid-cols-2');
       });
@@ -451,15 +505,17 @@ describe('Product Management Mobile Optimization', () => {
       });
 
       // Test touch events on product cards
-      const productCard = screen.getByText('Organic Cherry Tomatoes').closest('div');
+      const productCard = screen
+        .getByText('Organic Cherry Tomatoes')
+        .closest('div');
       if (productCard) {
         // Simulate touch start/end events
         fireEvent.touchStart(productCard, {
-          touches: [{ clientX: 100, clientY: 100 }]
+          touches: [{ clientX: 100, clientY: 100 }],
         });
 
         fireEvent.touchEnd(productCard, {
-          changedTouches: [{ clientX: 150, clientY: 100 }]
+          changedTouches: [{ clientX: 150, clientY: 100 }],
         });
 
         // Component should handle touch events without errors
@@ -470,7 +526,7 @@ describe('Product Management Mobile Optimization', () => {
     it('provides haptic feedback simulation for mobile actions', async () => {
       mockMobileViewport();
       const user = userEvent.setup();
-      
+
       // Mock navigator.vibrate for haptic feedback
       Object.defineProperty(navigator, 'vibrate', {
         writable: true,
@@ -486,7 +542,7 @@ describe('Product Management Mobile Optimization', () => {
       const deleteButtons = screen.getAllByTitle('Delete product');
       if (deleteButtons.length > 0) {
         await user.click(deleteButtons[0]);
-        
+
         // Component should work even if vibration API is available
         await waitFor(() => {
           expect(screen.getByText('Delete Product')).toBeInTheDocument();
@@ -502,15 +558,17 @@ describe('Product Management Mobile Optimization', () => {
 
       await waitFor(() => {
         // Check headings hierarchy
-        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Product Management');
-        
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+          'Product Management'
+        );
+
         // Check all interactive elements have proper labels
         const buttons = screen.getAllByRole('button');
-        buttons.forEach(button => {
+        buttons.forEach((button) => {
           expect(
-            button.textContent || 
-            button.getAttribute('title') || 
-            button.getAttribute('aria-label')
+            button.textContent ||
+              button.getAttribute('title') ||
+              button.getAttribute('aria-label')
           ).toBeTruthy();
         });
       });
@@ -524,10 +582,10 @@ describe('Product Management Mobile Optimization', () => {
         // Check form labels are properly associated
         const nameInput = screen.getByLabelText('Product Name');
         expect(nameInput).toBeInTheDocument();
-        
+
         const categorySelect = screen.getByLabelText('Category');
         expect(categorySelect).toBeInTheDocument();
-        
+
         const priceInput = screen.getByLabelText('Base Price');
         expect(priceInput).toBeInTheDocument();
       });
@@ -557,7 +615,7 @@ describe('Product Management Mobile Optimization', () => {
   describe('Performance on Mobile', () => {
     it('handles large datasets efficiently on mobile', async () => {
       mockMobileViewport();
-      
+
       // Mock large dataset
       const largeProductData = {
         data: {
@@ -572,22 +630,22 @@ describe('Product Management Mobile Optimization', () => {
             listingsCount: Math.floor(Math.random() * 10),
             images: [],
             createdAt: '2024-01-10T10:00:00Z',
-            updatedAt: '2024-01-15T10:00:00Z'
+            updatedAt: '2024-01-15T10:00:00Z',
           })),
           pagination: {
             totalProducts: 100,
             currentPage: 1,
             totalPages: 7,
-            limit: 15
-          }
-        }
+            limit: 15,
+          },
+        },
       };
 
       apiSlice.useGetAdminProductsQuery.mockReturnValue({
         data: largeProductData,
         isLoading: false,
         error: null,
-        refetch: vi.fn()
+        refetch: vi.fn(),
       });
 
       const startTime = performance.now();

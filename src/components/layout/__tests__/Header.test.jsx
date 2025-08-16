@@ -7,8 +7,8 @@ import authService from '../../../services/authService';
 // Mock authService
 vi.mock('../../../services/authService', () => ({
   default: {
-    logout: vi.fn()
-  }
+    logout: vi.fn(),
+  },
 }));
 
 // Mock react-router-dom
@@ -17,14 +17,14 @@ vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    useNavigate: () => mockNavigate
+    useNavigate: () => mockNavigate,
   };
 });
 
 describe('Header', () => {
   const mockProps = {
     onMenuToggle: vi.fn(),
-    isSidebarOpen: false
+    isSidebarOpen: false,
   };
 
   beforeEach(() => {
@@ -36,9 +36,9 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin', phone: '+1234567890' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -56,9 +56,9 @@ describe('Header', () => {
       auth: {
         isAuthenticated: false,
         user: null,
-        token: null
+        token: null,
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -75,12 +75,14 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
-    const { store } = renderWithProviders(<Header {...mockProps} />, { preloadedState });
+    const { store } = renderWithProviders(<Header {...mockProps} />, {
+      preloadedState,
+    });
 
     const themeToggle = screen.getByLabelText('Switch to dark mode');
     fireEvent.click(themeToggle);
@@ -95,9 +97,9 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -113,17 +115,19 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     // Test closed state
-    const { rerender } = renderWithProviders(<Header {...mockProps} />, { preloadedState });
+    const { rerender } = renderWithProviders(<Header {...mockProps} />, {
+      preloadedState,
+    });
     expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
 
     // Test open state
-    rerender(<Header {...mockProps} isSidebarOpen={true} />);
+    rerender(<Header {...mockProps} isSidebarOpen />);
     expect(screen.getByLabelText('Close menu')).toBeInTheDocument();
   });
 
@@ -132,21 +136,21 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
 
     const userMenuButton = screen.getByLabelText('User menu');
-    
+
     // Menu should be closed initially
     expect(screen.queryByText('Profile')).not.toBeInTheDocument();
 
     // Open menu
     fireEvent.click(userMenuButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Profile')).toBeInTheDocument();
       expect(screen.getByText('Settings')).toBeInTheDocument();
@@ -159,21 +163,21 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
 
     const notificationButton = screen.getByLabelText('Notifications');
-    
+
     // Notifications should be closed initially
     expect(screen.queryByText('Notifications')).not.toBeInTheDocument();
 
     // Open notifications
     fireEvent.click(notificationButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Notifications')).toBeInTheDocument();
     });
@@ -184,9 +188,9 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -210,9 +214,9 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -231,9 +235,9 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -247,14 +251,14 @@ describe('Header', () => {
     const preloadedState = {
       auth: {
         isAuthenticated: true,
-        user: { 
-          name: 'Test User', 
-          role: 'admin', 
-          avatar: 'https://example.com/avatar.jpg' 
+        user: {
+          name: 'Test User',
+          role: 'admin',
+          avatar: 'https://example.com/avatar.jpg',
         },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -269,9 +273,9 @@ describe('Header', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<Header {...mockProps} />, { preloadedState });
@@ -284,7 +288,7 @@ describe('Header', () => {
 
     // Check minimum touch target sizes would be handled by CSS classes
     const buttons = screen.getAllByRole('button');
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       expect(button).toHaveClass('min-h-[44px]');
     });
   });

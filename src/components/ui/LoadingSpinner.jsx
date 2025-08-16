@@ -45,7 +45,10 @@ const LoadingSpinner = ({
 }) => {
   const spinnerContent = (
     <div
-      className={cn('flex flex-col items-center justify-center gap-4', className)}
+      className={cn(
+        'flex flex-col items-center justify-center gap-4',
+        className
+      )}
       data-testid="loading-spinner"
       {...props}
     >
@@ -91,11 +94,11 @@ const LoadingSpinner = ({
 };
 
 // Organic dots spinner with breathing animation
-export const DotsSpinner = ({ 
-  className, 
-  size = 'default', 
+export const DotsSpinner = ({
+  className,
+  size = 'default',
   color = 'default',
-  ...props 
+  ...props
 }) => {
   const dotSize = {
     xs: 'w-1 h-1',
@@ -120,81 +123,123 @@ export const DotsSpinner = ({
   const colorClass = spinnerVariants({ color }).replace('animate-spin', '');
 
   return (
-    <div className={cn('flex items-center justify-between', containerSize, className)} {...props}>
-      <div className={cn(dotSize, 'rounded-full animate-pulse', colorClass)} style={{ animationDelay: '0ms' }} />
-      <div className={cn(dotSize, 'rounded-full animate-pulse', colorClass)} style={{ animationDelay: '150ms' }} />
-      <div className={cn(dotSize, 'rounded-full animate-pulse', colorClass)} style={{ animationDelay: '300ms' }} />
+    <div
+      className={cn(
+        'flex items-center justify-between',
+        containerSize,
+        className
+      )}
+      {...props}
+    >
+      <div
+        className={cn(dotSize, 'rounded-full animate-pulse', colorClass)}
+        style={{ animationDelay: '0ms' }}
+      />
+      <div
+        className={cn(dotSize, 'rounded-full animate-pulse', colorClass)}
+        style={{ animationDelay: '150ms' }}
+      />
+      <div
+        className={cn(dotSize, 'rounded-full animate-pulse', colorClass)}
+        style={{ animationDelay: '300ms' }}
+      />
     </div>
   );
 };
 
 // Pulse spinner with organic scaling
-export const PulseSpinner = ({ 
-  className, 
-  size = 'default', 
+export const PulseSpinner = ({
+  className,
+  size = 'default',
   color = 'default',
-  ...props 
+  ...props
 }) => {
-  const sizeClass = spinnerVariants({ size }).replace('animate-spin text-bottle-green', '');
+  const sizeClass = spinnerVariants({ size }).replace(
+    'animate-spin text-bottle-green',
+    ''
+  );
   const colorClass = spinnerVariants({ color }).replace('animate-spin', '');
 
   return (
-    <div className={cn('relative flex items-center justify-center', sizeClass, className)} {...props}>
-      <div className={cn('absolute rounded-full animate-ping', sizeClass, colorClass, 'opacity-20')} />
-      <div className={cn('relative rounded-full animate-pulse', sizeClass, colorClass)} />
+    <div
+      className={cn(
+        'relative flex items-center justify-center',
+        sizeClass,
+        className
+      )}
+      {...props}
+    >
+      <div
+        className={cn(
+          'absolute rounded-full animate-ping',
+          sizeClass,
+          colorClass,
+          'opacity-20'
+        )}
+      />
+      <div
+        className={cn(
+          'relative rounded-full animate-pulse',
+          sizeClass,
+          colorClass
+        )}
+      />
     </div>
   );
 };
 
 // Full page loading overlay
-export const LoadingOverlay = ({ 
-  isLoading, 
+export const LoadingOverlay = ({
+  isLoading,
   spinner: SpinnerComponent = LoadingSpinner,
   message,
   className,
   backdropBlur = true,
-  ...spinnerProps 
+  ...spinnerProps
 }) => {
   if (!isLoading) return null;
 
   return (
-    <div className={cn(
-      'fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 transition-all duration-300',
-      backdropBlur && 'backdrop-blur-sm',
-      className
-    )}>
+    <div
+      className={cn(
+        'fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 transition-all duration-300',
+        backdropBlur && 'backdrop-blur-sm',
+        className
+      )}
+    >
       <SpinnerComponent size="xl" {...spinnerProps} />
       {message && (
-        <p className="mt-4 text-text-muted text-center max-w-xs">
-          {message}
-        </p>
+        <p className="mt-4 text-text-muted text-center max-w-xs">{message}</p>
       )}
     </div>
   );
 };
 
 // Inline loading state
-export const InlineLoading = ({ 
+export const InlineLoading = ({
   size = 'sm',
   message,
   className,
   spinner: SpinnerComponent = LoadingSpinner,
-  ...props 
+  ...props
 }) => (
-  <div className={cn('flex items-center gap-2 text-text-muted', className)} {...props}>
+  <div
+    className={cn('flex items-center gap-2 text-text-muted', className)}
+    {...props}
+  >
     <SpinnerComponent size={size} color="muted" />
     {message && <span className="text-sm">{message}</span>}
   </div>
 );
 
 // Skeleton loading components for different content types
-export const SkeletonLine = ({ 
+export const SkeletonLine = ({
   className,
   width = 'w-full',
   height = 'h-4',
-  ...props 
+  ...props
 }) => (
-  <div 
+  <div
     className={cn(
       'animate-pulse bg-earthy-beige/50 rounded-full',
       width,
@@ -205,12 +250,8 @@ export const SkeletonLine = ({
   />
 );
 
-export const SkeletonCircle = ({ 
-  className,
-  size = 'w-12 h-12',
-  ...props 
-}) => (
-  <div 
+export const SkeletonCircle = ({ className, size = 'w-12 h-12', ...props }) => (
+  <div
     className={cn(
       'animate-pulse bg-earthy-beige/50 rounded-full flex-shrink-0',
       size,
@@ -234,9 +275,13 @@ export const SkeletonLoader = ({
         <SkeletonLine
           key={index}
           width={
-            index === 0 ? 'w-3/4' : 
-            index === 1 ? 'w-1/2' : 
-            index === 2 ? 'w-5/6' : 'w-full'
+            index === 0
+              ? 'w-3/4'
+              : index === 1
+                ? 'w-1/2'
+                : index === 2
+                  ? 'w-5/6'
+                  : 'w-full'
           }
         />
       ))}
@@ -250,7 +295,10 @@ export const SkeletonLoader = ({
 export const CardSkeleton = ({ className = '', ...props }) => {
   return (
     <div
-      className={cn('animate-pulse bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50', className)}
+      className={cn(
+        'animate-pulse bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50',
+        className
+      )}
       {...props}
     >
       {/* Image Placeholder */}
@@ -274,23 +322,39 @@ export const CardSkeleton = ({ className = '', ...props }) => {
   );
 };
 
-export const SkeletonTable = ({ rows = 5, columns = 4, className, ...props }) => (
+export const SkeletonTable = ({
+  rows = 5,
+  columns = 4,
+  className,
+  ...props
+}) => (
   <div className={cn('animate-pulse space-y-4', className)} {...props}>
     {/* Header */}
-    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+    <div
+      className="grid gap-4"
+      style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+    >
       {Array.from({ length: columns }).map((_, i) => (
         <SkeletonLine key={`header-${i}`} height="h-5" width="w-3/4" />
       ))}
     </div>
-    
+
     {/* Separator */}
     <SkeletonLine height="h-px" width="w-full" />
-    
+
     {/* Rows */}
     {Array.from({ length: rows }).map((_, rowIndex) => (
-      <div key={`row-${rowIndex}`} className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+      <div
+        key={`row-${rowIndex}`}
+        className="grid gap-4"
+        style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+      >
         {Array.from({ length: columns }).map((_, colIndex) => (
-          <SkeletonLine key={`cell-${rowIndex}-${colIndex}`} height="h-4" width="w-full" />
+          <SkeletonLine
+            key={`cell-${rowIndex}-${colIndex}`}
+            height="h-4"
+            width="w-full"
+          />
         ))}
       </div>
     ))}

@@ -20,7 +20,7 @@ const mockVendorsData = {
         role: 'vendor',
         isApproved: false,
         status: 'pending',
-        createdAt: '2024-01-15T10:30:00Z'
+        createdAt: '2024-01-15T10:30:00Z',
       },
       {
         id: '2',
@@ -32,7 +32,7 @@ const mockVendorsData = {
         role: 'vendor',
         isApproved: false,
         status: 'pending',
-        createdAt: '2024-01-14T14:20:00Z'
+        createdAt: '2024-01-14T14:20:00Z',
       },
       {
         id: '3',
@@ -44,16 +44,16 @@ const mockVendorsData = {
         role: 'vendor',
         isApproved: false,
         status: 'pending',
-        createdAt: '2024-01-13T08:45:00Z'
-      }
+        createdAt: '2024-01-13T08:45:00Z',
+      },
     ],
     pagination: {
       totalUsers: 3,
       currentPage: 1,
       totalPages: 1,
-      limit: 12
-    }
-  }
+      limit: 12,
+    },
+  },
 };
 
 // MSW server setup
@@ -62,12 +62,12 @@ const server = setupServer(
     const searchParams = req.url.searchParams;
     const role = searchParams.get('role');
     const isApproved = searchParams.get('isApproved');
-    
+
     // Only return pending vendors for approval page
     if (role === 'vendor' && isApproved === 'false') {
       return res(ctx.json(mockVendorsData));
     }
-    
+
     return res(ctx.json({ data: { users: [], pagination: {} } }));
   }),
   rest.put('/api/v1/admin/users/:id/approve', (req, res, ctx) => {
@@ -89,12 +89,12 @@ describe('VendorApproval', () => {
             id: 'admin-1',
             role: 'admin',
             name: 'Admin User',
-            phone: '+1234567890'
+            phone: '+1234567890',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -102,12 +102,14 @@ describe('VendorApproval', () => {
     renderVendorApproval();
 
     expect(screen.getByText('Vendor Approvals')).toBeInTheDocument();
-    expect(screen.getByText('Review and approve vendor applications')).toBeInTheDocument();
+    expect(
+      screen.getByText('Review and approve vendor applications')
+    ).toBeInTheDocument();
   });
 
   it('displays loading state initially', () => {
     renderVendorApproval();
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
@@ -162,7 +164,9 @@ describe('VendorApproval', () => {
       expect(screen.getByText('Fresh Produce Co')).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('Search vendors by name, phone, business...');
+    const searchInput = screen.getByPlaceholderText(
+      'Search vendors by name, phone, business...'
+    );
     await user.type(searchInput, 'Fresh');
 
     expect(searchInput.value).toBe('Fresh');
@@ -201,10 +205,11 @@ describe('VendorApproval', () => {
 
     // Click reject button (X icon)
     const rejectButtons = screen.getAllByRole('button');
-    const rejectButton = rejectButtons.find(btn => 
-      btn.querySelector('svg') && btn.getAttribute('title') === 'Reject'
+    const rejectButton = rejectButtons.find(
+      (btn) =>
+        btn.querySelector('svg') && btn.getAttribute('title') === 'Reject'
     );
-    
+
     if (rejectButton) {
       await user.click(rejectButton);
 
@@ -229,7 +234,9 @@ describe('VendorApproval', () => {
 
     // Should show vendor details modal
     await waitFor(() => {
-      expect(screen.getByText('Vendor Application Details')).toBeInTheDocument();
+      expect(
+        screen.getByText('Vendor Application Details')
+      ).toBeInTheDocument();
       expect(screen.getByText('Basic Information')).toBeInTheDocument();
       expect(screen.getByText('Business Information')).toBeInTheDocument();
     });
@@ -323,12 +330,19 @@ describe('VendorApproval', () => {
   it('shows empty state when no pending applications', async () => {
     server.use(
       rest.get('/api/v1/admin/users', (req, res, ctx) => {
-        return res(ctx.json({
-          data: {
-            users: [],
-            pagination: { totalUsers: 0, currentPage: 1, totalPages: 0, limit: 12 }
-          }
-        }));
+        return res(
+          ctx.json({
+            data: {
+              users: [],
+              pagination: {
+                totalUsers: 0,
+                currentPage: 1,
+                totalPages: 0,
+                limit: 12,
+              },
+            },
+          })
+        );
       })
     );
 
@@ -336,7 +350,11 @@ describe('VendorApproval', () => {
 
     await waitFor(() => {
       expect(screen.getByText('No pending approvals')).toBeInTheDocument();
-      expect(screen.getByText('All vendor applications have been processed. Check back later for new applications.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'All vendor applications have been processed. Check back later for new applications.'
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -350,7 +368,9 @@ describe('VendorApproval', () => {
     renderVendorApproval();
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to load vendor applications')).toBeInTheDocument();
+      expect(
+        screen.getByText('Failed to load vendor applications')
+      ).toBeInTheDocument();
       expect(screen.getByText('Retry')).toBeInTheDocument();
     });
   });
@@ -360,11 +380,13 @@ describe('VendorApproval', () => {
 
     await waitFor(() => {
       // Check for proper heading hierarchy
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Vendor Approvals');
-      
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        'Vendor Approvals'
+      );
+
       // Check for accessible form controls
       expect(screen.getByRole('searchbox')).toBeInTheDocument();
-      
+
       // Check for proper button labels
       const approveButtons = screen.getAllByText('Approve');
       expect(approveButtons.length).toBeGreaterThan(0);

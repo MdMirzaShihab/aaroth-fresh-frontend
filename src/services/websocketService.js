@@ -4,9 +4,10 @@
  */
 
 import { store } from '../store';
-import { addNotification } from '../store/slices/notificationSlice';
-import { updateOrderStatus } from '../store/slices/orderSlice';
-import { incrementUnreadNotifications } from '../store/slices/notificationSlice';
+import {
+  addNotification,
+  incrementUnreadNotifications,
+} from '../store/slices/notificationSlice';
 
 class WebSocketService {
   constructor() {
@@ -53,9 +54,12 @@ class WebSocketService {
           console.log('WebSocket disconnected:', event.code, event.reason);
           this.isConnected = false;
           this.stopHeartbeat();
-          
+
           // Only attempt reconnection if not manually closed
-          if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
+          if (
+            event.code !== 1000 &&
+            this.reconnectAttempts < this.maxReconnectAttempts
+          ) {
             this.attemptReconnect(token);
           }
         };
@@ -98,7 +102,7 @@ class WebSocketService {
 
     // Notify custom listeners
     if (this.listeners.has(type)) {
-      this.listeners.get(type).forEach(callback => {
+      this.listeners.get(type).forEach((callback) => {
         try {
           callback(payload);
         } catch (error) {
@@ -111,21 +115,23 @@ class WebSocketService {
   // Handle order status updates
   handleOrderUpdate(payload) {
     const { orderId, status, vendorId, restaurantId } = payload;
-    
-    // Update Redux store
-    store.dispatch(updateOrderStatus({ orderId, status }));
+
+    // Note: Order status updates would typically trigger a refetch of order data
+    // through RTK Query invalidation rather than direct state updates
 
     // Show notification to user
     const message = this.getOrderUpdateMessage(status);
-    store.dispatch(addNotification({
-      id: `order_${orderId}_${Date.now()}`,
-      type: 'info',
-      title: 'Order Update',
-      message: `Order #${orderId.slice(-6)} ${message}`,
-      timestamp: Date.now(),
-      read: false,
-      data: { orderId, status, type: 'order_update' }
-    }));
+    store.dispatch(
+      addNotification({
+        id: `order_${orderId}_${Date.now()}`,
+        type: 'info',
+        title: 'Order Update',
+        message: `Order #${orderId.slice(-6)} ${message}`,
+        timestamp: Date.now(),
+        read: false,
+        data: { orderId, status, type: 'order_update' },
+      })
+    );
 
     store.dispatch(incrementUnreadNotifications());
   }
@@ -133,16 +139,18 @@ class WebSocketService {
   // Handle notifications
   handleNotification(payload) {
     const { id, title, message, type, data } = payload;
-    
-    store.dispatch(addNotification({
-      id: id || `notification_${Date.now()}`,
-      type: type || 'info',
-      title: title || 'Notification',
-      message,
-      timestamp: Date.now(),
-      read: false,
-      data
-    }));
+
+    store.dispatch(
+      addNotification({
+        id: id || `notification_${Date.now()}`,
+        type: type || 'info',
+        title: title || 'Notification',
+        message,
+        timestamp: Date.now(),
+        read: false,
+        data,
+      })
+    );
 
     store.dispatch(incrementUnreadNotifications());
 
@@ -164,12 +172,12 @@ class WebSocketService {
   // Get order update message based on status
   getOrderUpdateMessage(status) {
     const messages = {
-      'confirmed': 'has been confirmed by the vendor',
-      'preparing': 'is being prepared',
-      'ready': 'is ready for pickup/delivery',
-      'shipped': 'has been shipped',
-      'delivered': 'has been delivered',
-      'cancelled': 'has been cancelled'
+      confirmed: 'has been confirmed by the vendor',
+      preparing: 'is being prepared',
+      ready: 'is ready for pickup/delivery',
+      shipped: 'has been shipped',
+      delivered: 'has been delivered',
+      cancelled: 'has been cancelled',
     };
     return messages[status] || `status updated to ${status}`;
   }
@@ -183,7 +191,7 @@ class WebSocketService {
         badge: '/favicon.ico',
         tag: 'aaroth-fresh-notification',
         requireInteraction: false,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -200,10 +208,15 @@ class WebSocketService {
   // Attempt to reconnect
   attemptReconnect(token) {
     this.reconnectAttempts++;
-    const delay = Math.min(this.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1), 30000);
-    
-    console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`);
-    
+    const delay = Math.min(
+      this.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1),
+      30000
+    );
+
+    console.log(
+      `Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`
+    );
+
     setTimeout(() => {
       if (!this.isConnected) {
         this.connect(token).catch((error) => {
@@ -267,7 +280,7 @@ class WebSocketService {
   joinRoom(roomName) {
     this.send({
       type: 'join_room',
-      room: roomName
+      room: roomName,
     });
   }
 
@@ -275,7 +288,7 @@ class WebSocketService {
   leaveRoom(roomName) {
     this.send({
       type: 'leave_room',
-      room: roomName
+      room: roomName,
     });
   }
 
@@ -284,7 +297,7 @@ class WebSocketService {
     this.send({
       type: 'subscribe',
       resource: 'order',
-      id: orderId
+      id: orderId,
     });
   }
 
@@ -293,7 +306,7 @@ class WebSocketService {
     this.send({
       type: 'unsubscribe',
       resource: 'order',
-      id: orderId
+      id: orderId,
     });
   }
 
@@ -312,7 +325,7 @@ class WebSocketService {
     return {
       connected: this.isConnected,
       readyState: this.ws ? this.ws.readyState : WebSocket.CLOSED,
-      reconnectAttempts: this.reconnectAttempts
+      reconnectAttempts: this.reconnectAttempts,
     };
   }
 }

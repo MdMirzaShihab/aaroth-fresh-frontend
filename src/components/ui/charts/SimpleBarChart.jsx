@@ -1,6 +1,10 @@
 import React from 'react';
 
-const SimpleBarChart = ({ data, height = 200, colors = ['#0EA5E9', '#10B981', '#F59E0B', '#EF4444'] }) => {
+const SimpleBarChart = ({
+  data,
+  height = 200,
+  colors = ['#0EA5E9', '#10B981', '#F59E0B', '#EF4444'],
+}) => {
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-text-muted">
@@ -9,37 +13,56 @@ const SimpleBarChart = ({ data, height = 200, colors = ['#0EA5E9', '#10B981', '#
     );
   }
 
-  const maxValue = Math.max(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map((d) => d.value));
   const padding = 40;
   const chartWidth = 400;
   const chartHeight = height - padding * 2;
-  const barWidth = (chartWidth - padding * 2) / data.length * 0.8;
-  const barSpacing = (chartWidth - padding * 2) / data.length * 0.2;
+  const barWidth = ((chartWidth - padding * 2) / data.length) * 0.8;
+  const barSpacing = ((chartWidth - padding * 2) / data.length) * 0.2;
 
   return (
     <div className="w-full">
-      <svg width="100%" height={height} viewBox={`0 0 ${chartWidth} ${height}`} className="overflow-visible">
+      <svg
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${chartWidth} ${height}`}
+        className="overflow-visible"
+      >
         {/* Grid lines */}
         <defs>
-          <pattern id="bar-grid" width="40" height="30" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#f3f4f6" strokeWidth="1"/>
+          <pattern
+            id="bar-grid"
+            width="40"
+            height="30"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 40 0 L 0 0 0 30"
+              fill="none"
+              stroke="#f3f4f6"
+              strokeWidth="1"
+            />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#bar-grid)" opacity="0.3"/>
-        
+        <rect width="100%" height="100%" fill="url(#bar-grid)" opacity="0.3" />
+
         {/* Y-axis labels */}
         <g className="text-xs fill-current text-text-muted">
-          <text x={10} y={padding + 5} textAnchor="start">{maxValue.toLocaleString()}</text>
-          <text x={10} y={height - padding + 5} textAnchor="start">0</text>
+          <text x={10} y={padding + 5} textAnchor="start">
+            {maxValue.toLocaleString()}
+          </text>
+          <text x={10} y={height - padding + 5} textAnchor="start">
+            0
+          </text>
         </g>
-        
+
         {/* Bars */}
         {data.map((item, index) => {
           const barHeight = (item.value / maxValue) * chartHeight;
           const x = padding + index * (barWidth + barSpacing) + barSpacing / 2;
           const y = height - padding - barHeight;
           const color = colors[index % colors.length];
-          
+
           return (
             <g key={index}>
               {/* Bar */}
@@ -55,7 +78,7 @@ const SimpleBarChart = ({ data, height = 200, colors = ['#0EA5E9', '#10B981', '#
               >
                 <title>{`${item.label}: ${item.value.toLocaleString()}`}</title>
               </rect>
-              
+
               {/* Value label on top of bar */}
               <text
                 x={x + barWidth / 2}
@@ -68,11 +91,15 @@ const SimpleBarChart = ({ data, height = 200, colors = ['#0EA5E9', '#10B981', '#
             </g>
           );
         })}
-        
+
         {/* X-axis labels */}
         <g className="text-xs fill-current text-text-muted">
           {data.map((item, index) => {
-            const x = padding + index * (barWidth + barSpacing) + barSpacing / 2 + barWidth / 2;
+            const x =
+              padding +
+              index * (barWidth + barSpacing) +
+              barSpacing / 2 +
+              barWidth / 2;
             return (
               <text
                 key={index}

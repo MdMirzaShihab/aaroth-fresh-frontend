@@ -1,20 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  useGetAdminCategoriesQuery,
-  useCreateAdminCategoryMutation,
-  useUpdateAdminCategoryMutation,
-  useDeleteAdminCategoryMutation
-} from '../../store/slices/apiSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import SearchBar from '../../components/ui/SearchBar';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import EmptyState from '../../components/ui/EmptyState';
-import { Modal } from '../../components/ui/Modal';
-import FormField from '../../components/ui/FormField';
-import { Input } from '../../components/ui/Input';
-import { 
+import {
   Tag,
   Plus,
   Edit3,
@@ -26,8 +11,23 @@ import {
   Users,
   TrendingUp,
   Eye,
-  Save
+  Save,
 } from 'lucide-react';
+import {
+  useGetAdminCategoriesQuery,
+  useCreateAdminCategoryMutation,
+  useUpdateAdminCategoryMutation,
+  useDeleteAdminCategoryMutation,
+} from '../../store/slices/apiSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import SearchBar from '../../components/ui/SearchBar';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import EmptyState from '../../components/ui/EmptyState';
+import { Modal } from '../../components/ui/Modal';
+import FormField from '../../components/ui/FormField';
+import { Input } from '../../components/ui/Input';
 
 const CategoryManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,15 +36,17 @@ const CategoryManagement = () => {
   const [editingCategory, setEditingCategory] = useState(null);
 
   // RTK Query hooks
-  const { 
-    data: categoriesData, 
-    isLoading, 
+  const {
+    data: categoriesData,
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useGetAdminCategoriesQuery();
 
-  const [createCategory, { isLoading: isCreating }] = useCreateAdminCategoryMutation();
-  const [updateCategory, { isLoading: isUpdating }] = useUpdateAdminCategoryMutation();
+  const [createCategory, { isLoading: isCreating }] =
+    useCreateAdminCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] =
+    useUpdateAdminCategoryMutation();
   const [deleteCategory] = useDeleteAdminCategoryMutation();
 
   const categories = categoriesData?.data?.categories || [];
@@ -57,29 +59,31 @@ const CategoryManagement = () => {
     color: '#10B981',
     isActive: true,
     sortOrder: 0,
-    parentId: null
+    parentId: null,
   });
 
   const [formErrors, setFormErrors] = useState({});
 
   // Filter categories based on search
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredCategories = categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (category.description &&
+        category.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Form validation
   const validateForm = () => {
     const errors = {};
-    
+
     if (!formData.name.trim()) {
       errors.name = 'Category name is required';
     }
-    
+
     if (formData.name.length < 2) {
       errors.name = 'Category name must be at least 2 characters';
     }
-    
+
     if (formData.name.length > 50) {
       errors.name = 'Category name must be less than 50 characters';
     }
@@ -91,7 +95,7 @@ const CategoryManagement = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     try {
@@ -102,11 +106,14 @@ const CategoryManagement = () => {
         color: formData.color,
         isActive: formData.isActive,
         sortOrder: parseInt(formData.sortOrder) || 0,
-        parentId: formData.parentId || null
+        parentId: formData.parentId || null,
       };
 
       if (editingCategory) {
-        await updateCategory({ id: editingCategory.id, ...categoryData }).unwrap();
+        await updateCategory({
+          id: editingCategory.id,
+          ...categoryData,
+        }).unwrap();
       } else {
         await createCategory(categoryData).unwrap();
       }
@@ -119,7 +126,7 @@ const CategoryManagement = () => {
         color: '#10B981',
         isActive: true,
         sortOrder: 0,
-        parentId: null
+        parentId: null,
       });
       setFormErrors({});
       setIsCreateModalOpen(false);
@@ -138,7 +145,7 @@ const CategoryManagement = () => {
       color: category.color || '#10B981',
       isActive: category.isActive !== false,
       sortOrder: category.sortOrder || 0,
-      parentId: category.parentId || null
+      parentId: category.parentId || null,
     });
     setEditingCategory(category);
     setIsCreateModalOpen(true);
@@ -160,12 +167,12 @@ const CategoryManagement = () => {
     const rootCategories = [];
 
     // Create a map of categories
-    categories.forEach(category => {
+    categories.forEach((category) => {
       categoryMap.set(category.id, { ...category, children: [] });
     });
 
     // Build hierarchy
-    categories.forEach(category => {
+    categories.forEach((category) => {
       const categoryWithChildren = categoryMap.get(category.id);
       if (category.parentId && categoryMap.has(category.parentId)) {
         categoryMap.get(category.parentId).children.push(categoryWithChildren);
@@ -174,18 +181,22 @@ const CategoryManagement = () => {
       }
     });
 
-    return rootCategories.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    return rootCategories.sort(
+      (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+    );
   };
 
   // Render category tree
   const renderCategoryTree = (categories, level = 0) => {
-    return categories.map(category => (
+    return categories.map((category) => (
       <div key={category.id}>
-        <Card className={`p-4 ${level > 0 ? `ml-${level * 6}` : ''} hover:shadow-md transition-shadow duration-300`}>
+        <Card
+          className={`p-4 ${level > 0 ? `ml-${level * 6}` : ''} hover:shadow-md transition-shadow duration-300`}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 flex-1">
               {/* Category Icon and Color */}
-              <div 
+              <div
                 className="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-sm font-medium"
                 style={{ backgroundColor: category.color || '#10B981' }}
               >
@@ -214,7 +225,7 @@ const CategoryManagement = () => {
                     </span>
                   )}
                 </div>
-                
+
                 {category.description && (
                   <p className="text-sm text-text-muted truncate">
                     {category.description}
@@ -232,7 +243,8 @@ const CategoryManagement = () => {
                   </span>
                   {category.createdAt && (
                     <span>
-                      Created {new Date(category.createdAt).toLocaleDateString()}
+                      Created{' '}
+                      {new Date(category.createdAt).toLocaleDateString()}
                     </span>
                   )}
                 </div>
@@ -242,7 +254,9 @@ const CategoryManagement = () => {
             {/* Actions */}
             <div className="flex items-center gap-1">
               <button
-                onClick={() => {/* Handle view products */}}
+                onClick={() => {
+                  /* Handle view products */
+                }}
                 className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                 title="View products"
               >
@@ -256,17 +270,19 @@ const CategoryManagement = () => {
               >
                 <Edit3 className="w-4 h-4" />
               </button>
-              
+
               <button
-                onClick={() => setConfirmAction({
-                  type: 'delete',
-                  category,
-                  title: 'Delete Category',
-                  message: `Are you sure you want to delete "${category.name}"? This action cannot be undone and may affect related products.`,
-                  confirmText: 'Delete',
-                  isDangerous: true,
-                  onConfirm: () => handleDelete(category.id)
-                })}
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'delete',
+                    category,
+                    title: 'Delete Category',
+                    message: `Are you sure you want to delete "${category.name}"? This action cannot be undone and may affect related products.`,
+                    confirmText: 'Delete',
+                    isDangerous: true,
+                    onConfirm: () => handleDelete(category.id),
+                  })
+                }
                 className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                 title="Delete category"
                 disabled={(category.productCount || 0) > 0}
@@ -302,8 +318,8 @@ const CategoryManagement = () => {
         title="Failed to load categories"
         description="There was an error loading category data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -333,7 +349,7 @@ const CategoryManagement = () => {
               color: '#10B981',
               isActive: true,
               sortOrder: 0,
-              parentId: null
+              parentId: null,
             });
             setEditingCategory(null);
             setIsCreateModalOpen(true);
@@ -356,7 +372,7 @@ const CategoryManagement = () => {
               className="w-full"
             />
           </div>
-          
+
           <div className="text-sm text-text-muted">
             {filteredCategories.length} of {categories.length} categories
           </div>
@@ -370,13 +386,15 @@ const CategoryManagement = () => {
           title="No categories found"
           description="No categories match your search criteria."
           action={{
-            label: "Add Category",
-            onClick: () => setIsCreateModalOpen(true)
+            label: 'Add Category',
+            onClick: () => setIsCreateModalOpen(true),
           }}
         />
       ) : (
         <div className="space-y-4">
-          {renderCategoryTree(searchTerm ? filteredCategories : categoryHierarchy)}
+          {renderCategoryTree(
+            searchTerm ? filteredCategories : categoryHierarchy
+          )}
         </div>
       )}
 
@@ -393,7 +411,7 @@ const CategoryManagement = () => {
             color: '#10B981',
             isActive: true,
             sortOrder: 0,
-            parentId: null
+            parentId: null,
           });
           setFormErrors({});
         }}
@@ -405,7 +423,9 @@ const CategoryManagement = () => {
             <FormField label="Category Name" error={formErrors.name}>
               <Input
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="Enter category name"
                 hasError={!!formErrors.name}
               />
@@ -414,13 +434,17 @@ const CategoryManagement = () => {
             <FormField label="Parent Category">
               <select
                 value={formData.parentId || ''}
-                onChange={(e) => setFormData({ ...formData, parentId: e.target.value || null })}
+                onChange={(e) =>
+                  setFormData({ ...formData, parentId: e.target.value || null })
+                }
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
               >
                 <option value="">None (Root Category)</option>
                 {categories
-                  .filter(cat => !editingCategory || cat.id !== editingCategory.id)
-                  .map(category => (
+                  .filter(
+                    (cat) => !editingCategory || cat.id !== editingCategory.id
+                  )
+                  .map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
@@ -431,7 +455,9 @@ const CategoryManagement = () => {
             <FormField label="Icon (Emoji or Unicode)">
               <Input
                 value={formData.icon}
-                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, icon: e.target.value })
+                }
                 placeholder="🥬 or leave empty"
                 maxLength={2}
               />
@@ -442,12 +468,16 @@ const CategoryManagement = () => {
                 <input
                   type="color"
                   value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
                   className="w-12 h-12 border border-gray-200 dark:border-gray-700 rounded-xl"
                 />
                 <Input
                   value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
                   placeholder="#10B981"
                   className="flex-1"
                 />
@@ -458,7 +488,12 @@ const CategoryManagement = () => {
               <Input
                 type="number"
                 value={formData.sortOrder}
-                onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    sortOrder: parseInt(e.target.value) || 0,
+                  })
+                }
                 placeholder="0"
                 min="0"
               />
@@ -469,7 +504,9 @@ const CategoryManagement = () => {
                 <input
                   type="checkbox"
                   checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isActive: e.target.checked })
+                  }
                   className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
                 />
                 <span className="text-text-dark dark:text-white font-medium">
@@ -482,7 +519,9 @@ const CategoryManagement = () => {
           <FormField label="Description">
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Optional category description"
               rows={3}
               className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
@@ -493,7 +532,7 @@ const CategoryManagement = () => {
           <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
             <p className="text-sm text-text-muted mb-2">Preview:</p>
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-sm font-medium"
                 style={{ backgroundColor: formData.color }}
               >
@@ -538,7 +577,7 @@ const CategoryManagement = () => {
       {/* Confirmation Dialog */}
       {confirmAction && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => setConfirmAction(null)}
           title={confirmAction.title}
           message={confirmAction.message}

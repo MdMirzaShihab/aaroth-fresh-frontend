@@ -11,32 +11,56 @@ import {
   Truck,
   Eye,
   MessageSquare,
-  Star
+  Star,
 } from 'lucide-react';
 
 /**
  * Mobile-optimized order card component
  * Designed specifically for touch interactions and small screens
  */
-const MobileOrderCard = ({ 
-  order, 
-  isSelected, 
-  onSelect, 
-  onStatusUpdate, 
+const MobileOrderCard = ({
+  order,
+  isSelected,
+  onSelect,
+  onStatusUpdate,
   onViewDetails,
-  showActions = true 
+  showActions = true,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
   // Status configuration for mobile display
   const statusConfig = {
-    pending: { color: 'text-orange-600 bg-orange-50', icon: Clock, label: 'Pending' },
-    confirmed: { color: 'text-blue-600 bg-blue-50', icon: CheckCircle, label: 'Confirmed' },
-    prepared: { color: 'text-purple-600 bg-purple-50', icon: Package, label: 'Prepared' },
-    shipped: { color: 'text-indigo-600 bg-indigo-50', icon: Truck, label: 'Shipped' },
-    delivered: { color: 'text-bottle-green bg-mint-fresh/20', icon: CheckCircle, label: 'Delivered' },
-    cancelled: { color: 'text-tomato-red bg-tomato-red/20', icon: AlertTriangle, label: 'Cancelled' }
+    pending: {
+      color: 'text-orange-600 bg-orange-50',
+      icon: Clock,
+      label: 'Pending',
+    },
+    confirmed: {
+      color: 'text-blue-600 bg-blue-50',
+      icon: CheckCircle,
+      label: 'Confirmed',
+    },
+    prepared: {
+      color: 'text-purple-600 bg-purple-50',
+      icon: Package,
+      label: 'Prepared',
+    },
+    shipped: {
+      color: 'text-indigo-600 bg-indigo-50',
+      icon: Truck,
+      label: 'Shipped',
+    },
+    delivered: {
+      color: 'text-bottle-green bg-mint-fresh/20',
+      icon: CheckCircle,
+      label: 'Delivered',
+    },
+    cancelled: {
+      color: 'text-tomato-red bg-tomato-red/20',
+      icon: AlertTriangle,
+      label: 'Cancelled',
+    },
   };
 
   const currentStatus = statusConfig[order.status] || statusConfig.pending;
@@ -47,9 +71,12 @@ const MobileOrderCard = ({
     const date = new Date(timestamp);
     const now = new Date();
     const diffInHours = Math.abs(now - date) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 24) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     } else {
       return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
@@ -59,7 +86,7 @@ const MobileOrderCard = ({
   const handleCardTap = (e) => {
     // Prevent tap when interacting with buttons
     if (e.target.closest('button')) return;
-    
+
     // Single tap to view details
     onViewDetails?.(order.id);
   };
@@ -71,11 +98,11 @@ const MobileOrderCard = ({
 
   // Touch event handlers for mobile gestures
   let pressTimer = null;
-  
+
   const handleTouchStart = () => {
     pressTimer = setTimeout(handleLongPress, 500); // 500ms for long press
   };
-  
+
   const handleTouchEnd = () => {
     clearTimeout(pressTimer);
   };
@@ -83,7 +110,7 @@ const MobileOrderCard = ({
   return (
     <div className="relative">
       {/* Main Card */}
-      <div 
+      <div
         className={`bg-white rounded-2xl shadow-soft p-4 mb-3 transition-all duration-200 touch-manipulation ${
           isSelected ? 'ring-2 ring-bottle-green/30 bg-mint-fresh/5' : ''
         }`}
@@ -104,25 +131,33 @@ const MobileOrderCard = ({
                 className="w-6 h-6 flex items-center justify-center touch-target-large"
                 aria-label={`${isSelected ? 'Deselect' : 'Select'} order ${order.id.slice(-8)}`}
               >
-                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                  isSelected 
-                    ? 'bg-bottle-green border-bottle-green' 
-                    : 'border-gray-300 hover:border-bottle-green'
-                }`}>
+                <div
+                  className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    isSelected
+                      ? 'bg-bottle-green border-bottle-green'
+                      : 'border-gray-300 hover:border-bottle-green'
+                  }`}
+                >
                   {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
                 </div>
               </button>
             )}
-            
+
             {/* Order ID */}
             <div>
-              <span className="text-sm font-medium text-text-muted">Order #</span>
-              <span className="font-bold text-text-dark ml-1">{order.id.slice(-8)}</span>
+              <span className="text-sm font-medium text-text-muted">
+                Order #
+              </span>
+              <span className="font-bold text-text-dark ml-1">
+                {order.id.slice(-8)}
+              </span>
             </div>
           </div>
 
           {/* Status Badge */}
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium ${currentStatus.color}`}>
+          <div
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium ${currentStatus.color}`}
+          >
             <StatusIcon className="w-4 h-4" />
             <span>{currentStatus.label}</span>
           </div>
@@ -134,13 +169,17 @@ const MobileOrderCard = ({
             <User className="w-5 h-5 text-text-muted" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-text-dark truncate">{order.restaurant.name}</h3>
+            <h3 className="font-semibold text-text-dark truncate">
+              {order.restaurant.name}
+            </h3>
             <div className="flex items-center gap-4 text-sm text-text-muted mt-1">
               <span>{order.items.length} items</span>
-              <span className="font-semibold text-text-dark">৳{order.totalAmount.toFixed(0)}</span>
+              <span className="font-semibold text-text-dark">
+                ৳{order.totalAmount.toFixed(0)}
+              </span>
             </div>
           </div>
-          
+
           {/* More Actions Button - Large touch target */}
           <button
             onClick={(e) => {
@@ -163,10 +202,12 @@ const MobileOrderCard = ({
             </div>
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
-              <span className="truncate max-w-[100px]">{order.deliveryAddress.city}</span>
+              <span className="truncate max-w-[100px]">
+                {order.deliveryAddress.city}
+              </span>
             </div>
           </div>
-          
+
           {/* Priority indicator */}
           {order.priority === 'high' && (
             <div className="w-2 h-2 bg-tomato-red rounded-full"></div>
@@ -178,7 +219,9 @@ const MobileOrderCard = ({
           <div className="mt-4 pt-4 border-t border-gray-100 animate-fade-in">
             {/* Items Preview */}
             <div className="mb-3">
-              <h4 className="text-sm font-medium text-text-dark mb-2">Items:</h4>
+              <h4 className="text-sm font-medium text-text-dark mb-2">
+                Items:
+              </h4>
               <div className="space-y-1">
                 {order.items.slice(0, 2).map((item, index) => (
                   <div key={index} className="flex justify-between text-sm">
@@ -228,11 +271,11 @@ const MobileOrderCard = ({
       {showActions && (
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-black/20 z-40"
             onClick={() => setShowActions(false)}
           />
-          
+
           {/* Action Menu */}
           <div className="absolute top-0 right-0 bg-white rounded-2xl shadow-xl border border-gray-200 z-50 min-w-[160px] animate-scale-in">
             <div className="p-2">
@@ -245,9 +288,11 @@ const MobileOrderCard = ({
                 className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 rounded-xl transition-colors touch-target"
               >
                 <Eye className="w-4 h-4 text-text-muted" />
-                <span className="text-sm font-medium text-text-dark">View Details</span>
+                <span className="text-sm font-medium text-text-dark">
+                  View Details
+                </span>
               </button>
-              
+
               {order.status !== 'delivered' && order.status !== 'cancelled' && (
                 <button
                   onClick={(e) => {
@@ -258,10 +303,12 @@ const MobileOrderCard = ({
                   className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 rounded-xl transition-colors touch-target"
                 >
                   <CheckCircle className="w-4 h-4 text-bottle-green" />
-                  <span className="text-sm font-medium text-text-dark">Update Status</span>
+                  <span className="text-sm font-medium text-text-dark">
+                    Update Status
+                  </span>
                 </button>
               )}
-              
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -271,9 +318,11 @@ const MobileOrderCard = ({
                 className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 rounded-xl transition-colors touch-target"
               >
                 <Phone className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-text-dark">Contact</span>
+                <span className="text-sm font-medium text-text-dark">
+                  Contact
+                </span>
               </button>
-              
+
               {order.status === 'delivered' && (
                 <button
                   onClick={(e) => {
@@ -284,7 +333,9 @@ const MobileOrderCard = ({
                   className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 rounded-xl transition-colors touch-target"
                 >
                   <Star className="w-4 h-4 text-yellow-600" />
-                  <span className="text-sm font-medium text-text-dark">Request Review</span>
+                  <span className="text-sm font-medium text-text-dark">
+                    Request Review
+                  </span>
                 </button>
               )}
             </div>

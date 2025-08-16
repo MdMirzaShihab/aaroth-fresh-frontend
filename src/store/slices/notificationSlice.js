@@ -11,11 +11,11 @@ const initialState = {
       orders: true,
       products: true,
       system: true,
-      marketing: false
-    }
+      marketing: false,
+    },
   },
   isLoading: false,
-  error: null
+  error: null,
 };
 
 const notificationSlice = createSlice({
@@ -33,24 +33,24 @@ const notificationSlice = createSlice({
         priority: action.payload.priority || 'normal',
         data: action.payload.data || null,
         duration: action.payload.duration || 5000,
-        actions: action.payload.actions || null
+        actions: action.payload.actions || null,
       };
-      
+
       state.notifications.unshift(notification);
-      
+
       if (!notification.read) {
         state.unreadCount += 1;
       }
-      
+
       // Keep only last 100 notifications
       if (state.notifications.length > 100) {
         state.notifications = state.notifications.slice(0, 100);
       }
     },
-    
+
     removeNotification: (state, action) => {
       const id = action.payload;
-      const index = state.notifications.findIndex(n => n.id === id);
+      const index = state.notifications.findIndex((n) => n.id === id);
       if (index !== -1) {
         const notification = state.notifications[index];
         if (!notification.read) {
@@ -59,12 +59,12 @@ const notificationSlice = createSlice({
         state.notifications.splice(index, 1);
       }
     },
-    
+
     clearNotifications: (state) => {
       state.notifications = [];
       state.unreadCount = 0;
     },
-    
+
     markAsRead: (state, action) => {
       const id = action.payload;
       const notification = state.notifications.find((n) => n.id === id);
@@ -73,7 +73,7 @@ const notificationSlice = createSlice({
         state.unreadCount = Math.max(0, state.unreadCount - 1);
       }
     },
-    
+
     markAllAsRead: (state) => {
       state.notifications.forEach((notification) => {
         notification.read = true;
@@ -90,7 +90,7 @@ const notificationSlice = createSlice({
     updateNotificationSettings: (state, action) => {
       state.settings = {
         ...state.settings,
-        ...action.payload
+        ...action.payload,
       };
     },
 
@@ -103,7 +103,7 @@ const notificationSlice = createSlice({
     setNotificationsError: (state, action) => {
       state.error = action.payload;
       state.isLoading = false;
-    }
+    },
   },
 });
 
@@ -116,7 +116,7 @@ export const {
   incrementUnreadNotifications,
   updateNotificationSettings,
   setNotificationsLoading,
-  setNotificationsError
+  setNotificationsError,
 } = notificationSlice.actions;
 
 // Helper action creators for common notification types
@@ -156,9 +156,12 @@ export const showInfoNotification = (message, title = 'Info') =>
 export const selectNotifications = (state) => state.notification.notifications;
 export const selectUnreadNotifications = (state) =>
   state.notification.notifications.filter((n) => !n.read);
-export const selectUnreadNotificationCount = (state) => state.notification.unreadCount;
-export const selectNotificationSettings = (state) => state.notification.settings;
-export const selectNotificationsLoading = (state) => state.notification.isLoading;
+export const selectUnreadNotificationCount = (state) =>
+  state.notification.unreadCount;
+export const selectNotificationSettings = (state) =>
+  state.notification.settings;
+export const selectNotificationsLoading = (state) =>
+  state.notification.isLoading;
 export const selectNotificationsError = (state) => state.notification.error;
 
 export default notificationSlice.reducer;

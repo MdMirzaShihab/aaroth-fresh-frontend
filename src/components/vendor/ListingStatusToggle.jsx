@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import { useUpdateListingStatusMutation } from '../../store/slices/apiSlice';
 import { useDispatch } from 'react-redux';
-import { addNotification } from '../../store/slices/notificationSlice';
-import Button from '../ui/Button';
-import ConfirmDialog from '../ui/ConfirmDialog';
 import {
   Eye,
   EyeOff,
@@ -11,15 +7,19 @@ import {
   XCircle,
   AlertTriangle,
   Clock,
-  Package
+  Package,
 } from 'lucide-react';
+import { useUpdateListingStatusMutation } from '../../store/slices/apiSlice';
+import { addNotification } from '../../store/slices/notificationSlice';
+import Button from '../ui/Button';
+import ConfirmDialog from '../ui/ConfirmDialog';
 
-const ListingStatusToggle = ({ 
-  listing, 
-  variant = 'button', 
+const ListingStatusToggle = ({
+  listing,
+  variant = 'button',
   size = 'sm',
   showLabel = false,
-  className = ''
+  className = '',
 }) => {
   const dispatch = useDispatch();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -32,29 +32,29 @@ const ListingStatusToggle = ({
       icon: CheckCircle,
       color: 'text-bottle-green',
       bgColor: 'bg-mint-fresh/20',
-      description: 'Listing is visible to customers'
+      description: 'Listing is visible to customers',
     },
     inactive: {
-      label: 'Inactive', 
+      label: 'Inactive',
       icon: EyeOff,
       color: 'text-gray-600',
       bgColor: 'bg-gray-100',
-      description: 'Listing is hidden from customers'
+      description: 'Listing is hidden from customers',
     },
     out_of_stock: {
       label: 'Out of Stock',
       icon: Package,
-      color: 'text-tomato-red', 
+      color: 'text-tomato-red',
       bgColor: 'bg-tomato-red/20',
-      description: 'No inventory available'
+      description: 'No inventory available',
     },
     pending: {
       label: 'Pending Review',
       icon: Clock,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
-      description: 'Awaiting admin approval'
-    }
+      description: 'Awaiting admin approval',
+    },
   };
 
   const currentStatus = statusOptions[listing.status] || statusOptions.inactive;
@@ -63,11 +63,14 @@ const ListingStatusToggle = ({
 
   const handleStatusToggle = async () => {
     if (listing.status === 'pending') {
-      dispatch(addNotification({
-        type: 'warning',
-        title: 'Cannot Change Status',
-        message: 'Listings under review cannot be modified. Please wait for admin approval.',
-      }));
+      dispatch(
+        addNotification({
+          type: 'warning',
+          title: 'Cannot Change Status',
+          message:
+            'Listings under review cannot be modified. Please wait for admin approval.',
+        })
+      );
       return;
     }
 
@@ -76,25 +79,31 @@ const ListingStatusToggle = ({
 
   const confirmStatusChange = async () => {
     try {
-      await updateListingStatus({ 
-        id: listing.id, 
-        status: nextStatus 
+      await updateListingStatus({
+        id: listing.id,
+        status: nextStatus,
       }).unwrap();
 
-      dispatch(addNotification({
-        type: 'success',
-        title: 'Status Updated',
-        message: `Listing is now ${nextStatusData.label.toLowerCase()}`,
-      }));
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: 'Status Updated',
+          message: `Listing is now ${nextStatusData.label.toLowerCase()}`,
+        })
+      );
 
       setShowConfirm(false);
     } catch (error) {
       console.error('Failed to update listing status:', error);
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Update Failed',
-        message: error.data?.message || 'Failed to update listing status. Please try again.',
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Update Failed',
+          message:
+            error.data?.message ||
+            'Failed to update listing status. Please try again.',
+        })
+      );
     }
   };
 
@@ -102,7 +111,7 @@ const ListingStatusToggle = ({
   if (variant === 'badge') {
     const IconComponent = currentStatus.icon;
     return (
-      <span 
+      <span
         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
           currentStatus.color
         } ${currentStatus.bgColor} ${className}`}
@@ -126,16 +135,16 @@ const ListingStatusToggle = ({
               disabled={isLoading || listing.status === 'pending'}
               className="sr-only"
             />
-            <div 
+            <div
               className={`block w-10 h-6 rounded-full transition-colors ${
-                listing.status === 'active' 
-                  ? 'bg-bottle-green' 
-                  : 'bg-gray-300'
+                listing.status === 'active' ? 'bg-bottle-green' : 'bg-gray-300'
               } ${isLoading ? 'opacity-50' : ''}`}
             >
-              <div 
+              <div
                 className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  listing.status === 'active' ? 'translate-x-4' : 'translate-x-0'
+                  listing.status === 'active'
+                    ? 'translate-x-4'
+                    : 'translate-x-0'
                 }`}
               />
             </div>
@@ -146,15 +155,15 @@ const ListingStatusToggle = ({
             </span>
           )}
         </label>
-        
+
         {showConfirm && (
           <ConfirmDialog
-            isOpen={true}
+            isOpen
             onClose={() => setShowConfirm(false)}
             title={`${nextStatus === 'active' ? 'Activate' : 'Deactivate'} Listing`}
             message={`Are you sure you want to ${nextStatus === 'active' ? 'activate' : 'deactivate'} this listing? ${
-              nextStatus === 'active' 
-                ? 'It will become visible to customers.' 
+              nextStatus === 'active'
+                ? 'It will become visible to customers.'
                 : 'It will be hidden from customers.'
             }`}
             confirmText={nextStatus === 'active' ? 'Activate' : 'Deactivate'}
@@ -176,9 +185,9 @@ const ListingStatusToggle = ({
         <select
           value={listing.status}
           onChange={(e) => {
-            updateListingStatus({ 
-              id: listing.id, 
-              status: e.target.value 
+            updateListingStatus({
+              id: listing.id,
+              status: e.target.value,
             });
           }}
           disabled={isLoading || listing.status === 'pending'}
@@ -202,7 +211,7 @@ const ListingStatusToggle = ({
   // Default button variant
   const IconComponent = currentStatus.icon;
   const NextIconComponent = nextStatusData.icon;
-  
+
   return (
     <>
       <Button
@@ -223,31 +232,36 @@ const ListingStatusToggle = ({
           <Eye className="w-4 h-4" />
         )}
         {showLabel && (
-          <span>
-            {listing.status === 'active' ? 'Deactivate' : 'Activate'}
-          </span>
+          <span>{listing.status === 'active' ? 'Deactivate' : 'Activate'}</span>
         )}
       </Button>
 
       {showConfirm && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => setShowConfirm(false)}
           title={`${nextStatus === 'active' ? 'Activate' : 'Deactivate'} Listing`}
           message={
             <div className="space-y-3">
               <p>
-                Are you sure you want to {nextStatus === 'active' ? 'activate' : 'deactivate'} 
+                Are you sure you want to{' '}
+                {nextStatus === 'active' ? 'activate' : 'deactivate'}
                 <strong className="mx-1">"{listing.product?.name}"</strong>?
               </p>
               <div className="bg-gray-50 rounded-xl p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <IconComponent className={`w-4 h-4 ${currentStatus.color}`} />
-                  <span className="text-sm font-medium">Current: {currentStatus.label}</span>
+                  <span className="text-sm font-medium">
+                    Current: {currentStatus.label}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <NextIconComponent className={`w-4 h-4 ${nextStatusData.color}`} />
-                  <span className="text-sm font-medium">New: {nextStatusData.label}</span>
+                  <NextIconComponent
+                    className={`w-4 h-4 ${nextStatusData.color}`}
+                  />
+                  <span className="text-sm font-medium">
+                    New: {nextStatusData.label}
+                  </span>
                 </div>
               </div>
               <p className="text-sm text-text-muted">

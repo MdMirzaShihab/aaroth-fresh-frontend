@@ -22,7 +22,7 @@ const NotFoundPage = () => {
               <ArrowLeft className="w-5 h-5" />
               Go Back
             </button>
-            <Link 
+            <Link
               to="/"
               className="bg-gradient-primary text-white px-6 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 flex items-center gap-2 justify-center touch-target"
             >

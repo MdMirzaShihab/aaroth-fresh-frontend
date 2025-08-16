@@ -11,23 +11,25 @@ vi.mock('../Header', () => ({
         {isSidebarOpen ? 'Close Menu' : 'Open Menu'}
       </button>
     </div>
-  )
+  ),
 }));
 
 vi.mock('../Sidebar', () => ({
   default: ({ isOpen, onClose }) => (
     <div data-testid="sidebar" data-open={isOpen}>
-      <button onClick={onClose} data-testid="sidebar-close">Close</button>
+      <button onClick={onClose} data-testid="sidebar-close">
+        Close
+      </button>
     </div>
-  )
+  ),
 }));
 
 vi.mock('../MobileNavigation', () => ({
-  default: () => <div data-testid="mobile-navigation" />
+  default: () => <div data-testid="mobile-navigation" />,
 }));
 
 vi.mock('../Breadcrumb', () => ({
-  default: () => <div data-testid="breadcrumb" />
+  default: () => <div data-testid="breadcrumb" />,
 }));
 
 // Mock react-router-dom
@@ -38,7 +40,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
     ...actual,
     useLocation: () => ({ pathname: '/dashboard' }),
     useNavigate: () => mockNavigate,
-    Outlet: () => <div data-testid="outlet">Page Content</div>
+    Outlet: () => <div data-testid="outlet">Page Content</div>,
   };
 });
 
@@ -51,7 +53,7 @@ describe('AppLayout', () => {
       configurable: true,
       value: 1024,
     });
-    
+
     window.dispatchEvent = vi.fn();
   });
 
@@ -60,9 +62,9 @@ describe('AppLayout', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<AppLayout />, { preloadedState });
@@ -79,9 +81,9 @@ describe('AppLayout', () => {
       auth: {
         isAuthenticated: false,
         user: null,
-        token: null
+        token: null,
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<AppLayout />, { preloadedState });
@@ -95,21 +97,23 @@ describe('AppLayout', () => {
     // This test needs a separate implementation since mocking modules
     // after they're already imported doesn't work in Vitest
     // We'll verify this functionality through integration testing
-    
+
     const preloadedState = {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     // For this test, we'll check that the AppLayout component
     // has the logic to hide navigation - the actual hiding
     // will be tested in integration tests
-    const { container } = renderWithProviders(<AppLayout />, { preloadedState });
-    
+    const { container } = renderWithProviders(<AppLayout />, {
+      preloadedState,
+    });
+
     // Verify the component renders (the hiding logic is tested in integration)
     expect(container).toBeInTheDocument();
   });
@@ -119,9 +123,9 @@ describe('AppLayout', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<AppLayout />, { preloadedState });
@@ -135,7 +139,7 @@ describe('AppLayout', () => {
 
     // Toggle open
     fireEvent.click(menuToggle);
-    
+
     await waitFor(() => {
       expect(sidebar).toHaveAttribute('data-open', 'true');
       expect(menuToggle).toHaveTextContent('Close Menu');
@@ -143,7 +147,7 @@ describe('AppLayout', () => {
 
     // Toggle closed
     fireEvent.click(menuToggle);
-    
+
     await waitFor(() => {
       expect(sidebar).toHaveAttribute('data-open', 'false');
       expect(menuToggle).toHaveTextContent('Open Menu');
@@ -155,9 +159,9 @@ describe('AppLayout', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<AppLayout />, { preloadedState });
@@ -168,14 +172,14 @@ describe('AppLayout', () => {
 
     // Open sidebar first
     fireEvent.click(menuToggle);
-    
+
     await waitFor(() => {
       expect(sidebar).toHaveAttribute('data-open', 'true');
     });
 
     // Close using sidebar close button
     fireEvent.click(sidebarClose);
-    
+
     await waitFor(() => {
       expect(sidebar).toHaveAttribute('data-open', 'false');
     });
@@ -186,9 +190,9 @@ describe('AppLayout', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(<AppLayout />, { preloadedState });
@@ -213,15 +217,15 @@ describe('AppLayout', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
     renderWithProviders(
       <AppLayout>
         <div data-testid="custom-content">Custom Content</div>
-      </AppLayout>, 
+      </AppLayout>,
       { preloadedState }
     );
 
@@ -234,13 +238,15 @@ describe('AppLayout', () => {
       auth: {
         isAuthenticated: true,
         user: { name: 'Test User', role: 'admin' },
-        token: 'test-token'
+        token: 'test-token',
       },
-      theme: { mode: 'light', isSystemPreference: false }
+      theme: { mode: 'light', isSystemPreference: false },
     };
 
-    const { container } = renderWithProviders(<AppLayout />, { preloadedState });
-    
+    const { container } = renderWithProviders(<AppLayout />, {
+      preloadedState,
+    });
+
     // Check main content area has correct classes
     const mainElement = container.querySelector('main');
     expect(mainElement).toHaveClass('flex-1');

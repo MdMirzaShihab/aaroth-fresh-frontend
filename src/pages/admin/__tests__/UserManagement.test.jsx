@@ -17,7 +17,7 @@ const mockUsersData = {
         role: 'vendor',
         isApproved: false,
         status: 'pending',
-        createdAt: '2024-01-10T10:00:00Z'
+        createdAt: '2024-01-10T10:00:00Z',
       },
       {
         id: '2',
@@ -26,7 +26,7 @@ const mockUsersData = {
         role: 'restaurantOwner',
         isApproved: true,
         status: 'active',
-        createdAt: '2024-01-08T15:30:00Z'
+        createdAt: '2024-01-08T15:30:00Z',
       },
       {
         id: '3',
@@ -35,16 +35,16 @@ const mockUsersData = {
         role: 'restaurantManager',
         isApproved: true,
         status: 'active',
-        createdAt: '2024-01-05T09:15:00Z'
-      }
+        createdAt: '2024-01-05T09:15:00Z',
+      },
     ],
     pagination: {
       totalUsers: 3,
       currentPage: 1,
       totalPages: 1,
-      limit: 10
-    }
-  }
+      limit: 10,
+    },
+  },
 };
 
 // MSW server setup
@@ -80,12 +80,12 @@ describe('UserManagement', () => {
             id: 'admin-1',
             role: 'admin',
             name: 'Admin User',
-            phone: '+1234567890'
+            phone: '+1234567890',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -93,12 +93,16 @@ describe('UserManagement', () => {
     renderUserManagement();
 
     expect(screen.getByText('User Management')).toBeInTheDocument();
-    expect(screen.getByText('Manage users, approvals, and permissions across the platform')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Manage users, approvals, and permissions across the platform'
+      )
+    ).toBeInTheDocument();
   });
 
   it('displays loading state initially', () => {
     renderUserManagement();
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
@@ -143,7 +147,9 @@ describe('UserManagement', () => {
       expect(screen.getByText('John Vendor')).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('Search users by name, phone...');
+    const searchInput = screen.getByPlaceholderText(
+      'Search users by name, phone...'
+    );
     await user.type(searchInput, 'John');
 
     // Should trigger search (debounced)
@@ -195,7 +201,9 @@ describe('UserManagement', () => {
     // Should show confirmation dialog
     await waitFor(() => {
       expect(screen.getByText('Approve Vendor')).toBeInTheDocument();
-      expect(screen.getByText(/Are you sure you want to approve/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Are you sure you want to approve/)
+      ).toBeInTheDocument();
     });
 
     // Confirm approval
@@ -315,16 +323,16 @@ describe('UserManagement', () => {
             role: 'admin',
             isApproved: true,
             status: 'active',
-            createdAt: '2024-01-10T10:00:00Z'
-          }
+            createdAt: '2024-01-10T10:00:00Z',
+          },
         ],
         pagination: {
           totalUsers: 1,
           currentPage: 1,
           totalPages: 1,
-          limit: 10
-        }
-      }
+          limit: 10,
+        },
+      },
     };
 
     server.use(
@@ -348,11 +356,13 @@ describe('UserManagement', () => {
 
     await waitFor(() => {
       // Check for proper heading hierarchy
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('User Management');
-      
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        'User Management'
+      );
+
       // Check for accessible form controls
       expect(screen.getByLabelText(/search users/i)).toBeInTheDocument();
-      
+
       // Check table has proper structure
       expect(screen.getByRole('table')).toBeInTheDocument();
     });

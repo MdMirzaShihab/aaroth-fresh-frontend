@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  useGetProductAnalyticsQuery,
-  useGetAdminProductsQuery,
-  useGetProductPerformanceQuery
-} from '../../store/slices/apiSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import EmptyState from '../../components/ui/EmptyState';
-import SimpleLineChart from '../../components/ui/charts/SimpleLineChart';
-import SimpleBarChart from '../../components/ui/charts/SimpleBarChart';
-import SimplePieChart from '../../components/ui/charts/SimplePieChart';
-import { 
+import {
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -27,34 +15,44 @@ import {
   Star,
   Filter,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
 } from 'lucide-react';
+import {
+  useGetProductAnalyticsQuery,
+  useGetAdminProductsQuery,
+  useGetProductPerformanceQuery,
+} from '../../store/slices/apiSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
+import SimpleLineChart from '../../components/ui/charts/SimpleLineChart';
+import SimpleBarChart from '../../components/ui/charts/SimpleBarChart';
+import SimplePieChart from '../../components/ui/charts/SimplePieChart';
 
 const ProductAnalytics = () => {
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedProductId, setSelectedProductId] = useState(null);
-  
+
   // Query for overall product analytics
-  const { 
-    data: analyticsData, 
-    isLoading: analyticsLoading, 
+  const {
+    data: analyticsData,
+    isLoading: analyticsLoading,
     error: analyticsError,
-    refetch: refetchAnalytics 
+    refetch: refetchAnalytics,
   } = useGetProductAnalyticsQuery({ timeRange });
 
   // Query for product list (for dropdowns)
-  const { data: productsData } = useGetAdminProductsQuery({ 
-    limit: 100, 
-    status: 'active' 
+  const { data: productsData } = useGetAdminProductsQuery({
+    limit: 100,
+    status: 'active',
   });
 
   // Query for individual product performance
-  const { 
-    data: performanceData, 
-    isLoading: performanceLoading 
-  } = useGetProductPerformanceQuery(selectedProductId, {
-    skip: !selectedProductId
-  });
+  const { data: performanceData, isLoading: performanceLoading } =
+    useGetProductPerformanceQuery(selectedProductId, {
+      skip: !selectedProductId,
+    });
 
   const analytics = analyticsData?.data || {};
   const products = productsData?.data?.products || [];
@@ -77,13 +75,13 @@ const ProductAnalytics = () => {
       revenue: 125430,
       conversionRate: 7.56,
       averageRating: 4.3,
-      topPerformingCategory: 'Vegetables'
+      topPerformingCategory: 'Vegetables',
     },
     trends: {
       viewsTrend: '+12.5%',
       ordersTrend: '+8.3%',
       revenueTrend: '+15.7%',
-      conversionTrend: '-2.1%'
+      conversionTrend: '-2.1%',
     },
     charts: {
       viewsOverTime: [
@@ -117,8 +115,8 @@ const ProductAnalytics = () => {
         { name: 'Bell Peppers', views: 1890, orders: 167, revenue: 2505 },
         { name: 'Carrots', views: 1650, orders: 134, revenue: 2010 },
         { name: 'Lettuce Mix', views: 1420, orders: 112, revenue: 1680 },
-      ]
-    }
+      ],
+    },
   };
 
   // Key metrics data
@@ -200,8 +198,8 @@ const ProductAnalytics = () => {
         title="Failed to load analytics"
         description="There was an error loading analytics data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetchAnalytics
+          label: 'Retry',
+          onClick: refetchAnalytics,
         }}
       />
     );
@@ -227,7 +225,7 @@ const ProductAnalytics = () => {
             onChange={(e) => setTimeRange(e.target.value)}
             className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
           >
-            {timeRangeOptions.map(option => (
+            {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -253,18 +251,25 @@ const ProductAnalytics = () => {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {keyMetrics.map((metric) => (
-          <Card key={metric.id} className="p-6 hover:shadow-lg transition-shadow duration-300">
+          <Card
+            key={metric.id}
+            className="p-6 hover:shadow-lg transition-shadow duration-300"
+          >
             <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 rounded-2xl ${metric.bgColor} flex items-center justify-center`}>
+              <div
+                className={`w-12 h-12 rounded-2xl ${metric.bgColor} flex items-center justify-center`}
+              >
                 <metric.icon className={`w-6 h-6 ${metric.color}`} />
               </div>
-              <div className={`flex items-center gap-1 text-sm font-medium ${
-                metric.changeType === 'positive' 
-                  ? 'text-green-600' 
-                  : metric.changeType === 'negative' 
-                  ? 'text-red-600' 
-                  : 'text-gray-600'
-              }`}>
+              <div
+                className={`flex items-center gap-1 text-sm font-medium ${
+                  metric.changeType === 'positive'
+                    ? 'text-green-600'
+                    : metric.changeType === 'negative'
+                      ? 'text-red-600'
+                      : 'text-gray-600'
+                }`}
+              >
                 {metric.changeType === 'positive' ? (
                   <ArrowUpRight className="w-4 h-4" />
                 ) : metric.changeType === 'negative' ? (
@@ -273,14 +278,12 @@ const ProductAnalytics = () => {
                 {metric.change}
               </div>
             </div>
-            
+
             <div>
               <p className="text-2xl font-bold text-text-dark dark:text-white mb-1">
                 {metric.value}
               </p>
-              <p className="text-sm text-text-muted">
-                {metric.title}
-              </p>
+              <p className="text-sm text-text-muted">{metric.title}</p>
             </div>
           </Card>
         ))}
@@ -295,7 +298,9 @@ const ProductAnalytics = () => {
               <h3 className="text-lg font-semibold text-text-dark dark:text-white">
                 Product Views Trend
               </h3>
-              <p className="text-text-muted text-sm">Daily product page views</p>
+              <p className="text-text-muted text-sm">
+                Daily product page views
+              </p>
             </div>
             <div className="text-right">
               <p className="text-sm text-text-muted">This week</p>
@@ -304,8 +309,8 @@ const ProductAnalytics = () => {
               </p>
             </div>
           </div>
-          <SimpleLineChart 
-            data={mockAnalytics.charts.viewsOverTime} 
+          <SimpleLineChart
+            data={mockAnalytics.charts.viewsOverTime}
             height={250}
             color="#3B82F6"
           />
@@ -327,8 +332,8 @@ const ProductAnalytics = () => {
               </p>
             </div>
           </div>
-          <SimpleLineChart 
-            data={mockAnalytics.charts.ordersOverTime} 
+          <SimpleLineChart
+            data={mockAnalytics.charts.ordersOverTime}
             height={250}
             color="#10B981"
           />
@@ -346,7 +351,7 @@ const ProductAnalytics = () => {
             <p className="text-text-muted text-sm">Orders by category</p>
           </div>
           <div className="flex justify-center">
-            <SimplePieChart 
+            <SimplePieChart
               data={mockAnalytics.charts.topCategories}
               size={280}
             />
@@ -359,12 +364,17 @@ const ProductAnalytics = () => {
             <h3 className="text-lg font-semibold text-text-dark dark:text-white">
               Top Performing Products
             </h3>
-            <p className="text-text-muted text-sm">Best selling products this month</p>
+            <p className="text-text-muted text-sm">
+              Best selling products this month
+            </p>
           </div>
-          
+
           <div className="space-y-3">
             {mockAnalytics.charts.topProducts.map((product, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-gradient-secondary rounded-xl flex items-center justify-center text-white text-sm font-bold">
                     {index + 1}
@@ -382,9 +392,7 @@ const ProductAnalytics = () => {
                   <p className="font-medium text-text-dark dark:text-white text-sm">
                     ${product.revenue.toLocaleString()}
                   </p>
-                  <p className="text-xs text-text-muted">
-                    Revenue
-                  </p>
+                  <p className="text-xs text-text-muted">Revenue</p>
                 </div>
               </div>
             ))}
@@ -398,7 +406,7 @@ const ProductAnalytics = () => {
           <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
             Individual Product Performance
           </h3>
-          
+
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 max-w-md">
               <select
@@ -407,7 +415,7 @@ const ProductAnalytics = () => {
                 className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
               >
                 <option value="">Select a product to analyze</option>
-                {products.map(product => (
+                {products.map((product) => (
                   <option key={product.id} value={product.id}>
                     {product.name}
                   </option>
@@ -432,20 +440,24 @@ const ProductAnalytics = () => {
               <p className="text-2xl font-bold text-blue-900">1,248</p>
               <p className="text-xs text-blue-700">+12% vs last period</p>
             </div>
-            
+
             <div className="p-4 bg-green-50 rounded-2xl">
               <div className="flex items-center gap-2 mb-2">
                 <ShoppingCart className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-green-800">Orders</span>
+                <span className="text-sm font-medium text-green-800">
+                  Orders
+                </span>
               </div>
               <p className="text-2xl font-bold text-green-900">89</p>
               <p className="text-xs text-green-700">+8% vs last period</p>
             </div>
-            
+
             <div className="p-4 bg-purple-50 rounded-2xl">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className="w-4 h-4 text-purple-600" />
-                <span className="text-sm font-medium text-purple-800">Conversion</span>
+                <span className="text-sm font-medium text-purple-800">
+                  Conversion
+                </span>
               </div>
               <p className="text-2xl font-bold text-purple-900">7.1%</p>
               <p className="text-xs text-purple-700">-0.3% vs last period</p>
@@ -463,35 +475,44 @@ const ProductAnalytics = () => {
         <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
           Insights & Recommendations
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-4 bg-green-50 rounded-2xl">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-medium text-green-800">Growth Opportunity</span>
+              <span className="text-sm font-medium text-green-800">
+                Growth Opportunity
+              </span>
             </div>
             <p className="text-sm text-green-700">
-              Organic vegetables category showing 25% growth. Consider expanding inventory.
+              Organic vegetables category showing 25% growth. Consider expanding
+              inventory.
             </p>
           </div>
-          
+
           <div className="p-4 bg-orange-50 rounded-2xl">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="w-4 h-4 text-orange-600" />
-              <span className="text-sm font-medium text-orange-800">Attention Needed</span>
+              <span className="text-sm font-medium text-orange-800">
+                Attention Needed
+              </span>
             </div>
             <p className="text-sm text-orange-700">
-              12 products have low conversion rates. Review pricing and descriptions.
+              12 products have low conversion rates. Review pricing and
+              descriptions.
             </p>
           </div>
-          
+
           <div className="p-4 bg-blue-50 rounded-2xl">
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-800">Customer Behavior</span>
+              <span className="text-sm font-medium text-blue-800">
+                Customer Behavior
+              </span>
             </div>
             <p className="text-sm text-blue-700">
-              Peak ordering times are 10-11 AM and 3-4 PM. Optimize inventory accordingly.
+              Peak ordering times are 10-11 AM and 3-4 PM. Optimize inventory
+              accordingly.
             </p>
           </div>
         </div>

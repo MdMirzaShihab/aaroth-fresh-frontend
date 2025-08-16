@@ -8,9 +8,7 @@ const ChangePassword = () => {
           <h1 className="text-3xl font-bold text-text-dark mb-4">
             Change Password
           </h1>
-          <p className="text-text-muted">
-            Password change functionality.
-          </p>
+          <p className="text-text-muted">Password change functionality.</p>
         </div>
       </div>
     </div>

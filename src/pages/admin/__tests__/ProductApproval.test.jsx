@@ -12,7 +12,7 @@ vi.mock('../../../store/slices/apiSlice', async () => {
     ...actual,
     useGetAdminProductsQuery: vi.fn(),
     useUpdateAdminProductMutation: vi.fn(),
-    useBulkUpdateProductsMutation: vi.fn()
+    useBulkUpdateProductsMutation: vi.fn(),
   };
 });
 
@@ -30,16 +30,21 @@ const mockPendingProductsData = {
         basePrice: 5.99,
         status: 'pending',
         images: [
-          { id: 'img-1', url: 'https://example.com/cherry-tomatoes.jpg', alt: 'Cherry Tomatoes', isPrimary: true }
+          {
+            id: 'img-1',
+            url: 'https://example.com/cherry-tomatoes.jpg',
+            alt: 'Cherry Tomatoes',
+            isPrimary: true,
+          },
         ],
         vendor: {
           id: 'vendor-1',
           name: 'Green Valley Farm',
           businessName: 'Green Valley Organic Farm',
-          phone: '+1234567890'
+          phone: '+1234567890',
         },
         createdAt: '2024-01-15T10:00:00Z',
-        updatedAt: '2024-01-15T10:00:00Z'
+        updatedAt: '2024-01-15T10:00:00Z',
       },
       {
         id: '2',
@@ -54,19 +59,19 @@ const mockPendingProductsData = {
         vendor: {
           id: 'vendor-2',
           name: 'Herb Garden Co',
-          phone: '+1234567891'
+          phone: '+1234567891',
         },
         createdAt: '2024-01-14T15:30:00Z',
-        updatedAt: '2024-01-14T15:30:00Z'
-      }
+        updatedAt: '2024-01-14T15:30:00Z',
+      },
     ],
     pagination: {
       totalProducts: 2,
       currentPage: 1,
       totalPages: 1,
-      limit: 12
-    }
-  }
+      limit: 12,
+    },
+  },
 };
 
 describe('ProductApproval', () => {
@@ -75,16 +80,22 @@ describe('ProductApproval', () => {
       data: mockPendingProductsData,
       isLoading: false,
       error: null,
-      refetch: vi.fn()
+      refetch: vi.fn(),
     };
 
     apiSlice.useGetAdminProductsQuery.mockReturnValue({
       ...defaultResult,
-      ...queryResult
+      ...queryResult,
     });
 
-    apiSlice.useUpdateAdminProductMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
+    apiSlice.useUpdateAdminProductMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
 
     return renderWithProviders(<ProductApproval />, {
       preloadedState: {
@@ -93,12 +104,12 @@ describe('ProductApproval', () => {
           user: {
             id: 'admin-1',
             role: 'admin',
-            name: 'Admin User'
+            name: 'Admin User',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -110,12 +121,14 @@ describe('ProductApproval', () => {
     renderProductApproval();
 
     expect(screen.getByText('Product Approval Queue')).toBeInTheDocument();
-    expect(screen.getByText('Review and approve product submissions from vendors')).toBeInTheDocument();
+    expect(
+      screen.getByText('Review and approve product submissions from vendors')
+    ).toBeInTheDocument();
   });
 
   it('displays loading state', () => {
     renderProductApproval({ isLoading: true });
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
@@ -129,7 +142,9 @@ describe('ProductApproval', () => {
     });
 
     // Check descriptions
-    expect(screen.getByText('Sweet and juicy cherry tomatoes from organic farm')).toBeInTheDocument();
+    expect(
+      screen.getByText('Sweet and juicy cherry tomatoes from organic farm')
+    ).toBeInTheDocument();
     expect(screen.getByText('Aromatic fresh basil leaves')).toBeInTheDocument();
 
     // Check vendors
@@ -168,10 +183,16 @@ describe('ProductApproval', () => {
     renderProductApproval();
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('Search products by name, vendor, category...')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText(
+          'Search products by name, vendor, category...'
+        )
+      ).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('Search products by name, vendor, category...');
+    const searchInput = screen.getByPlaceholderText(
+      'Search products by name, vendor, category...'
+    );
     await user.type(searchInput, 'Organic');
 
     expect(searchInput.value).toBe('Organic');
@@ -179,10 +200,13 @@ describe('ProductApproval', () => {
 
   it('handles individual product approval', async () => {
     const user = userEvent.setup();
-    const mockUpdateProduct = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({}) 
+    const mockUpdateProduct = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({}),
     });
-    apiSlice.useUpdateAdminProductMutation.mockReturnValue([mockUpdateProduct, { isLoading: false }]);
+    apiSlice.useUpdateAdminProductMutation.mockReturnValue([
+      mockUpdateProduct,
+      { isLoading: false },
+    ]);
 
     renderProductApproval();
 
@@ -206,16 +230,19 @@ describe('ProductApproval', () => {
       id: '1',
       status: 'active',
       reviewNotes: '',
-      reviewedAt: expect.any(String)
+      reviewedAt: expect.any(String),
     });
   });
 
   it('handles individual product rejection', async () => {
     const user = userEvent.setup();
-    const mockUpdateProduct = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({}) 
+    const mockUpdateProduct = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({}),
     });
-    apiSlice.useUpdateAdminProductMutation.mockReturnValue([mockUpdateProduct, { isLoading: false }]);
+    apiSlice.useUpdateAdminProductMutation.mockReturnValue([
+      mockUpdateProduct,
+      { isLoading: false },
+    ]);
 
     renderProductApproval();
 
@@ -225,7 +252,7 @@ describe('ProductApproval', () => {
 
     // Click reject button for first product (X icon button)
     const rejectButtons = screen.getAllByRole('button');
-    const rejectButton = rejectButtons.find(btn => btn.querySelector('svg')); // Find button with X icon
+    const rejectButton = rejectButtons.find((btn) => btn.querySelector('svg')); // Find button with X icon
     if (rejectButton) {
       await user.click(rejectButton);
 
@@ -241,7 +268,7 @@ describe('ProductApproval', () => {
         id: '1',
         status: 'rejected',
         reviewNotes: '',
-        reviewedAt: expect.any(String)
+        reviewedAt: expect.any(String),
       });
     }
   });
@@ -276,7 +303,8 @@ describe('ProductApproval', () => {
     });
 
     // Click select all checkbox
-    const selectAllCheckbox = screen.getByLabelText('Select all').previousElementSibling;
+    const selectAllCheckbox =
+      screen.getByLabelText('Select all').previousElementSibling;
     await user.click(selectAllCheckbox);
 
     // Should show bulk actions with all products selected
@@ -287,10 +315,13 @@ describe('ProductApproval', () => {
 
   it('handles bulk approval', async () => {
     const user = userEvent.setup();
-    const mockBulkUpdateProducts = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({}) 
+    const mockBulkUpdateProducts = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({}),
     });
-    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([mockBulkUpdateProducts, { isLoading: false }]);
+    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([
+      mockBulkUpdateProducts,
+      { isLoading: false },
+    ]);
 
     renderProductApproval();
 
@@ -319,17 +350,20 @@ describe('ProductApproval', () => {
       productIds: ['1', '2'],
       updates: {
         status: 'active',
-        reviewedAt: expect.any(String)
-      }
+        reviewedAt: expect.any(String),
+      },
     });
   });
 
   it('handles bulk rejection', async () => {
     const user = userEvent.setup();
-    const mockBulkUpdateProducts = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({}) 
+    const mockBulkUpdateProducts = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({}),
     });
-    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([mockBulkUpdateProducts, { isLoading: false }]);
+    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([
+      mockBulkUpdateProducts,
+      { isLoading: false },
+    ]);
 
     renderProductApproval();
 
@@ -358,8 +392,8 @@ describe('ProductApproval', () => {
       productIds: ['1', '2'],
       updates: {
         status: 'rejected',
-        reviewedAt: expect.any(String)
-      }
+        reviewedAt: expect.any(String),
+      },
     });
   });
 
@@ -400,7 +434,7 @@ describe('ProductApproval', () => {
     await waitFor(() => {
       // Fresh Basil has no images, should show placeholder
       expect(screen.getByText('Fresh Basil')).toBeInTheDocument();
-      
+
       // Check for image placeholder icons
       const imageIcons = screen.getAllByTestId(/image-icon|placeholder/);
       expect(imageIcons.length).toBeGreaterThan(0);
@@ -408,8 +442,8 @@ describe('ProductApproval', () => {
   });
 
   it('handles API errors gracefully', async () => {
-    renderProductApproval({ 
-      error: { status: 500, data: { error: 'Server error' } }
+    renderProductApproval({
+      error: { status: 500, data: { error: 'Server error' } },
     });
 
     await waitFor(() => {
@@ -423,14 +457,23 @@ describe('ProductApproval', () => {
       data: {
         data: {
           products: [],
-          pagination: { totalProducts: 0, currentPage: 1, totalPages: 0, limit: 12 }
-        }
-      }
+          pagination: {
+            totalProducts: 0,
+            currentPage: 1,
+            totalPages: 0,
+            limit: 12,
+          },
+        },
+      },
     });
 
     await waitFor(() => {
       expect(screen.getByText('No pending approvals')).toBeInTheDocument();
-      expect(screen.getByText('All product submissions have been reviewed. Check back later for new submissions.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'All product submissions have been reviewed. Check back later for new submissions.'
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -458,28 +501,30 @@ describe('ProductApproval', () => {
 
     await waitFor(() => {
       // Check for proper heading hierarchy
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Product Approval Queue');
-      
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        'Product Approval Queue'
+      );
+
       // Check for accessible form controls
       expect(screen.getByRole('searchbox')).toBeInTheDocument();
-      
+
       // Check all buttons have proper labels or titles
       const actionButtons = screen.getAllByRole('button');
-      actionButtons.forEach(button => {
+      actionButtons.forEach((button) => {
         expect(
-          button.textContent || 
-          button.getAttribute('title') || 
-          button.getAttribute('aria-label')
+          button.textContent ||
+            button.getAttribute('title') ||
+            button.getAttribute('aria-label')
         ).toBeTruthy();
       });
-      
+
       // Check all checkboxes are properly labeled
       const checkboxes = screen.getAllByRole('checkbox');
-      checkboxes.forEach(checkbox => {
+      checkboxes.forEach((checkbox) => {
         expect(
           checkbox.getAttribute('aria-label') ||
-          checkbox.nextElementSibling?.textContent ||
-          checkbox.previousElementSibling?.textContent
+            checkbox.nextElementSibling?.textContent ||
+            checkbox.previousElementSibling?.textContent
         ).toBeTruthy();
       });
     });
@@ -496,9 +541,9 @@ describe('ProductApproval', () => {
     // Test tab navigation
     const searchInput = screen.getByRole('searchbox');
     searchInput.focus();
-    
+
     await user.tab();
-    
+
     // Next focusable element should be focused
     expect(document.activeElement).not.toBe(searchInput);
   });
@@ -532,8 +577,14 @@ describe('ProductApproval', () => {
 
     await waitFor(() => {
       // Check that products use responsive grid classes
-      const gridContainer = screen.getByText('Organic Cherry Tomatoes').closest('.grid');
-      expect(gridContainer).toHaveClass('grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3');
+      const gridContainer = screen
+        .getByText('Organic Cherry Tomatoes')
+        .closest('.grid');
+      expect(gridContainer).toHaveClass(
+        'grid-cols-1',
+        'md:grid-cols-2',
+        'lg:grid-cols-3'
+      );
     });
   });
 });

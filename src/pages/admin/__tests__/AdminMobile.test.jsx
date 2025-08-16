@@ -19,10 +19,10 @@ const mockDashboardData = {
     inactiveUsers: 87,
     systemHealth: {
       apiHealth: 'healthy',
-      databaseHealth: 'healthy'
+      databaseHealth: 'healthy',
     },
-    recentActivity: []
-  }
+    recentActivity: [],
+  },
 };
 
 const mockUsersData = {
@@ -35,11 +35,11 @@ const mockUsersData = {
         role: 'vendor',
         isApproved: false,
         status: 'pending',
-        createdAt: '2024-01-10T10:00:00Z'
-      }
+        createdAt: '2024-01-10T10:00:00Z',
+      },
     ],
-    pagination: { totalUsers: 1, currentPage: 1, totalPages: 1, limit: 10 }
-  }
+    pagination: { totalUsers: 1, currentPage: 1, totalPages: 1, limit: 10 },
+  },
 };
 
 const server = setupServer(
@@ -93,12 +93,12 @@ const renderWithAdminAuth = (Component) => {
           id: 'admin-1',
           role: 'admin',
           name: 'Admin User',
-          phone: '+1234567890'
+          phone: '+1234567890',
         },
         token: 'mock-token',
-        loading: false
-      }
-    }
+        loading: false,
+      },
+    },
   });
 };
 
@@ -151,7 +151,9 @@ describe('Admin Mobile Responsiveness', () => {
       });
 
       // Check for horizontal scroll container
-      const tableContainer = screen.getByRole('table').closest('.overflow-x-auto');
+      const tableContainer = screen
+        .getByRole('table')
+        .closest('.overflow-x-auto');
       expect(tableContainer).toBeInTheDocument();
     });
 
@@ -159,7 +161,9 @@ describe('Admin Mobile Responsiveness', () => {
       renderWithAdminAuth(UserManagement);
 
       await waitFor(() => {
-        const filtersContainer = screen.getByPlaceholderText('Search users by name, phone...').closest('.flex');
+        const filtersContainer = screen
+          .getByPlaceholderText('Search users by name, phone...')
+          .closest('.flex');
         expect(filtersContainer).toHaveClass('flex-col');
         expect(filtersContainer).toHaveClass('lg:flex-row');
       });
@@ -170,7 +174,9 @@ describe('Admin Mobile Responsiveness', () => {
 
       await waitFor(() => {
         // Check search input
-        const searchInput = screen.getByPlaceholderText('Search users by name, phone...');
+        const searchInput = screen.getByPlaceholderText(
+          'Search users by name, phone...'
+        );
         expect(searchInput.parentElement).toHaveClass('min-h-[44px]');
 
         // Check dropdown filters
@@ -203,31 +209,38 @@ describe('Admin Mobile Responsiveness', () => {
     it('renders vendor cards in single column on mobile', async () => {
       server.use(
         rest.get('/api/v1/admin/users', (req, res, ctx) => {
-          return res(ctx.json({
-            data: {
-              users: [
-                {
-                  id: '1',
-                  name: 'Vendor One',
-                  phone: '+1234567890',
-                  role: 'vendor',
-                  isApproved: false,
-                  status: 'pending',
-                  createdAt: '2024-01-10T10:00:00Z'
+          return res(
+            ctx.json({
+              data: {
+                users: [
+                  {
+                    id: '1',
+                    name: 'Vendor One',
+                    phone: '+1234567890',
+                    role: 'vendor',
+                    isApproved: false,
+                    status: 'pending',
+                    createdAt: '2024-01-10T10:00:00Z',
+                  },
+                  {
+                    id: '2',
+                    name: 'Vendor Two',
+                    phone: '+1234567891',
+                    role: 'vendor',
+                    isApproved: false,
+                    status: 'pending',
+                    createdAt: '2024-01-09T10:00:00Z',
+                  },
+                ],
+                pagination: {
+                  totalUsers: 2,
+                  currentPage: 1,
+                  totalPages: 1,
+                  limit: 12,
                 },
-                {
-                  id: '2',
-                  name: 'Vendor Two',
-                  phone: '+1234567891',
-                  role: 'vendor',
-                  isApproved: false,
-                  status: 'pending',
-                  createdAt: '2024-01-09T10:00:00Z'
-                }
-              ],
-              pagination: { totalUsers: 2, currentPage: 1, totalPages: 1, limit: 12 }
-            }
-          }));
+              },
+            })
+          );
         })
       );
 
@@ -247,20 +260,29 @@ describe('Admin Mobile Responsiveness', () => {
     it('makes vendor action buttons touch-friendly', async () => {
       server.use(
         rest.get('/api/v1/admin/users', (req, res, ctx) => {
-          return res(ctx.json({
-            data: {
-              users: [{
-                id: '1',
-                name: 'Test Vendor',
-                phone: '+1234567890',
-                role: 'vendor',
-                isApproved: false,
-                status: 'pending',
-                createdAt: '2024-01-10T10:00:00Z'
-              }],
-              pagination: { totalUsers: 1, currentPage: 1, totalPages: 1, limit: 12 }
-            }
-          }));
+          return res(
+            ctx.json({
+              data: {
+                users: [
+                  {
+                    id: '1',
+                    name: 'Test Vendor',
+                    phone: '+1234567890',
+                    role: 'vendor',
+                    isApproved: false,
+                    status: 'pending',
+                    createdAt: '2024-01-10T10:00:00Z',
+                  },
+                ],
+                pagination: {
+                  totalUsers: 1,
+                  currentPage: 1,
+                  totalPages: 1,
+                  limit: 12,
+                },
+              },
+            })
+          );
         })
       );
 
@@ -299,20 +321,27 @@ describe('Admin Mobile Responsiveness', () => {
     it('shows appropriate vendor card grid on tablet', async () => {
       server.use(
         rest.get('/api/v1/admin/users', (req, res, ctx) => {
-          return res(ctx.json({
-            data: {
-              users: Array.from({ length: 4 }, (_, i) => ({
-                id: String(i + 1),
-                name: `Vendor ${i + 1}`,
-                phone: `+123456789${i}`,
-                role: 'vendor',
-                isApproved: false,
-                status: 'pending',
-                createdAt: '2024-01-10T10:00:00Z'
-              })),
-              pagination: { totalUsers: 4, currentPage: 1, totalPages: 1, limit: 12 }
-            }
-          }));
+          return res(
+            ctx.json({
+              data: {
+                users: Array.from({ length: 4 }, (_, i) => ({
+                  id: String(i + 1),
+                  name: `Vendor ${i + 1}`,
+                  phone: `+123456789${i}`,
+                  role: 'vendor',
+                  isApproved: false,
+                  status: 'pending',
+                  createdAt: '2024-01-10T10:00:00Z',
+                })),
+                pagination: {
+                  totalUsers: 4,
+                  currentPage: 1,
+                  totalPages: 1,
+                  limit: 12,
+                },
+              },
+            })
+          );
         })
       );
 
@@ -338,7 +367,9 @@ describe('Admin Mobile Responsiveness', () => {
 
       // While we can't directly test swipe gestures in jsdom,
       // we can ensure touch-friendly elements are present
-      const tableContainer = screen.getByRole('table').closest('.overflow-x-auto');
+      const tableContainer = screen
+        .getByRole('table')
+        .closest('.overflow-x-auto');
       expect(tableContainer).toBeInTheDocument();
     });
 
@@ -352,7 +383,7 @@ describe('Admin Mobile Responsiveness', () => {
 
       // Test hover/active states (which translate to touch feedback)
       const checkbox = screen.getAllByRole('checkbox')[1];
-      
+
       // Focus should provide visual feedback
       await user.tab();
       expect(document.activeElement).toBeTruthy();
@@ -360,23 +391,32 @@ describe('Admin Mobile Responsiveness', () => {
 
     it('handles modal interactions on mobile', async () => {
       const user = userEvent.setup();
-      
+
       server.use(
         rest.get('/api/v1/admin/users', (req, res, ctx) => {
-          return res(ctx.json({
-            data: {
-              users: [{
-                id: '1',
-                name: 'Test Vendor',
-                phone: '+1234567890',
-                role: 'vendor',
-                isApproved: false,
-                status: 'pending',
-                createdAt: '2024-01-10T10:00:00Z'
-              }],
-              pagination: { totalUsers: 1, currentPage: 1, totalPages: 1, limit: 12 }
-            }
-          }));
+          return res(
+            ctx.json({
+              data: {
+                users: [
+                  {
+                    id: '1',
+                    name: 'Test Vendor',
+                    phone: '+1234567890',
+                    role: 'vendor',
+                    isApproved: false,
+                    status: 'pending',
+                    createdAt: '2024-01-10T10:00:00Z',
+                  },
+                ],
+                pagination: {
+                  totalUsers: 1,
+                  currentPage: 1,
+                  totalPages: 1,
+                  limit: 12,
+                },
+              },
+            })
+          );
         })
       );
 
@@ -394,7 +434,7 @@ describe('Admin Mobile Responsiveness', () => {
       await waitFor(() => {
         const modal = screen.getByText('Vendor Application Details');
         expect(modal).toBeInTheDocument();
-        
+
         // Modal container should be responsive
         const modalContainer = modal.closest('.relative');
         expect(modalContainer).toHaveClass('w-full');
@@ -415,9 +455,11 @@ describe('Admin Mobile Responsiveness', () => {
       // Test tab navigation
       await user.tab();
       expect(document.activeElement).toBeTruthy();
-      
+
       // Should be able to navigate to interactive elements
-      const searchInput = screen.getByPlaceholderText('Search users by name, phone...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search users by name, phone...'
+      );
       expect(searchInput).toBeInTheDocument();
     });
 
@@ -427,10 +469,11 @@ describe('Admin Mobile Responsiveness', () => {
       await waitFor(() => {
         // All interactive elements should meet minimum touch target size
         const buttons = screen.getAllByRole('button');
-        buttons.forEach(button => {
-          const hasMinHeight = button.classList.contains('min-h-[36px]') || 
-                              button.classList.contains('min-h-[44px]') ||
-                              button.classList.contains('min-h-[48px]');
+        buttons.forEach((button) => {
+          const hasMinHeight =
+            button.classList.contains('min-h-[36px]') ||
+            button.classList.contains('min-h-[44px]') ||
+            button.classList.contains('min-h-[48px]');
           expect(hasMinHeight).toBeTruthy();
         });
       });
@@ -443,8 +486,10 @@ describe('Admin Mobile Responsiveness', () => {
         // Check that text elements have appropriate mobile sizing
         const title = screen.getByText('Admin Dashboard');
         expect(title).toHaveClass('text-3xl');
-        
-        const description = screen.getByText('Monitor and manage your Aaroth Fresh platform');
+
+        const description = screen.getByText(
+          'Monitor and manage your Aaroth Fresh platform'
+        );
         expect(description).toHaveClass('text-text-muted');
       });
     });

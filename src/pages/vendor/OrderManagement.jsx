@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { 
-  Package, 
-  Search, 
+import {
+  Package,
+  Search,
   Filter,
   RefreshCw,
   Download,
@@ -14,7 +14,7 @@ import {
   MoreVertical,
   Bell,
   ArrowUpDown,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 import {
   useGetVendorOrdersQuery,
@@ -22,13 +22,13 @@ import {
   useGetOrderNotificationsQuery,
   useUpdateOrderStatusWorkflowMutation,
   useBulkUpdateOrderStatusMutation,
-  useMarkNotificationAsReadMutation
+  useMarkNotificationAsReadMutation,
 } from '../../store/slices/apiSlice';
 import { addNotification } from '../../store/slices/notificationSlice';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
-  
+
   // State for search, filters, and pagination
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -40,33 +40,32 @@ const OrderManagement = () => {
   const [timeRange, setTimeRange] = useState('7d');
 
   // Derived query parameters
-  const queryParams = useMemo(() => ({
-    page: currentPage,
-    limit: 15,
-    search: searchTerm || undefined,
-    status: statusFilter !== 'all' ? statusFilter : undefined,
-    sortBy,
-    sortOrder,
-    timeRange
-  }), [currentPage, searchTerm, statusFilter, sortBy, sortOrder, timeRange]);
+  const queryParams = useMemo(
+    () => ({
+      page: currentPage,
+      limit: 15,
+      search: searchTerm || undefined,
+      status: statusFilter !== 'all' ? statusFilter : undefined,
+      sortBy,
+      sortOrder,
+      timeRange,
+    }),
+    [currentPage, searchTerm, statusFilter, sortBy, sortOrder, timeRange]
+  );
 
   // API queries with polling
   const {
     data: ordersData,
     isLoading: ordersLoading,
     error: ordersError,
-    refetch: refetchOrders
+    refetch: refetchOrders,
   } = useGetVendorOrdersQuery(queryParams);
 
-  const {
-    data: analyticsData,
-    isLoading: analyticsLoading
-  } = useGetVendorOrderAnalyticsQuery({ timeRange });
+  const { data: analyticsData, isLoading: analyticsLoading } =
+    useGetVendorOrderAnalyticsQuery({ timeRange });
 
-  const {
-    data: notificationsData,
-    isLoading: notificationsLoading
-  } = useGetOrderNotificationsQuery();
+  const { data: notificationsData, isLoading: notificationsLoading } =
+    useGetOrderNotificationsQuery();
 
   // Mutations
   const [updateOrderStatus] = useUpdateOrderStatusWorkflowMutation();
@@ -75,12 +74,42 @@ const OrderManagement = () => {
 
   // Order status configuration
   const orderStatuses = [
-    { value: 'pending', label: 'Pending', color: 'text-orange-600 bg-orange-50', icon: Clock },
-    { value: 'confirmed', label: 'Confirmed', color: 'text-blue-600 bg-blue-50', icon: CheckCircle },
-    { value: 'prepared', label: 'Prepared', color: 'text-purple-600 bg-purple-50', icon: Package },
-    { value: 'shipped', label: 'Shipped', color: 'text-indigo-600 bg-indigo-50', icon: Truck },
-    { value: 'delivered', label: 'Delivered', color: 'text-bottle-green bg-mint-fresh/20', icon: CheckCircle },
-    { value: 'cancelled', label: 'Cancelled', color: 'text-tomato-red bg-tomato-red/20', icon: AlertCircle }
+    {
+      value: 'pending',
+      label: 'Pending',
+      color: 'text-orange-600 bg-orange-50',
+      icon: Clock,
+    },
+    {
+      value: 'confirmed',
+      label: 'Confirmed',
+      color: 'text-blue-600 bg-blue-50',
+      icon: CheckCircle,
+    },
+    {
+      value: 'prepared',
+      label: 'Prepared',
+      color: 'text-purple-600 bg-purple-50',
+      icon: Package,
+    },
+    {
+      value: 'shipped',
+      label: 'Shipped',
+      color: 'text-indigo-600 bg-indigo-50',
+      icon: Truck,
+    },
+    {
+      value: 'delivered',
+      label: 'Delivered',
+      color: 'text-bottle-green bg-mint-fresh/20',
+      icon: CheckCircle,
+    },
+    {
+      value: 'cancelled',
+      label: 'Cancelled',
+      color: 'text-tomato-red bg-tomato-red/20',
+      icon: AlertCircle,
+    },
   ];
 
   // Handle search
@@ -108,9 +137,9 @@ const OrderManagement = () => {
 
   // Handle order selection
   const handleSelectOrder = (orderId) => {
-    setSelectedOrders(prev => 
-      prev.includes(orderId) 
-        ? prev.filter(id => id !== orderId)
+    setSelectedOrders((prev) =>
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
         : [...prev, orderId]
     );
   };
@@ -119,7 +148,9 @@ const OrderManagement = () => {
     if (selectedOrders.length === ordersData?.data?.orders?.length) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(ordersData?.data?.orders?.map(order => order.id) || []);
+      setSelectedOrders(
+        ordersData?.data?.orders?.map((order) => order.id) || []
+      );
     }
   };
 
@@ -129,22 +160,26 @@ const OrderManagement = () => {
       await bulkUpdateOrderStatus({
         orderIds: selectedOrders,
         status,
-        notes: `Bulk updated to ${status}`
+        notes: `Bulk updated to ${status}`,
       }).unwrap();
-      
-      dispatch(addNotification({
-        type: 'success',
-        title: 'Bulk Update Successful',
-        message: `${selectedOrders.length} orders updated to ${status}`
-      }));
-      
+
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: 'Bulk Update Successful',
+          message: `${selectedOrders.length} orders updated to ${status}`,
+        })
+      );
+
       setSelectedOrders([]);
     } catch (error) {
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Bulk Update Failed',
-        message: error.data?.message || 'Failed to update orders'
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Bulk Update Failed',
+          message: error.data?.message || 'Failed to update orders',
+        })
+      );
     }
   };
 
@@ -155,20 +190,24 @@ const OrderManagement = () => {
         id: orderId,
         status,
         notes,
-        estimatedTime: status === 'confirmed' ? '2-4 hours' : undefined
+        estimatedTime: status === 'confirmed' ? '2-4 hours' : undefined,
       }).unwrap();
-      
-      dispatch(addNotification({
-        type: 'success',
-        title: 'Order Updated',
-        message: `Order status changed to ${status}`
-      }));
+
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: 'Order Updated',
+          message: `Order status changed to ${status}`,
+        })
+      );
     } catch (error) {
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Update Failed',
-        message: error.data?.message || 'Failed to update order status'
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Update Failed',
+          message: error.data?.message || 'Failed to update order status',
+        })
+      );
     }
   };
 
@@ -183,21 +222,21 @@ const OrderManagement = () => {
 
   // Export orders
   const handleExport = () => {
-    const csvData = ordersData?.data?.orders?.map(order => ({
+    const csvData = ordersData?.data?.orders?.map((order) => ({
       'Order ID': order.id,
-      'Restaurant': order.restaurant.name,
-      'Items': order.items.length,
+      Restaurant: order.restaurant.name,
+      Items: order.items.length,
       'Total Amount': order.totalAmount,
-      'Status': order.status,
-      'Date': new Date(order.createdAt).toLocaleDateString()
+      Status: order.status,
+      Date: new Date(order.createdAt).toLocaleDateString(),
     }));
-    
+
     // Simple CSV export
     const csvContent = [
       Object.keys(csvData[0]).join(','),
-      ...csvData.map(row => Object.values(row).join(','))
+      ...csvData.map((row) => Object.values(row).join(',')),
     ].join('\n');
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -205,21 +244,26 @@ const OrderManagement = () => {
     a.download = `orders-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    
-    dispatch(addNotification({
-      type: 'success',
-      title: 'Export Complete',
-      message: 'Orders exported successfully'
-    }));
+
+    dispatch(
+      addNotification({
+        type: 'success',
+        title: 'Export Complete',
+        message: 'Orders exported successfully',
+      })
+    );
   };
 
   // Get status badge
   const getStatusBadge = (status) => {
-    const statusConfig = orderStatuses.find(s => s.value === status) || orderStatuses[0];
+    const statusConfig =
+      orderStatuses.find((s) => s.value === status) || orderStatuses[0];
     const Icon = statusConfig.icon;
-    
+
     return (
-      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-2xl text-sm font-medium ${statusConfig.color}`}>
+      <span
+        className={`inline-flex items-center gap-2 px-3 py-1 rounded-2xl text-sm font-medium ${statusConfig.color}`}
+      >
         <Icon className="w-4 h-4" />
         {statusConfig.label}
       </span>
@@ -232,7 +276,9 @@ const OrderManagement = () => {
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="flex items-center gap-3">
           <RefreshCw className="w-6 h-6 animate-spin text-bottle-green" />
-          <span className="text-lg font-medium text-text-dark">Loading orders...</span>
+          <span className="text-lg font-medium text-text-dark">
+            Loading orders...
+          </span>
         </div>
       </div>
     );
@@ -243,7 +289,9 @@ const OrderManagement = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-6">
         <AlertCircle className="w-16 h-16 text-tomato-red/60 mb-4" />
-        <h2 className="text-2xl font-medium text-text-dark/80 mb-4">Failed to load orders</h2>
+        <h2 className="text-2xl font-medium text-text-dark/80 mb-4">
+          Failed to load orders
+        </h2>
         <p className="text-text-muted mb-8 max-w-md leading-relaxed">
           There was an error loading your order data. Please try again.
         </p>
@@ -267,12 +315,14 @@ const OrderManagement = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-text-dark mb-2">Order Management</h1>
+          <h1 className="text-3xl font-bold text-text-dark mb-2">
+            Order Management
+          </h1>
           <p className="text-text-muted text-lg">
             Manage your orders, track fulfillment, and optimize delivery
           </p>
         </div>
-        
+
         {/* Notifications Badge */}
         {notifications.length > 0 && (
           <div className="relative">
@@ -382,15 +432,15 @@ const OrderManagement = () => {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-medium transition-all duration-200 ${
-                showFilters 
-                  ? 'bg-bottle-green text-white' 
+                showFilters
+                  ? 'bg-bottle-green text-white'
                   : 'bg-gray-100 hover:bg-gray-200 text-text-dark'
               }`}
             >
               <Filter className="w-4 h-4" />
               Filters
             </button>
-            
+
             <button
               onClick={() => refetchOrders()}
               className="flex items-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-text-dark rounded-2xl font-medium transition-all duration-200"
@@ -398,7 +448,7 @@ const OrderManagement = () => {
               <RefreshCw className="w-4 h-4" />
               Refresh
             </button>
-            
+
             <button
               onClick={handleExport}
               className="flex items-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-text-dark rounded-2xl font-medium transition-all duration-200"
@@ -415,22 +465,28 @@ const OrderManagement = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Status Filter */}
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">Status</label>
+                <label className="block text-sm font-medium text-text-dark mb-2">
+                  Status
+                </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilter(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
                 >
                   <option value="all">All Statuses</option>
-                  {orderStatuses.map(status => (
-                    <option key={status.value} value={status.value}>{status.label}</option>
+                  {orderStatuses.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
                   ))}
                 </select>
               </div>
 
               {/* Sort By */}
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">Sort By</label>
+                <label className="block text-sm font-medium text-text-dark mb-2">
+                  Sort By
+                </label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -445,9 +501,13 @@ const OrderManagement = () => {
 
               {/* Sort Order */}
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">Sort Order</label>
+                <label className="block text-sm font-medium text-text-dark mb-2">
+                  Sort Order
+                </label>
                 <button
-                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  onClick={() =>
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+                  }
                   className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 border-0 rounded-2xl text-text-dark transition-all duration-200"
                 >
                   <ArrowUpDown className="w-4 h-4" />
@@ -474,9 +534,9 @@ const OrderManagement = () => {
                 Clear selection
               </button>
             </div>
-            
+
             <div className="flex gap-3 ml-auto">
-              {['confirmed', 'prepared', 'shipped'].map(status => (
+              {['confirmed', 'prepared', 'shipped'].map((status) => (
                 <button
                   key={status}
                   onClick={() => handleBulkStatusUpdate(status)}
@@ -501,7 +561,10 @@ const OrderManagement = () => {
                   <th className="w-12 px-6 py-4 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedOrders.length === orders.length && orders.length > 0}
+                      checked={
+                        selectedOrders.length === orders.length &&
+                        orders.length > 0
+                      }
                       onChange={handleSelectAll}
                       className="w-4 h-4 text-bottle-green bg-gray-100 border-gray-300 rounded focus:ring-bottle-green/20 focus:ring-2"
                     />
@@ -513,10 +576,10 @@ const OrderManagement = () => {
                     { key: 'totalAmount', label: 'Amount', sortable: true },
                     { key: 'status', label: 'Status', sortable: true },
                     { key: 'createdAt', label: 'Date', sortable: true },
-                    { key: 'actions', label: 'Actions', sortable: false }
-                  ].map(column => (
-                    <th 
-                      key={column.key} 
+                    { key: 'actions', label: 'Actions', sortable: false },
+                  ].map((column) => (
+                    <th
+                      key={column.key}
                       className="px-6 py-4 text-left text-sm font-medium text-text-dark/70"
                     >
                       {column.sortable ? (
@@ -536,7 +599,10 @@ const OrderManagement = () => {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr
+                    key={order.id}
+                    className="hover:bg-gray-50/50 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <input
                         type="checkbox"
@@ -546,17 +612,27 @@ const OrderManagement = () => {
                       />
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-medium text-text-dark">#{order.id.slice(-8)}</div>
+                      <div className="font-medium text-text-dark">
+                        #{order.id.slice(-8)}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-medium text-text-dark">{order.restaurant.name}</div>
-                      <div className="text-sm text-text-muted">{order.restaurant.address}</div>
+                      <div className="font-medium text-text-dark">
+                        {order.restaurant.name}
+                      </div>
+                      <div className="text-sm text-text-muted">
+                        {order.restaurant.address}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-text-dark font-medium">{order.items.length} items</span>
+                      <span className="text-text-dark font-medium">
+                        {order.items.length} items
+                      </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-bold text-text-dark">৳{order.totalAmount.toFixed(0)}</span>
+                      <span className="font-bold text-text-dark">
+                        ৳{order.totalAmount.toFixed(0)}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       {getStatusBadge(order.status)}
@@ -595,7 +671,10 @@ const OrderManagement = () => {
         {/* Mobile Card View */}
         <div className="lg:hidden space-y-4 p-6">
           {orders.map((order) => (
-            <div key={order.id} className="bg-gray-50/80 rounded-2xl p-4 space-y-3">
+            <div
+              key={order.id}
+              className="bg-gray-50/80 rounded-2xl p-4 space-y-3"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <input
@@ -605,20 +684,27 @@ const OrderManagement = () => {
                     className="w-4 h-4 text-bottle-green bg-gray-100 border-gray-300 rounded focus:ring-bottle-green/20 focus:ring-2"
                   />
                   <div>
-                    <div className="font-medium text-text-dark">#{order.id.slice(-8)}</div>
-                    <div className="text-sm text-text-muted">{order.restaurant.name}</div>
+                    <div className="font-medium text-text-dark">
+                      #{order.id.slice(-8)}
+                    </div>
+                    <div className="text-sm text-text-muted">
+                      {order.restaurant.name}
+                    </div>
                   </div>
                 </div>
                 {getStatusBadge(order.status)}
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <div className="text-sm text-text-muted">
-                  {order.items.length} items • {new Date(order.createdAt).toLocaleDateString()}
+                  {order.items.length} items •{' '}
+                  {new Date(order.createdAt).toLocaleDateString()}
                 </div>
-                <div className="font-bold text-text-dark">৳{order.totalAmount.toFixed(0)}</div>
+                <div className="font-bold text-text-dark">
+                  ৳{order.totalAmount.toFixed(0)}
+                </div>
               </div>
-              
+
               <div className="flex justify-between items-center pt-2 border-t border-gray-200/50">
                 <button className="flex items-center gap-2 text-bottle-green font-medium">
                   <Eye className="w-4 h-4" />
@@ -640,7 +726,9 @@ const OrderManagement = () => {
               {searchTerm ? 'No orders match your search' : 'No orders yet'}
             </h3>
             <p className="text-text-muted">
-              {searchTerm ? 'Try adjusting your search terms or filters.' : 'Your orders will appear here once customers start placing them.'}
+              {searchTerm
+                ? 'Try adjusting your search terms or filters.'
+                : 'Your orders will appear here once customers start placing them.'}
             </p>
           </div>
         )}
@@ -650,9 +738,11 @@ const OrderManagement = () => {
       {pagination.totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-sm text-text-muted">
-            Showing {((pagination.current - 1) * 15) + 1} to {Math.min(pagination.current * 15, pagination.totalOrders)} of {pagination.totalOrders} orders
+            Showing {(pagination.current - 1) * 15 + 1} to{' '}
+            {Math.min(pagination.current * 15, pagination.totalOrders)} of{' '}
+            {pagination.totalOrders} orders
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -661,28 +751,33 @@ const OrderManagement = () => {
             >
               Previous
             </button>
-            
+
             <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                const pageNum = i + 1;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                      currentPage === pageNum
-                        ? 'bg-bottle-green text-white'
-                        : 'text-text-dark bg-white border border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
+              {Array.from(
+                { length: Math.min(5, pagination.totalPages) },
+                (_, i) => {
+                  const pageNum = i + 1;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                        currentPage === pageNum
+                          ? 'bg-bottle-green text-white'
+                          : 'text-text-dark bg-white border border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+              )}
             </div>
-            
+
             <button
-              onClick={() => setCurrentPage(Math.min(pagination.totalPages, currentPage + 1))}
+              onClick={() =>
+                setCurrentPage(Math.min(pagination.totalPages, currentPage + 1))
+              }
               disabled={currentPage === pagination.totalPages}
               className="px-4 py-2 text-text-dark bg-white border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >

@@ -12,7 +12,7 @@ vi.mock('../../../store/slices/apiSlice', async () => {
     ...actual,
     useGetProductAnalyticsQuery: vi.fn(),
     useGetAdminProductsQuery: vi.fn(),
-    useGetProductPerformanceQuery: vi.fn()
+    useGetProductPerformanceQuery: vi.fn(),
   };
 });
 
@@ -21,30 +21,36 @@ vi.mock('../../../components/ui/charts/SimpleLineChart', () => ({
   default: ({ data, height, color }) => (
     <div data-testid="line-chart" data-height={height} data-color={color}>
       {data.map((point, index) => (
-        <span key={index}>{point.label}:{point.value}</span>
+        <span key={index}>
+          {point.label}:{point.value}
+        </span>
       ))}
     </div>
-  )
+  ),
 }));
 
 vi.mock('../../../components/ui/charts/SimpleBarChart', () => ({
   default: ({ data, height }) => (
     <div data-testid="bar-chart" data-height={height}>
       {data.map((point, index) => (
-        <span key={index}>{point.label}:{point.value}</span>
+        <span key={index}>
+          {point.label}:{point.value}
+        </span>
       ))}
     </div>
-  )
+  ),
 }));
 
 vi.mock('../../../components/ui/charts/SimplePieChart', () => ({
   default: ({ data, size }) => (
     <div data-testid="pie-chart" data-size={size}>
       {data.map((point, index) => (
-        <span key={index}>{point.label}:{point.value}%</span>
+        <span key={index}>
+          {point.label}:{point.value}%
+        </span>
       ))}
     </div>
-  )
+  ),
 }));
 
 // Mock analytics data
@@ -57,15 +63,15 @@ const mockAnalyticsData = {
       totalOrders: 3420,
       revenue: 125430,
       conversionRate: 7.56,
-      averageRating: 4.3
+      averageRating: 4.3,
     },
     trends: {
       viewsTrend: '+12.5%',
       ordersTrend: '+8.3%',
       revenueTrend: '+15.7%',
-      conversionTrend: '-2.1%'
-    }
-  }
+      conversionTrend: '-2.1%',
+    },
+  },
 };
 
 const mockProductsData = {
@@ -73,9 +79,9 @@ const mockProductsData = {
     products: [
       { id: '1', name: 'Organic Tomatoes', status: 'active' },
       { id: '2', name: 'Fresh Spinach', status: 'active' },
-      { id: '3', name: 'Bell Peppers', status: 'active' }
-    ]
-  }
+      { id: '3', name: 'Bell Peppers', status: 'active' },
+    ],
+  },
 };
 
 const mockProductPerformanceData = {
@@ -83,44 +89,48 @@ const mockProductPerformanceData = {
     views: 1248,
     orders: 89,
     conversionRate: 7.1,
-    revenue: 2680
-  }
+    revenue: 2680,
+  },
 };
 
 describe('ProductAnalytics', () => {
-  const renderProductAnalytics = (analyticsResult = {}, productsResult = {}, performanceResult = {}) => {
+  const renderProductAnalytics = (
+    analyticsResult = {},
+    productsResult = {},
+    performanceResult = {}
+  ) => {
     const defaultAnalyticsResult = {
       data: mockAnalyticsData,
       isLoading: false,
       error: null,
-      refetch: vi.fn()
+      refetch: vi.fn(),
     };
 
     const defaultProductsResult = {
       data: mockProductsData,
       isLoading: false,
-      error: null
+      error: null,
     };
 
     const defaultPerformanceResult = {
       data: mockProductPerformanceData,
       isLoading: false,
-      error: null
+      error: null,
     };
 
     apiSlice.useGetProductAnalyticsQuery.mockReturnValue({
       ...defaultAnalyticsResult,
-      ...analyticsResult
+      ...analyticsResult,
     });
 
     apiSlice.useGetAdminProductsQuery.mockReturnValue({
       ...defaultProductsResult,
-      ...productsResult
+      ...productsResult,
     });
 
     apiSlice.useGetProductPerformanceQuery.mockReturnValue({
       ...defaultPerformanceResult,
-      ...performanceResult
+      ...performanceResult,
     });
 
     return renderWithProviders(<ProductAnalytics />, {
@@ -130,12 +140,12 @@ describe('ProductAnalytics', () => {
           user: {
             id: 'admin-1',
             role: 'admin',
-            name: 'Admin User'
+            name: 'Admin User',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -147,12 +157,16 @@ describe('ProductAnalytics', () => {
     renderProductAnalytics();
 
     expect(screen.getByText('Product Analytics')).toBeInTheDocument();
-    expect(screen.getByText('Track product performance, sales metrics, and customer insights')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Track product performance, sales metrics, and customer insights'
+      )
+    ).toBeInTheDocument();
   });
 
   it('displays loading state', () => {
     renderProductAnalytics({ isLoading: true });
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
@@ -186,7 +200,7 @@ describe('ProductAnalytics', () => {
       expect(screen.getByText('+12.5%')).toBeInTheDocument();
       expect(screen.getByText('+8.3%')).toBeInTheDocument();
       expect(screen.getByText('+15.7%')).toBeInTheDocument();
-      
+
       // Check negative trend
       expect(screen.getByText('-2.1%')).toBeInTheDocument();
     });
@@ -238,7 +252,9 @@ describe('ProductAnalytics', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Top Performing Products')).toBeInTheDocument();
-      expect(screen.getByText('Best selling products this month')).toBeInTheDocument();
+      expect(
+        screen.getByText('Best selling products this month')
+      ).toBeInTheDocument();
     });
 
     // Check for mock product data in the table
@@ -252,11 +268,15 @@ describe('ProductAnalytics', () => {
     renderProductAnalytics();
 
     await waitFor(() => {
-      expect(screen.getByText('Individual Product Performance')).toBeInTheDocument();
+      expect(
+        screen.getByText('Individual Product Performance')
+      ).toBeInTheDocument();
     });
 
     // Select a product
-    const productSelect = screen.getByDisplayValue('Select a product to analyze');
+    const productSelect = screen.getByDisplayValue(
+      'Select a product to analyze'
+    );
     await user.selectOptions(productSelect, '1');
 
     await waitFor(() => {
@@ -271,11 +291,15 @@ describe('ProductAnalytics', () => {
     renderProductAnalytics({}, {}, { isLoading: true });
 
     await waitFor(() => {
-      expect(screen.getByText('Individual Product Performance')).toBeInTheDocument();
+      expect(
+        screen.getByText('Individual Product Performance')
+      ).toBeInTheDocument();
     });
 
     // Select a product
-    const productSelect = screen.getByDisplayValue('Select a product to analyze');
+    const productSelect = screen.getByDisplayValue(
+      'Select a product to analyze'
+    );
     await user.selectOptions(productSelect, '1');
 
     // Should show loading spinner
@@ -286,7 +310,9 @@ describe('ProductAnalytics', () => {
     renderProductAnalytics();
 
     await waitFor(() => {
-      expect(screen.getByText('Insights & Recommendations')).toBeInTheDocument();
+      expect(
+        screen.getByText('Insights & Recommendations')
+      ).toBeInTheDocument();
     });
 
     // Check for insight categories
@@ -296,8 +322,8 @@ describe('ProductAnalytics', () => {
   });
 
   it('handles API errors gracefully', async () => {
-    renderProductAnalytics({ 
-      error: { status: 500, data: { error: 'Server error' } }
+    renderProductAnalytics({
+      error: { status: 500, data: { error: 'Server error' } },
     });
 
     await waitFor(() => {
@@ -340,7 +366,7 @@ describe('ProductAnalytics', () => {
       expect(lineCharts[0]).toHaveAttribute('data-height', '250');
       expect(lineCharts[0]).toHaveAttribute('data-color', '#3B82F6');
       expect(lineCharts[1]).toHaveAttribute('data-color', '#10B981');
-      
+
       const pieChart = screen.getByTestId('pie-chart');
       expect(pieChart).toHaveAttribute('data-size', '280');
     });
@@ -351,19 +377,21 @@ describe('ProductAnalytics', () => {
 
     await waitFor(() => {
       // Check for proper heading hierarchy
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Product Analytics');
-      
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        'Product Analytics'
+      );
+
       // Check form controls have labels
       const timeRangeSelect = screen.getByDisplayValue('Last 30 Days');
       expect(timeRangeSelect).toBeInTheDocument();
-      
+
       // Check all buttons have proper labels
       const actionButtons = screen.getAllByRole('button');
-      actionButtons.forEach(button => {
+      actionButtons.forEach((button) => {
         expect(
-          button.textContent || 
-          button.getAttribute('title') || 
-          button.getAttribute('aria-label')
+          button.textContent ||
+            button.getAttribute('title') ||
+            button.getAttribute('aria-label')
         ).toBeTruthy();
       });
     });
@@ -380,9 +408,9 @@ describe('ProductAnalytics', () => {
     // Test tab navigation
     const timeRangeSelect = screen.getByDisplayValue('Last 30 Days');
     timeRangeSelect.focus();
-    
+
     await user.tab();
-    
+
     // Next focusable element should be focused
     expect(document.activeElement).not.toBe(timeRangeSelect);
   });
@@ -392,8 +420,15 @@ describe('ProductAnalytics', () => {
 
     await waitFor(() => {
       // Check that metric cards use responsive grid classes
-      const metricsContainer = screen.getByText('Total Products').closest('.grid');
-      expect(metricsContainer).toHaveClass('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-6');
+      const metricsContainer = screen
+        .getByText('Total Products')
+        .closest('.grid');
+      expect(metricsContainer).toHaveClass(
+        'grid-cols-1',
+        'sm:grid-cols-2',
+        'lg:grid-cols-3',
+        'xl:grid-cols-6'
+      );
     });
   });
 
@@ -401,7 +436,11 @@ describe('ProductAnalytics', () => {
     renderProductAnalytics();
 
     await waitFor(() => {
-      expect(screen.getByText('Select a product to view detailed performance metrics')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Select a product to view detailed performance metrics'
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -410,10 +449,10 @@ describe('ProductAnalytics', () => {
 
     await waitFor(() => {
       const lineCharts = screen.getAllByTestId('line-chart');
-      
+
       // Views chart should be blue
       expect(lineCharts[0]).toHaveAttribute('data-color', '#3B82F6');
-      
+
       // Orders chart should be green
       expect(lineCharts[1]).toHaveAttribute('data-color', '#10B981');
     });

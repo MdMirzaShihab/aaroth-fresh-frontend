@@ -3,85 +3,93 @@ import { AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
 import { cn } from '../../utils';
 
 // FormField wrapper component with comprehensive validation integration
-const FormField = forwardRef(({
-  children,
-  label,
-  description,
-  error,
-  success,
-  warning,
-  required = false,
-  className,
-  labelClassName,
-  descriptionClassName,
-  messageClassName,
-  id,
-  ...props
-}, ref) => {
-  const fieldId = id || `field-${Math.random().toString(36).substr(2, 9)}`;
+const FormField = forwardRef(
+  (
+    {
+      children,
+      label,
+      description,
+      error,
+      success,
+      warning,
+      required = false,
+      className,
+      labelClassName,
+      descriptionClassName,
+      messageClassName,
+      id,
+      ...props
+    },
+    ref
+  ) => {
+    const fieldId = id || `field-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Determine validation state
-  const hasError = error && error.length > 0;
-  const hasSuccess = success && success.length > 0;
-  const hasWarning = warning && warning.length > 0;
+    // Determine validation state
+    const hasError = error && error.length > 0;
+    const hasSuccess = success && success.length > 0;
+    const hasWarning = warning && warning.length > 0;
 
-  return (
-    <div className={cn('space-y-2', className)} ref={ref} {...props}>
-      {/* Label */}
-      {label && (
-        <label
-          htmlFor={fieldId}
-          className={cn(
-            'block text-sm font-medium text-text-dark/80 tracking-wide',
-            required && 'after:content-["*"] after:text-tomato-red after:ml-1',
-            labelClassName
-          )}
-        >
-          {label}
-        </label>
-      )}
+    return (
+      <div className={cn('space-y-2', className)} ref={ref} {...props}>
+        {/* Label */}
+        {label && (
+          <label
+            htmlFor={fieldId}
+            className={cn(
+              'block text-sm font-medium text-text-dark/80 tracking-wide',
+              required &&
+                'after:content-["*"] after:text-tomato-red after:ml-1',
+              labelClassName
+            )}
+          >
+            {label}
+          </label>
+        )}
 
-      {/* Description */}
-      {description && (
-        <p
-          className={cn(
-            'text-sm text-text-muted leading-relaxed',
-            descriptionClassName
-          )}
-          id={`${fieldId}-description`}
-        >
-          {description}
-        </p>
-      )}
+        {/* Description */}
+        {description && (
+          <p
+            className={cn(
+              'text-sm text-text-muted leading-relaxed',
+              descriptionClassName
+            )}
+            id={`${fieldId}-description`}
+          >
+            {description}
+          </p>
+        )}
 
-      {/* Input Field */}
-      <div className="relative">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(child, {
-              id: fieldId,
-              'aria-describedby': description ? `${fieldId}-description` : undefined,
-              'aria-invalid': hasError,
-              error: hasError,
-              success: hasSuccess,
-              warning: hasWarning,
-            });
-          }
-          return child;
-        })}
-      </div>
-
-      {/* Validation Messages */}
-      {(hasError || hasSuccess || hasWarning) && (
-        <div className={cn('mt-2', messageClassName)}>
-          {hasError && <ErrorMessage message={error} />}
-          {hasSuccess && <SuccessMessage message={success} />}
-          {hasWarning && <WarningMessage message={warning} />}
+        {/* Input Field */}
+        <div className="relative">
+          {React.Children.map(children, (child) => {
+            if (React.isValidElement(child)) {
+              return React.cloneElement(child, {
+                id: fieldId,
+                'aria-describedby': description
+                  ? `${fieldId}-description`
+                  : undefined,
+                'aria-invalid': hasError,
+                error: hasError,
+                success: hasSuccess,
+                warning: hasWarning,
+              });
+            }
+            return child;
+          })}
         </div>
-      )}
-    </div>
-  );
-});
+
+        {/* Validation Messages */}
+        {(hasError || hasSuccess || hasWarning) && (
+          <div className={cn('mt-2', messageClassName)}>
+            {hasError && <ErrorMessage message={error} />}
+            {hasSuccess && <SuccessMessage message={success} />}
+            {hasWarning && <WarningMessage message={warning} />}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 FormField.displayName = 'FormField';
 
@@ -99,14 +107,21 @@ export const ErrorMessage = ({ message, className, icon = true, ...props }) => {
       aria-live="polite"
       {...props}
     >
-      {icon && <AlertCircle className="w-4 h-4 text-tomato-red/60 flex-shrink-0" />}
+      {icon && (
+        <AlertCircle className="w-4 h-4 text-tomato-red/60 flex-shrink-0" />
+      )}
       <span className="flex-1">{message}</span>
     </div>
   );
 };
 
 // Success Message Component
-export const SuccessMessage = ({ message, className, icon = true, ...props }) => {
+export const SuccessMessage = ({
+  message,
+  className,
+  icon = true,
+  ...props
+}) => {
   if (!message) return null;
 
   return (
@@ -119,14 +134,21 @@ export const SuccessMessage = ({ message, className, icon = true, ...props }) =>
       aria-live="polite"
       {...props}
     >
-      {icon && <CheckCircle className="w-4 h-4 text-mint-fresh/80 flex-shrink-0" />}
+      {icon && (
+        <CheckCircle className="w-4 h-4 text-mint-fresh/80 flex-shrink-0" />
+      )}
       <span className="flex-1">{message}</span>
     </div>
   );
 };
 
 // Warning Message Component
-export const WarningMessage = ({ message, className, icon = true, ...props }) => {
+export const WarningMessage = ({
+  message,
+  className,
+  icon = true,
+  ...props
+}) => {
   if (!message) return null;
 
   return (
@@ -139,7 +161,9 @@ export const WarningMessage = ({ message, className, icon = true, ...props }) =>
       aria-live="polite"
       {...props}
     >
-      {icon && <AlertTriangle className="w-4 h-4 text-earthy-yellow/80 flex-shrink-0" />}
+      {icon && (
+        <AlertTriangle className="w-4 h-4 text-earthy-yellow/80 flex-shrink-0" />
+      )}
       <span className="flex-1">{message}</span>
     </div>
   );
@@ -157,26 +181,28 @@ export const FormGroup = ({
 }) => (
   <fieldset className={cn('space-y-6', className)} {...props}>
     {title && (
-      <legend className={cn(
-        'text-lg font-semibold text-text-dark mb-2',
-        titleClassName
-      )}>
+      <legend
+        className={cn(
+          'text-lg font-semibold text-text-dark mb-2',
+          titleClassName
+        )}
+      >
         {title}
       </legend>
     )}
-    
+
     {description && (
-      <p className={cn(
-        'text-sm text-text-muted leading-relaxed -mt-2 mb-4',
-        descriptionClassName
-      )}>
+      <p
+        className={cn(
+          'text-sm text-text-muted leading-relaxed -mt-2 mb-4',
+          descriptionClassName
+        )}
+      >
         {description}
       </p>
     )}
-    
-    <div className="space-y-4">
-      {children}
-    </div>
+
+    <div className="space-y-4">{children}</div>
   </fieldset>
 );
 
@@ -199,7 +225,9 @@ export const FormActions = ({
     <div
       className={cn(
         'pt-6 mt-6 border-t border-gray-200',
-        stack ? 'flex flex-col gap-3' : `flex items-center gap-3 ${justifyClass}`,
+        stack
+          ? 'flex flex-col gap-3'
+          : `flex items-center gap-3 ${justifyClass}`,
         'sm:flex-row sm:justify-end', // Always horizontal on desktop
         className
       )}
@@ -213,10 +241,7 @@ export const FormActions = ({
 // Help Text component
 export const HelpText = ({ children, className, ...props }) => (
   <p
-    className={cn(
-      'text-xs text-text-muted/80 mt-1 leading-relaxed',
-      className
-    )}
+    className={cn('text-xs text-text-muted/80 mt-1 leading-relaxed', className)}
     {...props}
   >
     {children}
@@ -245,9 +270,7 @@ export const FormSection = ({
     {(title || description) && (
       <div className={cn('space-y-1', headerClassName)}>
         {title && (
-          <h3 className="text-lg font-medium text-text-dark">
-            {title}
-          </h3>
+          <h3 className="text-lg font-medium text-text-dark">{title}</h3>
         )}
         {description && (
           <p className="text-sm text-text-muted leading-relaxed">
@@ -256,10 +279,8 @@ export const FormSection = ({
         )}
       </div>
     )}
-    
-    <div className={cn('space-y-4', contentClassName)}>
-      {children}
-    </div>
+
+    <div className={cn('space-y-4', contentClassName)}>{children}</div>
   </div>
 );
 
@@ -294,7 +315,7 @@ export const FieldArray = ({
         </div>
       </div>
     ))}
-    
+
     {onAdd && (
       <button
         type="button"

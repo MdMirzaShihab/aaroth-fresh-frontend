@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLocation, Navigate } from 'react-router-dom';
-import { selectIsAdmin, selectCanAccessAdminDashboard } from '../../store/selectors/adminSelectors';
+import { AlertTriangle } from 'lucide-react';
+import {
+  selectIsAdmin,
+  selectCanAccessAdminDashboard,
+} from '../../store/selectors/adminSelectors';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Breadcrumb from './Breadcrumb';
-import { AlertTriangle } from 'lucide-react';
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-  
+
   const isAdmin = useSelector(selectIsAdmin);
   const canAccess = useSelector(selectCanAccessAdminDashboard);
 
@@ -45,7 +48,7 @@ const AdminLayout = () => {
   // Get admin breadcrumb data
   const getAdminBreadcrumbs = () => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
-    
+
     const breadcrumbMap = {
       admin: { label: 'Admin', path: '/admin' },
       dashboard: { label: 'Dashboard', path: '/admin/dashboard' },
@@ -55,16 +58,24 @@ const AdminLayout = () => {
       categories: { label: 'Categories', path: '/admin/products/categories' },
       analytics: { label: 'Analytics', path: '/admin/analytics' },
       settings: { label: 'Settings', path: '/admin/settings' },
-      'create-restaurant-owner': { label: 'Create Restaurant Owner', path: '/admin/create-restaurant-owner' },
-      'create-restaurant-manager': { label: 'Create Restaurant Manager', path: '/admin/create-restaurant-manager' },
+      'create-restaurant-owner': {
+        label: 'Create Restaurant Owner',
+        path: '/admin/create-restaurant-owner',
+      },
+      'create-restaurant-manager': {
+        label: 'Create Restaurant Manager',
+        path: '/admin/create-restaurant-manager',
+      },
     };
 
     return pathSegments.map((segment, index) => {
       const path = '/' + pathSegments.slice(0, index + 1).join('/');
       return {
-        label: breadcrumbMap[segment]?.label || segment.charAt(0).toUpperCase() + segment.slice(1),
-        path: path,
-        isCurrentPage: index === pathSegments.length - 1
+        label:
+          breadcrumbMap[segment]?.label ||
+          segment.charAt(0).toUpperCase() + segment.slice(1),
+        path,
+        isCurrentPage: index === pathSegments.length - 1,
       };
     });
   };
@@ -72,18 +83,12 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Sidebar */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col lg:ml-0">
         {/* Header */}
-        <Header 
-          onMenuClick={() => setSidebarOpen(true)}
-          showAdminBadge={true}
-        />
+        <Header onMenuClick={() => setSidebarOpen(true)} showAdminBadge />
 
         {/* Main Content */}
         <main className="flex-1 relative">
@@ -91,7 +96,7 @@ const AdminLayout = () => {
           <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
             <div className="max-w-7xl mx-auto">
               <Breadcrumb items={getAdminBreadcrumbs()} />
-              
+
               {/* Admin Panel Indicator */}
               <div className="flex items-center gap-2 mt-2">
                 <div className="w-2 h-2 bg-gradient-secondary rounded-full animate-pulse"></div>

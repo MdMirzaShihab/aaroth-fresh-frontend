@@ -1,6 +1,10 @@
 import React from 'react';
 
-const SimplePieChart = ({ data, size = 200, colors = ['#0EA5E9', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'] }) => {
+const SimplePieChart = ({
+  data,
+  size = 200,
+  colors = ['#0EA5E9', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+}) => {
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-text-muted">
@@ -19,32 +23,32 @@ const SimplePieChart = ({ data, size = 200, colors = ['#0EA5E9', '#10B981', '#F5
   const slices = data.map((item, index) => {
     const percentage = (item.value / total) * 100;
     const angle = (item.value / total) * 360;
-    
+
     const startAngle = (currentAngle * Math.PI) / 180;
     const endAngle = ((currentAngle + angle) * Math.PI) / 180;
-    
+
     const largeArcFlag = angle > 180 ? 1 : 0;
-    
+
     const x1 = centerX + radius * Math.cos(startAngle);
     const y1 = centerY + radius * Math.sin(startAngle);
     const x2 = centerX + radius * Math.cos(endAngle);
     const y2 = centerY + radius * Math.sin(endAngle);
-    
+
     const pathData = [
       `M ${centerX} ${centerY}`,
       `L ${x1} ${y1}`,
       `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-      'Z'
+      'Z',
     ].join(' ');
-    
+
     currentAngle += angle;
-    
+
     return {
       ...item,
       pathData,
       color: colors[index % colors.length],
       percentage: percentage.toFixed(1),
-      midAngle: startAngle + (endAngle - startAngle) / 2
+      midAngle: startAngle + (endAngle - startAngle) / 2,
     };
   });
 
@@ -65,7 +69,7 @@ const SimplePieChart = ({ data, size = 200, colors = ['#0EA5E9', '#10B981', '#F5
               <title>{`${slice.label}: ${slice.value.toLocaleString()} (${slice.percentage}%)`}</title>
             </path>
           ))}
-          
+
           {/* Center circle for donut effect */}
           <circle
             cx={centerX}
@@ -74,7 +78,7 @@ const SimplePieChart = ({ data, size = 200, colors = ['#0EA5E9', '#10B981', '#F5
             fill="white"
             className="drop-shadow-sm"
           />
-          
+
           {/* Total in center */}
           <text
             x={centerX}
@@ -94,12 +98,12 @@ const SimplePieChart = ({ data, size = 200, colors = ['#0EA5E9', '#10B981', '#F5
           </text>
         </svg>
       </div>
-      
+
       {/* Legend */}
       <div className="space-y-2">
         {slices.map((slice, index) => (
           <div key={index} className="flex items-center gap-2">
-            <div 
+            <div
               className="w-3 h-3 rounded-full flex-shrink-0"
               style={{ backgroundColor: slice.color }}
             />

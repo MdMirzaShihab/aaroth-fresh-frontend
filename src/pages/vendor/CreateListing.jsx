@@ -3,17 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useForm, useFieldArray } from 'react-hook-form';
 import {
-  useCreateListingMutation,
-  useGetPublicProductsQuery,
-  useGetCategoriesQuery
-} from '../../store/slices/apiSlice';
-import { addNotification } from '../../store/slices/notificationSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import FormField from '../../components/ui/FormField';
-import FileUpload from '../../components/ui/FileUpload';
-import {
   ArrowLeft,
   Plus,
   Minus,
@@ -27,8 +16,19 @@ import {
   AlertTriangle,
   CheckCircle,
   Upload,
-  X
+  X,
 } from 'lucide-react';
+import {
+  useCreateListingMutation,
+  useGetPublicProductsQuery,
+  useGetCategoriesQuery,
+} from '../../store/slices/apiSlice';
+import { addNotification } from '../../store/slices/notificationSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import FormField from '../../components/ui/FormField';
+import FileUpload from '../../components/ui/FileUpload';
 
 const CreateListing = () => {
   const navigate = useNavigate();
@@ -44,63 +44,71 @@ const CreateListing = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      pricing: [{
-        pricePerUnit: '',
-        unit: 'kg',
-        bulkDiscount: {
-          minQuantity: '',
-          discountPercentage: ''
-        }
-      }],
+      pricing: [
+        {
+          pricePerUnit: '',
+          unit: 'kg',
+          bulkDiscount: {
+            minQuantity: '',
+            discountPercentage: '',
+          },
+        },
+      ],
       availability: {
         quantityAvailable: '',
         harvestDate: '',
-        expiryDate: ''
+        expiryDate: '',
       },
-      deliveryOptions: [{
-        type: 'pickup',
-        cost: 0,
-        timeRange: '30 minutes'
-      }],
+      deliveryOptions: [
+        {
+          type: 'pickup',
+          cost: 0,
+          timeRange: '30 minutes',
+        },
+      ],
       discount: {
         type: 'percentage',
         value: '',
-        validUntil: ''
+        validUntil: '',
       },
       certifications: [],
       qualityGrade: 'Standard',
       minimumOrderValue: '',
-      leadTime: '2-4 hours'
-    }
+      leadTime: '2-4 hours',
+    },
   });
 
   // Field arrays for dynamic forms
-  const { fields: pricingFields, append: appendPricing, remove: removePricing } = useFieldArray({
+  const {
+    fields: pricingFields,
+    append: appendPricing,
+    remove: removePricing,
+  } = useFieldArray({
     control,
-    name: 'pricing'
+    name: 'pricing',
   });
 
-  const { fields: deliveryFields, append: appendDelivery, remove: removeDelivery } = useFieldArray({
+  const {
+    fields: deliveryFields,
+    append: appendDelivery,
+    remove: removeDelivery,
+  } = useFieldArray({
     control,
-    name: 'deliveryOptions'
+    name: 'deliveryOptions',
   });
 
   // API mutations and queries
   const [createListing] = useCreateListingMutation();
 
-  const {
-    data: productsData,
-    isLoading: productsLoading
-  } = useGetPublicProductsQuery({
-    limit: 1000 // Get all products for selection
-  });
+  const { data: productsData, isLoading: productsLoading } =
+    useGetPublicProductsQuery({
+      limit: 1000, // Get all products for selection
+    });
 
-  const {
-    data: categoriesData
-  } = useGetCategoriesQuery();
+  const { data: categoriesData } = useGetCategoriesQuery();
 
   const products = productsData?.data?.products || [];
   const categories = categoriesData?.categories || [];
@@ -139,50 +147,58 @@ const CreateListing = () => {
 
   // Delivery areas (this would typically come from a config or API)
   const deliveryAreas = [
-    'Dhanmondi', 'Gulshan', 'Banani', 'Uttara', 'Mirpur',
-    'Wari', 'Old Dhaka', 'Motijheel', 'Tejgaon', 'Pallabi'
+    'Dhanmondi',
+    'Gulshan',
+    'Banani',
+    'Uttara',
+    'Mirpur',
+    'Wari',
+    'Old Dhaka',
+    'Motijheel',
+    'Tejgaon',
+    'Pallabi',
   ];
 
   // Handle image upload
   const handleImageUpload = (files) => {
     const newFiles = Array.from(files);
-    setImageFiles(prev => [...prev, ...newFiles]);
-    
+    setImageFiles((prev) => [...prev, ...newFiles]);
+
     // Create preview URLs
-    const newImages = newFiles.map(file => ({
+    const newImages = newFiles.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
-      id: Date.now() + Math.random()
+      id: Date.now() + Math.random(),
     }));
-    
-    setUploadedImages(prev => [...prev, ...newImages]);
+
+    setUploadedImages((prev) => [...prev, ...newImages]);
   };
 
   // Remove image
   const handleRemoveImage = (imageId) => {
-    setUploadedImages(prev => {
-      const imageToRemove = prev.find(img => img.id === imageId);
+    setUploadedImages((prev) => {
+      const imageToRemove = prev.find((img) => img.id === imageId);
       if (imageToRemove?.preview) {
         URL.revokeObjectURL(imageToRemove.preview);
       }
-      return prev.filter(img => img.id !== imageId);
+      return prev.filter((img) => img.id !== imageId);
     });
-    
-    setImageFiles(prev => 
-      prev.filter((file, index) => 
-        uploadedImages[index]?.id !== imageId
-      )
+
+    setImageFiles((prev) =>
+      prev.filter((file, index) => uploadedImages[index]?.id !== imageId)
     );
   };
 
   // Form submission
   const onSubmit = async (data) => {
     if (imageFiles.length === 0) {
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Images Required',
-        message: 'Please upload at least one product image.',
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Images Required',
+          message: 'Please upload at least one product image.',
+        })
+      );
       return;
     }
 
@@ -191,7 +207,7 @@ const CreateListing = () => {
     try {
       // Create FormData for file upload
       const formData = new FormData();
-      
+
       // Add form data
       formData.append('productId', data.productId);
       formData.append('pricing', JSON.stringify(data.pricing));
@@ -202,32 +218,38 @@ const CreateListing = () => {
       formData.append('minimumOrderValue', data.minimumOrderValue);
       formData.append('leadTime', data.leadTime);
       formData.append('certifications', JSON.stringify(data.certifications));
-      
+
       if (data.discount.value) {
         formData.append('discount', JSON.stringify(data.discount));
       }
 
       // Add image files
-      imageFiles.forEach(file => {
+      imageFiles.forEach((file) => {
         formData.append('images', file);
       });
 
       const result = await createListing(formData).unwrap();
-      
-      dispatch(addNotification({
-        type: 'success',
-        title: 'Listing Created',
-        message: 'Your product listing has been created successfully!',
-      }));
+
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: 'Listing Created',
+          message: 'Your product listing has been created successfully!',
+        })
+      );
 
       navigate('/vendor/listings');
     } catch (error) {
       console.error('Failed to create listing:', error);
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Creation Failed',
-        message: error.data?.message || 'Failed to create listing. Please try again.',
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Creation Failed',
+          message:
+            error.data?.message ||
+            'Failed to create listing. Please try again.',
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -236,7 +258,7 @@ const CreateListing = () => {
   // Cleanup image URLs on unmount
   useEffect(() => {
     return () => {
-      uploadedImages.forEach(image => {
+      uploadedImages.forEach((image) => {
         if (image.preview) {
           URL.revokeObjectURL(image.preview);
         }
@@ -256,7 +278,7 @@ const CreateListing = () => {
           <ArrowLeft className="w-4 h-4" />
           Back to Listings
         </Button>
-        
+
         <div>
           <h1 className="text-3xl font-semibold text-text-dark dark:text-white">
             Create New Listing
@@ -282,11 +304,13 @@ const CreateListing = () => {
               required
             >
               <select
-                {...register('productId', { required: 'Please select a product' })}
+                {...register('productId', {
+                  required: 'Please select a product',
+                })}
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
               >
                 <option value="">Choose a product...</option>
-                {products.map(product => (
+                {products.map((product) => (
                   <option key={product.id} value={product.id}>
                     {product.name} ({product.category?.name})
                   </option>
@@ -300,10 +324,12 @@ const CreateListing = () => {
               required
             >
               <select
-                {...register('qualityGrade', { required: 'Please select quality grade' })}
+                {...register('qualityGrade', {
+                  required: 'Please select quality grade',
+                })}
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
               >
-                {qualityGradeOptions.map(option => (
+                {qualityGradeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -318,7 +344,9 @@ const CreateListing = () => {
                 required
               >
                 <textarea
-                  {...register('description', { required: 'Please provide a description' })}
+                  {...register('description', {
+                    required: 'Please provide a description',
+                  })}
                   rows="4"
                   placeholder="Describe your product quality, freshness, origin, and any special features..."
                   className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 resize-none"
@@ -337,9 +365,14 @@ const CreateListing = () => {
 
           <div className="space-y-6">
             {pricingFields.map((field, index) => (
-              <div key={field.id} className="border border-gray-200 rounded-2xl p-6">
+              <div
+                key={field.id}
+                className="border border-gray-200 rounded-2xl p-6"
+              >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-medium text-text-dark">Pricing Option {index + 1}</h3>
+                  <h3 className="font-medium text-text-dark">
+                    Pricing Option {index + 1}
+                  </h3>
                   {pricingFields.length > 1 && (
                     <Button
                       type="button"
@@ -363,9 +396,12 @@ const CreateListing = () => {
                     <input
                       type="number"
                       step="0.01"
-                      {...register(`pricing.${index}.pricePerUnit`, { 
+                      {...register(`pricing.${index}.pricePerUnit`, {
                         required: 'Price is required',
-                        min: { value: 0.01, message: 'Price must be greater than 0' }
+                        min: {
+                          value: 0.01,
+                          message: 'Price must be greater than 0',
+                        },
                       })}
                       placeholder="0.00"
                       className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
@@ -378,10 +414,12 @@ const CreateListing = () => {
                     required
                   >
                     <select
-                      {...register(`pricing.${index}.unit`, { required: 'Unit is required' })}
+                      {...register(`pricing.${index}.unit`, {
+                        required: 'Unit is required',
+                      })}
                       className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
                     >
-                      {unitOptions.map(option => (
+                      {unitOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
@@ -397,25 +435,25 @@ const CreateListing = () => {
                     Bulk Discount (Optional)
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      label="Minimum Quantity"
-                    >
+                    <FormField label="Minimum Quantity">
                       <input
                         type="number"
-                        {...register(`pricing.${index}.bulkDiscount.minQuantity`)}
+                        {...register(
+                          `pricing.${index}.bulkDiscount.minQuantity`
+                        )}
                         placeholder="10"
                         className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                       />
                     </FormField>
 
-                    <FormField
-                      label="Discount Percentage"
-                    >
+                    <FormField label="Discount Percentage">
                       <input
                         type="number"
                         step="0.1"
                         max="50"
-                        {...register(`pricing.${index}.bulkDiscount.discountPercentage`)}
+                        {...register(
+                          `pricing.${index}.bulkDiscount.discountPercentage`
+                        )}
                         placeholder="5.0"
                         className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                       />
@@ -428,11 +466,13 @@ const CreateListing = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => appendPricing({
-                pricePerUnit: '',
-                unit: 'kg',
-                bulkDiscount: { minQuantity: '', discountPercentage: '' }
-              })}
+              onClick={() =>
+                appendPricing({
+                  pricePerUnit: '',
+                  unit: 'kg',
+                  bulkDiscount: { minQuantity: '', discountPercentage: '' },
+                })
+              }
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
@@ -456,9 +496,9 @@ const CreateListing = () => {
             >
               <input
                 type="number"
-                {...register('availability.quantityAvailable', { 
+                {...register('availability.quantityAvailable', {
                   required: 'Quantity is required',
-                  min: { value: 0, message: 'Quantity must be 0 or greater' }
+                  min: { value: 0, message: 'Quantity must be 0 or greater' },
                 })}
                 placeholder="100"
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
@@ -529,7 +569,8 @@ const CreateListing = () => {
             )}
 
             <p className="text-sm text-text-muted">
-              Upload up to 5 high-quality images. First image will be used as the main product image.
+              Upload up to 5 high-quality images. First image will be used as
+              the main product image.
             </p>
           </div>
         </Card>
@@ -543,9 +584,14 @@ const CreateListing = () => {
 
           <div className="space-y-6">
             {deliveryFields.map((field, index) => (
-              <div key={field.id} className="border border-gray-200 rounded-2xl p-6">
+              <div
+                key={field.id}
+                className="border border-gray-200 rounded-2xl p-6"
+              >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-medium text-text-dark">Delivery Option {index + 1}</h3>
+                  <h3 className="font-medium text-text-dark">
+                    Delivery Option {index + 1}
+                  </h3>
                   {deliveryFields.length > 1 && (
                     <Button
                       type="button"
@@ -561,12 +607,11 @@ const CreateListing = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    label="Type"
-                    required
-                  >
+                  <FormField label="Type" required>
                     <select
-                      {...register(`deliveryOptions.${index}.type`, { required: 'Type is required' })}
+                      {...register(`deliveryOptions.${index}.type`, {
+                        required: 'Type is required',
+                      })}
                       className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
                     >
                       <option value="pickup">Pickup</option>
@@ -574,29 +619,25 @@ const CreateListing = () => {
                     </select>
                   </FormField>
 
-                  <FormField
-                    label="Cost (৳)"
-                    required
-                  >
+                  <FormField label="Cost (৳)" required>
                     <input
                       type="number"
                       step="0.01"
-                      {...register(`deliveryOptions.${index}.cost`, { 
+                      {...register(`deliveryOptions.${index}.cost`, {
                         required: 'Cost is required',
-                        min: { value: 0, message: 'Cost must be 0 or greater' }
+                        min: { value: 0, message: 'Cost must be 0 or greater' },
                       })}
                       placeholder="0.00"
                       className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                     />
                   </FormField>
 
-                  <FormField
-                    label="Time Range"
-                    required
-                  >
+                  <FormField label="Time Range" required>
                     <input
                       type="text"
-                      {...register(`deliveryOptions.${index}.timeRange`, { required: 'Time range is required' })}
+                      {...register(`deliveryOptions.${index}.timeRange`, {
+                        required: 'Time range is required',
+                      })}
                       placeholder="2-4 hours"
                       className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                     />
@@ -608,11 +649,13 @@ const CreateListing = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => appendDelivery({
-                type: 'pickup',
-                cost: 0,
-                timeRange: '30 minutes'
-              })}
+              onClick={() =>
+                appendDelivery({
+                  type: 'pickup',
+                  cost: 0,
+                  timeRange: '30 minutes',
+                })
+              }
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
@@ -629,9 +672,7 @@ const CreateListing = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              label="Minimum Order Value (৳)"
-            >
+            <FormField label="Minimum Order Value (৳)">
               <input
                 type="number"
                 step="0.01"
@@ -641,9 +682,7 @@ const CreateListing = () => {
               />
             </FormField>
 
-            <FormField
-              label="Lead Time"
-            >
+            <FormField label="Lead Time">
               <select
                 {...register('leadTime')}
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
@@ -658,19 +697,22 @@ const CreateListing = () => {
             </FormField>
 
             <div className="md:col-span-2">
-              <FormField
-                label="Certifications"
-              >
+              <FormField label="Certifications">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {certificationOptions.map(option => (
-                    <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+                  {certificationOptions.map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         value={option.value}
                         {...register('certifications')}
                         className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
                       />
-                      <span className="text-sm text-text-dark">{option.label}</span>
+                      <span className="text-sm text-text-dark">
+                        {option.label}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -690,7 +732,7 @@ const CreateListing = () => {
             >
               Cancel
             </Button>
-            
+
             <Button
               type="submit"
               disabled={isSubmitting}

@@ -1,17 +1,17 @@
 import React from 'react';
-import { 
-  Search, 
-  ShoppingCart, 
-  Package, 
-  Users, 
-  FileText, 
-  Heart, 
-  Star, 
-  Inbox, 
+import {
+  Search,
+  ShoppingCart,
+  Package,
+  Users,
+  FileText,
+  Heart,
+  Star,
+  Inbox,
   Calendar,
   Filter,
   AlertCircle,
-  Plus
+  Plus,
 } from 'lucide-react';
 import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
@@ -107,44 +107,65 @@ const EmptyState = ({
         return {
           icon: Search,
           title: title || 'No results found',
-          description: description || message || "Try adjusting your search terms or filters to find what you're looking for.",
+          description:
+            description ||
+            message ||
+            "Try adjusting your search terms or filters to find what you're looking for.",
         };
       case 'products':
         return {
           icon: Package,
           title: title || 'No products available',
-          description: description || message || 'There are currently no products in this category. Check back later for new additions.',
+          description:
+            description ||
+            message ||
+            'There are currently no products in this category. Check back later for new additions.',
         };
       case 'orders':
         return {
           icon: FileText,
           title: title || 'No orders yet',
-          description: description || message || "You haven't placed any orders yet. Start exploring products to place your first order.",
+          description:
+            description ||
+            message ||
+            "You haven't placed any orders yet. Start exploring products to place your first order.",
         };
       case 'users':
         return {
           icon: Users,
           title: title || 'No users found',
-          description: description || message || 'No users match your current filters or search criteria.',
+          description:
+            description ||
+            message ||
+            'No users match your current filters or search criteria.',
         };
       case 'error':
         return {
           icon: AlertCircle,
           title: title || 'Unable to load content',
-          description: description || message || 'We encountered an issue loading this content. Please try refreshing the page.',
+          description:
+            description ||
+            message ||
+            'We encountered an issue loading this content. Please try refreshing the page.',
           variant: 'error',
         };
       case 'create':
         return {
           icon: Plus,
           title: title || 'Get started',
-          description: description || message || 'Create your first item to get started with this section.',
+          description:
+            description ||
+            message ||
+            'Create your first item to get started with this section.',
         };
       default:
         return {
           icon: Package,
           title: title || 'Nothing here yet',
-          description: description || message || 'This section is empty. Content will appear here when available.',
+          description:
+            description ||
+            message ||
+            'This section is empty. Content will appear here when available.',
         };
     }
   };
@@ -153,19 +174,30 @@ const EmptyState = ({
   const FinalIcon = IconComponent || defaults.icon;
   const finalTitle = title || defaults.title;
   const finalDescription = description || message || defaults.description;
-  const finalVariant = variant === 'default' ? (defaults.variant || variant) : variant;
+  const finalVariant =
+    variant === 'default' ? defaults.variant || variant : variant;
 
   const renderIcon = () => {
     if (illustration) {
       return (
-        <div className={cn(iconVariants({ variant: finalVariant, size, animation }), iconClassName)}>
+        <div
+          className={cn(
+            iconVariants({ variant: finalVariant, size, animation }),
+            iconClassName
+          )}
+        >
           {illustration}
         </div>
       );
     }
 
     return (
-      <div className={cn(iconVariants({ variant: finalVariant, size, animation }), iconClassName)}>
+      <div
+        className={cn(
+          iconVariants({ variant: finalVariant, size, animation }),
+          iconClassName
+        )}
+      >
         <FinalIcon className="w-1/2 h-1/2" />
       </div>
     );
@@ -173,7 +205,10 @@ const EmptyState = ({
 
   return (
     <div
-      className={cn(emptyStateVariants({ size, spacing: 'default' }), className)}
+      className={cn(
+        emptyStateVariants({ size, spacing: 'default' }),
+        className
+      )}
       {...props}
     >
       {/* Illustration/Icon */}
@@ -181,20 +216,24 @@ const EmptyState = ({
 
       {/* Title */}
       {finalTitle && (
-        <h3 className={cn(
-          'text-lg font-medium text-text-dark/70 mb-2',
-          titleClassName
-        )}>
+        <h3
+          className={cn(
+            'text-lg font-medium text-text-dark/70 mb-2',
+            titleClassName
+          )}
+        >
           {finalTitle}
         </h3>
       )}
 
       {/* Description */}
       {finalDescription && (
-        <p className={cn(
-          'text-text-muted mb-8 leading-relaxed',
-          descriptionClassName
-        )}>
+        <p
+          className={cn(
+            'text-text-muted mb-8 leading-relaxed',
+            descriptionClassName
+          )}
+        >
           {finalDescription}
         </p>
       )}
@@ -206,11 +245,7 @@ const EmptyState = ({
       {(action || (actionLabel && onAction)) && (
         <div className={cn('mt-2', actionClassName)}>
           {action || (
-            <Button
-              variant="primary"
-              onClick={onAction}
-              className="px-8 py-3"
-            >
+            <Button variant="primary" onClick={onAction} className="px-8 py-3">
               {actionLabel}
             </Button>
           )}
@@ -240,7 +275,7 @@ export const NoSearchResults = ({
     description={
       searchTerm
         ? `We couldn't find anything matching "${searchTerm}". Try adjusting your search terms or filters.`
-        : "No results match your current search criteria."
+        : 'No results match your current search criteria.'
     }
     className={className}
     {...props}
@@ -263,7 +298,7 @@ export const NoSearchResults = ({
 
 export const EmptyCart = ({
   onBrowseProducts,
-  browseLabel = "Browse Products",
+  browseLabel = 'Browse Products',
   className,
   ...props
 }) => (
@@ -281,8 +316,8 @@ export const EmptyCart = ({
 
 export const NoProducts = ({
   onAddProduct,
-  addLabel = "Add Product",
-  entity = "products",
+  addLabel = 'Add Product',
+  entity = 'products',
   className,
   ...props
 }) => (
@@ -300,8 +335,8 @@ export const NoProducts = ({
 
 export const NoFavorites = ({
   onBrowse,
-  browseLabel = "Start Browsing",
-  favoriteType = "favorites",
+  browseLabel = 'Start Browsing',
+  favoriteType = 'favorites',
   className,
   ...props
 }) => (
@@ -319,8 +354,8 @@ export const NoFavorites = ({
 
 export const ErrorState = ({
   onRetry,
-  retryLabel = "Try Again",
-  errorMessage = "Something went wrong",
+  retryLabel = 'Try Again',
+  errorMessage = 'Something went wrong',
   className,
   ...props
 }) => (
@@ -337,16 +372,24 @@ export const ErrorState = ({
 );
 
 // Backward compatibility exports (keep existing API)
-export const SearchEmptyState = ({ searchTerm, onClearSearch, className = '' }) => (
-  <NoSearchResults 
+export const SearchEmptyState = ({
+  searchTerm,
+  onClearSearch,
+  className = '',
+}) => (
+  <NoSearchResults
     searchTerm={searchTerm}
     onClearSearch={onClearSearch}
     className={className}
   />
 );
 
-export const ProductsEmptyState = ({ onAddProduct, userCanAdd = false, className = '' }) => (
-  <NoProducts 
+export const ProductsEmptyState = ({
+  onAddProduct,
+  userCanAdd = false,
+  className = '',
+}) => (
+  <NoProducts
     onAddProduct={userCanAdd ? onAddProduct : undefined}
     className={className}
   />
@@ -361,15 +404,22 @@ export const OrdersEmptyState = ({ onStartShopping, className = '' }) => (
   />
 );
 
-export const ErrorEmptyState = ({ onRetry, retryText = 'Try Again', className = '' }) => (
-  <ErrorState
-    onRetry={onRetry}
-    retryLabel={retryText}
-    className={className}
-  />
+export const ErrorEmptyState = ({
+  onRetry,
+  retryText = 'Try Again',
+  className = '',
+}) => (
+  <ErrorState onRetry={onRetry} retryLabel={retryText} className={className} />
 );
 
-export const CreateEmptyState = ({ title, message, buttonText = 'Create New', onAction, icon, className = '' }) => (
+export const CreateEmptyState = ({
+  title,
+  message,
+  buttonText = 'Create New',
+  onAction,
+  icon,
+  className = '',
+}) => (
   <EmptyState
     type="create"
     title={title}

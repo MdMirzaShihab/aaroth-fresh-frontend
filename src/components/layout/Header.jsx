@@ -22,7 +22,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useSelector(selectAuth);
   const themeMode = useSelector(selectThemeMode);
-  
+
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,7 +43,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
 
   const handleUserMenuAction = async (item) => {
     setIsUserMenuOpen(false);
-    
+
     if (item.action === 'logout') {
       await authService.logout();
       navigate('/login');
@@ -62,7 +62,6 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-white/20 dark:border-gray-800/20 transition-all duration-300">
       <div className="flex items-center justify-between h-16 px-4 sm:px-6">
-        
         {/* Left Section - Menu Toggle & Logo */}
         <div className="flex items-center gap-4">
           {isAuthenticated && (
@@ -78,7 +77,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
               )}
             </button>
           )}
-          
+
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-secondary rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
@@ -107,7 +106,6 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
 
         {/* Right Section - Actions */}
         <div className="flex items-center gap-2 sm:gap-4">
-          
           {/* Theme Toggle */}
           <button
             onClick={handleThemeToggle}
@@ -207,7 +205,6 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                 {/* User Dropdown */}
                 {isUserMenuOpen && (
                   <div className="absolute right-0 top-12 w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl p-2 border border-white/50 dark:border-gray-800/50 animate-scale-in z-50">
-                    
                     {/* User Info */}
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                       <div className="flex items-center gap-3">
@@ -240,11 +237,14 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                           key={item.id}
                           onClick={() => handleUserMenuAction(item)}
                           className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl transition-all duration-200 min-h-[44px] ${
-                            item.className || 'text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800'
+                            item.className ||
+                            'text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800'
                           }`}
                         >
                           {item.icon && <item.icon className="w-4 h-4" />}
-                          <span className="text-sm font-medium">{item.label}</span>
+                          <span className="text-sm font-medium">
+                            {item.label}
+                          </span>
                         </button>
                       ))}
                     </div>

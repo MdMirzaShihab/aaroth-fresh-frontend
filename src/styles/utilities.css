@@ -12,7 +12,12 @@
 
 /* Animation Utilities - Motion with Purpose */
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -41,12 +46,12 @@
   .animate-shimmer {
     animation: none;
   }
-  
+
   .transition-transform,
   .transition-all {
     transition: none;
   }
-  
+
   .hover\:scale-\[1\.02\]:hover,
   .hover\:-translate-y-1:hover,
   .hover\:-translate-y-0\.5:hover {

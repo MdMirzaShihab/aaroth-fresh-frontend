@@ -1,22 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  useGetVendorListingsQuery,
-  useDeleteListingMutation,
-  useUpdateListingStatusMutation,
-  useBulkUpdateListingsMutation,
-  useBulkDeleteListingsMutation
-} from '../../store/slices/apiSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import SearchBar from '../../components/ui/SearchBar';
-import EmptyState from '../../components/ui/EmptyState';
-import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import Pagination from '../../components/ui/Pagination';
-import ListingStatusToggle from '../../components/vendor/ListingStatusToggle';
-import ListingBulkActions from '../../components/vendor/ListingBulkActions';
-import {
   Package,
   Plus,
   Search,
@@ -39,8 +23,24 @@ import {
   RefreshCw,
   Download,
   Upload,
-  Settings
+  Settings,
 } from 'lucide-react';
+import {
+  useGetVendorListingsQuery,
+  useDeleteListingMutation,
+  useUpdateListingStatusMutation,
+  useBulkUpdateListingsMutation,
+  useBulkDeleteListingsMutation,
+} from '../../store/slices/apiSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import SearchBar from '../../components/ui/SearchBar';
+import EmptyState from '../../components/ui/EmptyState';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import Pagination from '../../components/ui/Pagination';
+import ListingStatusToggle from '../../components/vendor/ListingStatusToggle';
+import ListingBulkActions from '../../components/vendor/ListingBulkActions';
 
 const ListingManagement = () => {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const ListingManagement = () => {
   const [selectedListings, setSelectedListings] = useState(new Set());
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const itemsPerPage = 15;
 
   // Query for vendor listings with filters
@@ -60,14 +60,14 @@ const ListingManagement = () => {
     data: listingsData,
     isLoading,
     error,
-    refetch
+    refetch,
   } = useGetVendorListingsQuery({
     page: currentPage,
     limit: itemsPerPage,
     search: searchTerm || undefined,
     status: statusFilter !== 'all' ? statusFilter : undefined,
     sortBy,
-    sortOrder
+    sortOrder,
   });
 
   // Mutations
@@ -112,12 +112,12 @@ const ListingManagement = () => {
     if (selectedListings.size === listings.length) {
       setSelectedListings(new Set());
     } else {
-      setSelectedListings(new Set(listings.map(listing => listing.id)));
+      setSelectedListings(new Set(listings.map((listing) => listing.id)));
     }
   };
 
   const handleSelectListing = (listingId) => {
-    setSelectedListings(prev => {
+    setSelectedListings((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(listingId)) {
         newSet.delete(listingId);
@@ -147,7 +147,7 @@ const ListingManagement = () => {
       onConfirm: async () => {
         try {
           await deleteListing(listing.id).unwrap();
-          setSelectedListings(prev => {
+          setSelectedListings((prev) => {
             const newSet = new Set(prev);
             newSet.delete(listing.id);
             return newSet;
@@ -156,7 +156,7 @@ const ListingManagement = () => {
         } catch (error) {
           console.error('Failed to delete listing:', error);
         }
-      }
+      },
     });
   };
 
@@ -164,7 +164,7 @@ const ListingManagement = () => {
   const handleBulkStatusUpdate = (status) => {
     const listingIds = Array.from(selectedListings);
     const actionName = status === 'active' ? 'activate' : 'deactivate';
-    
+
     setConfirmDialog({
       title: `Bulk ${actionName.charAt(0).toUpperCase() + actionName.slice(1)} Listings`,
       message: `Are you sure you want to ${actionName} ${listingIds.length} selected listings?`,
@@ -173,20 +173,20 @@ const ListingManagement = () => {
         try {
           await bulkUpdateListings({
             listingIds,
-            updates: { status }
+            updates: { status },
           }).unwrap();
           setSelectedListings(new Set());
           setConfirmDialog(null);
         } catch (error) {
           console.error('Failed to bulk update listings:', error);
         }
-      }
+      },
     });
   };
 
   const handleBulkDelete = () => {
     const listingIds = Array.from(selectedListings);
-    
+
     setConfirmDialog({
       title: 'Bulk Delete Listings',
       message: `Are you sure you want to permanently delete ${listingIds.length} selected listings? This action cannot be undone.`,
@@ -200,7 +200,7 @@ const ListingManagement = () => {
         } catch (error) {
           console.error('Failed to bulk delete listings:', error);
         }
-      }
+      },
     });
   };
 
@@ -222,13 +222,17 @@ const ListingManagement = () => {
 
   // Filtered and sorted data for display
   const filteredListings = useMemo(() => {
-    return listings.filter(listing => {
-      const matchesSearch = !searchTerm || 
-        listing.product?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return listings.filter((listing) => {
+      const matchesSearch =
+        !searchTerm ||
+        listing.product?.name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         listing.description?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === 'all' || listing.status === statusFilter;
-      
+
+      const matchesStatus =
+        statusFilter === 'all' || listing.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
   }, [listings, searchTerm, statusFilter]);
@@ -248,8 +252,8 @@ const ListingManagement = () => {
         title="Failed to load listings"
         description="There was an error loading your listings. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -266,21 +270,27 @@ const ListingManagement = () => {
           <p className="text-text-muted mt-1">
             Manage your product listings, inventory, and pricing
           </p>
-          
+
           {/* Stats Summary */}
           {stats && (
             <div className="flex flex-wrap items-center gap-4 mt-3 text-sm">
               <div className="flex items-center gap-1">
                 <CheckCircle className="w-4 h-4 text-bottle-green" />
-                <span className="text-bottle-green font-medium">{stats.activeListings || 0} Active</span>
+                <span className="text-bottle-green font-medium">
+                  {stats.activeListings || 0} Active
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <XCircle className="w-4 h-4 text-gray-500" />
-                <span className="text-gray-600">{stats.inactiveListings || 0} Inactive</span>
+                <span className="text-gray-600">
+                  {stats.inactiveListings || 0} Inactive
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <Package className="w-4 h-4 text-tomato-red" />
-                <span className="text-tomato-red">{stats.outOfStockListings || 0} Out of Stock</span>
+                <span className="text-tomato-red">
+                  {stats.outOfStockListings || 0} Out of Stock
+                </span>
               </div>
             </div>
           )}
@@ -297,15 +307,12 @@ const ListingManagement = () => {
             Refresh
           </Button>
 
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-          >
+          <Button variant="outline" className="flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </Button>
 
-          <Button 
+          <Button
             onClick={() => navigate('/vendor/listings/create')}
             className="flex items-center gap-2"
           >
@@ -337,7 +344,6 @@ const ListingManagement = () => {
             <Filter className="w-4 h-4" />
             Filters
           </Button>
-
         </div>
 
         {/* Expanded Filters */}
@@ -352,7 +358,7 @@ const ListingManagement = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
               >
-                {statusOptions.map(option => (
+                {statusOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -369,7 +375,7 @@ const ListingManagement = () => {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
               >
-                {sortOptions.map(option => (
+                {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -399,7 +405,10 @@ const ListingManagement = () => {
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                checked={selectedListings.size === listings.length && listings.length > 0}
+                checked={
+                  selectedListings.size === listings.length &&
+                  listings.length > 0
+                }
                 onChange={handleSelectAll}
                 className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
               />
@@ -412,7 +421,7 @@ const ListingManagement = () => {
       </Card>
 
       {/* Bulk Actions */}
-      <ListingBulkActions 
+      <ListingBulkActions
         selectedListings={Array.from(selectedListings)}
         onClearSelection={handleClearSelection}
         listings={listings}
@@ -423,10 +432,14 @@ const ListingManagement = () => {
         <EmptyState
           icon={Package}
           title="No listings found"
-          description={searchTerm ? "No listings match your search criteria." : "You haven't created any listings yet."}
+          description={
+            searchTerm
+              ? 'No listings match your search criteria.'
+              : "You haven't created any listings yet."
+          }
           action={{
-            label: "Create Your First Listing",
-            onClick: () => navigate('/vendor/listings/create')
+            label: 'Create Your First Listing',
+            onClick: () => navigate('/vendor/listings/create'),
           }}
         />
       ) : (
@@ -440,7 +453,10 @@ const ListingManagement = () => {
                     <th className="px-6 py-4 text-left">
                       <input
                         type="checkbox"
-                        checked={selectedListings.size === listings.length && listings.length > 0}
+                        checked={
+                          selectedListings.size === listings.length &&
+                          listings.length > 0
+                        }
                         onChange={handleSelectAll}
                         className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
                       />
@@ -448,13 +464,13 @@ const ListingManagement = () => {
                     <th className="px-6 py-4 text-left text-sm font-semibold text-text-dark">
                       Product
                     </th>
-                    <th 
+                    <th
                       className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-bottle-green"
                       onClick={() => handleSort('price')}
                     >
                       Price
                     </th>
-                    <th 
+                    <th
                       className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-bottle-green"
                       onClick={() => handleSort('availableQuantity')}
                     >
@@ -463,7 +479,7 @@ const ListingManagement = () => {
                     <th className="px-6 py-4 text-left text-sm font-semibold text-text-dark">
                       Status
                     </th>
-                    <th 
+                    <th
                       className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-bottle-green"
                       onClick={() => handleSort('updatedAt')}
                     >
@@ -476,7 +492,10 @@ const ListingManagement = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {listings.map((listing) => (
-                    <tr key={listing.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30">
+                    <tr
+                      key={listing.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800/30"
+                    >
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
@@ -489,8 +508,8 @@ const ListingManagement = () => {
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
                             {listing.images && listing.images.length > 0 ? (
-                              <img 
-                                src={listing.images[0].url} 
+                              <img
+                                src={listing.images[0].url}
                                 alt={listing.product?.name}
                                 className="w-full h-full object-cover"
                               />
@@ -534,7 +553,7 @@ const ListingManagement = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <ListingStatusToggle 
+                        <ListingStatusToggle
                           listing={listing}
                           variant="badge"
                         />
@@ -547,20 +566,24 @@ const ListingManagement = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => navigate(`/vendor/listings/${listing.id}`)}
+                            onClick={() =>
+                              navigate(`/vendor/listings/${listing.id}`)
+                            }
                             className="p-2 text-text-muted hover:text-bottle-green rounded-lg transition-colors"
                             title="View details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => navigate(`/vendor/listings/${listing.id}/edit`)}
+                            onClick={() =>
+                              navigate(`/vendor/listings/${listing.id}/edit`)
+                            }
                             className="p-2 text-text-muted hover:text-blue-600 rounded-lg transition-colors"
                             title="Edit listing"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
-                          <ListingStatusToggle 
+                          <ListingStatusToggle
                             listing={listing}
                             variant="button"
                             size="sm"
@@ -584,7 +607,10 @@ const ListingManagement = () => {
           {/* Mobile Card View */}
           <div className="lg:hidden grid grid-cols-1 gap-4">
             {listings.map((listing) => (
-              <Card key={listing.id} className={`p-4 ${selectedListings.has(listing.id) ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' : ''}`}>
+              <Card
+                key={listing.id}
+                className={`p-4 ${selectedListings.has(listing.id) ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' : ''}`}
+              >
                 <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
@@ -592,11 +618,11 @@ const ListingManagement = () => {
                     onChange={() => handleSelectListing(listing.id)}
                     className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green mt-1"
                   />
-                  
+
                   <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
                     {listing.images && listing.images.length > 0 ? (
-                      <img 
-                        src={listing.images[0].url} 
+                      <img
+                        src={listing.images[0].url}
                         alt={listing.product?.name}
                         className="w-full h-full object-cover"
                       />
@@ -612,10 +638,7 @@ const ListingManagement = () => {
                       <h3 className="font-medium text-text-dark dark:text-white line-clamp-1">
                         {listing.product?.name}
                       </h3>
-                      <ListingStatusToggle 
-                        listing={listing}
-                        variant="badge"
-                      />
+                      <ListingStatusToggle listing={listing} variant="badge" />
                     </div>
 
                     <p className="text-sm text-text-muted line-clamp-2 mb-3">
@@ -625,7 +648,8 @@ const ListingManagement = () => {
                     <div className="flex items-center justify-between text-sm">
                       <div>
                         <p className="font-medium text-text-dark dark:text-white">
-                          ৳{listing.pricing?.[0]?.pricePerUnit}/{listing.pricing?.[0]?.unit}
+                          ৳{listing.pricing?.[0]?.pricePerUnit}/
+                          {listing.pricing?.[0]?.unit}
                         </p>
                         <p className="text-text-muted">
                           Stock: {listing.availability?.quantityAvailable || 0}
@@ -633,20 +657,24 @@ const ListingManagement = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <button
-                          onClick={() => navigate(`/vendor/listings/${listing.id}`)}
+                          onClick={() =>
+                            navigate(`/vendor/listings/${listing.id}`)
+                          }
                           className="p-2 text-text-muted hover:text-bottle-green rounded-lg transition-colors"
                           title="View details"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => navigate(`/vendor/listings/${listing.id}/edit`)}
+                          onClick={() =>
+                            navigate(`/vendor/listings/${listing.id}/edit`)
+                          }
                           className="p-2 text-text-muted hover:text-blue-600 rounded-lg transition-colors"
                           title="Edit listing"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <ListingStatusToggle 
+                        <ListingStatusToggle
                           listing={listing}
                           variant="button"
                           size="sm"
@@ -662,7 +690,10 @@ const ListingManagement = () => {
                     </div>
 
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 text-xs text-text-muted">
-                      <span>Updated {new Date(listing.updatedAt).toLocaleDateString()}</span>
+                      <span>
+                        Updated{' '}
+                        {new Date(listing.updatedAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -688,7 +719,7 @@ const ListingManagement = () => {
       {/* Confirmation Dialog */}
       {confirmDialog && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => setConfirmDialog(null)}
           title={confirmDialog.title}
           message={confirmDialog.message}

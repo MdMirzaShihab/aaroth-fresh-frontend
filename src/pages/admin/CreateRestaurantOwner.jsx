@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useCreateAdminRestaurantOwnerMutation } from '../../store/slices/apiSlice';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import {
   User,
   Mail,
@@ -19,6 +15,10 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
+import { useCreateAdminRestaurantOwnerMutation } from '../../store/slices/apiSlice';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const CreateRestaurantOwner = () => {
   const navigate = useNavigate();

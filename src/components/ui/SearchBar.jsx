@@ -92,7 +92,7 @@ const SearchBar = ({
     if (onFilterChange) {
       onFilterChange({
         ...selectedFilters,
-        [filterKey]: filterValue
+        [filterKey]: filterValue,
       });
     }
   };
@@ -110,14 +110,17 @@ const SearchBar = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const hasActiveFilters = Object.values(selectedFilters).some(value => 
+  const hasActiveFilters = Object.values(selectedFilters).some((value) =>
     Array.isArray(value) ? value.length > 0 : value
   );
 
   return (
     <div ref={searchRef} className={cn('relative', className)} {...props}>
       {/* Main Search Input */}
-      <form onSubmit={handleSearch} className="relative flex items-center gap-2">
+      <form
+        onSubmit={handleSearch}
+        className="relative flex items-center gap-2"
+      >
         <div className="flex-1 relative">
           <Input
             variant="search"
@@ -157,7 +160,11 @@ const SearchBar = ({
             <span className="hidden sm:inline">Filters</span>
             {hasActiveFilters && (
               <span className="bg-white/20 text-xs px-1.5 py-0.5 rounded-full">
-                {Object.values(selectedFilters).filter(v => Array.isArray(v) ? v.length > 0 : v).length}
+                {
+                  Object.values(selectedFilters).filter((v) =>
+                    Array.isArray(v) ? v.length > 0 : v
+                  ).length
+                }
               </span>
             )}
           </Button>
@@ -219,11 +226,13 @@ const SearchBar = ({
                 <label className="text-sm font-medium text-text-dark">
                   {filter.label}
                 </label>
-                
+
                 {filter.type === 'select' && (
                   <select
                     value={selectedFilters[filter.key] || ''}
-                    onChange={(e) => handleFilterChange(filter.key, e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange(filter.key, e.target.value)
+                    }
                     className="w-full px-4 py-2 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg transition-all duration-300 min-h-[44px]"
                   >
                     <option value="">All {filter.label}</option>
@@ -238,15 +247,21 @@ const SearchBar = ({
                 {filter.type === 'multiselect' && (
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {filter.options.map((option) => (
-                      <label key={option.value} className="flex items-center gap-2 text-sm min-h-[32px]">
+                      <label
+                        key={option.value}
+                        className="flex items-center gap-2 text-sm min-h-[32px]"
+                      >
                         <input
                           type="checkbox"
-                          checked={(selectedFilters[filter.key] || []).includes(option.value)}
+                          checked={(selectedFilters[filter.key] || []).includes(
+                            option.value
+                          )}
                           onChange={(e) => {
-                            const currentValues = selectedFilters[filter.key] || [];
+                            const currentValues =
+                              selectedFilters[filter.key] || [];
                             const newValues = e.target.checked
                               ? [...currentValues, option.value]
-                              : currentValues.filter(v => v !== option.value);
+                              : currentValues.filter((v) => v !== option.value);
                             handleFilterChange(filter.key, newValues);
                           }}
                           className="w-4 h-4 rounded text-bottle-green focus:ring-bottle-green"
@@ -263,10 +278,12 @@ const SearchBar = ({
                       type="number"
                       placeholder="Min"
                       value={selectedFilters[filter.key]?.min || ''}
-                      onChange={(e) => handleFilterChange(filter.key, {
-                        ...selectedFilters[filter.key],
-                        min: e.target.value
-                      })}
+                      onChange={(e) =>
+                        handleFilterChange(filter.key, {
+                          ...selectedFilters[filter.key],
+                          min: e.target.value,
+                        })
+                      }
                       className="flex-1 px-3 py-2 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg transition-all duration-300 min-h-[40px]"
                     />
                     <span className="text-text-muted">to</span>
@@ -274,10 +291,12 @@ const SearchBar = ({
                       type="number"
                       placeholder="Max"
                       value={selectedFilters[filter.key]?.max || ''}
-                      onChange={(e) => handleFilterChange(filter.key, {
-                        ...selectedFilters[filter.key],
-                        max: e.target.value
-                      })}
+                      onChange={(e) =>
+                        handleFilterChange(filter.key, {
+                          ...selectedFilters[filter.key],
+                          max: e.target.value,
+                        })
+                      }
                       className="flex-1 px-3 py-2 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg transition-all duration-300 min-h-[40px]"
                     />
                   </div>
@@ -298,7 +317,7 @@ const SearchBar = ({
             >
               Clear all filters
             </button>
-            
+
             <Button
               onClick={() => setShowFilterPanel(false)}
               variant="primary"
@@ -340,7 +359,11 @@ export const CompactSearchBar = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={cn('flex items-center gap-2', className)} {...props}>
+    <form
+      onSubmit={handleSubmit}
+      className={cn('flex items-center gap-2', className)}
+      {...props}
+    >
       <Input
         variant="search"
         value={internalValue}

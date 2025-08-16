@@ -1,25 +1,10 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  useGetAdminProductsQuery,
-  useGetAdminCategoriesQuery,
-  useUpdateAdminProductMutation,
-  useDeleteAdminProductMutation,
-  useBulkUpdateProductsMutation
-} from '../../store/slices/apiSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import SearchBar from '../../components/ui/SearchBar';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import Pagination from '../../components/ui/Pagination';
-import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import EmptyState from '../../components/ui/EmptyState';
-import { Table } from '../../components/ui/Table';
-import { 
-  Package, 
-  Plus, 
-  Edit3, 
-  Trash2, 
+import {
+  Package,
+  Plus,
+  Edit3,
+  Trash2,
   Eye,
   Filter,
   SortAsc,
@@ -34,12 +19,27 @@ import {
   XCircle,
   Clock,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
 } from 'lucide-react';
+import {
+  useGetAdminProductsQuery,
+  useGetAdminCategoriesQuery,
+  useUpdateAdminProductMutation,
+  useDeleteAdminProductMutation,
+  useBulkUpdateProductsMutation,
+} from '../../store/slices/apiSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import SearchBar from '../../components/ui/SearchBar';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import Pagination from '../../components/ui/Pagination';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import EmptyState from '../../components/ui/EmptyState';
+import { Table } from '../../components/ui/Table';
 
 const ProductList = () => {
   const navigate = useNavigate();
-  
+
   // Local state for filtering, sorting and pagination
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -50,32 +50,40 @@ const ProductList = () => {
   const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [confirmAction, setConfirmAction] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const itemsPerPage = 15;
 
   // Query params for API call
-  const queryParams = useMemo(() => ({
-    page: currentPage,
-    limit: itemsPerPage,
-    search: searchTerm || undefined,
-    category: selectedCategory !== 'all' ? selectedCategory : undefined,
-    status: selectedStatus !== 'all' ? selectedStatus : undefined,
-    sortBy,
-    sortOrder,
-  }), [currentPage, searchTerm, selectedCategory, selectedStatus, sortBy, sortOrder]);
+  const queryParams = useMemo(
+    () => ({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: searchTerm || undefined,
+      category: selectedCategory !== 'all' ? selectedCategory : undefined,
+      status: selectedStatus !== 'all' ? selectedStatus : undefined,
+      sortBy,
+      sortOrder,
+    }),
+    [
+      currentPage,
+      searchTerm,
+      selectedCategory,
+      selectedStatus,
+      sortBy,
+      sortOrder,
+    ]
+  );
 
   // RTK Query hooks
-  const { 
-    data: productsData, 
-    isLoading, 
+  const {
+    data: productsData,
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useGetAdminProductsQuery(queryParams);
 
-  const { 
-    data: categoriesData, 
-    isLoading: categoriesLoading 
-  } = useGetAdminCategoriesQuery();
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useGetAdminCategoriesQuery();
 
   const [updateProduct] = useUpdateAdminProductMutation();
   const [deleteProduct] = useDeleteAdminProductMutation();
@@ -104,22 +112,25 @@ const ProductList = () => {
   ];
 
   // Handle sorting
-  const handleSort = useCallback((field) => {
-    if (sortBy === field) {
-      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('asc');
-    }
-    setCurrentPage(1);
-  }, [sortBy]);
+  const handleSort = useCallback(
+    (field) => {
+      if (sortBy === field) {
+        setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setSortBy(field);
+        setSortOrder('asc');
+      }
+      setCurrentPage(1);
+    },
+    [sortBy]
+  );
 
   // Handle product status toggle
   const handleStatusToggle = async (productId, currentStatus) => {
     try {
       const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
       await updateProduct({ id: productId, status: newStatus }).unwrap();
-      setSelectedProducts(prev => {
+      setSelectedProducts((prev) => {
         const newSet = new Set(prev);
         newSet.delete(productId);
         return newSet;
@@ -134,7 +145,7 @@ const ProductList = () => {
     try {
       await deleteProduct(productId).unwrap();
       setConfirmAction(null);
-      setSelectedProducts(prev => {
+      setSelectedProducts((prev) => {
         const newSet = new Set(prev);
         newSet.delete(productId);
         return newSet;
@@ -159,7 +170,7 @@ const ProductList = () => {
   const handleBulkDelete = async () => {
     try {
       const productIds = Array.from(selectedProducts);
-      const promises = productIds.map(id => deleteProduct(id).unwrap());
+      const promises = productIds.map((id) => deleteProduct(id).unwrap());
       await Promise.all(promises);
       setSelectedProducts(new Set());
       setConfirmAction(null);
@@ -173,12 +184,12 @@ const ProductList = () => {
     if (selectedProducts.size === products.length) {
       setSelectedProducts(new Set());
     } else {
-      setSelectedProducts(new Set(products.map(product => product.id)));
+      setSelectedProducts(new Set(products.map((product) => product.id)));
     }
   };
 
   const handleSelectProduct = (productId) => {
-    setSelectedProducts(prev => {
+    setSelectedProducts((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(productId)) {
         newSet.delete(productId);
@@ -191,17 +202,33 @@ const ProductList = () => {
 
   // Get category name from ID
   const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId);
+    const category = categories.find((cat) => cat.id === categoryId);
     return category?.name || 'Unknown';
   };
 
   // Get status badge styling
   const getStatusBadge = (status) => {
     const statusMap = {
-      active: { className: 'bg-mint-fresh/20 text-bottle-green', icon: CheckCircle, text: 'Active' },
-      inactive: { className: 'bg-gray-100 text-gray-600', icon: XCircle, text: 'Inactive' },
-      pending: { className: 'bg-earthy-yellow/20 text-earthy-brown', icon: Clock, text: 'Pending' },
-      outOfStock: { className: 'bg-tomato-red/20 text-tomato-red', icon: AlertTriangle, text: 'Out of Stock' },
+      active: {
+        className: 'bg-mint-fresh/20 text-bottle-green',
+        icon: CheckCircle,
+        text: 'Active',
+      },
+      inactive: {
+        className: 'bg-gray-100 text-gray-600',
+        icon: XCircle,
+        text: 'Inactive',
+      },
+      pending: {
+        className: 'bg-earthy-yellow/20 text-earthy-brown',
+        icon: Clock,
+        text: 'Pending',
+      },
+      outOfStock: {
+        className: 'bg-tomato-red/20 text-tomato-red',
+        icon: AlertTriangle,
+        text: 'Out of Stock',
+      },
     };
     return statusMap[status] || statusMap.active;
   };
@@ -213,7 +240,9 @@ const ProductList = () => {
       header: (
         <input
           type="checkbox"
-          checked={selectedProducts.size === products.length && products.length > 0}
+          checked={
+            selectedProducts.size === products.length && products.length > 0
+          }
           onChange={handleSelectAll}
           className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
         />
@@ -226,7 +255,7 @@ const ProductList = () => {
           className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
         />
       ),
-      width: '48px'
+      width: '48px',
     },
     {
       id: 'product',
@@ -236,17 +265,20 @@ const ProductList = () => {
           className="flex items-center gap-1 font-medium hover:text-bottle-green"
         >
           Product
-          {sortBy === 'name' && (
-            sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
-          )}
+          {sortBy === 'name' &&
+            (sortOrder === 'asc' ? (
+              <SortAsc className="w-4 h-4" />
+            ) : (
+              <SortDesc className="w-4 h-4" />
+            ))}
         </button>
       ),
       cell: (product) => (
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 flex-shrink-0 overflow-hidden">
             {product.images && product.images.length > 0 ? (
-              <img 
-                src={product.images[0].url} 
+              <img
+                src={product.images[0].url}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -265,7 +297,7 @@ const ProductList = () => {
         </div>
       ),
       sortable: true,
-      width: '300px'
+      width: '300px',
     },
     {
       id: 'category',
@@ -275,9 +307,12 @@ const ProductList = () => {
           className="flex items-center gap-1 font-medium hover:text-bottle-green"
         >
           Category
-          {sortBy === 'category' && (
-            sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
-          )}
+          {sortBy === 'category' &&
+            (sortOrder === 'asc' ? (
+              <SortAsc className="w-4 h-4" />
+            ) : (
+              <SortDesc className="w-4 h-4" />
+            ))}
         </button>
       ),
       cell: (product) => (
@@ -286,7 +321,7 @@ const ProductList = () => {
           {getCategoryName(product.category)}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'price',
@@ -296,9 +331,12 @@ const ProductList = () => {
           className="flex items-center gap-1 font-medium hover:text-bottle-green"
         >
           Base Price
-          {sortBy === 'price' && (
-            sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
-          )}
+          {sortBy === 'price' &&
+            (sortOrder === 'asc' ? (
+              <SortAsc className="w-4 h-4" />
+            ) : (
+              <SortDesc className="w-4 h-4" />
+            ))}
         </button>
       ),
       cell: (product) => (
@@ -307,7 +345,7 @@ const ProductList = () => {
           {product.price ? `${product.price}/${product.unit}` : 'N/A'}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'status',
@@ -317,12 +355,14 @@ const ProductList = () => {
         return (
           <div className="flex items-center gap-1">
             <badge.icon className="w-3 h-3" />
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${badge.className}`}>
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-medium ${badge.className}`}
+            >
               {badge.text}
             </span>
           </div>
         );
-      }
+      },
     },
     {
       id: 'listings',
@@ -332,9 +372,12 @@ const ProductList = () => {
           className="flex items-center gap-1 font-medium hover:text-bottle-green"
         >
           Listings
-          {sortBy === 'listingsCount' && (
-            sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
-          )}
+          {sortBy === 'listingsCount' &&
+            (sortOrder === 'asc' ? (
+              <SortAsc className="w-4 h-4" />
+            ) : (
+              <SortDesc className="w-4 h-4" />
+            ))}
         </button>
       ),
       cell: (product) => (
@@ -343,16 +386,15 @@ const ProductList = () => {
           <span className="text-sm font-medium text-text-dark dark:text-white">
             {product.listingsCount || 0}
           </span>
-          {product.listingsTrend && (
-            product.listingsTrend > 0 ? (
+          {product.listingsTrend &&
+            (product.listingsTrend > 0 ? (
               <TrendingUp className="w-3 h-3 text-green-600" />
             ) : (
               <TrendingDown className="w-3 h-3 text-red-600" />
-            )
-          )}
+            ))}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'updated',
@@ -362,17 +404,22 @@ const ProductList = () => {
           className="flex items-center gap-1 font-medium hover:text-bottle-green"
         >
           Updated
-          {sortBy === 'updatedAt' && (
-            sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
-          )}
+          {sortBy === 'updatedAt' &&
+            (sortOrder === 'asc' ? (
+              <SortAsc className="w-4 h-4" />
+            ) : (
+              <SortDesc className="w-4 h-4" />
+            ))}
         </button>
       ),
       cell: (product) => (
         <div className="text-sm text-text-muted">
-          {product.updatedAt ? new Date(product.updatedAt).toLocaleDateString() : 'Unknown'}
+          {product.updatedAt
+            ? new Date(product.updatedAt).toLocaleDateString()
+            : 'Unknown'}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'actions',
@@ -386,7 +433,7 @@ const ProductList = () => {
           >
             <Eye className="w-4 h-4" />
           </button>
-          
+
           <button
             onClick={() => navigate(`/admin/products/${product.id}/edit`)}
             className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
@@ -398,25 +445,35 @@ const ProductList = () => {
           <button
             onClick={() => handleStatusToggle(product.id, product.status)}
             className={`p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
-              product.status === 'active' 
+              product.status === 'active'
                 ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
                 : 'text-green-600 hover:text-green-800 hover:bg-green-100'
             }`}
-            title={product.status === 'active' ? 'Deactivate product' : 'Activate product'}
+            title={
+              product.status === 'active'
+                ? 'Deactivate product'
+                : 'Activate product'
+            }
           >
-            {product.status === 'active' ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+            {product.status === 'active' ? (
+              <XCircle className="w-4 h-4" />
+            ) : (
+              <CheckCircle className="w-4 h-4" />
+            )}
           </button>
-          
+
           <button
-            onClick={() => setConfirmAction({
-              type: 'delete',
-              product,
-              title: 'Delete Product',
-              message: `Are you sure you want to permanently delete "${product.name}"? This action cannot be undone and will affect all related listings.`,
-              confirmText: 'Delete',
-              isDangerous: true,
-              onConfirm: () => handleDelete(product.id)
-            })}
+            onClick={() =>
+              setConfirmAction({
+                type: 'delete',
+                product,
+                title: 'Delete Product',
+                message: `Are you sure you want to permanently delete "${product.name}"? This action cannot be undone and will affect all related listings.`,
+                confirmText: 'Delete',
+                isDangerous: true,
+                onConfirm: () => handleDelete(product.id),
+              })
+            }
             className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Delete product"
           >
@@ -424,8 +481,8 @@ const ProductList = () => {
           </button>
         </div>
       ),
-      width: '180px'
-    }
+      width: '180px',
+    },
   ];
 
   if (isLoading || categoriesLoading) {
@@ -443,8 +500,8 @@ const ProductList = () => {
         title="Failed to load products"
         description="There was an error loading product data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -470,52 +527,58 @@ const ProductList = () => {
               <span className="text-sm text-text-muted">
                 {selectedProducts.size} selected
               </span>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
-                onClick={() => setConfirmAction({
-                  type: 'bulk-activate',
-                  title: 'Bulk Activate Products',
-                  message: `Activate ${selectedProducts.size} selected products?`,
-                  confirmText: 'Activate',
-                  onConfirm: () => handleBulkStatusUpdate('active')
-                })}
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'bulk-activate',
+                    title: 'Bulk Activate Products',
+                    message: `Activate ${selectedProducts.size} selected products?`,
+                    confirmText: 'Activate',
+                    onConfirm: () => handleBulkStatusUpdate('active'),
+                  })
+                }
                 className="text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
               >
                 Activate
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
-                onClick={() => setConfirmAction({
-                  type: 'bulk-deactivate',
-                  title: 'Bulk Deactivate Products',
-                  message: `Deactivate ${selectedProducts.size} selected products?`,
-                  confirmText: 'Deactivate',
-                  onConfirm: () => handleBulkStatusUpdate('inactive')
-                })}
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'bulk-deactivate',
+                    title: 'Bulk Deactivate Products',
+                    message: `Deactivate ${selectedProducts.size} selected products?`,
+                    confirmText: 'Deactivate',
+                    onConfirm: () => handleBulkStatusUpdate('inactive'),
+                  })
+                }
                 className="text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-white"
               >
                 Deactivate
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
-                onClick={() => setConfirmAction({
-                  type: 'bulk-delete',
-                  title: 'Bulk Delete Products',
-                  message: `Permanently delete ${selectedProducts.size} selected products? This action cannot be undone.`,
-                  confirmText: 'Delete All',
-                  isDangerous: true,
-                  onConfirm: handleBulkDelete
-                })}
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'bulk-delete',
+                    title: 'Bulk Delete Products',
+                    message: `Permanently delete ${selectedProducts.size} selected products? This action cannot be undone.`,
+                    confirmText: 'Delete All',
+                    isDangerous: true,
+                    onConfirm: handleBulkDelete,
+                  })
+                }
                 className="text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"
               >
                 Delete
               </Button>
             </div>
           )}
-          
+
           <Button
             onClick={() => navigate('/admin/products/create')}
             className="flex items-center gap-2"
@@ -539,7 +602,7 @@ const ProductList = () => {
                 className="w-full"
               />
             </div>
-            
+
             <div className="flex gap-3">
               <Button
                 variant="outline"
@@ -572,7 +635,7 @@ const ProductList = () => {
                   className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                 >
                   <option value="all">All Categories</option>
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
@@ -593,7 +656,7 @@ const ProductList = () => {
                   }}
                   className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                 >
-                  {statusOptions.map(option => (
+                  {statusOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -612,17 +675,23 @@ const ProductList = () => {
                     onChange={(e) => setSortBy(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                   >
-                    {sortOptions.map(option => (
+                    {sortOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
                     ))}
                   </select>
                   <button
-                    onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                    onClick={() =>
+                      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+                    }
                     className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    {sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+                    {sortOrder === 'asc' ? (
+                      <SortAsc className="w-4 h-4" />
+                    ) : (
+                      <SortDesc className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -643,8 +712,8 @@ const ProductList = () => {
                 title="No products found"
                 description="No products match your current filters."
                 action={{
-                  label: "Add Product",
-                  onClick: () => navigate('/admin/products/create')
+                  label: 'Add Product',
+                  onClick: () => navigate('/admin/products/create'),
                 }}
               />
             }
@@ -668,7 +737,7 @@ const ProductList = () => {
       {/* Confirmation Dialog */}
       {confirmAction && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => setConfirmAction(null)}
           title={confirmAction.title}
           message={confirmAction.message}

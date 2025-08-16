@@ -1,24 +1,24 @@
 import React from 'react';
+import {
+  Users,
+  Package,
+  ShoppingCart,
+  TrendingUp,
+  UserCheck,
+  UserX,
+  AlertTriangle,
+} from 'lucide-react';
 import { useGetAdminDashboardQuery } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import EmptyState from '../../components/ui/EmptyState';
-import { 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  TrendingUp, 
-  UserCheck, 
-  UserX, 
-  AlertTriangle 
-} from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { 
-    data: dashboardData, 
-    isLoading, 
+  const {
+    data: dashboardData,
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useGetAdminDashboardQuery();
 
   if (isLoading) {
@@ -36,8 +36,8 @@ const AdminDashboard = () => {
         title="Failed to load dashboard"
         description="There was an error loading the dashboard data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
       changeType: 'positive',
       icon: Users,
       color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-      description: 'Registered users on platform'
+      description: 'Registered users on platform',
     },
     {
       id: 'active-vendors',
@@ -64,18 +64,20 @@ const AdminDashboard = () => {
       changeType: 'positive',
       icon: Package,
       color: 'bg-gradient-to-br from-bottle-green to-mint-fresh',
-      description: 'Approved and active vendors'
+      description: 'Approved and active vendors',
     },
     {
       id: 'pending-approvals',
       title: 'Pending Approvals',
       value: metrics.pendingApprovals || 0,
       change: metrics.approvalChange || '0',
-      changeType: metrics.approvalChange?.startsWith('+') ? 'negative' : 'positive',
+      changeType: metrics.approvalChange?.startsWith('+')
+        ? 'negative'
+        : 'positive',
       icon: UserCheck,
       color: 'bg-gradient-to-br from-earthy-yellow to-amber-500',
       description: 'Vendors awaiting approval',
-      urgent: (metrics.pendingApprovals || 0) > 10
+      urgent: (metrics.pendingApprovals || 0) > 10,
     },
     {
       id: 'restaurants',
@@ -85,7 +87,7 @@ const AdminDashboard = () => {
       changeType: 'positive',
       icon: ShoppingCart,
       color: 'bg-gradient-to-br from-purple-500 to-purple-600',
-      description: 'Restaurant partners'
+      description: 'Restaurant partners',
     },
     {
       id: 'total-orders',
@@ -95,7 +97,7 @@ const AdminDashboard = () => {
       changeType: 'positive',
       icon: TrendingUp,
       color: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
-      description: 'All-time orders placed'
+      description: 'All-time orders placed',
     },
     {
       id: 'inactive-users',
@@ -105,8 +107,8 @@ const AdminDashboard = () => {
       changeType: 'neutral',
       icon: UserX,
       color: 'bg-gradient-to-br from-gray-500 to-gray-600',
-      description: 'Users who haven\'t logged in recently'
-    }
+      description: "Users who haven't logged in recently",
+    },
   ];
 
   const recentActivity = dashboardData?.data?.recentActivity || [];
@@ -124,7 +126,7 @@ const AdminDashboard = () => {
             Monitor and manage your Aaroth Fresh platform
           </p>
         </div>
-        
+
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3">
           {(metrics.pendingApprovals || 0) > 0 && (
@@ -156,18 +158,22 @@ const AdminDashboard = () => {
                     {metric.title}
                   </p>
                   <p className="text-3xl font-bold text-text-dark dark:text-white mb-2">
-                    {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
+                    {typeof metric.value === 'number'
+                      ? metric.value.toLocaleString()
+                      : metric.value}
                   </p>
-                  
+
                   {/* Change Indicator */}
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                      metric.changeType === 'positive' 
-                        ? 'bg-mint-fresh/20 text-bottle-green'
-                        : metric.changeType === 'negative'
-                        ? 'bg-tomato-red/20 text-tomato-red'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}>
+                    <span
+                      className={`text-sm font-medium px-2 py-1 rounded-full ${
+                        metric.changeType === 'positive'
+                          ? 'bg-mint-fresh/20 text-bottle-green'
+                          : metric.changeType === 'negative'
+                            ? 'bg-tomato-red/20 text-tomato-red'
+                            : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
                       {metric.change}
                     </span>
                     {metric.urgent && (
@@ -177,8 +183,10 @@ const AdminDashboard = () => {
                     )}
                   </div>
                 </div>
-                
-                <div className={`w-12 h-12 rounded-2xl ${metric.color} flex items-center justify-center text-white shadow-lg`}>
+
+                <div
+                  className={`w-12 h-12 rounded-2xl ${metric.color} flex items-center justify-center text-white shadow-lg`}
+                >
                   <metric.icon className="w-6 h-6" />
                 </div>
               </div>
@@ -203,7 +211,7 @@ const AdminDashboard = () => {
             <div className="w-2 h-2 bg-mint-fresh rounded-full animate-pulse" />
             System Health
           </h3>
-          
+
           <div className="space-y-4">
             {Object.entries(systemHealth).length > 0 ? (
               Object.entries(systemHealth).map(([key, value]) => (
@@ -211,13 +219,15 @@ const AdminDashboard = () => {
                   <span className="text-text-muted text-sm capitalize">
                     {key.replace(/([A-Z])/g, ' $1').trim()}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    value === 'healthy' || value === 'good' 
-                      ? 'bg-mint-fresh/20 text-bottle-green'
-                      : value === 'warning'
-                      ? 'bg-earthy-yellow/20 text-earthy-brown'
-                      : 'bg-tomato-red/20 text-tomato-red'
-                  }`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      value === 'healthy' || value === 'good'
+                        ? 'bg-mint-fresh/20 text-bottle-green'
+                        : value === 'warning'
+                          ? 'bg-earthy-yellow/20 text-earthy-brown'
+                          : 'bg-tomato-red/20 text-tomato-red'
+                    }`}
+                  >
                     {typeof value === 'string' ? value : 'Normal'}
                   </span>
                 </div>
@@ -235,18 +245,23 @@ const AdminDashboard = () => {
           <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
             Recent Activity
           </h3>
-          
+
           <div className="space-y-3">
             {recentActivity.length > 0 ? (
               recentActivity.slice(0, 5).map((activity, index) => (
-                <div key={index} className="flex items-start gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                <div
+                  key={index}
+                  className="flex items-start gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                >
                   <div className="w-2 h-2 bg-bottle-green rounded-full mt-2 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-text-dark dark:text-white">
                       {activity.description || 'System activity'}
                     </p>
                     <p className="text-xs text-text-muted">
-                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'Recently'}
+                      {activity.timestamp
+                        ? new Date(activity.timestamp).toLocaleString()
+                        : 'Recently'}
                     </p>
                   </div>
                 </div>

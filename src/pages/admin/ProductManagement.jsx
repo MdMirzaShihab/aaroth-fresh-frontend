@@ -1,10 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { 
+import {
+  Package,
+  Plus,
+  Edit3,
+  Trash2,
+  Eye,
+  AlertTriangle,
+  Tag,
+  DollarSign,
+  Image as ImageIcon,
+} from 'lucide-react';
+import {
   useGetAdminProductsQuery,
   useGetAdminCategoriesQuery,
   useCreateAdminProductMutation,
   useUpdateAdminProductMutation,
-  useDeleteAdminProductMutation 
+  useDeleteAdminProductMutation,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -17,17 +28,6 @@ import { Table } from '../../components/ui/Table';
 import { Modal } from '../../components/ui/Modal';
 import FormField from '../../components/ui/FormField';
 import { Input } from '../../components/ui/Input';
-import { 
-  Package, 
-  Plus, 
-  Edit3, 
-  Trash2, 
-  Eye,
-  AlertTriangle,
-  Tag,
-  DollarSign,
-  Image as ImageIcon
-} from 'lucide-react';
 
 const ProductManagement = () => {
   // Local state for filtering and pagination
@@ -38,32 +38,35 @@ const ProductManagement = () => {
   const [confirmAction, setConfirmAction] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  
+
   const itemsPerPage = 10;
 
   // Query params for API call
-  const queryParams = useMemo(() => ({
-    page: currentPage,
-    limit: itemsPerPage,
-    search: searchTerm || undefined,
-    category: selectedCategory !== 'all' ? selectedCategory : undefined,
-  }), [currentPage, searchTerm, selectedCategory]);
+  const queryParams = useMemo(
+    () => ({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: searchTerm || undefined,
+      category: selectedCategory !== 'all' ? selectedCategory : undefined,
+    }),
+    [currentPage, searchTerm, selectedCategory]
+  );
 
   // RTK Query hooks
-  const { 
-    data: productsData, 
-    isLoading: productsLoading, 
+  const {
+    data: productsData,
+    isLoading: productsLoading,
     error: productsError,
-    refetch 
+    refetch,
   } = useGetAdminProductsQuery(queryParams);
 
-  const { 
-    data: categoriesData, 
-    isLoading: categoriesLoading 
-  } = useGetAdminCategoriesQuery();
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useGetAdminCategoriesQuery();
 
-  const [createProduct, { isLoading: isCreating }] = useCreateAdminProductMutation();
-  const [updateProduct, { isLoading: isUpdating }] = useUpdateAdminProductMutation();
+  const [createProduct, { isLoading: isCreating }] =
+    useCreateAdminProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] =
+    useUpdateAdminProductMutation();
   const [deleteProduct] = useDeleteAdminProductMutation();
 
   const products = productsData?.data?.products || [];
@@ -77,7 +80,7 @@ const ProductManagement = () => {
     category: '',
     unit: '',
     price: '',
-    image: null
+    image: null,
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -87,7 +90,7 @@ const ProductManagement = () => {
     try {
       await deleteProduct(productId).unwrap();
       setConfirmAction(null);
-      setSelectedProducts(prev => {
+      setSelectedProducts((prev) => {
         const newSet = new Set(prev);
         newSet.delete(productId);
         return newSet;
@@ -102,12 +105,12 @@ const ProductManagement = () => {
     if (selectedProducts.size === products.length) {
       setSelectedProducts(new Set());
     } else {
-      setSelectedProducts(new Set(products.map(product => product.id)));
+      setSelectedProducts(new Set(products.map((product) => product.id)));
     }
   };
 
   const handleSelectProduct = (productId) => {
-    setSelectedProducts(prev => {
+    setSelectedProducts((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(productId)) {
         newSet.delete(productId);
@@ -121,20 +124,24 @@ const ProductManagement = () => {
   // Form validation
   const validateForm = () => {
     const errors = {};
-    
+
     if (!formData.name.trim()) {
       errors.name = 'Product name is required';
     }
-    
+
     if (!formData.category) {
       errors.category = 'Category is required';
     }
-    
+
     if (!formData.unit.trim()) {
       errors.unit = 'Unit is required';
     }
-    
-    if (!formData.price || isNaN(formData.price) || parseFloat(formData.price) <= 0) {
+
+    if (
+      !formData.price ||
+      isNaN(formData.price) ||
+      parseFloat(formData.price) <= 0
+    ) {
       errors.price = 'Valid price is required';
     }
 
@@ -145,7 +152,7 @@ const ProductManagement = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     try {
@@ -170,7 +177,7 @@ const ProductManagement = () => {
         category: '',
         unit: '',
         price: '',
-        image: null
+        image: null,
       });
       setFormErrors({});
       setIsCreateModalOpen(false);
@@ -188,7 +195,7 @@ const ProductManagement = () => {
       category: product.category,
       unit: product.unit,
       price: product.price.toString(),
-      image: null
+      image: null,
     });
     setEditingProduct(product);
     setIsCreateModalOpen(true);
@@ -196,7 +203,7 @@ const ProductManagement = () => {
 
   // Get category name from ID
   const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId);
+    const category = categories.find((cat) => cat.id === categoryId);
     return category?.name || 'Unknown';
   };
 
@@ -207,7 +214,9 @@ const ProductManagement = () => {
       header: (
         <input
           type="checkbox"
-          checked={selectedProducts.size === products.length && products.length > 0}
+          checked={
+            selectedProducts.size === products.length && products.length > 0
+          }
           onChange={handleSelectAll}
           className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
         />
@@ -220,7 +229,7 @@ const ProductManagement = () => {
           className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
         />
       ),
-      width: '48px'
+      width: '48px',
     },
     {
       id: 'product',
@@ -229,8 +238,8 @@ const ProductManagement = () => {
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 flex-shrink-0">
             {product.image ? (
-              <img 
-                src={product.image} 
+              <img
+                src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover rounded-2xl"
               />
@@ -249,7 +258,7 @@ const ProductManagement = () => {
         </div>
       ),
       sortable: true,
-      width: '300px'
+      width: '300px',
     },
     {
       id: 'category',
@@ -260,7 +269,7 @@ const ProductManagement = () => {
           {getCategoryName(product.category)}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'price',
@@ -271,7 +280,7 @@ const ProductManagement = () => {
           {product.price ? `${product.price}/${product.unit}` : 'N/A'}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'listings',
@@ -281,17 +290,19 @@ const ProductManagement = () => {
           {product.listingsCount || 0} listings
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'updated',
       header: 'Last Updated',
       cell: (product) => (
         <div className="text-sm text-text-muted">
-          {product.updatedAt ? new Date(product.updatedAt).toLocaleDateString() : 'Unknown'}
+          {product.updatedAt
+            ? new Date(product.updatedAt).toLocaleDateString()
+            : 'Unknown'}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'actions',
@@ -299,13 +310,15 @@ const ProductManagement = () => {
       cell: (product) => (
         <div className="flex items-center gap-1">
           <button
-            onClick={() => {/* Handle view */}}
+            onClick={() => {
+              /* Handle view */
+            }}
             className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="View product"
           >
             <Eye className="w-4 h-4" />
           </button>
-          
+
           <button
             onClick={() => handleEdit(product)}
             className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
@@ -313,17 +326,19 @@ const ProductManagement = () => {
           >
             <Edit3 className="w-4 h-4" />
           </button>
-          
+
           <button
-            onClick={() => setConfirmAction({
-              type: 'delete',
-              product,
-              title: 'Delete Product',
-              message: `Are you sure you want to permanently delete "${product.name}"? This action cannot be undone.`,
-              confirmText: 'Delete',
-              isDangerous: true,
-              onConfirm: () => handleDelete(product.id)
-            })}
+            onClick={() =>
+              setConfirmAction({
+                type: 'delete',
+                product,
+                title: 'Delete Product',
+                message: `Are you sure you want to permanently delete "${product.name}"? This action cannot be undone.`,
+                confirmText: 'Delete',
+                isDangerous: true,
+                onConfirm: () => handleDelete(product.id),
+              })
+            }
             className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Delete product"
           >
@@ -331,8 +346,8 @@ const ProductManagement = () => {
           </button>
         </div>
       ),
-      width: '120px'
-    }
+      width: '120px',
+    },
   ];
 
   if (productsLoading || categoriesLoading) {
@@ -350,8 +365,8 @@ const ProductManagement = () => {
         title="Failed to load products"
         description="There was an error loading product data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -382,7 +397,7 @@ const ProductManagement = () => {
               </Button>
             </>
           )}
-          
+
           <Button
             onClick={() => {
               setFormData({
@@ -391,7 +406,7 @@ const ProductManagement = () => {
                 category: '',
                 unit: '',
                 price: '',
-                image: null
+                image: null,
               });
               setEditingProduct(null);
               setIsCreateModalOpen(true);
@@ -428,7 +443,7 @@ const ProductManagement = () => {
               className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
             >
               <option value="all">All Categories</option>
-              {categories.map(category => (
+              {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
@@ -450,8 +465,8 @@ const ProductManagement = () => {
                 title="No products found"
                 description="No products match your current filters."
                 action={{
-                  label: "Add Product",
-                  onClick: () => setIsCreateModalOpen(true)
+                  label: 'Add Product',
+                  onClick: () => setIsCreateModalOpen(true),
                 }}
               />
             }
@@ -484,7 +499,7 @@ const ProductManagement = () => {
             category: '',
             unit: '',
             price: '',
-            image: null
+            image: null,
           });
           setFormErrors({});
         }}
@@ -496,7 +511,9 @@ const ProductManagement = () => {
             <FormField label="Product Name" error={formErrors.name}>
               <Input
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="Enter product name"
                 hasError={!!formErrors.name}
               />
@@ -505,15 +522,17 @@ const ProductManagement = () => {
             <FormField label="Category" error={formErrors.category}>
               <select
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
                 className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
-                  formErrors.category 
-                    ? 'border-tomato-red/30 bg-tomato-red/5' 
+                  formErrors.category
+                    ? 'border-tomato-red/30 bg-tomato-red/5'
                     : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
                 <option value="">Select category</option>
-                {categories.map(category => (
+                {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
@@ -524,7 +543,9 @@ const ProductManagement = () => {
             <FormField label="Unit" error={formErrors.unit}>
               <Input
                 value={formData.unit}
-                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, unit: e.target.value })
+                }
                 placeholder="e.g., kg, lbs, pieces"
                 hasError={!!formErrors.unit}
               />
@@ -536,7 +557,9 @@ const ProductManagement = () => {
                 step="0.01"
                 min="0"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
                 placeholder="0.00"
                 hasError={!!formErrors.price}
               />
@@ -546,7 +569,9 @@ const ProductManagement = () => {
           <FormField label="Description">
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Enter product description (optional)"
               rows={3}
               className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
@@ -564,10 +589,7 @@ const ProductManagement = () => {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              isLoading={isCreating || isUpdating}
-            >
+            <Button type="submit" isLoading={isCreating || isUpdating}>
               {editingProduct ? 'Update Product' : 'Create Product'}
             </Button>
           </div>
@@ -577,7 +599,7 @@ const ProductManagement = () => {
       {/* Confirmation Dialog */}
       {confirmAction && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => setConfirmAction(null)}
           title={confirmAction.title}
           message={confirmAction.message}

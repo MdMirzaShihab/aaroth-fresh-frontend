@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
-  useGetVendorAnalyticsQuery,
-  useGetListingPerformanceQuery,
-  useGetVendorOrdersQuery,
-  useGetVendorDashboardQuery
-} from '../../store/slices/apiSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import EmptyState from '../../components/ui/EmptyState';
-import SimpleLineChart from '../../components/ui/charts/SimpleLineChart';
-import SimpleBarChart from '../../components/ui/charts/SimpleBarChart';
-import {
   TrendingUp,
   TrendingDown,
   DollarSign,
@@ -32,8 +20,20 @@ import {
   Star,
   Clock,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
+import {
+  useGetVendorAnalyticsQuery,
+  useGetListingPerformanceQuery,
+  useGetVendorOrdersQuery,
+  useGetVendorDashboardQuery,
+} from '../../store/slices/apiSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
+import SimpleLineChart from '../../components/ui/charts/SimpleLineChart';
+import SimpleBarChart from '../../components/ui/charts/SimpleBarChart';
 
 const VendorAnalytics = () => {
   const [timeRange, setTimeRange] = useState('30d');
@@ -46,13 +46,13 @@ const VendorAnalytics = () => {
     data: analyticsData,
     isLoading: analyticsLoading,
     error: analyticsError,
-    refetch: refetchAnalytics
+    refetch: refetchAnalytics,
   } = useGetVendorAnalyticsQuery(
     { timeRange },
     {
       pollingInterval: refreshInterval,
       refetchOnFocus: true,
-      refetchOnReconnect: true
+      refetchOnReconnect: true,
     }
   );
 
@@ -60,19 +60,17 @@ const VendorAnalytics = () => {
   const {
     data: performanceData,
     isLoading: performanceLoading,
-    refetch: refetchPerformance
+    refetch: refetchPerformance,
   } = useGetListingPerformanceQuery(
     { timeRange },
     {
       pollingInterval: refreshInterval * 2, // Less frequent refresh
-      refetchOnFocus: true
+      refetchOnFocus: true,
     }
   );
 
   // Get dashboard data for comparison
-  const {
-    data: dashboardData
-  } = useGetVendorDashboardQuery();
+  const { data: dashboardData } = useGetVendorDashboardQuery();
 
   const analytics = analyticsData?.data || {};
   const performance = performanceData?.data || {};
@@ -84,7 +82,7 @@ const VendorAnalytics = () => {
     { value: '30d', label: 'Last 30 Days', description: 'Monthly overview' },
     { value: '90d', label: 'Last 3 Months', description: 'Quarterly analysis' },
     { value: '180d', label: 'Last 6 Months', description: 'Bi-annual trends' },
-    { value: '365d', label: 'Last Year', description: 'Annual performance' }
+    { value: '365d', label: 'Last Year', description: 'Annual performance' },
   ];
 
   // Metric options for detailed view
@@ -92,7 +90,12 @@ const VendorAnalytics = () => {
     { value: 'revenue', label: 'Revenue', icon: DollarSign, color: '#10B981' },
     { value: 'orders', label: 'Orders', icon: ShoppingCart, color: '#3B82F6' },
     { value: 'views', label: 'Product Views', icon: Eye, color: '#8B5CF6' },
-    { value: 'conversions', label: 'Conversions', icon: TrendingUp, color: '#F59E0B' }
+    {
+      value: 'conversions',
+      label: 'Conversions',
+      icon: TrendingUp,
+      color: '#F59E0B',
+    },
   ];
 
   // Refresh interval options
@@ -100,7 +103,7 @@ const VendorAnalytics = () => {
     { value: 60000, label: '1 minute' },
     { value: 300000, label: '5 minutes' },
     { value: 600000, label: '10 minutes' },
-    { value: 0, label: 'Manual only' }
+    { value: 0, label: 'Manual only' },
   ];
 
   // Calculate performance metrics
@@ -112,7 +115,7 @@ const VendorAnalytics = () => {
     topPerformingProduct: performance.topProduct?.name || 'N/A',
     totalViews: analytics.totalViews || 0,
     revenueGrowth: analytics.revenueGrowth || 0,
-    orderGrowth: analytics.orderGrowth || 0
+    orderGrowth: analytics.orderGrowth || 0,
   };
 
   // Format change percentage
@@ -142,11 +145,12 @@ const VendorAnalytics = () => {
       title: 'Total Revenue',
       value: `৳${performanceMetrics.totalRevenue.toLocaleString()}`,
       change: formatChange(performanceMetrics.revenueGrowth),
-      changeType: performanceMetrics.revenueGrowth >= 0 ? 'positive' : 'negative',
+      changeType:
+        performanceMetrics.revenueGrowth >= 0 ? 'positive' : 'negative',
       icon: DollarSign,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
-      description: `Revenue for ${timeRangeOptions.find(t => t.value === timeRange)?.label.toLowerCase()}`
+      description: `Revenue for ${timeRangeOptions.find((t) => t.value === timeRange)?.label.toLowerCase()}`,
     },
     {
       id: 'orders',
@@ -157,7 +161,7 @@ const VendorAnalytics = () => {
       icon: ShoppingCart,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
-      description: 'Orders received and processed'
+      description: 'Orders received and processed',
     },
     {
       id: 'aov',
@@ -168,18 +172,19 @@ const VendorAnalytics = () => {
       icon: TrendingUp,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
-      description: 'Average value per order'
+      description: 'Average value per order',
     },
     {
       id: 'conversion',
       title: 'Conversion Rate',
       value: `${performanceMetrics.conversionRate.toFixed(1)}%`,
       change: formatChange(analytics.conversionGrowth || 0),
-      changeType: (analytics.conversionGrowth || 0) >= 0 ? 'positive' : 'negative',
+      changeType:
+        (analytics.conversionGrowth || 0) >= 0 ? 'positive' : 'negative',
       icon: Star,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
-      description: 'Views that resulted in orders'
+      description: 'Views that resulted in orders',
     },
     {
       id: 'views',
@@ -190,7 +195,7 @@ const VendorAnalytics = () => {
       icon: Eye,
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
-      description: 'Total listing views'
+      description: 'Total listing views',
     },
     {
       id: 'performance',
@@ -201,8 +206,8 @@ const VendorAnalytics = () => {
       icon: Package,
       color: 'text-emerald-600',
       bgColor: 'bg-emerald-50',
-      description: 'Best performing product'
-    }
+      description: 'Best performing product',
+    },
   ];
 
   if (analyticsLoading && !analytics.totalRevenue) {
@@ -220,8 +225,8 @@ const VendorAnalytics = () => {
         title="Failed to load analytics"
         description="There was an error loading your analytics data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetchAnalytics
+          label: 'Retry',
+          onClick: refetchAnalytics,
         }}
       />
     );
@@ -244,7 +249,13 @@ const VendorAnalytics = () => {
             {refreshInterval > 0 && (
               <>
                 <span className="mx-2">•</span>
-                <span>Auto-refresh: {refreshOptions.find(r => r.value === refreshInterval)?.label}</span>
+                <span>
+                  Auto-refresh:{' '}
+                  {
+                    refreshOptions.find((r) => r.value === refreshInterval)
+                      ?.label
+                  }
+                </span>
               </>
             )}
           </div>
@@ -258,7 +269,7 @@ const VendorAnalytics = () => {
             onChange={(e) => setTimeRange(e.target.value)}
             className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
           >
-            {timeRangeOptions.map(option => (
+            {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -271,7 +282,7 @@ const VendorAnalytics = () => {
             onChange={(e) => setRefreshInterval(Number(e.target.value))}
             className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
           >
-            {refreshOptions.map(option => (
+            {refreshOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 Auto-refresh: {option.label}
               </option>
@@ -287,10 +298,7 @@ const VendorAnalytics = () => {
             Refresh
           </Button>
 
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-          >
+          <Button variant="outline" className="flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </Button>
@@ -302,18 +310,25 @@ const VendorAnalytics = () => {
         {keyMetrics.map((metric) => {
           const IconComponent = metric.icon;
           return (
-            <Card key={metric.id} className="p-6 hover:shadow-lg transition-shadow duration-300">
+            <Card
+              key={metric.id}
+              className="p-6 hover:shadow-lg transition-shadow duration-300"
+            >
               <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-2xl ${metric.bgColor} flex items-center justify-center`}>
+                <div
+                  className={`w-12 h-12 rounded-2xl ${metric.bgColor} flex items-center justify-center`}
+                >
                   <IconComponent className={`w-6 h-6 ${metric.color}`} />
                 </div>
-                <div className={`flex items-center gap-1 text-sm font-medium ${
-                  metric.changeType === 'positive' 
-                    ? 'text-green-600' 
-                    : metric.changeType === 'negative' 
-                    ? 'text-red-600' 
-                    : 'text-gray-600'
-                }`}>
+                <div
+                  className={`flex items-center gap-1 text-sm font-medium ${
+                    metric.changeType === 'positive'
+                      ? 'text-green-600'
+                      : metric.changeType === 'negative'
+                        ? 'text-red-600'
+                        : 'text-gray-600'
+                  }`}
+                >
                   {metric.changeType === 'positive' ? (
                     <ArrowUpRight className="w-4 h-4" />
                   ) : metric.changeType === 'negative' ? (
@@ -322,17 +337,18 @@ const VendorAnalytics = () => {
                   {metric.change}
                 </div>
               </div>
-              
+
               <div>
-                <p className="text-2xl font-bold text-text-dark dark:text-white mb-1 truncate" title={metric.value}>
+                <p
+                  className="text-2xl font-bold text-text-dark dark:text-white mb-1 truncate"
+                  title={metric.value}
+                >
                   {metric.value}
                 </p>
                 <p className="text-sm font-medium text-text-dark mb-1">
                   {metric.title}
                 </p>
-                <p className="text-xs text-text-muted">
-                  {metric.description}
-                </p>
+                <p className="text-xs text-text-muted">{metric.description}</p>
               </div>
             </Card>
           );
@@ -349,7 +365,9 @@ const VendorAnalytics = () => {
                 <BarChart3 className="w-5 h-5" />
                 Revenue Trend
               </h3>
-              <p className="text-text-muted text-sm">Daily revenue performance</p>
+              <p className="text-text-muted text-sm">
+                Daily revenue performance
+              </p>
             </div>
             <div className="text-right">
               <p className="text-sm text-text-muted">Period Total</p>
@@ -363,8 +381,8 @@ const VendorAnalytics = () => {
               <LoadingSpinner size="md" />
             </div>
           ) : (
-            <SimpleLineChart 
-              data={analytics.revenueChart || []} 
+            <SimpleLineChart
+              data={analytics.revenueChart || []}
               height={300}
               color="#10B981"
             />
@@ -393,8 +411,8 @@ const VendorAnalytics = () => {
               <LoadingSpinner size="md" />
             </div>
           ) : (
-            <SimpleBarChart 
-              data={analytics.ordersChart || []} 
+            <SimpleBarChart
+              data={analytics.ordersChart || []}
               height={300}
               color="#3B82F6"
             />
@@ -427,7 +445,10 @@ const VendorAnalytics = () => {
           ) : performance.topProducts?.length > 0 ? (
             <div className="space-y-4">
               {performance.topProducts.slice(0, 5).map((product, index) => (
-                <div key={product.id} className="flex items-center justify-between">
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-gradient-secondary rounded-full flex items-center justify-center text-white text-sm font-bold">
                       {index + 1}
@@ -474,7 +495,10 @@ const VendorAnalytics = () => {
                     <div className="h-4 bg-gray-300 rounded w-12"></div>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gray-300 h-2 rounded-full" style={{width: `${Math.random() * 100}%`}}></div>
+                    <div
+                      className="bg-gray-300 h-2 rounded-full"
+                      style={{ width: `${Math.random() * 100}%` }}
+                    ></div>
                   </div>
                 </div>
               ))}
@@ -482,27 +506,35 @@ const VendorAnalytics = () => {
           ) : analytics.orderStatus ? (
             <div className="space-y-4">
               {Object.entries(analytics.orderStatus).map(([status, count]) => {
-                const percentage = ((count / performanceMetrics.totalOrders) * 100) || 0;
+                const percentage =
+                  (count / performanceMetrics.totalOrders) * 100 || 0;
                 const statusConfig = {
                   pending: { color: 'bg-orange-500', icon: Clock },
                   confirmed: { color: 'bg-blue-500', icon: CheckCircle },
                   delivered: { color: 'bg-green-500', icon: CheckCircle },
-                  cancelled: { color: 'bg-red-500', icon: AlertTriangle }
+                  cancelled: { color: 'bg-red-500', icon: AlertTriangle },
                 };
-                const config = statusConfig[status] || { color: 'bg-gray-500', icon: Activity };
+                const config = statusConfig[status] || {
+                  color: 'bg-gray-500',
+                  icon: Activity,
+                };
                 const IconComponent = config.icon;
-                
+
                 return (
                   <div key={status}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <IconComponent className="w-4 h-4 text-text-muted" />
-                        <span className="text-sm font-medium text-text-dark capitalize">{status}</span>
+                        <span className="text-sm font-medium text-text-dark capitalize">
+                          {status}
+                        </span>
                       </div>
-                      <span className="text-sm font-medium text-text-dark">{count}</span>
+                      <span className="text-sm font-medium text-text-dark">
+                        {count}
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full transition-all duration-300 ${config.color}`}
                         style={{ width: `${percentage}%` }}
                       ></div>
@@ -534,35 +566,50 @@ const VendorAnalytics = () => {
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-800">Revenue Growth</p>
+                  <p className="text-sm font-medium text-green-800">
+                    Revenue Growth
+                  </p>
                   <p className="text-xs text-green-600 mt-1">
-                    vs. previous {timeRange === '7d' ? 'week' : timeRange === '30d' ? 'month' : 'period'}
+                    vs. previous{' '}
+                    {timeRange === '7d'
+                      ? 'week'
+                      : timeRange === '30d'
+                        ? 'month'
+                        : 'period'}
                   </p>
                 </div>
-                <div className={`text-lg font-bold ${getTrendColor(performanceMetrics.revenueGrowth)}`}>
+                <div
+                  className={`text-lg font-bold ${getTrendColor(performanceMetrics.revenueGrowth)}`}
+                >
                   {formatChange(performanceMetrics.revenueGrowth)}
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-800">Order Growth</p>
+                  <p className="text-sm font-medium text-blue-800">
+                    Order Growth
+                  </p>
                   <p className="text-xs text-blue-600 mt-1">
                     New orders received
                   </p>
                 </div>
-                <div className={`text-lg font-bold ${getTrendColor(performanceMetrics.orderGrowth)}`}>
+                <div
+                  className={`text-lg font-bold ${getTrendColor(performanceMetrics.orderGrowth)}`}
+                >
                   {formatChange(performanceMetrics.orderGrowth)}
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-purple-800">Conversion Rate</p>
+                  <p className="text-sm font-medium text-purple-800">
+                    Conversion Rate
+                  </p>
                   <p className="text-xs text-purple-600 mt-1">
                     Views to orders ratio
                   </p>
@@ -576,7 +623,9 @@ const VendorAnalytics = () => {
             <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-orange-800">Avg Order Value</p>
+                  <p className="text-sm font-medium text-orange-800">
+                    Avg Order Value
+                  </p>
                   <p className="text-xs text-orange-600 mt-1">
                     Revenue per order
                   </p>
@@ -605,7 +654,9 @@ const VendorAnalytics = () => {
                     <Activity className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-blue-800 leading-relaxed">{insight}</p>
+                    <p className="text-sm text-blue-800 leading-relaxed">
+                      {insight}
+                    </p>
                   </div>
                 </div>
               </div>

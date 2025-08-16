@@ -2,13 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import {
-  useCreateAdminRestaurantManagerMutation,
-  useGetRestaurantsListQuery,
-} from '../../store/slices/apiSlice';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import {
   User,
   Mail,
   Phone,
@@ -21,6 +14,13 @@ import {
   EyeOff,
   ChevronDown,
 } from 'lucide-react';
+import {
+  useCreateAdminRestaurantManagerMutation,
+  useGetRestaurantsListQuery,
+} from '../../store/slices/apiSlice';
+import { Card } from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const CreateRestaurantManager = () => {
   const navigate = useNavigate();

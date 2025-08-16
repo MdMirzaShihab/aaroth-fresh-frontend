@@ -1,14 +1,14 @@
 import React, { useState, forwardRef } from 'react';
-import { 
-  AlertTriangle, 
-  AlertCircle, 
-  Info, 
-  CheckCircle, 
-  X, 
-  ChevronDown, 
+import {
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  CheckCircle,
+  X,
+  ChevronDown,
   ChevronUp,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
@@ -35,8 +35,10 @@ const alertBannerVariants = cva(
         inline: 'rounded-2xl',
         top: 'rounded-none border-t-0 border-l-0 border-r-0',
         bottom: 'rounded-none border-b-0 border-l-0 border-r-0',
-        sticky: 'sticky top-0 z-40 rounded-none border-t-0 border-l-0 border-r-0',
-        fixed: 'fixed top-0 left-0 right-0 z-50 rounded-none border-t-0 border-l-0 border-r-0',
+        sticky:
+          'sticky top-0 z-40 rounded-none border-t-0 border-l-0 border-r-0',
+        fixed:
+          'fixed top-0 left-0 right-0 z-50 rounded-none border-t-0 border-l-0 border-r-0',
       },
       emphasis: {
         subtle: '',
@@ -57,156 +59,170 @@ const alertBannerVariants = cva(
  * Enhanced AlertBanner Component for System Messages
  * Follows CLAUDE.md patterns for gentle guidance and system communication
  */
-const AlertBanner = forwardRef(({
-  variant = 'default',
-  size = 'default',
-  position = 'inline',
-  emphasis = 'subtle',
-  icon: CustomIcon,
-  title,
-  children,
-  message,
-  description, // Alternative to children/message
-  action,
-  actionLabel,
-  onAction,
-  onClose,
-  dismissible = false,
-  collapsible = false,
-  defaultCollapsed = false,
-  showIcon = true,
-  className,
-  titleClassName,
-  contentClassName,
-  actionsClassName,
-  ...props
-}, ref) => {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-  const [isDismissed, setIsDismissed] = useState(false);
+const AlertBanner = forwardRef(
+  (
+    {
+      variant = 'default',
+      size = 'default',
+      position = 'inline',
+      emphasis = 'subtle',
+      icon: CustomIcon,
+      title,
+      children,
+      message,
+      description, // Alternative to children/message
+      action,
+      actionLabel,
+      onAction,
+      onClose,
+      dismissible = false,
+      collapsible = false,
+      defaultCollapsed = false,
+      showIcon = true,
+      className,
+      titleClassName,
+      contentClassName,
+      actionsClassName,
+      ...props
+    },
+    ref
+  ) => {
+    const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+    const [isDismissed, setIsDismissed] = useState(false);
 
-  const handleClose = () => {
-    setIsDismissed(true);
-    onClose?.();
-  };
+    const handleClose = () => {
+      setIsDismissed(true);
+      onClose?.();
+    };
 
-  const handleToggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+    const handleToggleCollapse = () => {
+      setIsCollapsed(!isCollapsed);
+    };
 
-  const getIcon = () => {
-    const iconProps = { className: 'w-5 h-5 flex-shrink-0' };
+    const getIcon = () => {
+      const iconProps = { className: 'w-5 h-5 flex-shrink-0' };
 
-    if (CustomIcon) return <CustomIcon {...iconProps} />;
+      if (CustomIcon) return <CustomIcon {...iconProps} />;
 
-    switch (variant) {
-      case 'success':
-        return <CheckCircle {...iconProps} />;
-      case 'error':
-        return <AlertCircle {...iconProps} />;
-      case 'warning':
-        return <AlertTriangle {...iconProps} />;
-      case 'info':
-        return <Info {...iconProps} />;
-      default:
-        return <Info {...iconProps} />;
-    }
-  };
+      switch (variant) {
+        case 'success':
+          return <CheckCircle {...iconProps} />;
+        case 'error':
+          return <AlertCircle {...iconProps} />;
+        case 'warning':
+          return <AlertTriangle {...iconProps} />;
+        case 'info':
+          return <Info {...iconProps} />;
+        default:
+          return <Info {...iconProps} />;
+      }
+    };
 
-  const finalContent = children || message || description;
+    const finalContent = children || message || description;
 
-  if (isDismissed) return null;
+    if (isDismissed) return null;
 
-  return (
-    <div
-      ref={ref}
-      className={cn(alertBannerVariants({ variant, size, position, emphasis }), className)}
-      role="alert"
-      aria-live={variant === 'error' ? 'assertive' : 'polite'}
-      {...props}
-    >
-      <div className="flex items-start gap-3">
-        {/* Icon */}
-        {showIcon && getIcon()}
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          alertBannerVariants({ variant, size, position, emphasis }),
+          className
+        )}
+        role="alert"
+        aria-live={variant === 'error' ? 'assertive' : 'polite'}
+        {...props}
+      >
+        <div className="flex items-start gap-3">
+          {/* Icon */}
+          {showIcon && getIcon()}
 
-        {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          {/* Title Row */}
-          <div className="flex items-center gap-2">
-            {title && (
-              <h4 className={cn('font-medium', titleClassName)}>
-                {title}
-              </h4>
-            )}
-            
-            {/* Collapse Toggle */}
-            {collapsible && (
-              <button
-                onClick={handleToggleCollapse}
-                className="p-1 hover:bg-black/10 rounded-lg transition-colors duration-200 ml-auto"
-                aria-label={isCollapsed ? 'Expand' : 'Collapse'}
-              >
-                {isCollapsed ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronUp className="w-4 h-4" />
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            {/* Title Row */}
+            <div className="flex items-center gap-2">
+              {title && (
+                <h4 className={cn('font-medium', titleClassName)}>{title}</h4>
+              )}
+
+              {/* Collapse Toggle */}
+              {collapsible && (
+                <button
+                  onClick={handleToggleCollapse}
+                  className="p-1 hover:bg-black/10 rounded-lg transition-colors duration-200 ml-auto"
+                  aria-label={isCollapsed ? 'Expand' : 'Collapse'}
+                >
+                  {isCollapsed ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4" />
+                  )}
+                </button>
+              )}
+            </div>
+
+            {/* Content */}
+            {!isCollapsed && finalContent && (
+              <div
+                className={cn(
+                  'leading-relaxed',
+                  title && 'mt-1',
+                  contentClassName
                 )}
-              </button>
+              >
+                {typeof finalContent === 'string' ? (
+                  <p>{finalContent}</p>
+                ) : (
+                  finalContent
+                )}
+              </div>
+            )}
+
+            {/* Actions */}
+            {!isCollapsed && (action || (actionLabel && onAction)) && (
+              <div
+                className={cn('mt-3 flex items-center gap-2', actionsClassName)}
+              >
+                {action || (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onAction}
+                    className="text-current hover:bg-current/10"
+                  >
+                    {actionLabel}
+                  </Button>
+                )}
+              </div>
             )}
           </div>
 
-          {/* Content */}
-          {!isCollapsed && finalContent && (
-            <div className={cn(
-              'leading-relaxed',
-              title && 'mt-1',
-              contentClassName
-            )}>
-              {typeof finalContent === 'string' ? <p>{finalContent}</p> : finalContent}
-            </div>
-          )}
-
-          {/* Actions */}
-          {!isCollapsed && (action || (actionLabel && onAction)) && (
-            <div className={cn('mt-3 flex items-center gap-2', actionsClassName)}>
-              {action || (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onAction}
-                  className="text-current hover:bg-current/10"
-                >
-                  {actionLabel}
-                </Button>
-              )}
-            </div>
+          {/* Dismiss Button */}
+          {dismissible && (
+            <button
+              onClick={handleClose}
+              className="flex-shrink-0 p-1 hover:bg-black/10 rounded-lg transition-colors duration-200"
+              aria-label="Dismiss"
+            >
+              <X className="w-4 h-4" />
+            </button>
           )}
         </div>
-
-        {/* Dismiss Button */}
-        {dismissible && (
-          <button
-            onClick={handleClose}
-            className="flex-shrink-0 p-1 hover:bg-black/10 rounded-lg transition-colors duration-200"
-            aria-label="Dismiss"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 AlertBanner.displayName = 'AlertBanner';
 
 // Pre-built AlertBanner variants for common system messages
 
-export const MaintenanceBanner = ({ 
-  scheduledTime, 
+export const MaintenanceBanner = ({
+  scheduledTime,
   duration = '30 minutes',
   onLearnMore,
   className,
-  ...props 
+  ...props
 }) => (
   <AlertBanner
     variant="warning"
@@ -219,8 +235,10 @@ export const MaintenanceBanner = ({
     {...props}
   >
     <p>
-      We'll be performing scheduled maintenance {scheduledTime && `on ${scheduledTime}`} 
-      for approximately {duration}. Some features may be temporarily unavailable.
+      We'll be performing scheduled maintenance{' '}
+      {scheduledTime && `on ${scheduledTime}`}
+      for approximately {duration}. Some features may be temporarily
+      unavailable.
     </p>
     {onLearnMore && (
       <Button
@@ -236,13 +254,13 @@ export const MaintenanceBanner = ({
   </AlertBanner>
 );
 
-export const UpdateBanner = ({ 
-  version, 
+export const UpdateBanner = ({
+  version,
   onUpdate,
   onDismiss,
   features = [],
   className,
-  ...props 
+  ...props
 }) => (
   <AlertBanner
     variant="info"
@@ -278,13 +296,13 @@ export const UpdateBanner = ({
   </AlertBanner>
 );
 
-export const ErrorBanner = ({ 
-  error, 
+export const ErrorBanner = ({
+  error,
   onRetry,
   onReport,
   showDetails = false,
   className,
-  ...props 
+  ...props
 }) => (
   <AlertBanner
     variant="error"
@@ -296,10 +314,15 @@ export const ErrorBanner = ({
     {...props}
   >
     <div className="space-y-2">
-      <p>We encountered an unexpected error. Please try again or contact support if the problem persists.</p>
+      <p>
+        We encountered an unexpected error. Please try again or contact support
+        if the problem persists.
+      </p>
       {showDetails && error && (
         <details className="text-xs bg-black/5 rounded-lg p-2 mt-2">
-          <summary className="cursor-pointer font-medium">Error Details</summary>
+          <summary className="cursor-pointer font-medium">
+            Error Details
+          </summary>
           <pre className="mt-1 overflow-auto">{error.toString()}</pre>
         </details>
       )}
@@ -329,11 +352,7 @@ export const ErrorBanner = ({
   </AlertBanner>
 );
 
-export const OfflineBanner = ({ 
-  onRetry,
-  className,
-  ...props 
-}) => (
+export const OfflineBanner = ({ onRetry, className, ...props }) => (
   <AlertBanner
     variant="warning"
     position="sticky"
@@ -357,13 +376,13 @@ export const OfflineBanner = ({
   </AlertBanner>
 );
 
-export const CookieBanner = ({ 
+export const CookieBanner = ({
   onAccept,
   onDecline,
   onCustomize,
   policyUrl,
   className,
-  ...props 
+  ...props
 }) => (
   <AlertBanner
     variant="default"
@@ -376,8 +395,8 @@ export const CookieBanner = ({
     <div className="space-y-3">
       <p className="font-medium">We use cookies to enhance your experience</p>
       <p className="text-sm opacity-90">
-        This website uses cookies to ensure you get the best experience. 
-        By continuing to use this site, you consent to our use of cookies.
+        This website uses cookies to ensure you get the best experience. By
+        continuing to use this site, you consent to our use of cookies.
       </p>
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <Button
@@ -424,7 +443,7 @@ export const CookieBanner = ({
   </AlertBanner>
 );
 
-export const FeatureBanner = ({ 
+export const FeatureBanner = ({
   featureName,
   description,
   onTryNow,
@@ -432,7 +451,7 @@ export const FeatureBanner = ({
   onDismiss,
   beta = false,
   className,
-  ...props 
+  ...props
 }) => (
   <AlertBanner
     variant="success"

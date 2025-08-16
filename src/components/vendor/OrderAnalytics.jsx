@@ -15,27 +15,28 @@ import {
   Target,
   Star,
   Truck,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
-import {
-  useGetVendorOrderAnalyticsQuery
-} from '../../store/slices/apiSlice';
+import { useGetVendorOrderAnalyticsQuery } from '../../store/slices/apiSlice';
 import { addNotification } from '../../store/slices/notificationSlice';
 
 const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
   const dispatch = useDispatch();
   const [chartType, setChartType] = useState('revenue'); // 'revenue', 'orders', 'customers'
-  
+
   // Fetch analytics data
   const {
     data: analyticsData,
     isLoading,
     error,
-    refetch
-  } = useGetVendorOrderAnalyticsQuery({ timeRange }, {
-    pollingInterval: 300000, // Refresh every 5 minutes
-    refetchOnMountOrArgChange: true
-  });
+    refetch,
+  } = useGetVendorOrderAnalyticsQuery(
+    { timeRange },
+    {
+      pollingInterval: 300000, // Refresh every 5 minutes
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const analytics = analyticsData?.data || {};
 
@@ -44,7 +45,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
     { value: '7d', label: '7 Days' },
     { value: '30d', label: '30 Days' },
     { value: '90d', label: '90 Days' },
-    { value: '1y', label: '1 Year' }
+    { value: '1y', label: '1 Year' },
   ];
 
   // Calculate trends and insights
@@ -52,7 +53,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
     if (!analytics.trends) return [];
 
     const insights = [];
-    
+
     // Revenue insights
     if (analytics.revenueChange > 0) {
       insights.push({
@@ -60,7 +61,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         icon: TrendingUp,
         title: 'Revenue Growing',
         description: `Revenue increased by ${analytics.revenueChange}% compared to previous period`,
-        value: analytics.revenueChange
+        value: analytics.revenueChange,
       });
     } else if (analytics.revenueChange < -10) {
       insights.push({
@@ -68,7 +69,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         icon: TrendingDown,
         title: 'Revenue Declining',
         description: `Revenue decreased by ${Math.abs(analytics.revenueChange)}% - consider promotions`,
-        value: analytics.revenueChange
+        value: analytics.revenueChange,
       });
     }
 
@@ -79,7 +80,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         icon: Package,
         title: 'High Order Volume',
         description: `Orders increased by ${analytics.orderVolumeChange}% - great momentum!`,
-        value: analytics.orderVolumeChange
+        value: analytics.orderVolumeChange,
       });
     }
 
@@ -90,7 +91,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         icon: Star,
         title: 'Excellent Ratings',
         description: `Maintaining ${analytics.averageRating}/5.0 average rating`,
-        value: analytics.averageRating
+        value: analytics.averageRating,
       });
     } else if (analytics.averageRating < 4.0) {
       insights.push({
@@ -98,7 +99,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         icon: AlertTriangle,
         title: 'Rating Needs Attention',
         description: `Average rating is ${analytics.averageRating}/5.0 - focus on service quality`,
-        value: analytics.averageRating
+        value: analytics.averageRating,
       });
     }
 
@@ -109,7 +110,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         icon: Truck,
         title: 'Fast Delivery',
         description: `Average delivery time: ${analytics.averageDeliveryTime} minutes`,
-        value: analytics.averageDeliveryTime
+        value: analytics.averageDeliveryTime,
       });
     }
 
@@ -125,11 +126,11 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         totalOrders: analytics.totalOrders || 0,
         totalRevenue: analytics.totalRevenue || 0,
         averageOrderValue: analytics.averageOrderValue || 0,
-        customerSatisfaction: analytics.averageRating || 0
+        customerSatisfaction: analytics.averageRating || 0,
       },
       trends: analytics.trends || [],
       topProducts: analytics.topProducts || [],
-      customerInsights: analytics.customerInsights || {}
+      customerInsights: analytics.customerInsights || {},
     };
 
     const jsonData = JSON.stringify(exportData, null, 2);
@@ -141,11 +142,13 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
     a.click();
     URL.revokeObjectURL(url);
 
-    dispatch(addNotification({
-      type: 'success',
-      title: 'Export Complete',
-      message: 'Analytics data exported successfully'
-    }));
+    dispatch(
+      addNotification({
+        type: 'success',
+        title: 'Export Complete',
+        message: 'Analytics data exported successfully',
+      })
+    );
   };
 
   if (isLoading) {
@@ -153,7 +156,9 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3">
           <RefreshCw className="w-6 h-6 animate-spin text-bottle-green" />
-          <span className="text-lg font-medium text-text-dark">Loading analytics...</span>
+          <span className="text-lg font-medium text-text-dark">
+            Loading analytics...
+          </span>
         </div>
       </div>
     );
@@ -163,8 +168,12 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
     return (
       <div className="bg-white rounded-3xl shadow-soft p-8 text-center">
         <AlertTriangle className="w-16 h-16 text-tomato-red/60 mx-auto mb-4" />
-        <h3 className="text-xl font-medium text-text-dark/80 mb-2">Failed to load analytics</h3>
-        <p className="text-text-muted mb-6">There was an error loading your analytics data.</p>
+        <h3 className="text-xl font-medium text-text-dark/80 mb-2">
+          Failed to load analytics
+        </h3>
+        <p className="text-text-muted mb-6">
+          There was an error loading your analytics data.
+        </p>
         <button
           onClick={() => refetch()}
           className="bg-bottle-green text-white px-6 py-3 rounded-2xl font-medium hover:opacity-90 transition-opacity"
@@ -180,8 +189,12 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h2 className="text-2xl font-bold text-text-dark mb-2">Order Analytics</h2>
-          <p className="text-text-muted">Track your order performance and trends</p>
+          <h2 className="text-2xl font-bold text-text-dark mb-2">
+            Order Analytics
+          </h2>
+          <p className="text-text-muted">
+            Track your order performance and trends
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -191,7 +204,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             onChange={(e) => onTimeRangeChange?.(e.target.value)}
             className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
           >
-            {timeRangeOptions.map(option => (
+            {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 Last {option.label}
               </option>
@@ -226,12 +239,15 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <div className="p-3 bg-blue-50 rounded-2xl">
               <Package className="w-6 h-6 text-blue-600" />
             </div>
-            <span className={`text-sm font-medium px-2 py-1 rounded-xl ${
-              (analytics.orderVolumeChange || 0) >= 0 
-                ? 'text-bottle-green bg-mint-fresh/20' 
-                : 'text-tomato-red bg-tomato-red/20'
-            }`}>
-              {(analytics.orderVolumeChange || 0) >= 0 ? '+' : ''}{analytics.orderVolumeChange || 0}%
+            <span
+              className={`text-sm font-medium px-2 py-1 rounded-xl ${
+                (analytics.orderVolumeChange || 0) >= 0
+                  ? 'text-bottle-green bg-mint-fresh/20'
+                  : 'text-tomato-red bg-tomato-red/20'
+              }`}
+            >
+              {(analytics.orderVolumeChange || 0) >= 0 ? '+' : ''}
+              {analytics.orderVolumeChange || 0}%
             </span>
           </div>
           <h3 className="text-2xl font-bold text-text-dark mb-1">
@@ -246,12 +262,15 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <div className="p-3 bg-bottle-green/20 rounded-2xl">
               <DollarSign className="w-6 h-6 text-bottle-green" />
             </div>
-            <span className={`text-sm font-medium px-2 py-1 rounded-xl ${
-              (analytics.revenueChange || 0) >= 0 
-                ? 'text-bottle-green bg-mint-fresh/20' 
-                : 'text-tomato-red bg-tomato-red/20'
-            }`}>
-              {(analytics.revenueChange || 0) >= 0 ? '+' : ''}{analytics.revenueChange || 0}%
+            <span
+              className={`text-sm font-medium px-2 py-1 rounded-xl ${
+                (analytics.revenueChange || 0) >= 0
+                  ? 'text-bottle-green bg-mint-fresh/20'
+                  : 'text-tomato-red bg-tomato-red/20'
+              }`}
+            >
+              {(analytics.revenueChange || 0) >= 0 ? '+' : ''}
+              {analytics.revenueChange || 0}%
             </span>
           </div>
           <h3 className="text-2xl font-bold text-text-dark mb-1">
@@ -266,12 +285,15 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <div className="p-3 bg-purple-50 rounded-2xl">
               <Target className="w-6 h-6 text-purple-600" />
             </div>
-            <span className={`text-sm font-medium px-2 py-1 rounded-xl ${
-              (analytics.aovChange || 0) >= 0 
-                ? 'text-bottle-green bg-mint-fresh/20' 
-                : 'text-tomato-red bg-tomato-red/20'
-            }`}>
-              {(analytics.aovChange || 0) >= 0 ? '+' : ''}{analytics.aovChange || 0}%
+            <span
+              className={`text-sm font-medium px-2 py-1 rounded-xl ${
+                (analytics.aovChange || 0) >= 0
+                  ? 'text-bottle-green bg-mint-fresh/20'
+                  : 'text-tomato-red bg-tomato-red/20'
+              }`}
+            >
+              {(analytics.aovChange || 0) >= 0 ? '+' : ''}
+              {analytics.aovChange || 0}%
             </span>
           </div>
           <h3 className="text-2xl font-bold text-text-dark mb-1">
@@ -286,12 +308,15 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <div className="p-3 bg-yellow-50 rounded-2xl">
               <Star className="w-6 h-6 text-yellow-600" />
             </div>
-            <span className={`text-sm font-medium px-2 py-1 rounded-xl ${
-              (analytics.ratingChange || 0) >= 0 
-                ? 'text-bottle-green bg-mint-fresh/20' 
-                : 'text-tomato-red bg-tomato-red/20'
-            }`}>
-              {(analytics.ratingChange || 0) >= 0 ? '+' : ''}{analytics.ratingChange || 0}
+            <span
+              className={`text-sm font-medium px-2 py-1 rounded-xl ${
+                (analytics.ratingChange || 0) >= 0
+                  ? 'text-bottle-green bg-mint-fresh/20'
+                  : 'text-tomato-red bg-tomato-red/20'
+              }`}
+            >
+              {(analytics.ratingChange || 0) >= 0 ? '+' : ''}
+              {analytics.ratingChange || 0}
             </span>
           </div>
           <h3 className="text-2xl font-bold text-text-dark mb-1">
@@ -306,13 +331,15 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         {/* Trends Chart */}
         <div className="bg-white rounded-3xl shadow-soft p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-text-dark">Performance Trends</h3>
+            <h3 className="text-xl font-bold text-text-dark">
+              Performance Trends
+            </h3>
             <div className="flex bg-gray-100 rounded-xl p-1">
               <button
                 onClick={() => setChartType('revenue')}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  chartType === 'revenue' 
-                    ? 'bg-white text-text-dark shadow-sm' 
+                  chartType === 'revenue'
+                    ? 'bg-white text-text-dark shadow-sm'
                     : 'text-text-muted hover:text-text-dark'
                 }`}
               >
@@ -321,8 +348,8 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
               <button
                 onClick={() => setChartType('orders')}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  chartType === 'orders' 
-                    ? 'bg-white text-text-dark shadow-sm' 
+                  chartType === 'orders'
+                    ? 'bg-white text-text-dark shadow-sm'
                     : 'text-text-muted hover:text-text-dark'
                 }`}
               >
@@ -336,10 +363,12 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <div className="text-center">
               <BarChart3 className="w-12 h-12 text-text-muted/40 mx-auto mb-2" />
               <p className="text-text-muted text-sm">
-                {chartType === 'revenue' ? 'Revenue' : 'Order'} trend chart would be displayed here
+                {chartType === 'revenue' ? 'Revenue' : 'Order'} trend chart
+                would be displayed here
               </p>
               <p className="text-text-muted text-xs mt-1">
-                Showing {timeRange} data with {analytics.totalDataPoints || 0} points
+                Showing {timeRange} data with {analytics.totalDataPoints || 0}{' '}
+                points
               </p>
             </div>
           </div>
@@ -347,38 +376,52 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
 
         {/* Order Status Distribution */}
         <div className="bg-white rounded-3xl shadow-soft p-6">
-          <h3 className="text-xl font-bold text-text-dark mb-6">Order Status Distribution</h3>
-          
+          <h3 className="text-xl font-bold text-text-dark mb-6">
+            Order Status Distribution
+          </h3>
+
           <div className="space-y-4">
-            {analytics.statusDistribution && Object.entries(analytics.statusDistribution).map(([status, count]) => {
-              const percentage = analytics.totalOrders > 0 ? ((count / analytics.totalOrders) * 100).toFixed(1) : 0;
-              const colors = {
-                pending: 'bg-orange-500',
-                confirmed: 'bg-blue-500', 
-                prepared: 'bg-purple-500',
-                shipped: 'bg-indigo-500',
-                delivered: 'bg-bottle-green',
-                cancelled: 'bg-tomato-red'
-              };
-              
-              return (
-                <div key={status} className="flex items-center gap-4">
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className={`w-4 h-4 rounded-full ${colors[status] || 'bg-gray-400'}`}></div>
-                    <span className="text-text-dark font-medium capitalize">{status}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full ${colors[status] || 'bg-gray-400'}`}
-                        style={{ width: `${percentage}%` }}
-                      ></div>
+            {analytics.statusDistribution &&
+              Object.entries(analytics.statusDistribution).map(
+                ([status, count]) => {
+                  const percentage =
+                    analytics.totalOrders > 0
+                      ? ((count / analytics.totalOrders) * 100).toFixed(1)
+                      : 0;
+                  const colors = {
+                    pending: 'bg-orange-500',
+                    confirmed: 'bg-blue-500',
+                    prepared: 'bg-purple-500',
+                    shipped: 'bg-indigo-500',
+                    delivered: 'bg-bottle-green',
+                    cancelled: 'bg-tomato-red',
+                  };
+
+                  return (
+                    <div key={status} className="flex items-center gap-4">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div
+                          className={`w-4 h-4 rounded-full ${colors[status] || 'bg-gray-400'}`}
+                        ></div>
+                        <span className="text-text-dark font-medium capitalize">
+                          {status}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-32 bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${colors[status] || 'bg-gray-400'}`}
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-text-dark font-medium w-12 text-right">
+                          {count}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-text-dark font-medium w-12 text-right">{count}</span>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                }
+              )}
           </div>
         </div>
       </div>
@@ -387,8 +430,10 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Business Insights */}
         <div className="lg:col-span-2 bg-white rounded-3xl shadow-soft p-6">
-          <h3 className="text-xl font-bold text-text-dark mb-6">Business Insights</h3>
-          
+          <h3 className="text-xl font-bold text-text-dark mb-6">
+            Business Insights
+          </h3>
+
           {insights.length > 0 ? (
             <div className="space-y-4">
               {insights.map((insight, index) => {
@@ -396,17 +441,24 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
                 const colors = {
                   positive: 'text-bottle-green bg-mint-fresh/20',
                   negative: 'text-tomato-red bg-tomato-red/20',
-                  warning: 'text-orange-600 bg-orange-50'
+                  warning: 'text-orange-600 bg-orange-50',
                 };
-                
+
                 return (
-                  <div key={index} className="flex items-start gap-4 p-4 bg-gray-50/80 rounded-2xl">
+                  <div
+                    key={index}
+                    className="flex items-start gap-4 p-4 bg-gray-50/80 rounded-2xl"
+                  >
                     <div className={`p-2 rounded-xl ${colors[insight.type]}`}>
                       <Icon className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-text-dark mb-1">{insight.title}</h4>
-                      <p className="text-text-muted text-sm">{insight.description}</p>
+                      <h4 className="font-semibold text-text-dark mb-1">
+                        {insight.title}
+                      </h4>
+                      <p className="text-text-muted text-sm">
+                        {insight.description}
+                      </p>
                     </div>
                   </div>
                 );
@@ -415,15 +467,19 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
           ) : (
             <div className="text-center py-8">
               <Target className="w-12 h-12 text-text-muted/40 mx-auto mb-2" />
-              <p className="text-text-muted">No insights available yet. More data needed for analysis.</p>
+              <p className="text-text-muted">
+                No insights available yet. More data needed for analysis.
+              </p>
             </div>
           )}
         </div>
 
         {/* Top Products */}
         <div className="bg-white rounded-3xl shadow-soft p-6">
-          <h3 className="text-xl font-bold text-text-dark mb-6">Top Products</h3>
-          
+          <h3 className="text-xl font-bold text-text-dark mb-6">
+            Top Products
+          </h3>
+
           {analytics.topProducts && analytics.topProducts.length > 0 ? (
             <div className="space-y-4">
               {analytics.topProducts.slice(0, 5).map((product, index) => (
@@ -432,11 +488,17 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-text-dark truncate">{product.name}</div>
-                    <div className="text-sm text-text-muted">{product.orderCount} orders</div>
+                    <div className="font-medium text-text-dark truncate">
+                      {product.name}
+                    </div>
+                    <div className="text-sm text-text-muted">
+                      {product.orderCount} orders
+                    </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-text-dark">৳{product.revenue?.toLocaleString()}</div>
+                    <div className="font-bold text-text-dark">
+                      ৳{product.revenue?.toLocaleString()}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -444,7 +506,9 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
           ) : (
             <div className="text-center py-8">
               <Package className="w-12 h-12 text-text-muted/40 mx-auto mb-2" />
-              <p className="text-text-muted text-sm">No product data available yet.</p>
+              <p className="text-text-muted text-sm">
+                No product data available yet.
+              </p>
             </div>
           )}
         </div>
@@ -452,8 +516,10 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
 
       {/* Performance Metrics */}
       <div className="bg-white rounded-3xl shadow-soft p-6">
-        <h3 className="text-xl font-bold text-text-dark mb-6">Performance Metrics</h3>
-        
+        <h3 className="text-xl font-bold text-text-dark mb-6">
+          Performance Metrics
+        </h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
@@ -462,7 +528,9 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <div className="text-2xl font-bold text-text-dark mb-1">
               {analytics.averageDeliveryTime || 'N/A'}
             </div>
-            <div className="text-sm text-text-muted">Avg Delivery Time (min)</div>
+            <div className="text-sm text-text-muted">
+              Avg Delivery Time (min)
+            </div>
           </div>
 
           <div className="text-center">

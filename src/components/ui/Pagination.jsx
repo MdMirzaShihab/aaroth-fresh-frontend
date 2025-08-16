@@ -10,10 +10,14 @@ const paginationItemVariants = cva(
   {
     variants: {
       variant: {
-        default: 'min-h-[44px] min-w-[44px] px-3 py-2 bg-earthy-beige/30 text-text-dark hover:bg-bottle-green hover:text-white hover:shadow-lg hover:shadow-glow-green/20 hover:-translate-y-0.5',
-        active: 'min-h-[44px] min-w-[44px] px-3 py-2 bg-gradient-secondary text-white shadow-lg shadow-glow-green/20',
-        ghost: 'min-h-[44px] min-w-[44px] px-3 py-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10',
-        outline: 'min-h-[44px] min-w-[44px] px-3 py-2 border-2 border-gray-300 text-text-dark hover:border-bottle-green hover:bg-bottle-green/5',
+        default:
+          'min-h-[44px] min-w-[44px] px-3 py-2 bg-earthy-beige/30 text-text-dark hover:bg-bottle-green hover:text-white hover:shadow-lg hover:shadow-glow-green/20 hover:-translate-y-0.5',
+        active:
+          'min-h-[44px] min-w-[44px] px-3 py-2 bg-gradient-secondary text-white shadow-lg shadow-glow-green/20',
+        ghost:
+          'min-h-[44px] min-w-[44px] px-3 py-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10',
+        outline:
+          'min-h-[44px] min-w-[44px] px-3 py-2 border-2 border-gray-300 text-text-dark hover:border-bottle-green hover:bg-bottle-green/5',
       },
       size: {
         default: 'text-sm',
@@ -60,7 +64,8 @@ const Pagination = ({
   const showEndEllipsis = endPage < totalPages;
 
   const handlePageChange = (page) => {
-    if (disabled || page === currentPage || page < 1 || page > totalPages) return;
+    if (disabled || page === currentPage || page < 1 || page > totalPages)
+      return;
     onPageChange(page);
   };
 
@@ -74,8 +79,9 @@ const Pagination = ({
       {/* Page Info (Mobile/Desktop) */}
       {showPageInfo && totalItems && (
         <div className="text-center text-sm text-text-muted">
-          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} to{' '}
-          {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} results
+          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}{' '}
+          to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{' '}
+          results
         </div>
       )}
 
@@ -187,7 +193,8 @@ export const SimplePagination = ({
   ...props
 }) => {
   const handlePageChange = (page) => {
-    if (disabled || page === currentPage || page < 1 || page > totalPages) return;
+    if (disabled || page === currentPage || page < 1 || page > totalPages)
+      return;
     onPageChange(page);
   };
 
@@ -244,7 +251,8 @@ export const MobilePagination = ({
   ...props
 }) => {
   const handlePageChange = (page) => {
-    if (disabled || page === currentPage || page < 1 || page > totalPages) return;
+    if (disabled || page === currentPage || page < 1 || page > totalPages)
+      return;
     onPageChange(page);
   };
 
@@ -272,9 +280,7 @@ export const MobilePagination = ({
           <div className="text-lg font-medium text-text-dark">
             {currentPage}
           </div>
-          <div className="text-xs text-text-muted">
-            of {totalPages}
-          </div>
+          <div className="text-xs text-text-muted">of {totalPages}</div>
         </div>
 
         <Button
@@ -341,17 +347,15 @@ export const CompactPagination = ({
   ...props
 }) => {
   const handlePageChange = (page) => {
-    if (disabled || page === currentPage || page < 1 || page > totalPages) return;
+    if (disabled || page === currentPage || page < 1 || page > totalPages)
+      return;
     onPageChange(page);
   };
 
   if (totalPages <= 1) return null;
 
   return (
-    <div
-      className={cn('flex items-center gap-1', className)}
-      {...props}
-    >
+    <div className={cn('flex items-center gap-1', className)} {...props}>
       <button
         className={cn(
           'p-1 rounded-lg hover:bg-bottle-green/10 transition-colors duration-200 min-h-[32px] min-w-[32px] flex items-center justify-center',
@@ -371,7 +375,8 @@ export const CompactPagination = ({
       <button
         className={cn(
           'p-1 rounded-lg hover:bg-bottle-green/10 transition-colors duration-200 min-h-[32px] min-w-[32px] flex items-center justify-center',
-          (disabled || currentPage === totalPages) && 'opacity-50 cursor-not-allowed'
+          (disabled || currentPage === totalPages) &&
+            'opacity-50 cursor-not-allowed'
         )}
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={disabled || currentPage === totalPages}

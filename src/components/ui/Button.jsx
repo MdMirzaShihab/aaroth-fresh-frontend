@@ -10,31 +10,31 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // Primary - Gradient with glow effect
-        primary: 
+        primary:
           'bg-gradient-secondary text-white shadow-sm hover:shadow-lg hover:shadow-glow-green/20 hover:-translate-y-0.5 focus-visible:ring-bottle-green',
-        
+
         // Secondary - Solid earth tone
-        secondary: 
+        secondary:
           'bg-earthy-brown text-white hover:bg-earthy-brown/90 focus-visible:ring-earthy-brown',
-        
+
         // Outline - Sophisticated border
-        outline: 
+        outline:
           'border-2 border-bottle-green text-bottle-green bg-transparent hover:bg-bottle-green hover:text-white focus-visible:ring-bottle-green',
-        
+
         // Ghost - Minimal presence
-        ghost: 
+        ghost:
           'text-bottle-green hover:bg-bottle-green/10 focus-visible:ring-bottle-green/50',
-        
+
         // Destructive - For dangerous actions
-        destructive: 
+        destructive:
           'bg-tomato-red text-white hover:bg-tomato-red/90 focus-visible:ring-tomato-red',
-        
+
         // Success - For positive actions
-        success: 
+        success:
           'bg-mint-fresh text-bottle-green hover:bg-mint-fresh/90 focus-visible:ring-mint-fresh',
-        
+
         // Glass - Glassmorphism effect
-        glass: 
+        glass:
           'bg-glass backdrop-blur-sm border border-white/20 text-text-dark hover:bg-white/10 hover:border-white/30 focus-visible:ring-white/50',
       },
       size: {
@@ -87,56 +87,58 @@ const LoadingSpinner = ({ className }) => (
 );
 
 // Button component with forwardRef for proper ref handling
-const Button = forwardRef(({
-  className,
-  variant,
-  size,
-  fullWidth,
-  loading,
-  disabled,
-  children,
-  leftIcon,
-  rightIcon,
-  type = 'button',
-  ...props
-}, ref) => {
-  const isDisabled = disabled || loading;
+const Button = forwardRef(
+  (
+    {
+      className,
+      variant,
+      size,
+      fullWidth,
+      loading,
+      disabled,
+      children,
+      leftIcon,
+      rightIcon,
+      type = 'button',
+      ...props
+    },
+    ref
+  ) => {
+    const isDisabled = disabled || loading;
 
-  return (
-    <button
-      className={cn(buttonVariants({ variant, size, fullWidth, loading }), className)}
-      ref={ref}
-      disabled={isDisabled}
-      type={type}
-      aria-disabled={isDisabled}
-      {...props}
-    >
-      {/* Left Icon */}
-      {leftIcon && !loading && (
-        <span className="mr-2 flex-shrink-0">
-          {leftIcon}
+    return (
+      <button
+        className={cn(
+          buttonVariants({ variant, size, fullWidth, loading }),
+          className
+        )}
+        ref={ref}
+        disabled={isDisabled}
+        type={type}
+        aria-disabled={isDisabled}
+        {...props}
+      >
+        {/* Left Icon */}
+        {leftIcon && !loading && (
+          <span className="mr-2 flex-shrink-0">{leftIcon}</span>
+        )}
+
+        {/* Loading Spinner */}
+        {loading && <LoadingSpinner className="mr-2" />}
+
+        {/* Button Content */}
+        <span className={cn('truncate', loading && 'opacity-70')}>
+          {children}
         </span>
-      )}
-      
-      {/* Loading Spinner */}
-      {loading && (
-        <LoadingSpinner className="mr-2" />
-      )}
-      
-      {/* Button Content */}
-      <span className={cn('truncate', loading && 'opacity-70')}>
-        {children}
-      </span>
-      
-      {/* Right Icon */}
-      {rightIcon && !loading && (
-        <span className="ml-2 flex-shrink-0">
-          {rightIcon}
-        </span>
-      )}
-    </button>
-  );
-});
+
+        {/* Right Icon */}
+        {rightIcon && !loading && (
+          <span className="ml-2 flex-shrink-0">{rightIcon}</span>
+        )}
+      </button>
+    );
+  }
+);
 
 Button.displayName = 'Button';
 

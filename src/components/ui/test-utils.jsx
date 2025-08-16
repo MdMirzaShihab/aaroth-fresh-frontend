@@ -14,7 +14,7 @@ import { vi } from 'vitest';
 const createMockSlice = (name, initialState = {}) => ({
   name,
   reducer: (state = initialState, action) => state,
-  actions: {}
+  actions: {},
 });
 
 // Default test store configuration
@@ -57,24 +57,18 @@ export const renderWithProviders = (
 ) => {
   // Router wrapper
   const RouterWrapper = ({ children }) => (
-    <BrowserRouter>
-      {children}
-    </BrowserRouter>
+    <BrowserRouter>{children}</BrowserRouter>
   );
 
   // Redux wrapper
   const ReduxWrapper = ({ children }) => (
-    <Provider store={store}>
-      {children}
-    </Provider>
+    <Provider store={store}>{children}</Provider>
   );
 
   // Combined wrapper
   const AllTheProviders = ({ children }) => (
     <ReduxWrapper>
-      <RouterWrapper>
-        {children}
-      </RouterWrapper>
+      <RouterWrapper>{children}</RouterWrapper>
     </ReduxWrapper>
   );
 
@@ -88,14 +82,14 @@ export const renderWithProviders = (
 export const mockHooks = {
   // Mock useMediaQuery
   useMediaQuery: vi.fn(() => false),
-  
+
   // Mock Intersection Observer
   intersectionObserver: {
     observe: vi.fn(),
     disconnect: vi.fn(),
     unobserve: vi.fn(),
   },
-  
+
   // Mock ResizeObserver
   resizeObserver: {
     observe: vi.fn(),
@@ -108,14 +102,14 @@ export const mockHooks = {
 export const setupGlobalMocks = () => {
   // Mock IntersectionObserver
   global.IntersectionObserver = vi.fn(() => mockHooks.intersectionObserver);
-  
+
   // Mock ResizeObserver
   global.ResizeObserver = vi.fn(() => mockHooks.resizeObserver);
-  
+
   // Mock matchMedia for responsive testing
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -126,10 +120,10 @@ export const setupGlobalMocks = () => {
       dispatchEvent: vi.fn(),
     })),
   });
-  
+
   // Mock scrollIntoView
   Element.prototype.scrollIntoView = vi.fn();
-  
+
   // Mock getBoundingClientRect for layout testing
   Element.prototype.getBoundingClientRect = vi.fn(() => ({
     width: 100,
@@ -156,13 +150,13 @@ export const a11yTestUtils = {
       meetsTabletTarget: rect.width >= 48 && rect.height >= 48,
     };
   },
-  
+
   // Check focus management
   checkFocusManagement: async (user, element) => {
     await user.tab();
     return document.activeElement === element;
   },
-  
+
   // Check ARIA attributes
   checkAriaAttributes: (element, expectedAttributes = {}) => {
     const results = {};
@@ -176,13 +170,13 @@ export const a11yTestUtils = {
     });
     return results;
   },
-  
+
   // Check color contrast (simplified)
   checkColorContrast: (element) => {
     const computedStyle = window.getComputedStyle(element);
     const backgroundColor = computedStyle.backgroundColor;
     const color = computedStyle.color;
-    
+
     return {
       backgroundColor,
       textColor: color,
@@ -203,7 +197,7 @@ export const mockData = {
     avatar: null,
     ...overrides,
   }),
-  
+
   // Product data
   product: (overrides = {}) => ({
     id: '1',
@@ -215,7 +209,7 @@ export const mockData = {
     inStock: true,
     ...overrides,
   }),
-  
+
   // Order data
   order: (overrides = {}) => ({
     id: '1',
@@ -225,7 +219,7 @@ export const mockData = {
     createdAt: new Date().toISOString(),
     ...overrides,
   }),
-  
+
   // Notification data
   notification: (overrides = {}) => ({
     id: '1',
@@ -235,14 +229,14 @@ export const mockData = {
     duration: 5000,
     ...overrides,
   }),
-  
+
   // Form field options
   selectOptions: [
     { value: 'option1', label: 'Option 1' },
     { value: 'option2', label: 'Option 2' },
     { value: 'option3', label: 'Option 3' },
   ],
-  
+
   // Table data
   tableData: Array.from({ length: 10 }, (_, i) => ({
     id: i + 1,
@@ -261,7 +255,7 @@ export const componentTestUtils = {
       expect(loadingElement).not.toBeInTheDocument();
     });
   },
-  
+
   // Simulate user interactions
   fillForm: async (user, formData) => {
     for (const [fieldName, value] of Object.entries(formData)) {
@@ -270,18 +264,21 @@ export const componentTestUtils = {
       await user.type(field, value);
     }
   },
-  
+
   // Test responsive behavior
-  testResponsiveLayout: (component, breakpoints = ['mobile', 'tablet', 'desktop']) => {
-    breakpoints.forEach(breakpoint => {
+  testResponsiveLayout: (
+    component,
+    breakpoints = ['mobile', 'tablet', 'desktop']
+  ) => {
+    breakpoints.forEach((breakpoint) => {
       // Mock different screen sizes
       const mediaQueries = {
         mobile: '(max-width: 640px)',
         tablet: '(min-width: 641px) and (max-width: 1024px)',
         desktop: '(min-width: 1025px)',
       };
-      
-      window.matchMedia = vi.fn().mockImplementation(query => ({
+
+      window.matchMedia = vi.fn().mockImplementation((query) => ({
         matches: query === mediaQueries[breakpoint],
         media: query,
         onchange: null,
@@ -291,35 +288,41 @@ export const componentTestUtils = {
         removeEventListener: vi.fn(),
         dispatchEvent: vi.fn(),
       }));
-      
+
       // Re-render and test layout
       render(component);
     });
   },
-  
+
   // Test keyboard navigation
-  testKeyboardNavigation: async (user, element, expectedKeys = ['Tab', 'Enter', ' ']) => {
+  testKeyboardNavigation: async (
+    user,
+    element,
+    expectedKeys = ['Tab', 'Enter', ' ']
+  ) => {
     const results = {};
-    
+
     for (const key of expectedKeys) {
       element.focus();
       await user.keyboard(`{${key}}`);
       results[key] = document.activeElement;
     }
-    
+
     return results;
   },
-  
+
   // Test error boundaries
   testErrorBoundary: (ComponentWithError, ErrorBoundary) => {
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-    
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
     render(
       <ErrorBoundary>
         <ComponentWithError />
       </ErrorBoundary>
     );
-    
+
     consoleError.mockRestore();
   },
 };
@@ -333,22 +336,24 @@ export const performanceTestUtils = {
     const end = performance.now();
     return end - start;
   },
-  
+
   // Test with large datasets
   testWithLargeDataset: (Component, generateData, size = 1000) => {
-    const largeDataset = Array.from({ length: size }, (_, i) => generateData(i));
+    const largeDataset = Array.from({ length: size }, (_, i) =>
+      generateData(i)
+    );
     return render(<Component data={largeDataset} />);
   },
-  
+
   // Memory leak detection (simplified)
   testMemoryUsage: (Component, iterations = 10) => {
     const initialMemory = performance.memory?.usedJSHeapSize || 0;
-    
+
     for (let i = 0; i < iterations; i++) {
       const { unmount } = render(<Component key={i} />);
       unmount();
     }
-    
+
     const finalMemory = performance.memory?.usedJSHeapSize || 0;
     return {
       initialMemory,
@@ -364,21 +369,23 @@ export const customMatchers = {
   toMeetTouchTargetSize: (element) => {
     const rect = element.getBoundingClientRect();
     const meetsMobile = rect.width >= 44 && rect.height >= 44;
-    
+
     return {
-      message: () => 
+      message: () =>
         `Expected element to meet touch target size of 44px, but got ${rect.width}x${rect.height}`,
       pass: meetsMobile,
     };
   },
-  
+
   // Check if element is visible and focusable
   toBeFocusableAndVisible: (element) => {
     const isVisible = element.offsetParent !== null;
-    const isFocusable = element.tabIndex >= 0 || element.matches('input, button, select, textarea, a[href]');
-    
+    const isFocusable =
+      element.tabIndex >= 0 ||
+      element.matches('input, button, select, textarea, a[href]');
+
     return {
-      message: () => 
+      message: () =>
         `Expected element to be focusable and visible, but visible: ${isVisible}, focusable: ${isFocusable}`,
       pass: isVisible && isFocusable,
     };
@@ -391,7 +398,7 @@ export const testSetup = {
     setupGlobalMocks();
     vi.clearAllMocks();
   },
-  
+
   afterEach: () => {
     vi.restoreAllMocks();
   },

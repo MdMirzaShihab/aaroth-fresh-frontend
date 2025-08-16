@@ -13,11 +13,11 @@ import {
   Volume2,
   VolumeX,
   Trash2,
-  MarkAllAsRead
+  MarkAllAsRead,
 } from 'lucide-react';
 import {
   useGetOrderNotificationsQuery,
-  useMarkNotificationAsReadMutation
+  useMarkNotificationAsReadMutation,
 } from '../../store/slices/apiSlice';
 import { addNotification } from '../../store/slices/notificationSlice';
 
@@ -33,52 +33,58 @@ const OrderNotifications = ({ onClose }) => {
     data: notificationsData,
     isLoading,
     error,
-    refetch
+    refetch,
   } = useGetOrderNotificationsQuery(undefined, {
     pollingInterval: 30000, // Poll every 30 seconds
     refetchOnMountOrArgChange: true,
-    refetchOnFocus: true
+    refetchOnFocus: true,
   });
 
   const [markNotificationAsRead] = useMarkNotificationAsReadMutation();
 
   const notifications = notificationsData?.data?.notifications || [];
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   // Notification categories
   const notificationTypes = {
     new_order: {
       icon: Package,
       color: 'text-blue-600 bg-blue-50',
-      sound: '/sounds/new-order.mp3'
+      sound: '/sounds/new-order.mp3',
     },
     order_cancelled: {
       icon: AlertTriangle,
       color: 'text-tomato-red bg-tomato-red/20',
-      sound: '/sounds/alert.mp3'
+      sound: '/sounds/alert.mp3',
     },
     payment_received: {
       icon: DollarSign,
       color: 'text-bottle-green bg-mint-fresh/20',
-      sound: '/sounds/success.mp3'
+      sound: '/sounds/success.mp3',
     },
     order_updated: {
       icon: Clock,
       color: 'text-orange-600 bg-orange-50',
-      sound: '/sounds/notification.mp3'
+      sound: '/sounds/notification.mp3',
     },
     delivery_confirmed: {
       icon: CheckCircle,
       color: 'text-bottle-green bg-mint-fresh/20',
-      sound: '/sounds/success.mp3'
-    }
+      sound: '/sounds/success.mp3',
+    },
   };
 
   // Filter notifications
-  const filteredNotifications = notifications.filter(notification => {
+  const filteredNotifications = notifications.filter((notification) => {
     if (filter === 'all') return true;
     if (filter === 'unread') return !notification.read;
-    if (filter === 'orders') return ['new_order', 'order_cancelled', 'order_updated', 'delivery_confirmed'].includes(notification.type);
+    if (filter === 'orders')
+      return [
+        'new_order',
+        'order_cancelled',
+        'order_updated',
+        'delivery_confirmed',
+      ].includes(notification.type);
     if (filter === 'payments') return notification.type === 'payment_received';
     return true;
   });
@@ -86,7 +92,7 @@ const OrderNotifications = ({ onClose }) => {
   // Play notification sound
   const playNotificationSound = (type) => {
     if (!soundEnabled) return;
-    
+
     const soundConfig = notificationTypes[type];
     if (soundConfig?.sound) {
       try {
@@ -106,7 +112,10 @@ const OrderNotifications = ({ onClose }) => {
   useEffect(() => {
     if (notifications.length > 0) {
       const latestNotification = notifications[0];
-      if (!latestNotification.read && Date.now() - new Date(latestNotification.createdAt).getTime() < 60000) {
+      if (
+        !latestNotification.read &&
+        Date.now() - new Date(latestNotification.createdAt).getTime() < 60000
+      ) {
         // Play sound for notifications newer than 1 minute
         playNotificationSound(latestNotification.type);
       }
@@ -125,22 +134,28 @@ const OrderNotifications = ({ onClose }) => {
   // Mark all as read
   const handleMarkAllAsRead = async () => {
     try {
-      const unreadNotifications = notifications.filter(n => !n.read);
+      const unreadNotifications = notifications.filter((n) => !n.read);
       await Promise.all(
-        unreadNotifications.map(n => markNotificationAsRead({ notificationId: n.id }).unwrap())
+        unreadNotifications.map((n) =>
+          markNotificationAsRead({ notificationId: n.id }).unwrap()
+        )
       );
-      
-      dispatch(addNotification({
-        type: 'success',
-        title: 'All notifications marked as read',
-        message: `${unreadNotifications.length} notifications updated`
-      }));
+
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: 'All notifications marked as read',
+          message: `${unreadNotifications.length} notifications updated`,
+        })
+      );
     } catch (error) {
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Failed to update notifications',
-        message: 'Please try again later'
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Failed to update notifications',
+          message: 'Please try again later',
+        })
+      );
     }
   };
 
@@ -149,12 +164,16 @@ const OrderNotifications = ({ onClose }) => {
     const newState = !soundEnabled;
     setSoundEnabled(newState);
     localStorage.setItem('orderNotificationSound', newState.toString());
-    
-    dispatch(addNotification({
-      type: 'info',
-      title: `Notification sounds ${newState ? 'enabled' : 'disabled'}`,
-      message: newState ? 'You will hear sounds for new notifications' : 'Notification sounds are now muted'
-    }));
+
+    dispatch(
+      addNotification({
+        type: 'info',
+        title: `Notification sounds ${newState ? 'enabled' : 'disabled'}`,
+        message: newState
+          ? 'You will hear sounds for new notifications'
+          : 'Notification sounds are now muted',
+      })
+    );
   };
 
   // Get relative time
@@ -162,7 +181,7 @@ const OrderNotifications = ({ onClose }) => {
     const now = new Date();
     const time = new Date(timestamp);
     const diffInMinutes = Math.floor((now - time) / (1000 * 60));
-    
+
     if (diffInMinutes < 1) return 'Just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
@@ -177,27 +196,33 @@ const OrderNotifications = ({ onClose }) => {
           <div className="flex items-center gap-3">
             <Bell className="w-6 h-6 text-bottle-green" />
             <div>
-              <h3 className="text-xl font-bold text-text-dark">Notifications</h3>
+              <h3 className="text-xl font-bold text-text-dark">
+                Notifications
+              </h3>
               {unreadCount > 0 && (
                 <p className="text-sm text-text-muted">{unreadCount} unread</p>
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {/* Sound toggle */}
             <button
               onClick={handleToggleSound}
               className={`p-2 rounded-xl transition-colors ${
-                soundEnabled 
-                  ? 'bg-bottle-green/10 text-bottle-green' 
+                soundEnabled
+                  ? 'bg-bottle-green/10 text-bottle-green'
                   : 'bg-gray-100 text-text-muted'
               }`}
               title={soundEnabled ? 'Disable sounds' : 'Enable sounds'}
             >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {soundEnabled ? (
+                <Volume2 className="w-4 h-4" />
+              ) : (
+                <VolumeX className="w-4 h-4" />
+              )}
             </button>
-            
+
             {/* Close button */}
             <button
               onClick={onClose}
@@ -213,9 +238,25 @@ const OrderNotifications = ({ onClose }) => {
           {[
             { value: 'all', label: 'All', count: notifications.length },
             { value: 'unread', label: 'Unread', count: unreadCount },
-            { value: 'orders', label: 'Orders', count: notifications.filter(n => ['new_order', 'order_cancelled', 'order_updated', 'delivery_confirmed'].includes(n.type)).length },
-            { value: 'payments', label: 'Payments', count: notifications.filter(n => n.type === 'payment_received').length }
-          ].map(tab => (
+            {
+              value: 'orders',
+              label: 'Orders',
+              count: notifications.filter((n) =>
+                [
+                  'new_order',
+                  'order_cancelled',
+                  'order_updated',
+                  'delivery_confirmed',
+                ].includes(n.type)
+              ).length,
+            },
+            {
+              value: 'payments',
+              label: 'Payments',
+              count: notifications.filter((n) => n.type === 'payment_received')
+                .length,
+            },
+          ].map((tab) => (
             <button
               key={tab.value}
               onClick={() => setFilter(tab.value)}
@@ -227,11 +268,13 @@ const OrderNotifications = ({ onClose }) => {
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${
-                  filter === tab.value
-                    ? 'bg-white/20 text-white'
-                    : 'bg-gray-200 text-text-muted'
-                }`}>
+                <span
+                  className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${
+                    filter === tab.value
+                      ? 'bg-white/20 text-white'
+                      : 'bg-gray-200 text-text-muted'
+                  }`}
+                >
                   {tab.count}
                 </span>
               )}
@@ -242,7 +285,9 @@ const OrderNotifications = ({ onClose }) => {
         {/* Actions Bar */}
         {unreadCount > 0 && (
           <div className="flex items-center justify-between px-4 py-3 bg-gray-50/80">
-            <span className="text-sm text-text-muted">{unreadCount} unread notifications</span>
+            <span className="text-sm text-text-muted">
+              {unreadCount} unread notifications
+            </span>
             <button
               onClick={handleMarkAllAsRead}
               className="flex items-center gap-2 text-sm font-medium text-bottle-green hover:text-bottle-green/80 transition-colors"
@@ -273,11 +318,13 @@ const OrderNotifications = ({ onClose }) => {
           ) : filteredNotifications.length === 0 ? (
             <div className="text-center py-8 px-4">
               <Bell className="w-12 h-12 text-text-muted/40 mx-auto mb-3" />
-              <h4 className="font-medium text-text-dark mb-1">No notifications</h4>
+              <h4 className="font-medium text-text-dark mb-1">
+                No notifications
+              </h4>
               <p className="text-text-muted text-sm">
-                {filter === 'unread' 
-                  ? "You're all caught up!" 
-                  : "New notifications will appear here"}
+                {filter === 'unread'
+                  ? "You're all caught up!"
+                  : 'New notifications will appear here'}
               </p>
             </div>
           ) : (
@@ -285,7 +332,7 @@ const OrderNotifications = ({ onClose }) => {
               {filteredNotifications.map((notification) => {
                 const typeConfig = notificationTypes[notification.type] || {
                   icon: Bell,
-                  color: 'text-gray-600 bg-gray-100'
+                  color: 'text-gray-600 bg-gray-100',
                 };
                 const Icon = typeConfig.icon;
 
@@ -295,32 +342,38 @@ const OrderNotifications = ({ onClose }) => {
                     className={`p-4 hover:bg-gray-50/80 transition-colors cursor-pointer ${
                       !notification.read ? 'bg-blue-50/30' : ''
                     }`}
-                    onClick={() => !notification.read && handleMarkAsRead(notification.id)}
+                    onClick={() =>
+                      !notification.read && handleMarkAsRead(notification.id)
+                    }
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-xl ${typeConfig.color} flex-shrink-0`}>
+                      <div
+                        className={`p-2 rounded-xl ${typeConfig.color} flex-shrink-0`}
+                      >
                         <Icon className="w-5 h-5" />
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className={`font-medium ${!notification.read ? 'text-text-dark' : 'text-text-muted'}`}>
+                          <h4
+                            className={`font-medium ${!notification.read ? 'text-text-dark' : 'text-text-muted'}`}
+                          >
                             {notification.title}
                           </h4>
                           {!notification.read && (
                             <div className="w-2 h-2 bg-bottle-green rounded-full flex-shrink-0 mt-2"></div>
                           )}
                         </div>
-                        
+
                         <p className="text-sm text-text-muted mt-1 leading-relaxed">
                           {notification.message}
                         </p>
-                        
+
                         <div className="flex items-center justify-between mt-3">
                           <span className="text-xs text-text-muted">
                             {getRelativeTime(notification.createdAt)}
                           </span>
-                          
+
                           {notification.actionUrl && (
                             <button
                               onClick={(e) => {
@@ -347,9 +400,7 @@ const OrderNotifications = ({ onClose }) => {
         {/* Footer */}
         <div className="border-t border-gray-200 p-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-text-muted">
-              Auto-refresh: 30s
-            </span>
+            <span className="text-text-muted">Auto-refresh: 30s</span>
             <button
               onClick={() => refetch()}
               className="text-bottle-green hover:text-bottle-green/80 font-medium transition-colors"
@@ -365,15 +416,16 @@ const OrderNotifications = ({ onClose }) => {
 
 // Notification Badge Component (for use in headers)
 export const NotificationBadge = ({ className = '' }) => {
-  const {
-    data: notificationsData,
-    isLoading
-  } = useGetOrderNotificationsQuery(undefined, {
-    pollingInterval: 30000, // Poll every 30 seconds
-    refetchOnMountOrArgChange: true
-  });
+  const { data: notificationsData, isLoading } = useGetOrderNotificationsQuery(
+    undefined,
+    {
+      pollingInterval: 30000, // Poll every 30 seconds
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-  const unreadCount = notificationsData?.data?.notifications?.filter(n => !n.read).length || 0;
+  const unreadCount =
+    notificationsData?.data?.notifications?.filter((n) => !n.read).length || 0;
 
   if (isLoading || unreadCount === 0) {
     return (

@@ -10,7 +10,7 @@ import {
   Clock,
   ChevronDown,
   SlidersHorizontal,
-  RotateCcw
+  RotateCcw,
 } from 'lucide-react';
 
 // Order filters slice for Redux state management
@@ -26,18 +26,18 @@ const initialFiltersState = {
   sortOrder: 'desc',
   restaurantId: '',
   paymentMethod: 'all',
-  deliveryArea: 'all'
+  deliveryArea: 'all',
 };
 
-const OrderFilters = ({ 
-  onFiltersChange, 
+const OrderFilters = ({
+  onFiltersChange,
   totalResults = 0,
   isLoading = false,
   availableRestaurants = [],
-  availableAreas = []
+  availableAreas = [],
 }) => {
   const dispatch = useDispatch();
-  
+
   // Local state for filters
   const [filters, setFilters] = useState(initialFiltersState);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -47,11 +47,31 @@ const OrderFilters = ({
   const statusOptions = [
     { value: 'all', label: 'All Orders', count: 0 },
     { value: 'pending', label: 'Pending', count: 0, color: 'text-orange-600' },
-    { value: 'confirmed', label: 'Confirmed', count: 0, color: 'text-blue-600' },
-    { value: 'prepared', label: 'Prepared', count: 0, color: 'text-purple-600' },
+    {
+      value: 'confirmed',
+      label: 'Confirmed',
+      count: 0,
+      color: 'text-blue-600',
+    },
+    {
+      value: 'prepared',
+      label: 'Prepared',
+      count: 0,
+      color: 'text-purple-600',
+    },
     { value: 'shipped', label: 'Shipped', count: 0, color: 'text-indigo-600' },
-    { value: 'delivered', label: 'Delivered', count: 0, color: 'text-bottle-green' },
-    { value: 'cancelled', label: 'Cancelled', count: 0, color: 'text-tomato-red' }
+    {
+      value: 'delivered',
+      label: 'Delivered',
+      count: 0,
+      color: 'text-bottle-green',
+    },
+    {
+      value: 'cancelled',
+      label: 'Cancelled',
+      count: 0,
+      color: 'text-tomato-red',
+    },
   ];
 
   // Date range options
@@ -59,7 +79,7 @@ const OrderFilters = ({
     { value: '7d', label: 'Last 7 Days' },
     { value: '30d', label: 'Last 30 Days' },
     { value: '90d', label: 'Last 90 Days' },
-    { value: 'custom', label: 'Custom Range' }
+    { value: 'custom', label: 'Custom Range' },
   ];
 
   // Sort options
@@ -68,7 +88,7 @@ const OrderFilters = ({
     { value: 'totalAmount', label: 'Amount' },
     { value: 'status', label: 'Status' },
     { value: 'restaurant', label: 'Restaurant' },
-    { value: 'deliveryDate', label: 'Delivery Date' }
+    { value: 'deliveryDate', label: 'Delivery Date' },
   ];
 
   // Payment method options
@@ -77,25 +97,25 @@ const OrderFilters = ({
     { value: 'cash', label: 'Cash on Delivery' },
     { value: 'card', label: 'Credit/Debit Card' },
     { value: 'mobile', label: 'Mobile Payment' },
-    { value: 'bank', label: 'Bank Transfer' }
+    { value: 'bank', label: 'Bank Transfer' },
   ];
 
   // Handle filter changes
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
-    
+
     // Reset custom dates when changing from custom range
     if (key === 'dateRange' && value !== 'custom') {
       newFilters.customDateFrom = '';
       newFilters.customDateTo = '';
       setShowDatePicker(false);
     }
-    
+
     // Show date picker for custom range
     if (key === 'dateRange' && value === 'custom') {
       setShowDatePicker(true);
     }
-    
+
     setFilters(newFilters);
   };
 
@@ -103,14 +123,14 @@ const OrderFilters = ({
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       const searchParams = { ...filters };
-      
+
       // Clean up empty filters
-      Object.keys(searchParams).forEach(key => {
+      Object.keys(searchParams).forEach((key) => {
         if (searchParams[key] === '' || searchParams[key] === 'all') {
           delete searchParams[key];
         }
       });
-      
+
       onFiltersChange(searchParams);
     }, 300); // 300ms debounce
 
@@ -126,9 +146,13 @@ const OrderFilters = ({
 
   // Check if any filters are active
   const hasActiveFilters = useMemo(() => {
-    return Object.keys(filters).some(key => {
+    return Object.keys(filters).some((key) => {
       if (key === 'sortBy' || key === 'sortOrder') return false; // Ignore default sorting
-      return filters[key] !== initialFiltersState[key] && filters[key] !== '' && filters[key] !== 'all';
+      return (
+        filters[key] !== initialFiltersState[key] &&
+        filters[key] !== '' &&
+        filters[key] !== 'all'
+      );
     });
   }, [filters]);
 
@@ -163,7 +187,7 @@ const OrderFilters = ({
             onChange={(e) => handleFilterChange('status', e.target.value)}
             className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
           >
-            {statusOptions.map(option => (
+            {statusOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label} {option.count > 0 && `(${option.count})`}
               </option>
@@ -176,7 +200,7 @@ const OrderFilters = ({
             onChange={(e) => handleFilterChange('dateRange', e.target.value)}
             className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
           >
-            {dateRangeOptions.map(option => (
+            {dateRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -188,7 +212,7 @@ const OrderFilters = ({
             onClick={() => setShowAdvanced(!showAdvanced)}
             className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-medium transition-all duration-200 whitespace-nowrap ${
               showAdvanced || hasActiveFilters
-                ? 'bg-bottle-green text-white' 
+                ? 'bg-bottle-green text-white'
                 : 'bg-gray-100 hover:bg-gray-200 text-text-dark'
             }`}
           >
@@ -216,7 +240,7 @@ const OrderFilters = ({
           <span>
             {isLoading ? 'Loading...' : `${totalResults} orders found`}
           </span>
-          
+
           {/* Sort Options */}
           <div className="flex items-center gap-3">
             <span>Sort by:</span>
@@ -225,19 +249,26 @@ const OrderFilters = ({
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
               className="bg-transparent border-0 text-text-dark focus:ring-0 text-sm"
             >
-              {sortOptions.map(option => (
+              {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
             </select>
-            
+
             <button
-              onClick={() => handleFilterChange('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc')}
+              onClick={() =>
+                handleFilterChange(
+                  'sortOrder',
+                  filters.sortOrder === 'asc' ? 'desc' : 'asc'
+                )
+              }
               className="text-text-muted hover:text-text-dark transition-colors"
               title={`Sort ${filters.sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
             >
-              <ChevronDown className={`w-4 h-4 transition-transform ${filters.sortOrder === 'asc' ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`w-4 h-4 transition-transform ${filters.sortOrder === 'asc' ? 'rotate-180' : ''}`}
+              />
             </button>
           </div>
         </div>
@@ -258,14 +289,18 @@ const OrderFilters = ({
                   type="number"
                   placeholder="Min amount"
                   value={filters.amountMin}
-                  onChange={(e) => handleFilterChange('amountMin', e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange('amountMin', e.target.value)
+                  }
                   className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
                 />
                 <input
                   type="number"
                   placeholder="Max amount"
                   value={filters.amountMax}
-                  onChange={(e) => handleFilterChange('amountMax', e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange('amountMax', e.target.value)
+                  }
                   className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
                 />
               </div>
@@ -279,11 +314,13 @@ const OrderFilters = ({
               </label>
               <select
                 value={filters.restaurantId}
-                onChange={(e) => handleFilterChange('restaurantId', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange('restaurantId', e.target.value)
+                }
                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
               >
                 <option value="">All Restaurants</option>
-                {availableRestaurants.map(restaurant => (
+                {availableRestaurants.map((restaurant) => (
                   <option key={restaurant.id} value={restaurant.id}>
                     {restaurant.name}
                   </option>
@@ -299,10 +336,12 @@ const OrderFilters = ({
               </label>
               <select
                 value={filters.paymentMethod}
-                onChange={(e) => handleFilterChange('paymentMethod', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange('paymentMethod', e.target.value)
+                }
                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
               >
-                {paymentMethodOptions.map(option => (
+                {paymentMethodOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -318,11 +357,13 @@ const OrderFilters = ({
               </label>
               <select
                 value={filters.deliveryArea}
-                onChange={(e) => handleFilterChange('deliveryArea', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange('deliveryArea', e.target.value)
+                }
                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
               >
                 <option value="all">All Areas</option>
-                {availableAreas.map(area => (
+                {availableAreas.map((area) => (
                   <option key={area} value={area}>
                     {area}
                   </option>
@@ -340,20 +381,28 @@ const OrderFilters = ({
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md">
                 <div>
-                  <label className="block text-xs text-text-muted mb-1">From Date</label>
+                  <label className="block text-xs text-text-muted mb-1">
+                    From Date
+                  </label>
                   <input
                     type="date"
                     value={filters.customDateFrom}
-                    onChange={(e) => handleFilterChange('customDateFrom', e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange('customDateFrom', e.target.value)
+                    }
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-text-muted mb-1">To Date</label>
+                  <label className="block text-xs text-text-muted mb-1">
+                    To Date
+                  </label>
                   <input
                     type="date"
                     value={filters.customDateTo}
-                    onChange={(e) => handleFilterChange('customDateTo', e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange('customDateTo', e.target.value)
+                    }
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
                   />
                 </div>
@@ -367,8 +416,10 @@ const OrderFilters = ({
       {hasActiveFilters && (
         <div className="border-t border-gray-100 p-4 bg-gray-25">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-text-dark">Active filters:</span>
-            
+            <span className="text-sm font-medium text-text-dark">
+              Active filters:
+            </span>
+
             {filters.search && (
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
                 Search: "{filters.search}"
@@ -383,7 +434,11 @@ const OrderFilters = ({
 
             {filters.status !== 'all' && (
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
-                Status: {statusOptions.find(opt => opt.value === filters.status)?.label}
+                Status:{' '}
+                {
+                  statusOptions.find((opt) => opt.value === filters.status)
+                    ?.label
+                }
                 <button
                   onClick={() => handleFilterChange('status', 'all')}
                   className="hover:bg-bottle-green/20 rounded-full p-0.5"
@@ -395,7 +450,8 @@ const OrderFilters = ({
 
             {(filters.amountMin || filters.amountMax) && (
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
-                Amount: ৳{filters.amountMin || '0'} - ৳{filters.amountMax || '∞'}
+                Amount: ৳{filters.amountMin || '0'} - ৳
+                {filters.amountMax || '∞'}
                 <button
                   onClick={() => {
                     handleFilterChange('amountMin', '');
@@ -410,7 +466,12 @@ const OrderFilters = ({
 
             {filters.paymentMethod !== 'all' && (
               <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
-                Payment: {paymentMethodOptions.find(opt => opt.value === filters.paymentMethod)?.label}
+                Payment:{' '}
+                {
+                  paymentMethodOptions.find(
+                    (opt) => opt.value === filters.paymentMethod
+                  )?.label
+                }
                 <button
                   onClick={() => handleFilterChange('paymentMethod', 'all')}
                   className="hover:bg-bottle-green/20 rounded-full p-0.5"

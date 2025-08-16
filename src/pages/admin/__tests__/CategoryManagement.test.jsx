@@ -14,7 +14,7 @@ vi.mock('../../../store/slices/apiSlice', async () => {
     useCreateAdminCategoryMutation: vi.fn(),
     useUpdateAdminCategoryMutation: vi.fn(),
     useDeleteAdminCategoryMutation: vi.fn(),
-    useBulkUpdateCategoriesMutation: vi.fn()
+    useBulkUpdateCategoriesMutation: vi.fn(),
   };
 });
 
@@ -42,9 +42,9 @@ const mockCategoriesData = {
             parentId: 'cat-1',
             isActive: true,
             order: 1,
-            productsCount: 12
-          }
-        ]
+            productsCount: 12,
+          },
+        ],
       },
       {
         id: 'cat-2',
@@ -57,10 +57,10 @@ const mockCategoriesData = {
         order: 2,
         productsCount: 28,
         createdAt: '2024-01-08T10:00:00Z',
-        children: []
-      }
-    ]
-  }
+        children: [],
+      },
+    ],
+  },
 };
 
 describe('CategoryManagement', () => {
@@ -69,18 +69,30 @@ describe('CategoryManagement', () => {
       data: mockCategoriesData,
       isLoading: false,
       error: null,
-      refetch: vi.fn()
+      refetch: vi.fn(),
     };
 
     apiSlice.useGetAdminCategoriesQuery.mockReturnValue({
       ...defaultResult,
-      ...queryResult
+      ...queryResult,
     });
 
-    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useDeleteAdminCategoryMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useBulkUpdateCategoriesMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
+    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useDeleteAdminCategoryMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useBulkUpdateCategoriesMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
 
     return renderWithProviders(<CategoryManagement />, {
       preloadedState: {
@@ -89,12 +101,12 @@ describe('CategoryManagement', () => {
           user: {
             id: 'admin-1',
             role: 'admin',
-            name: 'Admin User'
+            name: 'Admin User',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -106,12 +118,16 @@ describe('CategoryManagement', () => {
     renderCategoryManagement();
 
     expect(screen.getByText('Category Management')).toBeInTheDocument();
-    expect(screen.getByText('Organize products with hierarchical categories and manage the catalog structure')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Organize products with hierarchical categories and manage the catalog structure'
+      )
+    ).toBeInTheDocument();
   });
 
   it('displays loading state', () => {
     renderCategoryManagement({ isLoading: true });
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
@@ -124,7 +140,9 @@ describe('CategoryManagement', () => {
     });
 
     // Check descriptions
-    expect(screen.getByText('Fresh vegetables from local farms')).toBeInTheDocument();
+    expect(
+      screen.getByText('Fresh vegetables from local farms')
+    ).toBeInTheDocument();
     expect(screen.getByText('Seasonal fruits')).toBeInTheDocument();
 
     // Check product counts
@@ -163,10 +181,13 @@ describe('CategoryManagement', () => {
 
   it('creates new category with valid data', async () => {
     const user = userEvent.setup();
-    const mockCreateCategory = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({ data: { id: 'new-cat' } }) 
+    const mockCreateCategory = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({ data: { id: 'new-cat' } }),
     });
-    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([mockCreateCategory, { isLoading: false }]);
+    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([
+      mockCreateCategory,
+      { isLoading: false },
+    ]);
 
     renderCategoryManagement();
 
@@ -181,7 +202,7 @@ describe('CategoryManagement', () => {
     // Fill form
     await user.type(screen.getByLabelText('Category Name'), 'Test Category');
     await user.type(screen.getByLabelText('Description'), 'Test description');
-    
+
     // Submit
     const createButton = screen.getByText('Create Category');
     await user.click(createButton);
@@ -190,7 +211,7 @@ describe('CategoryManagement', () => {
       expect(mockCreateCategory).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'Test Category',
-          description: 'Test description'
+          description: 'Test description',
         })
       );
     });
@@ -216,10 +237,13 @@ describe('CategoryManagement', () => {
 
   it('updates category with changes', async () => {
     const user = userEvent.setup();
-    const mockUpdateCategory = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({}) 
+    const mockUpdateCategory = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({}),
     });
-    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([mockUpdateCategory, { isLoading: false }]);
+    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([
+      mockUpdateCategory,
+      { isLoading: false },
+    ]);
 
     renderCategoryManagement();
 
@@ -248,7 +272,7 @@ describe('CategoryManagement', () => {
       expect(mockUpdateCategory).toHaveBeenCalledWith(
         expect.objectContaining({
           id: 'cat-1',
-          name: 'Fresh Vegetables'
+          name: 'Fresh Vegetables',
         })
       );
     });
@@ -256,10 +280,13 @@ describe('CategoryManagement', () => {
 
   it('handles category deletion', async () => {
     const user = userEvent.setup();
-    const mockDeleteCategory = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({}) 
+    const mockDeleteCategory = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({}),
     });
-    apiSlice.useDeleteAdminCategoryMutation.mockReturnValue([mockDeleteCategory, { isLoading: false }]);
+    apiSlice.useDeleteAdminCategoryMutation.mockReturnValue([
+      mockDeleteCategory,
+      { isLoading: false },
+    ]);
 
     renderCategoryManagement();
 
@@ -284,10 +311,13 @@ describe('CategoryManagement', () => {
 
   it('handles category status toggle', async () => {
     const user = userEvent.setup();
-    const mockUpdateCategory = vi.fn().mockReturnValue({ 
-      unwrap: vi.fn().mockResolvedValue({}) 
+    const mockUpdateCategory = vi.fn().mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({}),
     });
-    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([mockUpdateCategory, { isLoading: false }]);
+    apiSlice.useUpdateAdminCategoryMutation.mockReturnValue([
+      mockUpdateCategory,
+      { isLoading: false },
+    ]);
 
     renderCategoryManagement();
 
@@ -301,7 +331,7 @@ describe('CategoryManagement', () => {
 
     expect(mockUpdateCategory).toHaveBeenCalledWith({
       id: 'cat-1',
-      isActive: false
+      isActive: false,
     });
   });
 
@@ -340,8 +370,8 @@ describe('CategoryManagement', () => {
   });
 
   it('handles API errors gracefully', async () => {
-    renderCategoryManagement({ 
-      error: { status: 500, data: { error: 'Server error' } }
+    renderCategoryManagement({
+      error: { status: 500, data: { error: 'Server error' } },
     });
 
     await waitFor(() => {
@@ -354,14 +384,18 @@ describe('CategoryManagement', () => {
     renderCategoryManagement({
       data: {
         data: {
-          categories: []
-        }
-      }
+          categories: [],
+        },
+      },
     });
 
     await waitFor(() => {
       expect(screen.getByText('No categories found')).toBeInTheDocument();
-      expect(screen.getByText('Create your first category to start organizing products')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Create your first category to start organizing products'
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -378,7 +412,10 @@ describe('CategoryManagement', () => {
   it('validates required fields in form', async () => {
     const user = userEvent.setup();
     const mockCreateCategory = vi.fn();
-    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([mockCreateCategory, { isLoading: false }]);
+    apiSlice.useCreateAdminCategoryMutation.mockReturnValue([
+      mockCreateCategory,
+      { isLoading: false },
+    ]);
 
     renderCategoryManagement();
 
@@ -403,15 +440,17 @@ describe('CategoryManagement', () => {
 
     await waitFor(() => {
       // Check for proper heading hierarchy
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Category Management');
-      
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        'Category Management'
+      );
+
       // Check all buttons have proper labels or titles
       const actionButtons = screen.getAllByRole('button');
-      actionButtons.forEach(button => {
+      actionButtons.forEach((button) => {
         expect(
-          button.textContent || 
-          button.getAttribute('title') || 
-          button.getAttribute('aria-label')
+          button.textContent ||
+            button.getAttribute('title') ||
+            button.getAttribute('aria-label')
         ).toBeTruthy();
       });
     });
@@ -428,9 +467,9 @@ describe('CategoryManagement', () => {
     // Test tab navigation
     const addButton = screen.getByText('Add Category');
     addButton.focus();
-    
+
     await user.tab();
-    
+
     // Next focusable element should be focused
     expect(document.activeElement).not.toBe(addButton);
   });

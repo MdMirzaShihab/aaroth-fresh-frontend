@@ -32,25 +32,28 @@ const Homepage = () => {
   // Fix data access patterns to match actual API response
   const featuredListings = featuredData?.data || [];
   const categories = categoriesData?.data || [];
-  
+
   // Debug logging - remove in production
   console.log('Homepage - Featured Data:', featuredData);
   console.log('Homepage - Categories Data:', categoriesData);
   console.log('Homepage - Transformed Products:', featuredListings.slice(0, 1));
-  
+
   // Transform featured listings to expected product format
-  const featuredProducts = featuredListings.map(listing => ({
+  const featuredProducts = featuredListings.map((listing) => ({
     id: listing.id,
     name: listing.productId?.name || 'Unknown Product',
     category: listing.productId?.category,
-    images: listing.images?.length > 0 ? listing.images.map(img => img.url) : (listing.productId?.images || []),
-    averagePrice: listing.effectivePrice || (listing.pricing?.[0]?.pricePerUnit),
+    images:
+      listing.images?.length > 0
+        ? listing.images.map((img) => img.url)
+        : listing.productId?.images || [],
+    averagePrice: listing.effectivePrice || listing.pricing?.[0]?.pricePerUnit,
     unit: listing.pricing?.[0]?.unit || listing.availability?.unit || 'unit',
     activeListingsCount: 1, // Each listing represents one vendor
     vendorName: listing.vendorId?.businessName || 'Local Vendor',
     qualityGrade: listing.qualityGrade,
     isInSeason: listing.availability?.isInSeason,
-    quantityAvailable: listing.availability?.quantityAvailable
+    quantityAvailable: listing.availability?.quantityAvailable,
   }));
 
   return (
@@ -205,7 +208,9 @@ const Homepage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-lg font-bold text-bottle-green">
-                          {product.averagePrice ? `৳${product.averagePrice.toFixed(2)}` : 'Price on request'}
+                          {product.averagePrice
+                            ? `৳${product.averagePrice.toFixed(2)}`
+                            : 'Price on request'}
                         </span>
                         <span className="text-sm text-text-muted">
                           per {product.unit}
@@ -299,10 +304,12 @@ const Homepage = () => {
                 <Users className="w-8 h-8 text-white" />
               </div>
               <div className="text-4xl font-bold text-bottle-green mb-2">
-                {categories.length > 0 
-                  ? categories.reduce((total, cat) => total + (cat.productCount || 0), 0) || categories.length * 10
-                  : '150+'
-                }
+                {categories.length > 0
+                  ? categories.reduce(
+                      (total, cat) => total + (cat.productCount || 0),
+                      0
+                    ) || categories.length * 10
+                  : '150+'}
               </div>
               <div className="text-text-muted">Local Vendors</div>
             </div>

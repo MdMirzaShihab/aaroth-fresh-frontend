@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ShoppingCart, 
-  Plus, 
-  Minus, 
-  X, 
-  MapPin, 
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  X,
+  MapPin,
   Clock,
   CreditCard,
   Truck,
   CheckCircle,
   AlertCircle,
   Calendar,
-  Edit
+  Edit,
 } from 'lucide-react';
-import { selectCart, updateQuantity, removeFromCart, clearCart } from '../../store/slices/cartSlice';
+import {
+  selectCart,
+  updateQuantity,
+  removeFromCart,
+  clearCart,
+} from '../../store/slices/cartSlice';
 import { selectAuth } from '../../store/slices/authSlice';
 import { useCreateOrderMutation } from '../../store/slices/apiSlice';
 import { formatCurrency, formatPhoneForDisplay } from '../../utils';
@@ -32,13 +37,14 @@ const PlaceOrder = () => {
     phone: user?.phone || '',
     notes: '',
     preferredDeliveryTime: 'asap',
-    customDeliveryTime: ''
+    customDeliveryTime: '',
   });
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [step, setStep] = useState(1); // 1: Cart Review, 2: Delivery, 3: Payment, 4: Confirmation
 
   // API mutation
-  const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation();
+  const [createOrder, { isLoading: isCreatingOrder }] =
+    useCreateOrderMutation();
 
   // Calculations
   const subtotal = total;
@@ -63,33 +69,33 @@ const PlaceOrder = () => {
 
     try {
       const orderData = {
-        items: cartItems.map(item => ({
+        items: cartItems.map((item) => ({
           productId: item.id,
           quantity: item.quantity,
           price: item.price,
-          vendorId: item.vendorId
+          vendorId: item.vendorId,
         })),
         deliveryAddress: deliveryInfo.address,
         phone: deliveryInfo.phone,
         notes: deliveryInfo.notes,
-        preferredDeliveryTime: deliveryInfo.preferredDeliveryTime === 'custom' 
-          ? deliveryInfo.customDeliveryTime 
-          : deliveryInfo.preferredDeliveryTime,
+        preferredDeliveryTime:
+          deliveryInfo.preferredDeliveryTime === 'custom'
+            ? deliveryInfo.customDeliveryTime
+            : deliveryInfo.preferredDeliveryTime,
         paymentMethod,
         subtotal,
         deliveryFee,
         tax,
-        totalAmount: finalTotal
+        totalAmount: finalTotal,
       };
 
       const response = await createOrder(orderData).unwrap();
-      
+
       // Clear cart and redirect
       dispatch(clearCart());
-      navigate(`/restaurant/orders/${response.orderId}`, { 
-        state: { orderPlaced: true } 
+      navigate(`/restaurant/orders/${response.orderId}`, {
+        state: { orderPlaced: true },
       });
-
     } catch (error) {
       console.error('Failed to create order:', error);
       // Handle error (could show a toast notification)
@@ -102,7 +108,9 @@ const PlaceOrder = () => {
       <div className="max-w-2xl mx-auto text-center py-12">
         <div className="glass rounded-3xl p-12">
           <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-text-dark mb-4">Your cart is empty</h2>
+          <h2 className="text-2xl font-bold text-text-dark mb-4">
+            Your cart is empty
+          </h2>
           <p className="text-text-muted mb-8">
             Add some fresh products to get started
           </p>
@@ -132,29 +140,35 @@ const PlaceOrder = () => {
             { step: 1, title: 'Cart Review', icon: ShoppingCart },
             { step: 2, title: 'Delivery Details', icon: MapPin },
             { step: 3, title: 'Payment', icon: CreditCard },
-            { step: 4, title: 'Confirmation', icon: CheckCircle }
+            { step: 4, title: 'Confirmation', icon: CheckCircle },
           ].map(({ step: stepNum, title, icon: Icon }) => (
             <div key={stepNum} className="flex items-center">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
-                step >= stepNum 
-                  ? 'bg-gradient-primary text-white' 
-                  : 'bg-gray-200 text-gray-500'
-              }`}>
+              <div
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
+                  step >= stepNum
+                    ? 'bg-gradient-primary text-white'
+                    : 'bg-gray-200 text-gray-500'
+                }`}
+              >
                 {step > stepNum ? (
                   <CheckCircle className="w-5 h-5" />
                 ) : (
                   <Icon className="w-5 h-5" />
                 )}
               </div>
-              <span className={`ml-3 font-medium hidden sm:inline ${
-                step >= stepNum ? 'text-text-dark' : 'text-text-muted'
-              }`}>
+              <span
+                className={`ml-3 font-medium hidden sm:inline ${
+                  step >= stepNum ? 'text-text-dark' : 'text-text-muted'
+                }`}
+              >
                 {title}
               </span>
               {stepNum < 4 && (
-                <div className={`hidden sm:block w-16 h-0.5 ml-4 ${
-                  step > stepNum ? 'bg-bottle-green' : 'bg-gray-200'
-                }`} />
+                <div
+                  className={`hidden sm:block w-16 h-0.5 ml-4 ${
+                    step > stepNum ? 'bg-bottle-green' : 'bg-gray-200'
+                  }`}
+                />
               )}
             </div>
           ))}
@@ -164,18 +178,24 @@ const PlaceOrder = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          
           {/* Step 1: Cart Review */}
           {step === 1 && (
             <div className="glass rounded-3xl p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-text-dark">Cart Review</h2>
-                <span className="text-text-muted">{cartItems.length} items</span>
+                <h2 className="text-xl font-semibold text-text-dark">
+                  Cart Review
+                </h2>
+                <span className="text-text-muted">
+                  {cartItems.length} items
+                </span>
               </div>
 
               <div className="space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="bg-white/50 border border-gray-100 rounded-2xl p-4">
+                  <div
+                    key={item.id}
+                    className="bg-white/50 border border-gray-100 rounded-2xl p-4"
+                  >
                     <div className="flex items-center gap-4">
                       {/* Product Image */}
                       <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
@@ -194,8 +214,12 @@ const PlaceOrder = () => {
 
                       {/* Product Details */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-text-dark truncate">{item.name}</h3>
-                        <p className="text-sm text-text-muted">{item.vendorName}</p>
+                        <h3 className="font-semibold text-text-dark truncate">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-text-muted">
+                          {item.vendorName}
+                        </p>
                         <p className="text-sm font-medium text-text-dark">
                           {formatCurrency(item.price)} per {item.unit}
                         </p>
@@ -204,7 +228,9 @@ const PlaceOrder = () => {
                       {/* Quantity Controls */}
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity - 1)
+                          }
                           className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors touch-target"
                         >
                           <Minus className="w-4 h-4" />
@@ -213,7 +239,9 @@ const PlaceOrder = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity + 1)
+                          }
                           className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors touch-target"
                         >
                           <Plus className="w-4 h-4" />
@@ -259,7 +287,9 @@ const PlaceOrder = () => {
           {/* Step 2: Delivery Details */}
           {step === 2 && (
             <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark mb-6">Delivery Details</h2>
+              <h2 className="text-xl font-semibold text-text-dark mb-6">
+                Delivery Details
+              </h2>
 
               <div className="space-y-6">
                 {/* Delivery Address */}
@@ -269,7 +299,12 @@ const PlaceOrder = () => {
                   </label>
                   <textarea
                     value={deliveryInfo.address}
-                    onChange={(e) => setDeliveryInfo(prev => ({ ...prev, address: e.target.value }))}
+                    onChange={(e) =>
+                      setDeliveryInfo((prev) => ({
+                        ...prev,
+                        address: e.target.value,
+                      }))
+                    }
                     placeholder="Enter your complete delivery address"
                     rows={3}
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
@@ -285,7 +320,12 @@ const PlaceOrder = () => {
                   <input
                     type="tel"
                     value={deliveryInfo.phone}
-                    onChange={(e) => setDeliveryInfo(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) =>
+                      setDeliveryInfo((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
                     placeholder="+880 1712-345-678"
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
                     required
@@ -304,18 +344,32 @@ const PlaceOrder = () => {
                         name="deliveryTime"
                         value="asap"
                         checked={deliveryInfo.preferredDeliveryTime === 'asap'}
-                        onChange={(e) => setDeliveryInfo(prev => ({ ...prev, preferredDeliveryTime: e.target.value }))}
+                        onChange={(e) =>
+                          setDeliveryInfo((prev) => ({
+                            ...prev,
+                            preferredDeliveryTime: e.target.value,
+                          }))
+                        }
                         className="text-bottle-green focus:ring-bottle-green/20"
                       />
-                      <span className="text-text-dark">As soon as possible</span>
+                      <span className="text-text-dark">
+                        As soon as possible
+                      </span>
                     </label>
                     <label className="flex items-center gap-3">
                       <input
                         type="radio"
                         name="deliveryTime"
                         value="custom"
-                        checked={deliveryInfo.preferredDeliveryTime === 'custom'}
-                        onChange={(e) => setDeliveryInfo(prev => ({ ...prev, preferredDeliveryTime: e.target.value }))}
+                        checked={
+                          deliveryInfo.preferredDeliveryTime === 'custom'
+                        }
+                        onChange={(e) =>
+                          setDeliveryInfo((prev) => ({
+                            ...prev,
+                            preferredDeliveryTime: e.target.value,
+                          }))
+                        }
                         className="text-bottle-green focus:ring-bottle-green/20"
                       />
                       <span className="text-text-dark">Schedule for later</span>
@@ -324,7 +378,12 @@ const PlaceOrder = () => {
                       <input
                         type="datetime-local"
                         value={deliveryInfo.customDeliveryTime}
-                        onChange={(e) => setDeliveryInfo(prev => ({ ...prev, customDeliveryTime: e.target.value }))}
+                        onChange={(e) =>
+                          setDeliveryInfo((prev) => ({
+                            ...prev,
+                            customDeliveryTime: e.target.value,
+                          }))
+                        }
                         min={new Date().toISOString().slice(0, 16)}
                         className="ml-6 px-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
                       />
@@ -339,7 +398,12 @@ const PlaceOrder = () => {
                   </label>
                   <textarea
                     value={deliveryInfo.notes}
-                    onChange={(e) => setDeliveryInfo(prev => ({ ...prev, notes: e.target.value }))}
+                    onChange={(e) =>
+                      setDeliveryInfo((prev) => ({
+                        ...prev,
+                        notes: e.target.value,
+                      }))
+                    }
                     placeholder="Any special delivery instructions..."
                     rows={2}
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
@@ -368,7 +432,9 @@ const PlaceOrder = () => {
           {/* Step 3: Payment Method */}
           {step === 3 && (
             <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark mb-6">Payment Method</h2>
+              <h2 className="text-xl font-semibold text-text-dark mb-6">
+                Payment Method
+              </h2>
 
               <div className="space-y-4">
                 <label className="flex items-center p-4 bg-white/50 border border-gray-200 rounded-2xl cursor-pointer hover:border-bottle-green/30 transition-all duration-200">
@@ -385,9 +451,13 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-green-600" />
                       </div>
-                      <span className="font-medium text-text-dark">Cash on Delivery</span>
+                      <span className="font-medium text-text-dark">
+                        Cash on Delivery
+                      </span>
                     </div>
-                    <p className="text-sm text-text-muted mt-1">Pay when your order arrives</p>
+                    <p className="text-sm text-text-muted mt-1">
+                      Pay when your order arrives
+                    </p>
                   </div>
                 </label>
 
@@ -404,12 +474,16 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-blue-600" />
                       </div>
-                      <span className="font-medium text-text-dark">Credit/Debit Card</span>
+                      <span className="font-medium text-text-dark">
+                        Credit/Debit Card
+                      </span>
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
                         Coming Soon
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted mt-1">Secure online payment</p>
+                    <p className="text-sm text-text-muted mt-1">
+                      Secure online payment
+                    </p>
                   </div>
                 </label>
 
@@ -426,12 +500,16 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-purple-600" />
                       </div>
-                      <span className="font-medium text-text-dark">Mobile Banking</span>
+                      <span className="font-medium text-text-dark">
+                        Mobile Banking
+                      </span>
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
                         Coming Soon
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted mt-1">bKash, Rocket, Nagad</p>
+                    <p className="text-sm text-text-muted mt-1">
+                      bKash, Rocket, Nagad
+                    </p>
                   </div>
                 </label>
               </div>
@@ -456,13 +534,17 @@ const PlaceOrder = () => {
           {/* Step 4: Final Review */}
           {step === 4 && (
             <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark mb-6">Order Confirmation</h2>
+              <h2 className="text-xl font-semibold text-text-dark mb-6">
+                Order Confirmation
+              </h2>
 
               <div className="space-y-6">
                 {/* Delivery Details Summary */}
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-text-dark">Delivery Details</h3>
+                    <h3 className="font-medium text-text-dark">
+                      Delivery Details
+                    </h3>
                     <button
                       onClick={() => setStep(2)}
                       className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium"
@@ -474,25 +556,32 @@ const PlaceOrder = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-start gap-2">
                       <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-text-muted">{deliveryInfo.address}</span>
+                      <span className="text-text-muted">
+                        {deliveryInfo.address}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-gray-400" />
                       <span className="text-text-muted">
-                        {deliveryInfo.preferredDeliveryTime === 'asap' 
-                          ? 'As soon as possible' 
-                          : `Scheduled for ${new Date(deliveryInfo.customDeliveryTime).toLocaleDateString()} at ${new Date(deliveryInfo.customDeliveryTime).toLocaleTimeString()}`
-                        }
+                        {deliveryInfo.preferredDeliveryTime === 'asap'
+                          ? 'As soon as possible'
+                          : `Scheduled for ${new Date(deliveryInfo.customDeliveryTime).toLocaleDateString()} at ${new Date(deliveryInfo.customDeliveryTime).toLocaleTimeString()}`}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="w-4 h-4 text-center text-gray-400">📞</span>
-                      <span className="text-text-muted">{formatPhoneForDisplay(deliveryInfo.phone)}</span>
+                      <span className="w-4 h-4 text-center text-gray-400">
+                        📞
+                      </span>
+                      <span className="text-text-muted">
+                        {formatPhoneForDisplay(deliveryInfo.phone)}
+                      </span>
                     </div>
                     {deliveryInfo.notes && (
                       <div className="flex items-start gap-2">
                         <AlertCircle className="w-4 h-4 text-gray-400 mt-0.5" />
-                        <span className="text-text-muted">{deliveryInfo.notes}</span>
+                        <span className="text-text-muted">
+                          {deliveryInfo.notes}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -501,7 +590,9 @@ const PlaceOrder = () => {
                 {/* Payment Method Summary */}
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-text-dark">Payment Method</h3>
+                    <h3 className="font-medium text-text-dark">
+                      Payment Method
+                    </h3>
                     <button
                       onClick={() => setStep(3)}
                       className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium"
@@ -549,12 +640,18 @@ const PlaceOrder = () => {
         {/* Order Summary Sidebar */}
         <div className="lg:col-span-1">
           <div className="glass rounded-3xl p-6 sticky top-6">
-            <h3 className="text-lg font-semibold text-text-dark mb-4">Order Summary</h3>
-            
+            <h3 className="text-lg font-semibold text-text-dark mb-4">
+              Order Summary
+            </h3>
+
             <div className="space-y-3 pb-4 border-b border-gray-100">
               <div className="flex justify-between">
-                <span className="text-text-muted">Subtotal ({cartItems.length} items)</span>
-                <span className="font-medium text-text-dark">{formatCurrency(subtotal)}</span>
+                <span className="text-text-muted">
+                  Subtotal ({cartItems.length} items)
+                </span>
+                <span className="font-medium text-text-dark">
+                  {formatCurrency(subtotal)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Delivery Fee</span>
@@ -568,13 +665,19 @@ const PlaceOrder = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Tax</span>
-                <span className="font-medium text-text-dark">{formatCurrency(tax)}</span>
+                <span className="font-medium text-text-dark">
+                  {formatCurrency(tax)}
+                </span>
               </div>
             </div>
-            
+
             <div className="flex justify-between pt-4 mb-6">
-              <span className="text-lg font-semibold text-text-dark">Total</span>
-              <span className="text-lg font-bold text-text-dark">{formatCurrency(finalTotal)}</span>
+              <span className="text-lg font-semibold text-text-dark">
+                Total
+              </span>
+              <span className="text-lg font-bold text-text-dark">
+                {formatCurrency(finalTotal)}
+              </span>
             </div>
 
             {deliveryFee > 0 && (

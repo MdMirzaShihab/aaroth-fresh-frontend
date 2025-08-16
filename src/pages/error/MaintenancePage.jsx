@@ -13,7 +13,8 @@ const MaintenancePage = () => {
             Under Maintenance
           </h1>
           <p className="text-text-muted mb-8">
-            We're currently performing scheduled maintenance. We'll be back shortly.
+            We're currently performing scheduled maintenance. We'll be back
+            shortly.
           </p>
           <div className="flex items-center justify-center gap-2 text-text-muted">
             <Clock className="w-4 h-4" />

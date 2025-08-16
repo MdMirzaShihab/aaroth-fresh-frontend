@@ -14,7 +14,7 @@ vi.mock('../../../store/slices/apiSlice', async () => {
     useGetAdminCategoriesQuery: vi.fn(),
     useUpdateAdminProductMutation: vi.fn(),
     useDeleteAdminProductMutation: vi.fn(),
-    useBulkUpdateProductsMutation: vi.fn()
+    useBulkUpdateProductsMutation: vi.fn(),
   };
 });
 
@@ -24,7 +24,7 @@ vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: () => mockNavigate
+    useNavigate: () => mockNavigate,
   };
 });
 
@@ -41,9 +41,11 @@ const mockProductsData = {
         unit: 'lb',
         status: 'active',
         listingsCount: 5,
-        images: [{ url: 'https://example.com/tomato.jpg', alt: 'Organic Tomatoes' }],
+        images: [
+          { url: 'https://example.com/tomato.jpg', alt: 'Organic Tomatoes' },
+        ],
         createdAt: '2024-01-10T10:00:00Z',
-        updatedAt: '2024-01-15T10:00:00Z'
+        updatedAt: '2024-01-15T10:00:00Z',
       },
       {
         id: '2',
@@ -56,25 +58,25 @@ const mockProductsData = {
         listingsCount: 2,
         images: [],
         createdAt: '2024-01-08T10:00:00Z',
-        updatedAt: '2024-01-12T10:00:00Z'
-      }
+        updatedAt: '2024-01-12T10:00:00Z',
+      },
     ],
     pagination: {
       totalProducts: 2,
       currentPage: 1,
       totalPages: 1,
-      limit: 15
-    }
-  }
+      limit: 15,
+    },
+  },
 };
 
 const mockCategoriesData = {
   data: {
     categories: [
       { id: 'cat-1', name: 'Vegetables' },
-      { id: 'cat-2', name: 'Leafy Greens' }
-    ]
-  }
+      { id: 'cat-2', name: 'Leafy Greens' },
+    ],
+  },
 };
 
 describe('ProductList', () => {
@@ -83,28 +85,37 @@ describe('ProductList', () => {
       data: mockProductsData,
       isLoading: false,
       error: null,
-      refetch: vi.fn()
+      refetch: vi.fn(),
     };
 
     const defaultCategoriesResult = {
       data: mockCategoriesData,
       isLoading: false,
-      error: null
+      error: null,
     };
 
     apiSlice.useGetAdminProductsQuery.mockReturnValue({
       ...defaultProductsResult,
-      ...queryResult
+      ...queryResult,
     });
 
     apiSlice.useGetAdminCategoriesQuery.mockReturnValue({
       ...defaultCategoriesResult,
-      ...categoriesResult
+      ...categoriesResult,
     });
 
-    apiSlice.useUpdateAdminProductMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useDeleteAdminProductMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
-    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([vi.fn(), { isLoading: false }]);
+    apiSlice.useUpdateAdminProductMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useDeleteAdminProductMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
+    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([
+      vi.fn(),
+      { isLoading: false },
+    ]);
 
     return renderWithProviders(<ProductList />, {
       preloadedState: {
@@ -113,12 +124,12 @@ describe('ProductList', () => {
           user: {
             id: 'admin-1',
             role: 'admin',
-            name: 'Admin User'
+            name: 'Admin User',
           },
           token: 'mock-token',
-          loading: false
-        }
-      }
+          loading: false,
+        },
+      },
     });
   };
 
@@ -130,12 +141,16 @@ describe('ProductList', () => {
     renderProductList();
 
     expect(screen.getByText('Product Management')).toBeInTheDocument();
-    expect(screen.getByText('Manage products, categories, and inventory across the platform')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Manage products, categories, and inventory across the platform'
+      )
+    ).toBeInTheDocument();
   });
 
   it('displays loading state', () => {
     renderProductList({ isLoading: true });
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
@@ -168,7 +183,9 @@ describe('ProductList', () => {
       expect(screen.getByText('Organic Tomatoes')).toBeInTheDocument();
     });
 
-    const searchInput = screen.getByPlaceholderText('Search products by name, SKU, description...');
+    const searchInput = screen.getByPlaceholderText(
+      'Search products by name, SKU, description...'
+    );
     await user.type(searchInput, 'Organic');
 
     expect(searchInput.value).toBe('Organic');
@@ -230,8 +247,13 @@ describe('ProductList', () => {
 
   it('handles product status toggle', async () => {
     const user = userEvent.setup();
-    const mockUpdateProduct = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
-    apiSlice.useUpdateAdminProductMutation.mockReturnValue([mockUpdateProduct, { isLoading: false }]);
+    const mockUpdateProduct = vi
+      .fn()
+      .mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
+    apiSlice.useUpdateAdminProductMutation.mockReturnValue([
+      mockUpdateProduct,
+      { isLoading: false },
+    ]);
 
     renderProductList();
 
@@ -245,14 +267,19 @@ describe('ProductList', () => {
 
     expect(mockUpdateProduct).toHaveBeenCalledWith({
       id: '1',
-      status: 'inactive'
+      status: 'inactive',
     });
   });
 
   it('handles product deletion', async () => {
     const user = userEvent.setup();
-    const mockDeleteProduct = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
-    apiSlice.useDeleteAdminProductMutation.mockReturnValue([mockDeleteProduct, { isLoading: false }]);
+    const mockDeleteProduct = vi
+      .fn()
+      .mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
+    apiSlice.useDeleteAdminProductMutation.mockReturnValue([
+      mockDeleteProduct,
+      { isLoading: false },
+    ]);
 
     renderProductList();
 
@@ -267,7 +294,9 @@ describe('ProductList', () => {
     // Should show confirmation dialog
     await waitFor(() => {
       expect(screen.getByText('Delete Product')).toBeInTheDocument();
-      expect(screen.getByText(/permanently delete "Organic Tomatoes"/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/permanently delete "Organic Tomatoes"/)
+      ).toBeInTheDocument();
     });
 
     // Confirm deletion
@@ -300,8 +329,13 @@ describe('ProductList', () => {
 
   it('handles bulk operations', async () => {
     const user = userEvent.setup();
-    const mockBulkUpdateProducts = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
-    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([mockBulkUpdateProducts, { isLoading: false }]);
+    const mockBulkUpdateProducts = vi
+      .fn()
+      .mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
+    apiSlice.useBulkUpdateProductsMutation.mockReturnValue([
+      mockBulkUpdateProducts,
+      { isLoading: false },
+    ]);
 
     renderProductList();
 
@@ -329,7 +363,7 @@ describe('ProductList', () => {
 
     expect(mockBulkUpdateProducts).toHaveBeenCalledWith({
       productIds: ['1', '2'],
-      updates: { status: 'active' }
+      updates: { status: 'active' },
     });
   });
 
@@ -363,8 +397,8 @@ describe('ProductList', () => {
   });
 
   it('handles API errors gracefully', async () => {
-    renderProductList({ 
-      error: { status: 500, data: { error: 'Server error' } }
+    renderProductList({
+      error: { status: 500, data: { error: 'Server error' } },
     });
 
     await waitFor(() => {
@@ -378,14 +412,21 @@ describe('ProductList', () => {
       data: {
         data: {
           products: [],
-          pagination: { totalProducts: 0, currentPage: 1, totalPages: 0, limit: 15 }
-        }
-      }
+          pagination: {
+            totalProducts: 0,
+            currentPage: 1,
+            totalPages: 0,
+            limit: 15,
+          },
+        },
+      },
     });
 
     await waitFor(() => {
       expect(screen.getByText('No products found')).toBeInTheDocument();
-      expect(screen.getByText('No products match your current filters.')).toBeInTheDocument();
+      expect(
+        screen.getByText('No products match your current filters.')
+      ).toBeInTheDocument();
     });
   });
 
@@ -406,7 +447,7 @@ describe('ProductList', () => {
       // Fresh Spinach has no images, should show placeholder icon
       const productRows = screen.getAllByText(/Fresh Spinach/);
       expect(productRows.length).toBeGreaterThan(0);
-      
+
       // Check for image placeholder icons
       const imageIcons = screen.getAllByTestId(/image-icon|placeholder/);
       expect(imageIcons.length).toBeGreaterThan(0);
@@ -418,21 +459,23 @@ describe('ProductList', () => {
 
     await waitFor(() => {
       // Check for proper heading hierarchy
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Product Management');
-      
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        'Product Management'
+      );
+
       // Check for accessible form controls
       expect(screen.getByRole('searchbox')).toBeInTheDocument();
-      
+
       // Check table has proper structure
       expect(screen.getByRole('table')).toBeInTheDocument();
-      
+
       // Check all buttons have proper labels or titles
       const actionButtons = screen.getAllByRole('button');
-      actionButtons.forEach(button => {
+      actionButtons.forEach((button) => {
         expect(
-          button.textContent || 
-          button.getAttribute('title') || 
-          button.getAttribute('aria-label')
+          button.textContent ||
+            button.getAttribute('title') ||
+            button.getAttribute('aria-label')
         ).toBeTruthy();
       });
     });

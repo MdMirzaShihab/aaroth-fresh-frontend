@@ -1,13 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card } from '../../components/ui/Card';
-import { useGetListingsQuery, useGetCategoriesQuery } from '../../store/slices/apiSlice';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { 
-  Search, 
-  MapPin, 
-  Star, 
-  Users, 
+import {
+  Search,
+  MapPin,
+  Star,
+  Users,
   Package,
   ShoppingBag,
   Award,
@@ -16,50 +13,60 @@ import {
   ArrowRight,
   CheckCircle,
   Leaf,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
+import { Card } from '../../components/ui/Card';
+import {
+  useGetListingsQuery,
+  useGetCategoriesQuery,
+} from '../../store/slices/apiSlice';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const VendorDirectory = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  
+
   // Fetch listings to extract vendor information
-  const { 
-    data: listingsData, 
+  const {
+    data: listingsData,
     isLoading: listingsLoading,
-    error: listingsError 
+    error: listingsError,
   } = useGetListingsQuery({ limit: 100 });
-  
-  const { 
-    data: categoriesData, 
-    isLoading: categoriesLoading 
-  } = useGetCategoriesQuery();
-  
+
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useGetCategoriesQuery();
+
   const categories = categoriesData?.data || [];
   const listings = listingsData?.data || [];
-  
+
   // Extract unique vendors from listings
   const vendors = useMemo(() => {
     const vendorMap = new Map();
-    
-    listings.forEach(listing => {
+
+    listings.forEach((listing) => {
       if (listing.vendor && listing.vendor.id) {
         const vendorId = listing.vendor.id;
         const existingVendor = vendorMap.get(vendorId);
-        
+
         if (existingVendor) {
           // Update existing vendor data
           existingVendor.totalProducts += 1;
-          existingVendor.categories.add(listing.product?.category?.name || 'Other');
+          existingVendor.categories.add(
+            listing.product?.category?.name || 'Other'
+          );
           existingVendor.totalRevenue += listing.price || 0;
           existingVendor.listings.push(listing);
         } else {
           // Create new vendor entry
           vendorMap.set(vendorId, {
             id: vendorId,
-            name: listing.vendor.businessName || listing.vendor.name || 'Unknown Vendor',
-            location: listing.vendor.businessAddress?.city || 'Location not specified',
+            name:
+              listing.vendor.businessName ||
+              listing.vendor.name ||
+              'Unknown Vendor',
+            location:
+              listing.vendor.businessAddress?.city || 'Location not specified',
             description: `Quality supplier offering ${listing.product?.category?.name || 'fresh produce'} and more`,
             totalProducts: 1,
             categories: new Set([listing.product?.category?.name || 'Other']),
@@ -67,29 +74,33 @@ const VendorDirectory = () => {
             listings: [listing],
             verified: Math.random() > 0.3, // Mock verification status
             rating: (4.2 + Math.random() * 0.7).toFixed(1), // Mock rating 4.2-4.9
-            yearsInBusiness: Math.floor(Math.random() * 10) + 2
+            yearsInBusiness: Math.floor(Math.random() * 10) + 2,
           });
         }
       }
     });
-    
-    return Array.from(vendorMap.values()).map(vendor => ({
+
+    return Array.from(vendorMap.values()).map((vendor) => ({
       ...vendor,
       categories: Array.from(vendor.categories),
-      averagePrice: vendor.totalRevenue / vendor.totalProducts
+      averagePrice: vendor.totalRevenue / vendor.totalProducts,
     }));
   }, [listings]);
-  
+
   // Filter vendors based on search and category
   const filteredVendors = useMemo(() => {
-    return vendors.filter(vendor => {
-      const matchesSearch = !searchTerm || 
+    return vendors.filter((vendor) => {
+      const matchesSearch =
+        !searchTerm ||
         vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vendor.categories.some(cat => cat.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      const matchesCategory = selectedCategory === 'all' || 
+        vendor.categories.some((cat) =>
+          cat.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+      const matchesCategory =
+        selectedCategory === 'all' ||
         vendor.categories.includes(selectedCategory);
-      
+
       return matchesSearch && matchesCategory;
     });
   }, [vendors, searchTerm, selectedCategory]);
@@ -97,16 +108,22 @@ const VendorDirectory = () => {
   // Get stats from real data
   const stats = useMemo(() => {
     const totalProducts = listings.length;
-    const uniqueLocations = new Set(vendors.map(v => v.location).filter(Boolean)).size;
-    const avgRating = vendors.length > 0 
-      ? (vendors.reduce((sum, v) => sum + parseFloat(v.rating), 0) / vendors.length).toFixed(1)
-      : '4.8';
-    
+    const uniqueLocations = new Set(
+      vendors.map((v) => v.location).filter(Boolean)
+    ).size;
+    const avgRating =
+      vendors.length > 0
+        ? (
+            vendors.reduce((sum, v) => sum + parseFloat(v.rating), 0) /
+            vendors.length
+          ).toFixed(1)
+        : '4.8';
+
     return {
       totalVendors: vendors.length || 50,
       totalProducts: totalProducts || 500,
       locationsCount: uniqueLocations || 25,
-      averageRating: avgRating
+      averageRating: avgRating,
     };
   }, [vendors, listings]);
 
@@ -124,10 +141,10 @@ const VendorDirectory = () => {
               Meet Our Trusted Vendors
             </h1>
             <p className="text-xl text-text-muted mb-8 max-w-3xl mx-auto">
-              Connect with verified farms and suppliers committed to quality, 
+              Connect with verified farms and suppliers committed to quality,
               sustainability, and reliable delivery for your restaurant needs.
             </p>
-            
+
             {/* Search and Filter Bar */}
             <div className="max-w-4xl mx-auto">
               <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -147,8 +164,10 @@ const VendorDirectory = () => {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
                   <option value="all">All Categories</option>
-                  {categories.map(category => (
-                    <option key={category.id} value={category.name}>{category.name}</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.name}>
+                      {category.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -163,7 +182,7 @@ const VendorDirectory = () => {
                 Partner with Vendors
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/products')}
                 className="border-2 border-bottle-green text-bottle-green px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-bottle-green hover:text-white transition-all duration-200"
               >
@@ -187,28 +206,36 @@ const VendorDirectory = () => {
                 <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-text-dark mb-2">{stats.totalVendors}</div>
+                <div className="text-3xl font-bold text-text-dark mb-2">
+                  {stats.totalVendors}
+                </div>
                 <p className="text-text-muted">Active Vendors</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <MapPin className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-text-dark mb-2">{stats.locationsCount}+</div>
+                <div className="text-3xl font-bold text-text-dark mb-2">
+                  {stats.locationsCount}+
+                </div>
                 <p className="text-text-muted">Locations</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-mint-fresh to-bottle-green rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Package className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-text-dark mb-2">{stats.totalProducts}</div>
+                <div className="text-3xl font-bold text-text-dark mb-2">
+                  {stats.totalProducts}
+                </div>
                 <p className="text-text-muted">Products Available</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-earthy-yellow to-earthy-brown rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Star className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-text-dark mb-2">{stats.averageRating}</div>
+                <div className="text-3xl font-bold text-text-dark mb-2">
+                  {stats.averageRating}
+                </div>
                 <p className="text-text-muted">Average Rating</p>
               </div>
             </div>
@@ -218,14 +245,16 @@ const VendorDirectory = () => {
               <div className="flex items-center justify-between mb-12">
                 <div className="text-center flex-1">
                   <h2 className="text-3xl font-bold text-text-dark mb-4">
-                    {searchTerm || selectedCategory !== 'all' ? 'Search Results' : 'Our Vendor Network'}
+                    {searchTerm || selectedCategory !== 'all'
+                      ? 'Search Results'
+                      : 'Our Vendor Network'}
                   </h2>
                   <p className="text-text-muted text-lg">
-                    {filteredVendors.length === 0 ? 'No vendors found' : 
-                     searchTerm || selectedCategory !== 'all' ? 
-                     `${filteredVendors.length} vendors found` :
-                     'Quality suppliers serving restaurants nationwide'
-                    }
+                    {filteredVendors.length === 0
+                      ? 'No vendors found'
+                      : searchTerm || selectedCategory !== 'all'
+                        ? `${filteredVendors.length} vendors found`
+                        : 'Quality suppliers serving restaurants nationwide'}
                   </p>
                 </div>
               </div>
@@ -233,19 +262,22 @@ const VendorDirectory = () => {
               {listingsError ? (
                 <div className="text-center py-12">
                   <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-text-muted">Unable to load vendor information</p>
+                  <p className="text-text-muted">
+                    Unable to load vendor information
+                  </p>
                 </div>
               ) : filteredVendors.length === 0 ? (
                 <div className="text-center py-12">
                   <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-text-dark mb-2">No vendors found</h3>
+                  <h3 className="text-lg font-medium text-text-dark mb-2">
+                    No vendors found
+                  </h3>
                   <p className="text-text-muted mb-6">
-                    {searchTerm ? 
-                      `No vendors match "${searchTerm}". Try different keywords.` :
-                      selectedCategory !== 'all' ?
-                      `No vendors found in ${selectedCategory} category.` :
-                      'No vendor data available at the moment.'
-                    }
+                    {searchTerm
+                      ? `No vendors match "${searchTerm}". Try different keywords.`
+                      : selectedCategory !== 'all'
+                        ? `No vendors found in ${selectedCategory} category.`
+                        : 'No vendor data available at the moment.'}
                   </p>
                   {(searchTerm || selectedCategory !== 'all') && (
                     <button
@@ -262,7 +294,7 @@ const VendorDirectory = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                   {filteredVendors.slice(0, 8).map((vendor) => (
-                    <Card 
+                    <Card
                       key={vendor.id}
                       className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group"
                       onClick={handleSignUpClick}
@@ -282,7 +314,7 @@ const VendorDirectory = () => {
                           Fresh
                         </span>
                       </div>
-                      
+
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1 min-w-0">
@@ -291,38 +323,46 @@ const VendorDirectory = () => {
                             </h3>
                             <div className="flex items-center gap-2 mb-2">
                               <MapPin className="w-4 h-4 text-text-muted flex-shrink-0" />
-                              <span className="text-text-muted text-sm truncate">{vendor.location}</span>
+                              <span className="text-text-muted text-sm truncate">
+                                {vendor.location}
+                              </span>
                             </div>
                           </div>
                           <div className="text-right ml-4">
                             <div className="flex items-center gap-1 mb-1">
                               <Star className="w-4 h-4 text-earthy-yellow fill-current" />
-                              <span className="font-semibold">{vendor.rating}</span>
+                              <span className="font-semibold">
+                                {vendor.rating}
+                              </span>
                             </div>
-                            <p className="text-sm text-text-muted">{vendor.yearsInBusiness} years</p>
+                            <p className="text-sm text-text-muted">
+                              {vendor.yearsInBusiness} years
+                            </p>
                           </div>
                         </div>
-                        
+
                         <p className="text-text-muted mb-4 text-sm line-clamp-2">
                           {vendor.description}
                         </p>
-                        
+
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {vendor.categories.slice(0, 3).map((category, index) => (
-                            <span 
-                              key={index}
-                              className="bg-earthy-beige text-earthy-brown text-xs px-2 py-1 rounded-full"
-                            >
-                              {category}
-                            </span>
-                          ))}
+                          {vendor.categories
+                            .slice(0, 3)
+                            .map((category, index) => (
+                              <span
+                                key={index}
+                                className="bg-earthy-beige text-earthy-brown text-xs px-2 py-1 rounded-full"
+                              >
+                                {category}
+                              </span>
+                            ))}
                           {vendor.categories.length > 3 && (
                             <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
                               +{vendor.categories.length - 3} more
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                           <div className="flex items-center gap-4 text-sm text-text-muted">
                             <span className="flex items-center gap-1">
@@ -353,8 +393,9 @@ const VendorDirectory = () => {
               Ready to Connect with Premium Vendors?
             </h3>
             <p className="text-text-muted mb-8 max-w-2xl mx-auto">
-              Join our network to access detailed vendor profiles, direct communication tools, 
-              and start sourcing fresh produce for your restaurant.
+              Join our network to access detailed vendor profiles, direct
+              communication tools, and start sourcing fresh produce for your
+              restaurant.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
@@ -365,7 +406,7 @@ const VendorDirectory = () => {
                 Start Shopping Today
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/products')}
                 className="border-2 border-bottle-green text-bottle-green px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-bottle-green hover:text-white transition-all duration-200"
               >

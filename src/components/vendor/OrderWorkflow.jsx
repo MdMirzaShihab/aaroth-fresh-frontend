@@ -17,36 +17,51 @@ import {
   ChevronRight,
   Play,
   Pause,
-  RotateCcw
+  RotateCcw,
 } from 'lucide-react';
 import {
   useGetOrderWorkflowStepsQuery,
   useUpdateOrderFulfillmentStepMutation,
-  useUpdateOrderStatusWorkflowMutation
+  useUpdateOrderStatusWorkflowMutation,
 } from '../../store/slices/apiSlice';
 import { addNotification } from '../../store/slices/notificationSlice';
 
 // State machine pattern for order workflow
 const ORDER_WORKFLOW_STATES = {
   PENDING: 'pending',
-  CONFIRMED: 'confirmed', 
+  CONFIRMED: 'confirmed',
   PREPARING: 'preparing',
   PREPARED: 'prepared',
   SHIPPING: 'shipping',
   SHIPPED: 'shipped',
   DELIVERED: 'delivered',
-  CANCELLED: 'cancelled'
+  CANCELLED: 'cancelled',
 };
 
 const WORKFLOW_TRANSITIONS = {
-  [ORDER_WORKFLOW_STATES.PENDING]: [ORDER_WORKFLOW_STATES.CONFIRMED, ORDER_WORKFLOW_STATES.CANCELLED],
-  [ORDER_WORKFLOW_STATES.CONFIRMED]: [ORDER_WORKFLOW_STATES.PREPARING, ORDER_WORKFLOW_STATES.CANCELLED],
-  [ORDER_WORKFLOW_STATES.PREPARING]: [ORDER_WORKFLOW_STATES.PREPARED, ORDER_WORKFLOW_STATES.CANCELLED],
-  [ORDER_WORKFLOW_STATES.PREPARED]: [ORDER_WORKFLOW_STATES.SHIPPING, ORDER_WORKFLOW_STATES.CANCELLED],
-  [ORDER_WORKFLOW_STATES.SHIPPING]: [ORDER_WORKFLOW_STATES.SHIPPED, ORDER_WORKFLOW_STATES.CANCELLED],
+  [ORDER_WORKFLOW_STATES.PENDING]: [
+    ORDER_WORKFLOW_STATES.CONFIRMED,
+    ORDER_WORKFLOW_STATES.CANCELLED,
+  ],
+  [ORDER_WORKFLOW_STATES.CONFIRMED]: [
+    ORDER_WORKFLOW_STATES.PREPARING,
+    ORDER_WORKFLOW_STATES.CANCELLED,
+  ],
+  [ORDER_WORKFLOW_STATES.PREPARING]: [
+    ORDER_WORKFLOW_STATES.PREPARED,
+    ORDER_WORKFLOW_STATES.CANCELLED,
+  ],
+  [ORDER_WORKFLOW_STATES.PREPARED]: [
+    ORDER_WORKFLOW_STATES.SHIPPING,
+    ORDER_WORKFLOW_STATES.CANCELLED,
+  ],
+  [ORDER_WORKFLOW_STATES.SHIPPING]: [
+    ORDER_WORKFLOW_STATES.SHIPPED,
+    ORDER_WORKFLOW_STATES.CANCELLED,
+  ],
   [ORDER_WORKFLOW_STATES.SHIPPED]: [ORDER_WORKFLOW_STATES.DELIVERED],
   [ORDER_WORKFLOW_STATES.DELIVERED]: [],
-  [ORDER_WORKFLOW_STATES.CANCELLED]: []
+  [ORDER_WORKFLOW_STATES.CANCELLED]: [],
 };
 
 const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
@@ -61,10 +76,10 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
     data: workflowData,
     isLoading,
     error,
-    refetch
+    refetch,
   } = useGetOrderWorkflowStepsQuery(orderId, {
     pollingInterval: 60000, // Poll every minute
-    skip: !orderId
+    skip: !orderId,
   });
 
   // Mutations
@@ -74,76 +89,142 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
   const workflowSteps = workflowData?.data?.steps || [];
 
   // Define workflow stages with their associated steps
-  const workflowStages = useMemo(() => [
-    {
-      id: 'confirmation',
-      title: 'Order Confirmation',
-      status: ORDER_WORKFLOW_STATES.CONFIRMED,
-      icon: CheckCircle,
-      color: 'text-blue-600 bg-blue-50',
-      estimatedTime: '5 minutes',
-      steps: [
-        { id: 'verify_order', title: 'Verify order details', required: true },
-        { id: 'check_inventory', title: 'Check inventory availability', required: true },
-        { id: 'confirm_pricing', title: 'Confirm pricing and discounts', required: false },
-        { id: 'send_confirmation', title: 'Send confirmation to customer', required: true }
-      ]
-    },
-    {
-      id: 'preparation',
-      title: 'Order Preparation',
-      status: ORDER_WORKFLOW_STATES.PREPARING,
-      icon: Package,
-      color: 'text-purple-600 bg-purple-50',
-      estimatedTime: '15-30 minutes',
-      steps: [
-        { id: 'gather_items', title: 'Gather all ordered items', required: true },
-        { id: 'quality_check', title: 'Quality inspection', required: true },
-        { id: 'special_requests', title: 'Handle special requests', required: false },
-        { id: 'packaging', title: 'Package items securely', required: true },
-        { id: 'add_invoice', title: 'Add invoice and receipt', required: true }
-      ]
-    },
-    {
-      id: 'shipping',
-      title: 'Shipping & Delivery',
-      status: ORDER_WORKFLOW_STATES.SHIPPING,
-      icon: Truck,
-      color: 'text-indigo-600 bg-indigo-50',
-      estimatedTime: '30-60 minutes',
-      steps: [
-        { id: 'assign_driver', title: 'Assign delivery driver', required: true },
-        { id: 'prepare_route', title: 'Plan delivery route', required: false },
-        { id: 'load_vehicle', title: 'Load items in delivery vehicle', required: true },
-        { id: 'start_delivery', title: 'Start delivery journey', required: true },
-        { id: 'customer_contact', title: 'Contact customer for delivery', required: false }
-      ]
-    },
-    {
-      id: 'completion',
-      title: 'Order Completion',
-      status: ORDER_WORKFLOW_STATES.DELIVERED,
-      icon: CheckCircle,
-      color: 'text-bottle-green bg-mint-fresh/20',
-      estimatedTime: '5 minutes',
-      steps: [
-        { id: 'confirm_delivery', title: 'Confirm delivery with customer', required: true },
-        { id: 'collect_payment', title: 'Collect payment (if COD)', required: false },
-        { id: 'get_signature', title: 'Get delivery signature/photo', required: false },
-        { id: 'update_inventory', title: 'Update inventory records', required: true },
-        { id: 'send_receipt', title: 'Send final receipt', required: false }
-      ]
-    }
-  ], []);
+  const workflowStages = useMemo(
+    () => [
+      {
+        id: 'confirmation',
+        title: 'Order Confirmation',
+        status: ORDER_WORKFLOW_STATES.CONFIRMED,
+        icon: CheckCircle,
+        color: 'text-blue-600 bg-blue-50',
+        estimatedTime: '5 minutes',
+        steps: [
+          { id: 'verify_order', title: 'Verify order details', required: true },
+          {
+            id: 'check_inventory',
+            title: 'Check inventory availability',
+            required: true,
+          },
+          {
+            id: 'confirm_pricing',
+            title: 'Confirm pricing and discounts',
+            required: false,
+          },
+          {
+            id: 'send_confirmation',
+            title: 'Send confirmation to customer',
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'preparation',
+        title: 'Order Preparation',
+        status: ORDER_WORKFLOW_STATES.PREPARING,
+        icon: Package,
+        color: 'text-purple-600 bg-purple-50',
+        estimatedTime: '15-30 minutes',
+        steps: [
+          {
+            id: 'gather_items',
+            title: 'Gather all ordered items',
+            required: true,
+          },
+          { id: 'quality_check', title: 'Quality inspection', required: true },
+          {
+            id: 'special_requests',
+            title: 'Handle special requests',
+            required: false,
+          },
+          { id: 'packaging', title: 'Package items securely', required: true },
+          {
+            id: 'add_invoice',
+            title: 'Add invoice and receipt',
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'shipping',
+        title: 'Shipping & Delivery',
+        status: ORDER_WORKFLOW_STATES.SHIPPING,
+        icon: Truck,
+        color: 'text-indigo-600 bg-indigo-50',
+        estimatedTime: '30-60 minutes',
+        steps: [
+          {
+            id: 'assign_driver',
+            title: 'Assign delivery driver',
+            required: true,
+          },
+          {
+            id: 'prepare_route',
+            title: 'Plan delivery route',
+            required: false,
+          },
+          {
+            id: 'load_vehicle',
+            title: 'Load items in delivery vehicle',
+            required: true,
+          },
+          {
+            id: 'start_delivery',
+            title: 'Start delivery journey',
+            required: true,
+          },
+          {
+            id: 'customer_contact',
+            title: 'Contact customer for delivery',
+            required: false,
+          },
+        ],
+      },
+      {
+        id: 'completion',
+        title: 'Order Completion',
+        status: ORDER_WORKFLOW_STATES.DELIVERED,
+        icon: CheckCircle,
+        color: 'text-bottle-green bg-mint-fresh/20',
+        estimatedTime: '5 minutes',
+        steps: [
+          {
+            id: 'confirm_delivery',
+            title: 'Confirm delivery with customer',
+            required: true,
+          },
+          {
+            id: 'collect_payment',
+            title: 'Collect payment (if COD)',
+            required: false,
+          },
+          {
+            id: 'get_signature',
+            title: 'Get delivery signature/photo',
+            required: false,
+          },
+          {
+            id: 'update_inventory',
+            title: 'Update inventory records',
+            required: true,
+          },
+          { id: 'send_receipt', title: 'Send final receipt', required: false },
+        ],
+      },
+    ],
+    []
+  );
 
   // Get current stage based on order status
   const getCurrentStage = () => {
-    return workflowStages.find(stage => stage.status === currentStatus) || workflowStages[0];
+    return (
+      workflowStages.find((stage) => stage.status === currentStatus) ||
+      workflowStages[0]
+    );
   };
 
   // Get completed steps from API data
   const getStepStatus = (stepId) => {
-    const step = workflowSteps.find(s => s.id === stepId);
+    const step = workflowSteps.find((s) => s.id === stepId);
     return step ? step.completed : false;
   };
 
@@ -154,19 +235,21 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
         orderId,
         stepId,
         completed,
-        notes: stepNotes[stepId] || ''
+        notes: stepNotes[stepId] || '',
       }).unwrap();
 
-      dispatch(addNotification({
-        type: 'success',
-        title: `Step ${completed ? 'completed' : 'updated'}`,
-        message: `Workflow step has been ${completed ? 'marked as completed' : 'updated'}`
-      }));
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: `Step ${completed ? 'completed' : 'updated'}`,
+          message: `Workflow step has been ${completed ? 'marked as completed' : 'updated'}`,
+        })
+      );
 
       // Auto-advance workflow if all required steps in current stage are completed
       const currentStage = getCurrentStage();
-      const requiredSteps = currentStage.steps.filter(s => s.required);
-      const completedRequiredSteps = requiredSteps.filter(s => 
+      const requiredSteps = currentStage.steps.filter((s) => s.required);
+      const completedRequiredSteps = requiredSteps.filter((s) =>
         s.id === stepId ? completed : getStepStatus(s.id)
       );
 
@@ -174,23 +257,26 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
         // All required steps completed - suggest advancing to next stage
         const nextTransitions = WORKFLOW_TRANSITIONS[currentStatus] || [];
         const nextStatus = getNextLogicalStatus(currentStatus);
-        
+
         if (nextStatus && nextTransitions.includes(nextStatus)) {
-          dispatch(addNotification({
-            type: 'info',
-            title: 'Ready to advance',
-            message: `All required steps completed. Ready to move to ${nextStatus}.`,
-            autoClose: false
-          }));
+          dispatch(
+            addNotification({
+              type: 'info',
+              title: 'Ready to advance',
+              message: `All required steps completed. Ready to move to ${nextStatus}.`,
+              autoClose: false,
+            })
+          );
         }
       }
-
     } catch (error) {
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Update failed',
-        message: error.data?.message || 'Failed to update workflow step'
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Update failed',
+          message: error.data?.message || 'Failed to update workflow step',
+        })
+      );
     }
   };
 
@@ -203,9 +289,9 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
       ORDER_WORKFLOW_STATES.PREPARED,
       ORDER_WORKFLOW_STATES.SHIPPING,
       ORDER_WORKFLOW_STATES.SHIPPED,
-      ORDER_WORKFLOW_STATES.DELIVERED
+      ORDER_WORKFLOW_STATES.DELIVERED,
     ];
-    
+
     const currentIndex = statusOrder.indexOf(current);
     return statusOrder[currentIndex + 1] || null;
   };
@@ -220,22 +306,26 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
         id: orderId,
         status: nextStatus,
         notes: `Advanced to ${nextStatus} via workflow`,
-        estimatedTime: getCurrentStage()?.estimatedTime
+        estimatedTime: getCurrentStage()?.estimatedTime,
       }).unwrap();
 
       onStatusChange?.(nextStatus);
-      
-      dispatch(addNotification({
-        type: 'success',
-        title: 'Status updated',
-        message: `Order advanced to ${nextStatus}`
-      }));
+
+      dispatch(
+        addNotification({
+          type: 'success',
+          title: 'Status updated',
+          message: `Order advanced to ${nextStatus}`,
+        })
+      );
     } catch (error) {
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Status update failed',
-        message: error.data?.message || 'Failed to advance order status'
-      }));
+      dispatch(
+        addNotification({
+          type: 'error',
+          title: 'Status update failed',
+          message: error.data?.message || 'Failed to advance order status',
+        })
+      );
     }
   };
 
@@ -244,7 +334,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
     if (action === 'start') {
       setTimerStartTime(Date.now());
       const timer = setInterval(() => {
-        setWorkflowTimer(prev => prev + 1000);
+        setWorkflowTimer((prev) => prev + 1000);
       }, 1000);
       setWorkflowTimer(timer);
     } else if (action === 'stop') {
@@ -268,7 +358,9 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
   };
 
   const currentStage = getCurrentStage();
-  const currentStageIndex = workflowStages.findIndex(s => s.id === currentStage.id);
+  const currentStageIndex = workflowStages.findIndex(
+    (s) => s.id === currentStage.id
+  );
 
   if (isLoading) {
     return (
@@ -300,9 +392,11 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-xl font-bold text-text-dark">Order Workflow</h3>
-            <p className="text-text-muted">Track and manage order fulfillment steps</p>
+            <p className="text-text-muted">
+              Track and manage order fulfillment steps
+            </p>
           </div>
-          
+
           {/* Timer */}
           <div className="flex items-center gap-3">
             <div className="bg-gray-100 rounded-2xl px-4 py-2 flex items-center gap-2">
@@ -311,7 +405,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                 {formatTimer()}
               </span>
             </div>
-            
+
             <div className="flex gap-2">
               {!workflowTimer ? (
                 <button
@@ -328,7 +422,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                   <Pause className="w-4 h-4" />
                 </button>
               )}
-              
+
               <button
                 onClick={() => handleTimer('reset')}
                 className="p-2 bg-gray-100 text-text-muted rounded-xl hover:bg-gray-200 transition-colors"
@@ -350,19 +444,23 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
             return (
               <React.Fragment key={stage.id}>
                 <div className="flex flex-col items-center">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 ${
-                    isCompleted 
-                      ? 'bg-bottle-green text-white' 
-                      : isCurrent
-                      ? stage.color
-                      : 'bg-gray-100 text-text-muted'
-                  }`}>
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 ${
+                      isCompleted
+                        ? 'bg-bottle-green text-white'
+                        : isCurrent
+                          ? stage.color
+                          : 'bg-gray-100 text-text-muted'
+                    }`}
+                  >
                     <Icon className="w-6 h-6" />
                   </div>
                   <div className="text-center">
-                    <div className={`text-sm font-medium ${
-                      isCurrent ? 'text-text-dark' : 'text-text-muted'
-                    }`}>
+                    <div
+                      className={`text-sm font-medium ${
+                        isCurrent ? 'text-text-dark' : 'text-text-muted'
+                      }`}
+                    >
                       {stage.title}
                     </div>
                     <div className="text-xs text-text-muted mt-1">
@@ -370,11 +468,13 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                     </div>
                   </div>
                 </div>
-                
+
                 {index < workflowStages.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-4 ${
-                    isCompleted ? 'bg-bottle-green' : 'bg-gray-200'
-                  }`}></div>
+                  <div
+                    className={`flex-1 h-0.5 mx-4 ${
+                      isCompleted ? 'bg-bottle-green' : 'bg-gray-200'
+                    }`}
+                  ></div>
                 )}
               </React.Fragment>
             );
@@ -386,10 +486,14 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
       <div className="bg-white rounded-3xl shadow-soft p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h4 className="text-lg font-bold text-text-dark">{currentStage.title}</h4>
-            <p className="text-text-muted text-sm">Complete the required steps below</p>
+            <h4 className="text-lg font-bold text-text-dark">
+              {currentStage.title}
+            </h4>
+            <p className="text-text-muted text-sm">
+              Complete the required steps below
+            </p>
           </div>
-          
+
           {/* Advance Button */}
           {getNextLogicalStatus(currentStatus) && (
             <button
@@ -406,9 +510,12 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
           {currentStage.steps.map((step) => {
             const isCompleted = getStepStatus(step.id);
             const isActive = activeStep === step.id;
-            
+
             return (
-              <div key={step.id} className="border border-gray-200 rounded-2xl p-4">
+              <div
+                key={step.id}
+                className="border border-gray-200 rounded-2xl p-4"
+              >
                 <div className="flex items-start gap-4">
                   {/* Checkbox */}
                   <button
@@ -421,15 +528,17 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                       <Circle className="w-5 h-5 text-text-muted" />
                     )}
                   </button>
-                  
+
                   {/* Step Content */}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`font-medium ${
-                        isCompleted 
-                          ? 'text-text-muted line-through' 
-                          : 'text-text-dark'
-                      }`}>
+                      <span
+                        className={`font-medium ${
+                          isCompleted
+                            ? 'text-text-muted line-through'
+                            : 'text-text-dark'
+                        }`}
+                      >
                         {step.title}
                       </span>
                       {step.required && (
@@ -438,23 +547,25 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                         </span>
                       )}
                     </div>
-                    
+
                     {/* Step Notes */}
                     {(isActive || stepNotes[step.id]) && (
                       <div className="mt-3">
                         <textarea
                           value={stepNotes[step.id] || ''}
-                          onChange={(e) => setStepNotes(prev => ({
-                            ...prev,
-                            [step.id]: e.target.value
-                          }))}
+                          onChange={(e) =>
+                            setStepNotes((prev) => ({
+                              ...prev,
+                              [step.id]: e.target.value,
+                            }))
+                          }
                           placeholder="Add notes for this step..."
                           rows={2}
                           className="w-full px-3 py-2 bg-gray-50 border-0 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200 resize-none text-sm"
                         />
                       </div>
                     )}
-                    
+
                     {/* Step Actions */}
                     <div className="flex items-center gap-2 mt-3">
                       <button
@@ -464,7 +575,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                         <MessageSquare className="w-3 h-3" />
                         {isActive ? 'Hide' : 'Add'} notes
                       </button>
-                      
+
                       {step.id === 'get_signature' && (
                         <button className="flex items-center gap-1 text-xs text-text-muted hover:text-text-dark transition-colors">
                           <Camera className="w-3 h-3" />
@@ -484,21 +595,30 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl shadow-soft p-4 text-center">
           <div className="text-2xl font-bold text-bottle-green mb-1">
-            {workflowSteps.filter(s => s.completed).length}
+            {workflowSteps.filter((s) => s.completed).length}
           </div>
           <div className="text-sm text-text-muted">Steps Completed</div>
         </div>
-        
+
         <div className="bg-white rounded-2xl shadow-soft p-4 text-center">
           <div className="text-2xl font-bold text-orange-600 mb-1">
-            {currentStage.steps.filter(s => s.required && !getStepStatus(s.id)).length}
+            {
+              currentStage.steps.filter(
+                (s) => s.required && !getStepStatus(s.id)
+              ).length
+            }
           </div>
           <div className="text-sm text-text-muted">Required Remaining</div>
         </div>
-        
+
         <div className="bg-white rounded-2xl shadow-soft p-4 text-center">
           <div className="text-2xl font-bold text-text-dark mb-1">
-            {Math.round((workflowSteps.filter(s => s.completed).length / Math.max(workflowSteps.length, 1)) * 100)}%
+            {Math.round(
+              (workflowSteps.filter((s) => s.completed).length /
+                Math.max(workflowSteps.length, 1)) *
+                100
+            )}
+            %
           </div>
           <div className="text-sm text-text-muted">Overall Progress</div>
         </div>

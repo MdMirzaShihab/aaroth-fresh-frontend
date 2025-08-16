@@ -1,13 +1,30 @@
 import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { 
-  useGetAdminUsersQuery, 
+import {
+  Users,
+  Search,
+  Filter,
+  UserCheck,
+  UserX,
+  Edit3,
+  Trash2,
+  Phone,
+  Mail,
+  Eye,
+  MoreVertical,
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertTriangle,
+} from 'lucide-react';
+import {
+  useGetAdminUsersQuery,
   useApproveUserMutation,
   useUpdateAdminUserMutation,
   useDeleteAdminUserMutation,
   useBulkApproveUsersMutation,
   useBulkRejectUsersMutation,
-  useBulkDeleteUsersMutation
+  useBulkDeleteUsersMutation,
 } from '../../store/slices/apiSlice';
 import { selectAuth } from '../../store/slices/authSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -18,27 +35,10 @@ import Pagination from '../../components/ui/Pagination';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import EmptyState from '../../components/ui/EmptyState';
 import { Table } from '../../components/ui/Table';
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  UserCheck, 
-  UserX, 
-  Edit3, 
-  Trash2, 
-  Phone, 
-  Mail,
-  Eye,
-  MoreVertical,
-  CheckCircle,
-  XCircle,
-  Clock,
-  AlertTriangle
-} from 'lucide-react';
 
 const UserManagement = () => {
   const { user: currentUser } = useSelector(selectAuth);
-  
+
   // Local state for filtering and pagination
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
@@ -46,24 +46,27 @@ const UserManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUsers, setSelectedUsers] = useState(new Set());
   const [confirmAction, setConfirmAction] = useState(null);
-  
+
   const itemsPerPage = 10;
 
   // Query params for API call
-  const queryParams = useMemo(() => ({
-    page: currentPage,
-    limit: itemsPerPage,
-    search: searchTerm || undefined,
-    role: selectedRole !== 'all' ? selectedRole : undefined,
-    status: selectedStatus !== 'all' ? selectedStatus : undefined,
-  }), [currentPage, searchTerm, selectedRole, selectedStatus]);
+  const queryParams = useMemo(
+    () => ({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: searchTerm || undefined,
+      role: selectedRole !== 'all' ? selectedRole : undefined,
+      status: selectedStatus !== 'all' ? selectedStatus : undefined,
+    }),
+    [currentPage, searchTerm, selectedRole, selectedStatus]
+  );
 
   // RTK Query hooks
-  const { 
-    data: usersData, 
-    isLoading, 
+  const {
+    data: usersData,
+    isLoading,
     error,
-    refetch 
+    refetch,
   } = useGetAdminUsersQuery(queryParams);
 
   const [approveUser] = useApproveUserMutation();
@@ -108,7 +111,7 @@ const UserManagement = () => {
     try {
       await deleteUser(userId).unwrap();
       setConfirmAction(null);
-      setSelectedUsers(prev => {
+      setSelectedUsers((prev) => {
         const newSet = new Set(prev);
         newSet.delete(userId);
         return newSet;
@@ -157,12 +160,12 @@ const UserManagement = () => {
     if (selectedUsers.size === users.length) {
       setSelectedUsers(new Set());
     } else {
-      setSelectedUsers(new Set(users.map(user => user.id)));
+      setSelectedUsers(new Set(users.map((user) => user.id)));
     }
   };
 
   const handleSelectUser = (userId) => {
-    setSelectedUsers(prev => {
+    setSelectedUsers((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(userId)) {
         newSet.delete(userId);
@@ -179,34 +182,34 @@ const UserManagement = () => {
       return {
         className: 'bg-earthy-yellow/20 text-earthy-brown',
         icon: Clock,
-        text: 'Pending'
+        text: 'Pending',
       };
     }
-    
+
     switch (status?.toLowerCase()) {
       case 'active':
         return {
           className: 'bg-mint-fresh/20 text-bottle-green',
           icon: CheckCircle,
-          text: 'Active'
+          text: 'Active',
         };
       case 'inactive':
         return {
           className: 'bg-gray-100 text-gray-600',
           icon: XCircle,
-          text: 'Inactive'
+          text: 'Inactive',
         };
       case 'rejected':
         return {
           className: 'bg-tomato-red/20 text-tomato-red',
           icon: XCircle,
-          text: 'Rejected'
+          text: 'Rejected',
         };
       default:
         return {
           className: 'bg-blue-50 text-blue-600',
           icon: CheckCircle,
-          text: 'Active'
+          text: 'Active',
         };
     }
   };
@@ -243,7 +246,7 @@ const UserManagement = () => {
           className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
         />
       ),
-      width: '48px'
+      width: '48px',
     },
     {
       id: 'user',
@@ -265,17 +268,19 @@ const UserManagement = () => {
         </div>
       ),
       sortable: true,
-      width: '250px'
+      width: '250px',
     },
     {
       id: 'role',
       header: 'Role',
       cell: (user) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadge(user.role)}`}>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadge(user.role)}`}
+        >
           {user.role?.replace(/([A-Z])/g, ' $1').trim() || 'Unknown'}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'status',
@@ -285,23 +290,27 @@ const UserManagement = () => {
         return (
           <div className="flex items-center gap-1">
             <badge.icon className="w-3 h-3" />
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${badge.className}`}>
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-medium ${badge.className}`}
+            >
               {badge.text}
             </span>
           </div>
         );
       },
-      sortable: true
+      sortable: true,
     },
     {
       id: 'joined',
       header: 'Joined',
       cell: (user) => (
         <div className="text-sm text-text-muted">
-          {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
+          {user.createdAt
+            ? new Date(user.createdAt).toLocaleDateString()
+            : 'Unknown'}
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       id: 'actions',
@@ -311,28 +320,32 @@ const UserManagement = () => {
           {!user.isApproved && user.role === 'vendor' && (
             <>
               <button
-                onClick={() => setConfirmAction({
-                  type: 'approve',
-                  user,
-                  title: 'Approve Vendor',
-                  message: `Are you sure you want to approve ${user.name || user.phone}?`,
-                  confirmText: 'Approve',
-                  onConfirm: () => handleApproval(user.id, true)
-                })}
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'approve',
+                    user,
+                    title: 'Approve Vendor',
+                    message: `Are you sure you want to approve ${user.name || user.phone}?`,
+                    confirmText: 'Approve',
+                    onConfirm: () => handleApproval(user.id, true),
+                  })
+                }
                 className="p-2 text-bottle-green hover:bg-mint-fresh/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                 title="Approve user"
               >
                 <UserCheck className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setConfirmAction({
-                  type: 'reject',
-                  user,
-                  title: 'Reject Vendor',
-                  message: `Are you sure you want to reject ${user.name || user.phone}?`,
-                  confirmText: 'Reject',
-                  onConfirm: () => handleApproval(user.id, false)
-                })}
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'reject',
+                    user,
+                    title: 'Reject Vendor',
+                    message: `Are you sure you want to reject ${user.name || user.phone}?`,
+                    confirmText: 'Reject',
+                    onConfirm: () => handleApproval(user.id, false),
+                  })
+                }
                 className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                 title="Reject user"
               >
@@ -340,26 +353,30 @@ const UserManagement = () => {
               </button>
             </>
           )}
-          
+
           <button
-            onClick={() => {/* Handle edit */}}
+            onClick={() => {
+              /* Handle edit */
+            }}
             className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Edit user"
           >
             <Edit3 className="w-4 h-4" />
           </button>
-          
+
           {user.id !== currentUser?.id && (
             <button
-              onClick={() => setConfirmAction({
-                type: 'delete',
-                user,
-                title: 'Delete User',
-                message: `Are you sure you want to permanently delete ${user.name || user.phone}? This action cannot be undone.`,
-                confirmText: 'Delete',
-                isDangerous: true,
-                onConfirm: () => handleDelete(user.id)
-              })}
+              onClick={() =>
+                setConfirmAction({
+                  type: 'delete',
+                  user,
+                  title: 'Delete User',
+                  message: `Are you sure you want to permanently delete ${user.name || user.phone}? This action cannot be undone.`,
+                  confirmText: 'Delete',
+                  isDangerous: true,
+                  onConfirm: () => handleDelete(user.id),
+                })
+              }
               className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
               title="Delete user"
             >
@@ -368,8 +385,8 @@ const UserManagement = () => {
           )}
         </div>
       ),
-      width: '140px'
-    }
+      width: '140px',
+    },
   ];
 
   if (isLoading) {
@@ -387,8 +404,8 @@ const UserManagement = () => {
         title="Failed to load users"
         description="There was an error loading user data. Please try again."
         action={{
-          label: "Retry",
-          onClick: refetch
+          label: 'Retry',
+          onClick: refetch,
         }}
       />
     );
@@ -413,45 +430,51 @@ const UserManagement = () => {
             <span className="text-sm text-text-muted">
               {selectedUsers.size} selected
             </span>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
-              onClick={() => setConfirmAction({
-                type: 'bulk-approve',
-                title: 'Bulk Approve Users',
-                message: `Are you sure you want to approve ${selectedUsers.size} users? This will activate their accounts.`,
-                confirmText: 'Approve All',
-                onConfirm: handleBulkApprove
-              })}
+              onClick={() =>
+                setConfirmAction({
+                  type: 'bulk-approve',
+                  title: 'Bulk Approve Users',
+                  message: `Are you sure you want to approve ${selectedUsers.size} users? This will activate their accounts.`,
+                  confirmText: 'Approve All',
+                  onConfirm: handleBulkApprove,
+                })
+              }
               className="text-bottle-green border-bottle-green hover:bg-bottle-green hover:text-white"
             >
               Bulk Approve
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
-              onClick={() => setConfirmAction({
-                type: 'bulk-reject',
-                title: 'Bulk Reject Users',
-                message: `Are you sure you want to reject ${selectedUsers.size} users? This will deny their access.`,
-                confirmText: 'Reject All',
-                onConfirm: handleBulkReject
-              })}
+              onClick={() =>
+                setConfirmAction({
+                  type: 'bulk-reject',
+                  title: 'Bulk Reject Users',
+                  message: `Are you sure you want to reject ${selectedUsers.size} users? This will deny their access.`,
+                  confirmText: 'Reject All',
+                  onConfirm: handleBulkReject,
+                })
+              }
               className="text-orange-600 border-orange-600 hover:bg-orange-600 hover:text-white"
             >
               Bulk Reject
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
-              onClick={() => setConfirmAction({
-                type: 'bulk-delete',
-                title: 'Bulk Delete Users',
-                message: `Are you sure you want to permanently delete ${selectedUsers.size} users? This action cannot be undone.`,
-                confirmText: 'Delete All',
-                isDangerous: true,
-                onConfirm: handleBulkDelete
-              })}
+              onClick={() =>
+                setConfirmAction({
+                  type: 'bulk-delete',
+                  title: 'Bulk Delete Users',
+                  message: `Are you sure you want to permanently delete ${selectedUsers.size} users? This action cannot be undone.`,
+                  confirmText: 'Delete All',
+                  isDangerous: true,
+                  onConfirm: handleBulkDelete,
+                })
+              }
               className="text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"
             >
               Bulk Delete
@@ -483,7 +506,7 @@ const UserManagement = () => {
               }}
               className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
             >
-              {roleOptions.map(option => (
+              {roleOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -498,7 +521,7 @@ const UserManagement = () => {
               }}
               className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
             >
-              {statusOptions.map(option => (
+              {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -541,7 +564,7 @@ const UserManagement = () => {
       {/* Confirmation Dialog */}
       {confirmAction && (
         <ConfirmDialog
-          isOpen={true}
+          isOpen
           onClose={() => setConfirmAction(null)}
           title={confirmAction.title}
           message={confirmAction.message}

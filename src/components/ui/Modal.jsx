@@ -17,7 +17,8 @@ const modalVariants = cva(
         xl: 'w-full max-w-4xl mx-4',
         full: 'w-full mx-4 h-[90vh]',
         // Mobile-first: full width on mobile, constrained on desktop
-        responsive: 'w-full mx-4 sm:max-w-md sm:mx-auto md:max-w-lg lg:max-w-xl',
+        responsive:
+          'w-full mx-4 sm:max-w-md sm:mx-auto md:max-w-lg lg:max-w-xl',
       },
       position: {
         center: 'flex items-center justify-center',
@@ -33,22 +34,19 @@ const modalVariants = cva(
 );
 
 // Backdrop variants
-const backdropVariants = cva(
-  'fixed inset-0 z-50 transition-all duration-300',
-  {
-    variants: {
-      blur: {
-        none: 'bg-black/50',
-        light: 'bg-black/30 backdrop-blur-sm',
-        medium: 'bg-black/40 backdrop-blur-md',
-        heavy: 'bg-black/50 backdrop-blur-lg',
-      },
+const backdropVariants = cva('fixed inset-0 z-50 transition-all duration-300', {
+  variants: {
+    blur: {
+      none: 'bg-black/50',
+      light: 'bg-black/30 backdrop-blur-sm',
+      medium: 'bg-black/40 backdrop-blur-md',
+      heavy: 'bg-black/50 backdrop-blur-lg',
     },
-    defaultVariants: {
-      blur: 'medium',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    blur: 'medium',
+  },
+});
 
 const Modal = ({
   isOpen,
@@ -111,7 +109,10 @@ const Modal = ({
 
     return () => {
       // Restore focus to the previously focused element
-      if (previousActiveElement.current && previousActiveElement.current.focus) {
+      if (
+        previousActiveElement.current &&
+        previousActiveElement.current.focus
+      ) {
         previousActiveElement.current.focus();
       }
     };
@@ -144,10 +145,12 @@ const Modal = ({
         >
           {/* Modal Header */}
           {(title || showCloseButton) && (
-            <div className={cn(
-              'flex items-center justify-between p-6 pb-4',
-              headerClassName
-            )}>
+            <div
+              className={cn(
+                'flex items-center justify-between p-6 pb-4',
+                headerClassName
+              )}
+            >
               <div className="flex-1 min-w-0">
                 {title && (
                   <h2
@@ -166,7 +169,7 @@ const Modal = ({
                   </p>
                 )}
               </div>
-              
+
               {showCloseButton && (
                 <button
                   onClick={onClose}
@@ -180,11 +183,13 @@ const Modal = ({
           )}
 
           {/* Modal Content */}
-          <div className={cn(
-            'px-6',
-            !title && !showCloseButton && 'pt-6',
-            contentClassName
-          )}>
+          <div
+            className={cn(
+              'px-6',
+              !title && !showCloseButton && 'pt-6',
+              contentClassName
+            )}
+          >
             {children}
           </div>
         </div>
@@ -198,16 +203,12 @@ const Modal = ({
 
 // Modal Header component for better composition
 const ModalHeader = ({ children, className }) => (
-  <div className={cn('px-6 pt-6 pb-4', className)}>
-    {children}
-  </div>
+  <div className={cn('px-6 pt-6 pb-4', className)}>{children}</div>
 );
 
 // Modal Body component for better composition
 const ModalBody = ({ children, className }) => (
-  <div className={cn('px-6 py-2', className)}>
-    {children}
-  </div>
+  <div className={cn('px-6 py-2', className)}>{children}</div>
 );
 
 // Modal Footer component for better composition
@@ -220,11 +221,13 @@ const ModalFooter = ({ children, className, justify = 'end' }) => {
   }[justify];
 
   return (
-    <div className={cn(
-      'px-6 pb-6 pt-4 flex items-center gap-3',
-      justifyClass,
-      className
-    )}>
+    <div
+      className={cn(
+        'px-6 pb-6 pt-4 flex items-center gap-3',
+        justifyClass,
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -272,11 +275,13 @@ const Drawer = ({
       role="dialog"
       aria-modal="true"
     >
-      <div className={cn(
-        'bg-white/95 backdrop-blur-xl shadow-2xl border border-white/50 overflow-y-auto',
-        drawerClasses[position],
-        animationClasses[position]
-      )}>
+      <div
+        className={cn(
+          'bg-white/95 backdrop-blur-xl shadow-2xl border border-white/50 overflow-y-auto',
+          drawerClasses[position],
+          animationClasses[position]
+        )}
+      >
         {/* Drawer Handle for mobile */}
         {(position === 'bottom' || position === 'top') && (
           <div className="flex justify-center p-4">
@@ -299,9 +304,7 @@ const Drawer = ({
         )}
 
         {/* Drawer Content */}
-        <div className="p-6">
-          {children}
-        </div>
+        <div className="p-6">{children}</div>
       </div>
     </div>,
     document.body

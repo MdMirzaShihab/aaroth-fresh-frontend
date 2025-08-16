@@ -1,15 +1,22 @@
-import React, { useState, useRef, useEffect, forwardRef, createContext, useContext } from 'react';
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Check, 
-  Search, 
-  X, 
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  createContext,
+  useContext,
+} from 'react';
+import {
+  ChevronDown,
+  ChevronUp,
+  Check,
+  Search,
+  X,
   MoreVertical,
   Filter,
   User,
   Settings,
-  HelpCircle
+  HelpCircle,
 } from 'lucide-react';
 import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
@@ -20,24 +27,21 @@ import { Input } from './Input';
 const DropdownContext = createContext(null);
 
 // Dropdown variants following touch-friendly design
-const dropdownVariants = cva(
-  'relative inline-block',
-  {
-    variants: {
-      width: {
-        auto: 'w-auto',
-        full: 'w-full',
-        sm: 'w-48',
-        md: 'w-64',
-        lg: 'w-80',
-        xl: 'w-96',
-      },
+const dropdownVariants = cva('relative inline-block', {
+  variants: {
+    width: {
+      auto: 'w-auto',
+      full: 'w-full',
+      sm: 'w-48',
+      md: 'w-64',
+      lg: 'w-80',
+      xl: 'w-96',
     },
-    defaultVariants: {
-      width: 'auto',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    width: 'auto',
+  },
+});
 
 // Dropdown trigger variants
 const triggerVariants = cva(
@@ -48,7 +52,8 @@ const triggerVariants = cva(
         default: 'hover:bg-earthy-beige/20 hover:border-bottle-green/30',
         ghost: 'border-transparent bg-transparent hover:bg-earthy-beige/20',
         outline: 'border-2 border-bottle-green/30 hover:border-bottle-green',
-        filled: 'bg-earthy-beige/30 border-transparent hover:bg-earthy-beige/40',
+        filled:
+          'bg-earthy-beige/30 border-transparent hover:bg-earthy-beige/40',
       },
       size: {
         sm: 'px-3 py-2 text-xs min-h-[36px]',
@@ -107,8 +112,10 @@ const itemVariants = cva(
     variants: {
       variant: {
         default: '',
-        destructive: 'text-tomato-red hover:bg-tomato-red/5 focus:bg-tomato-red/5',
-        success: 'text-bottle-green hover:bg-bottle-green/10 focus:bg-bottle-green/10',
+        destructive:
+          'text-tomato-red hover:bg-tomato-red/5 focus:bg-tomato-red/5',
+        success:
+          'text-bottle-green hover:bg-bottle-green/10 focus:bg-bottle-green/10',
       },
       selected: {
         true: 'bg-bottle-green/10 text-bottle-green font-medium',
@@ -126,236 +133,252 @@ const itemVariants = cva(
  * Enhanced Dropdown Component with Touch-Friendly Interactions
  * Follows CLAUDE.md patterns for mobile-first design and accessibility
  */
-const Dropdown = forwardRef(({
-  open,
-  onOpenChange,
-  defaultOpen = false,
-  width = 'auto',
-  className,
-  children,
-  ...props
-}, ref) => {
-  const [isOpen, setIsOpen] = useState(open ?? defaultOpen);
-  const dropdownRef = useRef(null);
+const Dropdown = forwardRef(
+  (
+    {
+      open,
+      onOpenChange,
+      defaultOpen = false,
+      width = 'auto',
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const [isOpen, setIsOpen] = useState(open ?? defaultOpen);
+    const dropdownRef = useRef(null);
 
-  const handleOpenChange = (newOpen) => {
-    if (open === undefined) {
-      setIsOpen(newOpen);
-    }
-    onOpenChange?.(newOpen);
-  };
+    const handleOpenChange = (newOpen) => {
+      if (open === undefined) {
+        setIsOpen(newOpen);
+      }
+      onOpenChange?.(newOpen);
+    };
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      handleOpenChange(false);
-    }
-  };
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        handleOpenChange(false);
+      }
+    };
 
-  const handleEscape = (event) => {
-    if (event.key === 'Escape') {
-      handleOpenChange(false);
-    }
-  };
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        handleOpenChange(false);
+      }
+    };
 
-  useEffect(() => {
-    if (open !== undefined) {
-      setIsOpen(open);
-    }
-  }, [open]);
+    useEffect(() => {
+      if (open !== undefined) {
+        setIsOpen(open);
+      }
+    }, [open]);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscape);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-        document.removeEventListener('keydown', handleEscape);
-      };
-    }
-  }, [isOpen]);
+    useEffect(() => {
+      if (isOpen) {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+          document.removeEventListener('keydown', handleEscape);
+        };
+      }
+    }, [isOpen]);
 
-  const contextValue = {
-    isOpen: open ?? isOpen,
-    onOpenChange: handleOpenChange,
-  };
+    const contextValue = {
+      isOpen: open ?? isOpen,
+      onOpenChange: handleOpenChange,
+    };
 
-  return (
-    <DropdownContext.Provider value={contextValue}>
-      <div
-        ref={dropdownRef}
-        className={cn(dropdownVariants({ width }), className)}
-        {...props}
-      >
-        {children}
-      </div>
-    </DropdownContext.Provider>
-  );
-});
+    return (
+      <DropdownContext.Provider value={contextValue}>
+        <div
+          ref={dropdownRef}
+          className={cn(dropdownVariants({ width }), className)}
+          {...props}
+        >
+          {children}
+        </div>
+      </DropdownContext.Provider>
+    );
+  }
+);
 
 Dropdown.displayName = 'Dropdown';
 
 // Dropdown Trigger
-const DropdownTrigger = forwardRef(({
-  variant = 'default',
-  size = 'default',
-  width = 'auto',
-  placeholder = 'Select option...',
-  className,
-  children,
-  disabled,
-  ...props
-}, ref) => {
-  const context = useContext(DropdownContext);
+const DropdownTrigger = forwardRef(
+  (
+    {
+      variant = 'default',
+      size = 'default',
+      width = 'auto',
+      placeholder = 'Select option...',
+      className,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const context = useContext(DropdownContext);
 
-  if (!context) {
-    throw new Error('DropdownTrigger must be used within Dropdown');
+    if (!context) {
+      throw new Error('DropdownTrigger must be used within Dropdown');
+    }
+
+    const handleClick = () => {
+      if (!disabled) {
+        context.onOpenChange(!context.isOpen);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (
+        !disabled &&
+        (event.key === 'Enter' ||
+          event.key === ' ' ||
+          event.key === 'ArrowDown')
+      ) {
+        event.preventDefault();
+        context.onOpenChange(true);
+      }
+    };
+
+    return (
+      <button
+        ref={ref}
+        className={cn(triggerVariants({ variant, size, width }), className)}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        disabled={disabled}
+        aria-expanded={context.isOpen}
+        aria-haspopup="listbox"
+        role="combobox"
+        {...props}
+      >
+        <span className="flex-1 text-left truncate">
+          {children || placeholder}
+        </span>
+
+        {context.isOpen ? (
+          <ChevronUp className="w-4 h-4 text-text-muted flex-shrink-0" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-text-muted flex-shrink-0" />
+        )}
+      </button>
+    );
   }
-
-  const handleClick = () => {
-    if (!disabled) {
-      context.onOpenChange(!context.isOpen);
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if (!disabled && (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown')) {
-      event.preventDefault();
-      context.onOpenChange(true);
-    }
-  };
-
-  return (
-    <button
-      ref={ref}
-      className={cn(triggerVariants({ variant, size, width }), className)}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      disabled={disabled}
-      aria-expanded={context.isOpen}
-      aria-haspopup="listbox"
-      role="combobox"
-      {...props}
-    >
-      <span className="flex-1 text-left truncate">
-        {children || placeholder}
-      </span>
-      
-      {context.isOpen ? (
-        <ChevronUp className="w-4 h-4 text-text-muted flex-shrink-0" />
-      ) : (
-        <ChevronDown className="w-4 h-4 text-text-muted flex-shrink-0" />
-      )}
-    </button>
-  );
-});
+);
 
 DropdownTrigger.displayName = 'DropdownTrigger';
 
 // Dropdown Content/Menu
-const DropdownContent = forwardRef(({
-  position = 'bottom-left',
-  width = 'trigger',
-  className,
-  children,
-  ...props
-}, ref) => {
-  const context = useContext(DropdownContext);
+const DropdownContent = forwardRef(
+  (
+    {
+      position = 'bottom-left',
+      width = 'trigger',
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const context = useContext(DropdownContext);
 
-  if (!context) {
-    throw new Error('DropdownContent must be used within Dropdown');
-  }
+    if (!context) {
+      throw new Error('DropdownContent must be used within Dropdown');
+    }
 
-  if (!context.isOpen) {
-    return null;
-  }
+    if (!context.isOpen) {
+      return null;
+    }
 
-  return (
-    <div
-      ref={ref}
-      className={cn(menuVariants({ position, width }), className)}
-      role="listbox"
-      {...props}
-    >
-      <div className="py-2">
-        {children}
+    return (
+      <div
+        ref={ref}
+        className={cn(menuVariants({ position, width }), className)}
+        role="listbox"
+        {...props}
+      >
+        <div className="py-2">{children}</div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 DropdownContent.displayName = 'DropdownContent';
 
 // Dropdown Item
-const DropdownItem = forwardRef(({
-  value,
-  selected = false,
-  disabled = false,
-  variant = 'default',
-  icon: IconComponent,
-  shortcut,
-  className,
-  children,
-  onClick,
-  ...props
-}, ref) => {
-  const context = useContext(DropdownContext);
+const DropdownItem = forwardRef(
+  (
+    {
+      value,
+      selected = false,
+      disabled = false,
+      variant = 'default',
+      icon: IconComponent,
+      shortcut,
+      className,
+      children,
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
+    const context = useContext(DropdownContext);
 
-  const handleClick = (event) => {
-    if (!disabled) {
-      onClick?.(event, value);
-      if (!event.defaultPrevented) {
-        context?.onOpenChange(false);
+    const handleClick = (event) => {
+      if (!disabled) {
+        onClick?.(event, value);
+        if (!event.defaultPrevented) {
+          context?.onOpenChange(false);
+        }
       }
-    }
-  };
+    };
 
-  const handleKeyDown = (event) => {
-    if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
-      event.preventDefault();
-      handleClick(event);
-    }
-  };
+    const handleKeyDown = (event) => {
+      if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        handleClick(event);
+      }
+    };
 
-  return (
-    <div
-      ref={ref}
-      className={cn(itemVariants({ variant, selected }), className)}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="option"
-      aria-selected={selected}
-      aria-disabled={disabled}
-      tabIndex={disabled ? -1 : 0}
-      {...props}
-    >
-      {IconComponent && (
-        <IconComponent className="w-4 h-4 flex-shrink-0" />
-      )}
-      
-      <span className="flex-1 truncate">
-        {children}
-      </span>
+    return (
+      <div
+        ref={ref}
+        className={cn(itemVariants({ variant, selected }), className)}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="option"
+        aria-selected={selected}
+        aria-disabled={disabled}
+        tabIndex={disabled ? -1 : 0}
+        {...props}
+      >
+        {IconComponent && <IconComponent className="w-4 h-4 flex-shrink-0" />}
 
-      {selected && (
-        <Check className="w-4 h-4 text-bottle-green flex-shrink-0" />
-      )}
+        <span className="flex-1 truncate">{children}</span>
 
-      {shortcut && (
-        <span className="text-xs text-text-muted bg-earthy-beige/30 px-2 py-1 rounded-lg flex-shrink-0">
-          {shortcut}
-        </span>
-      )}
-    </div>
-  );
-});
+        {selected && (
+          <Check className="w-4 h-4 text-bottle-green flex-shrink-0" />
+        )}
+
+        {shortcut && (
+          <span className="text-xs text-text-muted bg-earthy-beige/30 px-2 py-1 rounded-lg flex-shrink-0">
+            {shortcut}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
 
 DropdownItem.displayName = 'DropdownItem';
 
 // Dropdown Separator
-const DropdownSeparator = forwardRef(({
-  className,
-  ...props
-}, ref) => (
+const DropdownSeparator = forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn('h-px bg-gray-200 my-2 mx-4', className)}
@@ -367,14 +390,13 @@ const DropdownSeparator = forwardRef(({
 DropdownSeparator.displayName = 'DropdownSeparator';
 
 // Dropdown Label/Header
-const DropdownLabel = forwardRef(({
-  className,
-  children,
-  ...props
-}, ref) => (
+const DropdownLabel = forwardRef(({ className, children, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('px-4 py-2 text-xs font-medium text-text-muted uppercase tracking-wide', className)}
+    className={cn(
+      'px-4 py-2 text-xs font-medium text-text-muted uppercase tracking-wide',
+      className
+    )}
     {...props}
   >
     {children}
@@ -397,21 +419,23 @@ export const SelectDropdown = ({
   ...props
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const filteredOptions = searchable
-    ? options.filter(option => 
+    ? options.filter((option) =>
         option.label.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : options;
 
-  const selectedOption = options.find(opt => opt.value === value);
-  const selectedOptions = multiple ? options.filter(opt => value?.includes(opt.value)) : [];
+  const selectedOption = options.find((opt) => opt.value === value);
+  const selectedOptions = multiple
+    ? options.filter((opt) => value?.includes(opt.value))
+    : [];
 
   const handleSelect = (optionValue) => {
     if (multiple) {
       const currentValues = value || [];
       const newValues = currentValues.includes(optionValue)
-        ? currentValues.filter(v => v !== optionValue)
+        ? currentValues.filter((v) => v !== optionValue)
         : [...currentValues, optionValue];
       onValueChange?.(newValues);
     } else {
@@ -430,10 +454,8 @@ export const SelectDropdown = ({
 
   return (
     <Dropdown className={className} {...props}>
-      <DropdownTrigger>
-        {getDisplayText()}
-      </DropdownTrigger>
-      
+      <DropdownTrigger>{getDisplayText()}</DropdownTrigger>
+
       <DropdownContent>
         {searchable && (
           <div className="px-3 pb-2">
@@ -448,7 +470,7 @@ export const SelectDropdown = ({
             />
           </div>
         )}
-        
+
         {filteredOptions.length === 0 ? (
           <div className="px-4 py-8 text-center text-text-muted text-sm">
             {searchTerm ? 'No options found' : 'No options available'}
@@ -458,7 +480,11 @@ export const SelectDropdown = ({
             <DropdownItem
               key={option.value}
               value={option.value}
-              selected={multiple ? value?.includes(option.value) : value === option.value}
+              selected={
+                multiple
+                  ? value?.includes(option.value)
+                  : value === option.value
+              }
               onClick={() => handleSelect(option.value)}
               icon={option.icon}
             >
@@ -482,7 +508,7 @@ export const ActionMenuDropdown = ({
     <DropdownTrigger variant="ghost">
       {trigger || <MoreVertical className="w-4 h-4" />}
     </DropdownTrigger>
-    
+
     <DropdownContent position="bottom-right" width="auto">
       {actions.map((action, index) => (
         <React.Fragment key={action.key || index}>
@@ -525,48 +551,32 @@ export const ProfileDropdown = ({
         <div className="text-xs text-text-muted truncate">{user?.email}</div>
       </div>
     </DropdownTrigger>
-    
+
     <DropdownContent position="bottom-right" width="auto">
       <div className="px-4 py-3 border-b border-gray-200">
         <div className="font-medium text-sm">{user?.name}</div>
         <div className="text-xs text-text-muted">{user?.email}</div>
       </div>
-      
+
       {menuItems.map((item, index) => (
-        <DropdownItem
-          key={index}
-          icon={item.icon}
-          onClick={item.onClick}
-        >
+        <DropdownItem key={index} icon={item.icon} onClick={item.onClick}>
           {item.label}
         </DropdownItem>
       ))}
-      
+
       {menuItems.length > 0 && <DropdownSeparator />}
-      
-      <DropdownItem
-        icon={Settings}
-        onClick={() => {}}
-        variant="default"
-      >
+
+      <DropdownItem icon={Settings} onClick={() => {}} variant="default">
         Settings
       </DropdownItem>
-      
-      <DropdownItem
-        icon={HelpCircle}
-        onClick={() => {}}
-        variant="default"
-      >
+
+      <DropdownItem icon={HelpCircle} onClick={() => {}} variant="default">
         Help & Support
       </DropdownItem>
-      
+
       <DropdownSeparator />
-      
-      <DropdownItem
-        icon={X}
-        onClick={onSignOut}
-        variant="destructive"
-      >
+
+      <DropdownItem icon={X} onClick={onSignOut} variant="destructive">
         Sign Out
       </DropdownItem>
     </DropdownContent>
@@ -594,7 +604,7 @@ export const FilterDropdown = ({
           </span>
         )}
       </DropdownTrigger>
-      
+
       <DropdownContent width="md">
         {filters.map((filter) => (
           <div key={filter.key} className="px-4 py-2">
