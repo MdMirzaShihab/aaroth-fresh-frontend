@@ -238,13 +238,22 @@ const ProductList = () => {
   };
 
   // Mobile Card Component
-  const ProductCard = ({ product, isSelected, onSelect, onStatusToggle, onEdit, onDelete }) => {
+  const ProductCard = ({
+    product,
+    isSelected,
+    onSelect,
+    onStatusToggle,
+    onEdit,
+    onDelete,
+  }) => {
     const badge = getStatusBadge(product.status);
-    
+
     return (
-      <Card className={`p-4 hover:shadow-lg transition-all duration-300 ${
-        isSelected ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' : ''
-      }`}>
+      <Card
+        className={`p-4 hover:shadow-lg transition-all duration-300 ${
+          isSelected ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' : ''
+        }`}
+      >
         {/* Header with selection and actions */}
         <div className="flex items-start justify-between mb-3">
           <input
@@ -292,7 +301,7 @@ const ProductList = () => {
               <ImageIcon className="w-8 h-8" />
             )}
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <h3 className="font-medium text-text-dark dark:text-white truncate text-lg">
               {product.name}
@@ -313,7 +322,9 @@ const ProductList = () => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1">
             <badge.icon className="w-4 h-4" />
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}
+            >
               {badge.text}
             </span>
           </div>
@@ -332,7 +343,10 @@ const ProductList = () => {
             <span>{product.listingsCount || 0} listings</span>
           </div>
           <div className="text-xs">
-            Updated {product.updatedAt ? new Date(product.updatedAt).toLocaleDateString() : 'Unknown'}
+            Updated{' '}
+            {product.updatedAt
+              ? new Date(product.updatedAt).toLocaleDateString()
+              : 'Unknown'}
           </div>
         </div>
 
@@ -949,7 +963,8 @@ const ProductList = () => {
           <Card className="p-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-text-dark dark:text-white">
-                {selectedProducts.size} product{selectedProducts.size !== 1 ? 's' : ''} selected
+                {selectedProducts.size} product
+                {selectedProducts.size !== 1 ? 's' : ''} selected
               </span>
               <button
                 onClick={() => setSelectedProducts(new Set())}
@@ -959,7 +974,7 @@ const ProductList = () => {
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() =>
@@ -976,7 +991,7 @@ const ProductList = () => {
                 <CheckCircle className="w-5 h-5" />
                 <span className="text-xs font-medium">Activate</span>
               </button>
-              
+
               <button
                 onClick={() =>
                   setConfirmAction({
@@ -992,7 +1007,7 @@ const ProductList = () => {
                 <XCircle className="w-5 h-5" />
                 <span className="text-xs font-medium">Deactivate</span>
               </button>
-              
+
               <button
                 onClick={() =>
                   setConfirmAction({

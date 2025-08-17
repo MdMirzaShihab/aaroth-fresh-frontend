@@ -42,12 +42,7 @@ const CreateRestaurantOwner = () => {
       password: '',
       restaurantName: '',
       ownerName: '',
-      address: {
-        street: '',
-        city: '',
-        area: '',
-        postalCode: '',
-      },
+      address: '',
       tradeLicenseNo: '',
     },
   });

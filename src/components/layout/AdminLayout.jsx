@@ -17,6 +17,13 @@ const AdminLayout = () => {
   const isAdmin = useSelector(selectIsAdmin);
   const canAccess = useSelector(selectCanAccessAdminDashboard);
 
+  // Debug logging
+  // console.log('AdminLayout Debug:', {
+  //   path: location.pathname,
+  //   isAdmin,
+  //   canAccess,
+  // });
+
   // If not admin or can't access, redirect to appropriate page
   if (!canAccess) {
     return <Navigate to="/dashboard" replace />;

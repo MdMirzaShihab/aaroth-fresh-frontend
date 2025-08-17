@@ -13,9 +13,9 @@ import {
   Eye,
 } from 'lucide-react';
 import {
-  useGetAdminUsersQuery,
-  useApproveUserMutation,
-  useDeleteAdminUserMutation,
+  useGetPendingVendorsQuery,
+  useVerifyVendorMutation,
+  useGetAdminVendorsQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -40,56 +40,50 @@ const VendorApproval = () => {
     isLoading,
     error,
     refetch,
-  } = useGetAdminUsersQuery({
-    page: currentPage,
-    limit: itemsPerPage,
-    search: searchTerm || undefined,
-    role: 'vendor',
-    status: 'pending',
-    isApproved: false,
-  });
+  } = useGetPendingVendorsQuery();
 
-  const [approveUser] = useApproveUserMutation();
-  const [deleteUser] = useDeleteAdminUserMutation();
+  const [verifyVendor, { isLoading: isVerifying }] = useVerifyVendorMutation();
 
-  const vendors = vendorsData?.data?.users || [];
-  const pagination = vendorsData?.data?.pagination || {};
+  const pendingVendors = vendorsData?.data || [];
+  const totalVendors = vendorsData?.count || 0;
 
   // Handle vendor approval
-  const handleApproval = async (vendorId, isApproved, reason = '') => {
+  const handleApproval = async (vendorId) => {
     try {
-      await approveUser({ id: vendorId, isApproved, reason }).unwrap();
+      await verifyVendor(vendorId).unwrap();
       setConfirmAction(null);
       setSelectedVendors((prev) => {
         const newSet = new Set(prev);
         newSet.delete(vendorId);
         return newSet;
       });
+      refetch(); // Refresh the list
     } catch (error) {
-      console.error('Failed to update vendor approval:', error);
+      console.error('Failed to verify vendor:', error);
     }
   };
 
   // Handle bulk approvals
-  const handleBulkApproval = async (isApproved) => {
+  const handleBulkApproval = async () => {
     try {
       const promises = Array.from(selectedVendors).map((vendorId) =>
-        approveUser({ id: vendorId, isApproved }).unwrap()
+        verifyVendor(vendorId).unwrap()
       );
       await Promise.all(promises);
       setSelectedVendors(new Set());
       setConfirmAction(null);
+      refetch(); // Refresh the list
     } catch (error) {
-      console.error('Failed to bulk update approvals:', error);
+      console.error('Failed to bulk verify vendors:', error);
     }
   };
 
   // Handle selection
   const handleSelectAll = () => {
-    if (selectedVendors.size === vendors.length) {
+    if (selectedVendors.size === pendingVendors.length) {
       setSelectedVendors(new Set());
     } else {
-      setSelectedVendors(new Set(vendors.map((vendor) => vendor.id)));
+      setSelectedVendors(new Set(pendingVendors.map((vendor) => vendor._id)));
     }
   };
 

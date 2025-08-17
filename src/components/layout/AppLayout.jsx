@@ -13,12 +13,7 @@ const AppLayout = ({ children }) => {
   const location = useLocation();
   const { isAuthenticated } = useSelector(selectAuth);
 
-  // Debug logging (can be removed in production)
-  // console.log('AppLayout Debug:', {
-  //   path: location.pathname,
-  //   isAuthenticated,
-  //   hasChildren: !!children
-  // });
+  // Debug logging removed
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

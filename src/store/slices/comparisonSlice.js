@@ -33,19 +33,21 @@ const comparisonSlice = createSlice({
   reducers: {
     addToComparison: (state, action) => {
       const product = action.payload;
-      const existingIndex = state.items.findIndex(item => item.id === (product.id || product._id));
-      
+      const existingIndex = state.items.findIndex(
+        (item) => item.id === (product.id || product._id)
+      );
+
       // Don't add if already exists
       if (existingIndex !== -1) {
         return;
       }
-      
+
       // Don't add if we've reached the maximum
       if (state.items.length >= state.maxItems) {
         state.error = `Maximum ${state.maxItems} products can be compared at once`;
         return;
       }
-      
+
       const comparisonItem = {
         id: product.id || product._id,
         name: product.name,
@@ -62,30 +64,32 @@ const comparisonSlice = createSlice({
         isInSeason: product.isInSeason,
         addedAt: new Date().toISOString(),
       };
-      
+
       state.items.push(comparisonItem);
       state.error = null;
       saveComparisonToStorage(state.items);
     },
-    
+
     removeFromComparison: (state, action) => {
       const productId = action.payload;
-      state.items = state.items.filter(item => item.id !== productId);
+      state.items = state.items.filter((item) => item.id !== productId);
       state.error = null;
       saveComparisonToStorage(state.items);
     },
-    
+
     toggleComparison: (state, action) => {
       const product = action.payload;
-      const existingIndex = state.items.findIndex(item => item.id === (product.id || product._id));
-      
+      const existingIndex = state.items.findIndex(
+        (item) => item.id === (product.id || product._id)
+      );
+
       if (existingIndex === -1) {
         // Add to comparison
         if (state.items.length >= state.maxItems) {
           state.error = `Maximum ${state.maxItems} products can be compared at once`;
           return;
         }
-        
+
         const comparisonItem = {
           id: product.id || product._id,
           name: product.name,
@@ -102,7 +106,7 @@ const comparisonSlice = createSlice({
           isInSeason: product.isInSeason,
           addedAt: new Date().toISOString(),
         };
-        
+
         state.items.push(comparisonItem);
         state.error = null;
       } else {
@@ -110,30 +114,34 @@ const comparisonSlice = createSlice({
         state.items.splice(existingIndex, 1);
         state.error = null;
       }
-      
+
       saveComparisonToStorage(state.items);
     },
-    
+
     clearComparison: (state) => {
       state.items = [];
       state.error = null;
       saveComparisonToStorage([]);
     },
-    
+
     reorderComparison: (state, action) => {
       const { fromIndex, toIndex } = action.payload;
-      
-      if (fromIndex >= 0 && fromIndex < state.items.length && 
-          toIndex >= 0 && toIndex < state.items.length) {
+
+      if (
+        fromIndex >= 0 &&
+        fromIndex < state.items.length &&
+        toIndex >= 0 &&
+        toIndex < state.items.length
+      ) {
         const [movedItem] = state.items.splice(fromIndex, 1);
         state.items.splice(toIndex, 0, movedItem);
         saveComparisonToStorage(state.items);
       }
     },
-    
+
     replaceInComparison: (state, action) => {
       const { replaceIndex, product } = action.payload;
-      
+
       if (replaceIndex >= 0 && replaceIndex < state.items.length) {
         const comparisonItem = {
           id: product.id || product._id,
@@ -151,21 +159,21 @@ const comparisonSlice = createSlice({
           isInSeason: product.isInSeason,
           addedAt: new Date().toISOString(),
         };
-        
+
         state.items[replaceIndex] = comparisonItem;
         state.error = null;
         saveComparisonToStorage(state.items);
       }
     },
-    
+
     setComparisonLoading: (state, action) => {
       state.loading = action.payload;
     },
-    
+
     setComparisonError: (state, action) => {
       state.error = action.payload;
     },
-    
+
     clearComparisonError: (state) => {
       state.error = null;
     },
@@ -194,7 +202,7 @@ export const selectMaxComparisonItems = (state) => state.comparison.maxItems;
 
 // Helper selector to check if a product is in comparison
 export const selectIsProductInComparison = (state, productId) => {
-  return state.comparison.items.some(item => item.id === productId);
+  return state.comparison.items.some((item) => item.id === productId);
 };
 
 // Selector to check if comparison is full
@@ -206,22 +214,22 @@ export const selectIsComparisonFull = (state) => {
 export const selectComparisonByCategory = (state) => {
   const items = state.comparison.items;
   const grouped = {};
-  
-  items.forEach(item => {
+
+  items.forEach((item) => {
     const category = item.category || 'Uncategorized';
     if (!grouped[category]) {
       grouped[category] = [];
     }
     grouped[category].push(item);
   });
-  
+
   return grouped;
 };
 
 // Selector to get comparison statistics
 export const selectComparisonStats = (state) => {
   const items = state.comparison.items;
-  
+
   if (items.length === 0) {
     return {
       averagePrice: 0,
@@ -231,19 +239,29 @@ export const selectComparisonStats = (state) => {
       categoryCount: 0,
     };
   }
-  
-  const prices = items.map(item => item.price).filter(price => price > 0);
-  const ratings = items.map(item => item.rating).filter(rating => rating > 0);
-  const vendors = new Set(items.map(item => item.vendorId).filter(Boolean));
-  const categories = new Set(items.map(item => item.category).filter(Boolean));
-  
+
+  const prices = items.map((item) => item.price).filter((price) => price > 0);
+  const ratings = items
+    .map((item) => item.rating)
+    .filter((rating) => rating > 0);
+  const vendors = new Set(items.map((item) => item.vendorId).filter(Boolean));
+  const categories = new Set(
+    items.map((item) => item.category).filter(Boolean)
+  );
+
   return {
-    averagePrice: prices.length > 0 ? prices.reduce((sum, price) => sum + price, 0) / prices.length : 0,
+    averagePrice:
+      prices.length > 0
+        ? prices.reduce((sum, price) => sum + price, 0) / prices.length
+        : 0,
     priceRange: {
       min: prices.length > 0 ? Math.min(...prices) : 0,
       max: prices.length > 0 ? Math.max(...prices) : 0,
     },
-    averageRating: ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0,
+    averageRating:
+      ratings.length > 0
+        ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
+        : 0,
     vendorCount: vendors.size,
     categoryCount: categories.size,
   };
@@ -252,66 +270,69 @@ export const selectComparisonStats = (state) => {
 // Selector for comparison table data (structured for easier rendering)
 export const selectComparisonTableData = (state) => {
   const items = state.comparison.items;
-  
+
   if (items.length === 0) {
     return { headers: [], rows: [] };
   }
-  
-  const headers = ['Feature', ...items.map(item => item.name)];
-  
+
+  const headers = ['Feature', ...items.map((item) => item.name)];
+
   const rows = [
     {
       feature: 'Image',
-      values: ['', ...items.map(item => item.image)],
+      values: ['', ...items.map((item) => item.image)],
       type: 'image',
     },
     {
       feature: 'Price',
-      values: ['', ...items.map(item => item.price)],
+      values: ['', ...items.map((item) => item.price)],
       type: 'currency',
     },
     {
       feature: 'Unit',
-      values: ['', ...items.map(item => item.unit || 'unit')],
+      values: ['', ...items.map((item) => item.unit || 'unit')],
       type: 'text',
     },
     {
       feature: 'Vendor',
-      values: ['', ...items.map(item => item.vendorName)],
+      values: ['', ...items.map((item) => item.vendorName)],
       type: 'text',
     },
     {
       feature: 'Rating',
-      values: ['', ...items.map(item => item.rating || 0)],
+      values: ['', ...items.map((item) => item.rating || 0)],
       type: 'rating',
     },
     {
       feature: 'Availability',
-      values: ['', ...items.map(item => item.availability)],
+      values: ['', ...items.map((item) => item.availability)],
       type: 'availability',
     },
     {
       feature: 'Category',
-      values: ['', ...items.map(item => item.category)],
+      values: ['', ...items.map((item) => item.category)],
       type: 'text',
     },
     {
       feature: 'Quality Grade',
-      values: ['', ...items.map(item => item.qualityGrade || 'N/A')],
+      values: ['', ...items.map((item) => item.qualityGrade || 'N/A')],
       type: 'text',
     },
     {
       feature: 'In Season',
-      values: ['', ...items.map(item => item.isInSeason ? 'Yes' : 'No')],
+      values: ['', ...items.map((item) => (item.isInSeason ? 'Yes' : 'No'))],
       type: 'boolean',
     },
     {
       feature: 'Description',
-      values: ['', ...items.map(item => item.description || 'No description available')],
+      values: [
+        '',
+        ...items.map((item) => item.description || 'No description available'),
+      ],
       type: 'text',
     },
   ];
-  
+
   return { headers, rows };
 };
 

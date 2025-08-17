@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import {
   Users,
   Search,
@@ -16,12 +17,14 @@ import {
   XCircle,
   Clock,
   AlertTriangle,
+  Store,
+  Utensils,
 } from 'lucide-react';
 import {
   useGetAdminUsersQuery,
-  useApproveUserMutation,
   useUpdateAdminUserMutation,
   useDeleteAdminUserMutation,
+  useApproveUserMutation,
   useBulkApproveUsersMutation,
   useBulkRejectUsersMutation,
   useBulkDeleteUsersMutation,
@@ -38,10 +41,44 @@ import { Table } from '../../components/ui/Table';
 
 const UserManagement = () => {
   const { user: currentUser } = useSelector(selectAuth);
+  const location = useLocation();
+
+  // Determine context based on route
+  const getPageContext = () => {
+    if (location.pathname.includes('/users/vendors')) {
+      return {
+        type: 'vendors',
+        title: 'Vendor User Accounts',
+        description: 'Manage vendor user accounts and permissions',
+        icon: Store,
+        roleFilter: 'vendor',
+      };
+    } else if (location.pathname.includes('/users/restaurants')) {
+      return {
+        type: 'restaurants',
+        title: 'Restaurant User Accounts',
+        description: 'Manage restaurant owner and manager accounts',
+        icon: Utensils,
+        roleFilter: ['restaurantOwner', 'restaurantManager'],
+      };
+    } else {
+      return {
+        type: 'all',
+        title: 'User Management',
+        description: 'Manage all user accounts across the platform',
+        icon: Users,
+        roleFilter: 'all',
+      };
+    }
+  };
+
+  const pageContext = getPageContext();
 
   // Local state for filtering and pagination
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState('all');
+  const [selectedRole, setSelectedRole] = useState(
+    pageContext.roleFilter === 'all' ? 'all' : pageContext.roleFilter
+  );
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUsers, setSelectedUsers] = useState(new Set());
@@ -50,16 +87,27 @@ const UserManagement = () => {
   const itemsPerPage = 10;
 
   // Query params for API call
-  const queryParams = useMemo(
-    () => ({
+  const queryParams = useMemo(() => {
+    let params = {
       page: currentPage,
       limit: itemsPerPage,
       search: searchTerm || undefined,
-      role: selectedRole !== 'all' ? selectedRole : undefined,
       status: selectedStatus !== 'all' ? selectedStatus : undefined,
-    }),
-    [currentPage, searchTerm, selectedRole, selectedStatus]
-  );
+    };
+
+    // Handle role filtering based on context
+    if (pageContext.type === 'vendors') {
+      params.role = 'vendor';
+    } else if (pageContext.type === 'restaurants') {
+      // For restaurants, we need to filter for both owner and manager roles
+      // Since backend might not support multiple roles in single param, we'll handle this in frontend
+      params.role = selectedRole !== 'all' ? selectedRole : undefined;
+    } else {
+      params.role = selectedRole !== 'all' ? selectedRole : undefined;
+    }
+
+    return params;
+  }, [currentPage, searchTerm, selectedRole, selectedStatus, pageContext.type]);
 
   // RTK Query hooks
   const {
@@ -69,15 +117,16 @@ const UserManagement = () => {
     refetch,
   } = useGetAdminUsersQuery(queryParams);
 
-  const [approveUser] = useApproveUserMutation();
   const [updateUser] = useUpdateAdminUserMutation();
   const [deleteUser] = useDeleteAdminUserMutation();
+  const [approveUser] = useApproveUserMutation();
   const [bulkApproveUsers] = useBulkApproveUsersMutation();
   const [bulkRejectUsers] = useBulkRejectUsersMutation();
   const [bulkDeleteUsers] = useBulkDeleteUsersMutation();
 
-  const users = usersData?.data?.users || [];
-  const pagination = usersData?.data?.pagination || {};
+  const users = usersData?.data || [];
+  const totalUsers = usersData?.total || 0;
+  const totalPages = usersData?.pages || 1;
 
   // Filter roles available
   const roleOptions = [
@@ -548,13 +597,13 @@ const UserManagement = () => {
         </div>
 
         {/* Pagination */}
-        {pagination.totalPages > 1 && (
+        {totalPages > 1 && (
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
             <Pagination
               currentPage={currentPage}
-              totalPages={pagination.totalPages}
+              totalPages={totalPages}
               onPageChange={setCurrentPage}
-              totalItems={pagination.totalUsers}
+              totalItems={totalUsers}
               itemsPerPage={itemsPerPage}
             />
           </div>

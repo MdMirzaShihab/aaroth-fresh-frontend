@@ -14,11 +14,11 @@ import { addBulkToCart } from '../../store/slices/cartSlice';
 import { formatCurrency } from '../../utils';
 import Button from '../ui/Button';
 
-const BulkOrderModal = ({ 
-  isOpen, 
-  onClose, 
-  selectedProducts = [], 
-  onClearSelection 
+const BulkOrderModal = ({
+  isOpen,
+  onClose,
+  selectedProducts = [],
+  onClearSelection,
 }) => {
   const dispatch = useDispatch();
   const [quantities, setQuantities] = useState({});
@@ -27,7 +27,7 @@ const BulkOrderModal = ({
   // Initialize quantities for selected products
   const initializedQuantities = useMemo(() => {
     const newQuantities = { ...quantities };
-    selectedProducts.forEach(product => {
+    selectedProducts.forEach((product) => {
       if (!(product._id in newQuantities)) {
         newQuantities[product._id] = 1;
       }
@@ -46,10 +46,10 @@ const BulkOrderModal = ({
     let totalPrice = 0;
     const vendorGroups = {};
 
-    selectedProducts.forEach(product => {
+    selectedProducts.forEach((product) => {
       const quantity = quantities[product._id] || 1;
       const itemTotal = product.price * quantity;
-      
+
       totalItems += quantity;
       totalPrice += itemTotal;
 
@@ -80,7 +80,7 @@ const BulkOrderModal = ({
 
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity >= 1 && newQuantity <= 999) {
-      setQuantities(prev => ({
+      setQuantities((prev) => ({
         ...prev,
         [productId]: newQuantity,
       }));
@@ -89,9 +89,9 @@ const BulkOrderModal = ({
 
   const handleAddAllToCart = async () => {
     setIsProcessing(true);
-    
+
     try {
-      const bulkItems = selectedProducts.map(product => ({
+      const bulkItems = selectedProducts.map((product) => ({
         id: product._id,
         name: product.name,
         price: product.price,
@@ -105,7 +105,7 @@ const BulkOrderModal = ({
       }));
 
       dispatch(addBulkToCart(bulkItems));
-      
+
       // Clear selection and close modal
       onClearSelection();
       onClose();
@@ -120,7 +120,7 @@ const BulkOrderModal = ({
     const newQuantities = { ...quantities };
     delete newQuantities[productId];
     setQuantities(newQuantities);
-    
+
     // Remove from selection
     onClearSelection([productId]);
   };
@@ -133,9 +133,7 @@ const BulkOrderModal = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-text-dark">
-              Bulk Order
-            </h2>
+            <h2 className="text-2xl font-bold text-text-dark">Bulk Order</h2>
             <p className="text-text-muted mt-1">
               Add multiple products to your cart at once
             </p>
@@ -210,7 +208,10 @@ const BulkOrderModal = ({
               {/* Vendor Groups */}
               <div className="space-y-4">
                 {totals.vendorGroups.map((vendorGroup, vendorIndex) => (
-                  <div key={vendorIndex} className="border border-gray-200 rounded-2xl p-4">
+                  <div
+                    key={vendorIndex}
+                    className="border border-gray-200 rounded-2xl p-4"
+                  >
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-text-dark">
                         {vendorGroup.vendorName}
@@ -222,7 +223,10 @@ const BulkOrderModal = ({
 
                     <div className="space-y-3">
                       {vendorGroup.items.map((product) => (
-                        <div key={product._id} className="bg-gray-50 rounded-xl p-4">
+                        <div
+                          key={product._id}
+                          className="bg-gray-50 rounded-xl p-4"
+                        >
                           <div className="flex items-center gap-4">
                             {/* Product Image */}
                             <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
@@ -245,7 +249,8 @@ const BulkOrderModal = ({
                                 {product.name}
                               </h4>
                               <p className="text-sm text-text-muted">
-                                {formatCurrency(product.price)} per {product.unit}
+                                {formatCurrency(product.price)} per{' '}
+                                {product.unit}
                               </p>
                               <p className="text-sm font-medium text-bottle-green">
                                 Total: {formatCurrency(product.itemTotal)}
@@ -255,7 +260,12 @@ const BulkOrderModal = ({
                             {/* Quantity Controls */}
                             <div className="flex items-center gap-3">
                               <button
-                                onClick={() => handleQuantityChange(product._id, (quantities[product._id] || 1) - 1)}
+                                onClick={() =>
+                                  handleQuantityChange(
+                                    product._id,
+                                    (quantities[product._id] || 1) - 1
+                                  )
+                                }
                                 disabled={quantities[product._id] <= 1}
                                 className="w-8 h-8 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-colors border border-gray-200 min-h-[44px] min-w-[44px] touch-target"
                               >
@@ -265,7 +275,12 @@ const BulkOrderModal = ({
                                 {quantities[product._id] || 1}
                               </span>
                               <button
-                                onClick={() => handleQuantityChange(product._id, (quantities[product._id] || 1) + 1)}
+                                onClick={() =>
+                                  handleQuantityChange(
+                                    product._id,
+                                    (quantities[product._id] || 1) + 1
+                                  )
+                                }
                                 className="w-8 h-8 bg-white hover:bg-gray-100 rounded-xl flex items-center justify-center transition-colors border border-gray-200 min-h-[44px] min-w-[44px] touch-target"
                               >
                                 <Plus className="w-4 h-4" />
@@ -298,8 +313,9 @@ const BulkOrderModal = ({
                         Multiple Vendors Notice
                       </h4>
                       <p className="text-sm text-amber-700">
-                        Your order contains items from {totals.vendorCount} different vendors. 
-                        Items may arrive separately and delivery fees may apply per vendor.
+                        Your order contains items from {totals.vendorCount}{' '}
+                        different vendors. Items may arrive separately and
+                        delivery fees may apply per vendor.
                       </p>
                     </div>
                   </div>
@@ -318,10 +334,11 @@ const BulkOrderModal = ({
                   Total: {formatCurrency(totals.totalPrice)}
                 </p>
                 <p className="text-sm text-text-muted">
-                  {totals.totalItems} items from {totals.vendorCount} vendor{totals.vendorCount > 1 ? 's' : ''}
+                  {totals.totalItems} items from {totals.vendorCount} vendor
+                  {totals.vendorCount > 1 ? 's' : ''}
                 </p>
               </div>
-              
+
               <div className="flex gap-3">
                 <Button
                   variant="outline"

@@ -234,7 +234,8 @@ const Profile = () => {
                   )}
                 </div>
                 <p className="text-text-muted text-sm mt-1">
-                  Member since {new Date(user?.createdAt).getFullYear() || '2024'}
+                  Member since{' '}
+                  {new Date(user?.createdAt).getFullYear() || '2024'}
                 </p>
               </div>
             </div>
@@ -312,42 +313,47 @@ const Profile = () => {
                   </div>
                   {user.vendor.businessAddress && (
                     <p className="text-text-muted text-sm">
-                      {user.vendor.businessAddress.street}, {user.vendor.businessAddress.city}
+                      {user.vendor.businessAddress.street},{' '}
+                      {user.vendor.businessAddress.city}
                     </p>
                   )}
                   <p className="text-xs text-text-muted mt-2">
-                    <span className="font-medium">Note:</span> To update business information, contact support.
+                    <span className="font-medium">Note:</span> To update
+                    business information, contact support.
                   </p>
                 </div>
               </div>
             )}
 
-            {(['restaurantOwner', 'restaurantManager'].includes(user?.role)) && user?.restaurant && (
-              <div>
-                <h4 className="text-lg font-semibold text-text-dark mb-4">
-                  Restaurant Information
-                </h4>
-                <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Building className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-text-dark">
-                      {user.restaurant.restaurantName}
-                    </span>
-                  </div>
-                  {user.restaurant.restaurantAddress && (
-                    <p className="text-text-muted text-sm">
-                      {user.restaurant.restaurantAddress.street}, {user.restaurant.restaurantAddress.city}
+            {['restaurantOwner', 'restaurantManager'].includes(user?.role) &&
+              user?.restaurant && (
+                <div>
+                  <h4 className="text-lg font-semibold text-text-dark mb-4">
+                    Restaurant Information
+                  </h4>
+                  <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Building className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium text-text-dark">
+                        {user.restaurant.restaurantName}
+                      </span>
+                    </div>
+                    {user.restaurant.restaurantAddress && (
+                      <p className="text-text-muted text-sm">
+                        {user.restaurant.restaurantAddress.street},{' '}
+                        {user.restaurant.restaurantAddress.city}
+                      </p>
+                    )}
+                    <p className="text-xs text-text-muted mt-2">
+                      <span className="font-medium">Note:</span> To update
+                      restaurant details,
+                      {user.role === 'restaurantOwner'
+                        ? ' visit the Restaurant Profile page.'
+                        : ' contact your restaurant owner.'}
                     </p>
-                  )}
-                  <p className="text-xs text-text-muted mt-2">
-                    <span className="font-medium">Note:</span> To update restaurant details, 
-                    {user.role === 'restaurantOwner' 
-                      ? ' visit the Restaurant Profile page.' 
-                      : ' contact your restaurant owner.'}
-                  </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Account Status */}
             <div>
@@ -357,25 +363,33 @@ const Profile = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-text-dark">Account Status</span>
-                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                      user?.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span className="text-sm font-medium text-text-dark">
+                      Account Status
+                    </span>
+                    <span
+                      className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                        user?.isActive
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
                       {user?.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-text-dark">Verification Status</span>
-                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                      user?.isApproved 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span className="text-sm font-medium text-text-dark">
+                      Verification Status
+                    </span>
+                    <span
+                      className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                        user?.isApproved
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
                       {user?.isApproved ? 'Verified' : 'Pending'}
                     </span>
                   </div>

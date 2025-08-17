@@ -13,6 +13,7 @@ import {
   Bell,
   User,
   MapPin,
+  Tag,
 } from 'lucide-react';
 
 // Navigation items configuration with role-based access
@@ -70,23 +71,25 @@ export const NAVIGATION_ITEMS = {
       ],
     },
     {
+      id: 'categories',
+      label: 'Categories',
+      icon: Tag,
+      path: '/admin/categories',
+      roles: ['admin'],
+    },
+    {
       id: 'products',
-      label: 'Product Management',
+      label: 'Products',
       icon: Package,
       path: '/admin/products',
       roles: ['admin'],
-      children: [
-        {
-          id: 'categories',
-          label: 'Categories',
-          path: '/admin/products/categories',
-        },
-        {
-          id: 'listings',
-          label: 'All Listings',
-          path: '/admin/products/listings',
-        },
-      ],
+    },
+    {
+      id: 'listings',
+      label: 'Vendor Listings',
+      icon: Store,
+      path: '/admin/listings',
+      roles: ['admin'],
     },
     {
       id: 'analytics',

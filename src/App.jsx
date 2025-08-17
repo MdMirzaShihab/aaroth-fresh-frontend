@@ -6,8 +6,7 @@ import { selectAuth } from './store/slices/authSlice';
 import authService from './services/authService';
 import AarothLogo from './assets/AarothLogo.png';
 
-// Debug Component (temporary)
-import TokenDiagnosticPanel from './components/debug/TokenDiagnosticPanel';
+// Removed debug component
 
 // Layout Components
 import AppLayout from './components/layout/AppLayout';
@@ -60,6 +59,15 @@ const CreateRestaurantOwner = lazy(
 );
 const CreateRestaurantManager = lazy(
   () => import('./pages/admin/CreateRestaurantManager')
+);
+const AdminProductManagement = lazy(
+  () => import('./pages/admin/AdminProductManagement')
+);
+const AdminListingsManagement = lazy(
+  () => import('./pages/admin/AdminListingsManagement')
+);
+const AdminSystemSettings = lazy(
+  () => import('./pages/admin/AdminSystemSettings')
 );
 
 // Vendor Pages
@@ -224,59 +232,175 @@ const App = () => {
 
           {/* Admin Routes - Protected with AdminLayout */}
           <Route
-            path="/admin"
+            path="/admin/*"
             element={
               <AdminRoute>
-                <AdminLayout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Routes>
-                      <Route
-                        index
-                        element={<Navigate to="dashboard" replace />}
-                      />
-                      <Route path="dashboard" element={<AdminDashboard />} />
-                      <Route path="users" element={<UserManagement />} />
-                      <Route
-                        path="vendors/approval"
-                        element={<VendorApproval />}
-                      />
-                      <Route path="products" element={<ProductManagement />} />
-                      <Route path="products/list" element={<ProductList />} />
-                      <Route path="products/create" element={<ProductForm />} />
-                      <Route
-                        path="products/:id/edit"
-                        element={<ProductForm />}
-                      />
-                      <Route
-                        path="products/approval"
-                        element={<ProductApproval />}
-                      />
-                      <Route
-                        path="categories"
-                        element={<CategoryManagement />}
-                      />
-                      <Route
-                        path="analytics"
-                        element={<AnalyticsDashboard />}
-                      />
-                      <Route
-                        path="analytics/products"
-                        element={<ProductAnalytics />}
-                      />
-                      <Route
-                        path="create-restaurant-owner"
-                        element={<CreateRestaurantOwner />}
-                      />
-                      <Route
-                        path="create-restaurant-manager"
-                        element={<CreateRestaurantManager />}
-                      />
-                    </Routes>
-                  </Suspense>
-                </AdminLayout>
+                <AdminLayout />
               </AdminRoute>
             }
-          />
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminDashboard />
+                </Suspense>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <UserManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="users/vendors"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <UserManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="users/restaurants"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <UserManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="users/approvals"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorApproval />
+                </Suspense>
+              }
+            />
+            <Route
+              path="vendors/approval"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorApproval />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminProductManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products/list"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductList />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products/create"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductForm />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products/:id/edit"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductForm />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products/approval"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductApproval />
+                </Suspense>
+              }
+            />
+            <Route
+              path="categories"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CategoryManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products/categories"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CategoryManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="listings"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminListingsManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products/listings"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminListingsManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="analytics"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AnalyticsDashboard />
+                </Suspense>
+              }
+            />
+            <Route
+              path="analytics/products"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductAnalytics />
+                </Suspense>
+              }
+            />
+            <Route
+              path="create-restaurant-owner"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CreateRestaurantOwner />
+                </Suspense>
+              }
+            />
+            <Route
+              path="create-restaurant-manager"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CreateRestaurantManager />
+                </Suspense>
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminSystemSettings />
+                </Suspense>
+              }
+            />
+          </Route>
 
           {/* Vendor Routes - Protected with AppLayout */}
           <Route
@@ -489,8 +613,7 @@ const App = () => {
         </Routes>
       </Suspense>
 
-      {/* Token Diagnostic Panel - Remove this in production */}
-      {/* {process.env.NODE_ENV === 'development' && <TokenDiagnosticPanel />} */}
+      {/* Debug panel removed */}
     </div>
   );
 };

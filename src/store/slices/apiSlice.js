@@ -42,6 +42,7 @@ export const apiSlice = createApi({
     'Vendor',
     'Restaurant',
     'Admin',
+    'SystemHealth',
   ],
   endpoints: (builder) => ({
     // Authentication endpoints
@@ -1452,6 +1453,227 @@ export const apiSlice = createApi({
       }),
       providesTags: ['Restaurant'],
     }),
+
+    // Admin - User Management
+    getAdminUsers: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/users',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'User', id: 'ADMIN_LIST' },
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'User',
+          id: _id,
+        })),
+      ],
+    }),
+
+    getAdminUser: builder.query({
+      query: (id) => `/admin/users/${id}`,
+      providesTags: (result, error, id) => [{ type: 'User', id }],
+    }),
+
+    updateAdminUser: builder.mutation({
+      query: ({ id, ...userData }) => ({
+        url: `/admin/users/${id}`,
+        method: 'PUT',
+        body: userData,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'User', id },
+        { type: 'User', id: 'ADMIN_LIST' },
+      ],
+    }),
+
+    deleteAdminUser: builder.mutation({
+      query: (id) => ({
+        url: `/admin/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'User', id },
+        { type: 'User', id: 'ADMIN_LIST' },
+      ],
+    }),
+
+    // Admin - User Approval
+    approveUser: builder.mutation({
+      query: ({ id, isApproved }) => ({
+        url: `/admin/users/${id}/approve`,
+        method: 'PUT',
+        body: { isApproved },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'User', id },
+        { type: 'User', id: 'ADMIN_LIST' },
+      ],
+    }),
+
+    // Admin - Bulk User Operations
+    bulkApproveUsers: builder.mutation({
+      query: (userIds) => ({
+        url: '/admin/users/bulk-approve',
+        method: 'PUT',
+        body: { userIds },
+      }),
+      invalidatesTags: [{ type: 'User', id: 'ADMIN_LIST' }],
+    }),
+
+    bulkRejectUsers: builder.mutation({
+      query: (userIds) => ({
+        url: '/admin/users/bulk-reject',
+        method: 'PUT',
+        body: { userIds },
+      }),
+      invalidatesTags: [{ type: 'User', id: 'ADMIN_LIST' }],
+    }),
+
+    bulkDeleteUsers: builder.mutation({
+      query: (userIds) => ({
+        url: '/admin/users/bulk-delete',
+        method: 'DELETE',
+        body: { userIds },
+      }),
+      invalidatesTags: [{ type: 'User', id: 'ADMIN_LIST' }],
+    }),
+
+    // Admin - Vendor Management
+    getAdminVendors: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'Vendor', id: 'ADMIN_LIST' },
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'Vendor',
+          id: _id,
+        })),
+      ],
+    }),
+
+    getPendingVendors: builder.query({
+      query: () => '/admin/vendors/pending',
+      providesTags: ['Vendor'],
+    }),
+
+    verifyVendor: builder.mutation({
+      query: (id) => ({
+        url: `/admin/vendors/${id}/verify`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Vendor', id },
+        { type: 'Vendor', id: 'ADMIN_LIST' },
+        'Vendor',
+      ],
+    }),
+
+    // Admin - Restaurant Management
+    getAdminRestaurants: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/restaurants',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'Restaurant', id: 'ADMIN_LIST' },
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'Restaurant',
+          id: _id,
+        })),
+      ],
+    }),
+
+    getPendingRestaurants: builder.query({
+      query: () => '/admin/restaurants/pending',
+      providesTags: ['Restaurant'],
+    }),
+
+    verifyRestaurant: builder.mutation({
+      query: (id) => ({
+        url: `/admin/restaurants/${id}/verify`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Restaurant', id },
+        { type: 'Restaurant', id: 'ADMIN_LIST' },
+        'Restaurant',
+      ],
+    }),
+
+    // Admin - Listings Management
+    getAdminListings: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/listings',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'Listing', id: 'ADMIN_LIST' },
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'Listing',
+          id: _id,
+        })),
+      ],
+    }),
+    getAdminListing: builder.query({
+      query: (id) => `/admin/listings/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Listing', id }],
+    }),
+    updateAdminListing: builder.mutation({
+      query: ({ id, ...listingData }) => ({
+        url: `/admin/listings/${id}`,
+        method: 'PUT',
+        body: listingData,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Listing', id },
+        { type: 'Listing', id: 'ADMIN_LIST' },
+        'Listing',
+      ],
+    }),
+    deleteAdminListing: builder.mutation({
+      query: (id) => ({
+        url: `/admin/listings/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Listing', id },
+        { type: 'Listing', id: 'ADMIN_LIST' },
+        'Listing',
+      ],
+    }),
+    approveAdminListing: builder.mutation({
+      query: ({ id, isApproved }) => ({
+        url: `/admin/listings/${id}/approve`,
+        method: 'PUT',
+        body: { isApproved },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Listing', id },
+        { type: 'Listing', id: 'ADMIN_LIST' },
+        'Listing',
+      ],
+    }),
+
+    // Admin - Featured Listings Management
+    toggleFeaturedListing: builder.mutation({
+      query: (id) => ({
+        url: `/admin/listings/${id}/featured`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Listing', id },
+        { type: 'Listing', id: 'LIST' },
+        'Listing',
+      ],
+    }),
+
+    // System Health Check
+    getSystemHealth: builder.query({
+      query: () => '/health',
+      providesTags: ['SystemHealth'],
+    }),
   }),
 });
 
@@ -1607,4 +1829,27 @@ export const {
   useCreateAdminRestaurantOwnerMutation,
   useCreateAdminRestaurantManagerMutation,
   useGetRestaurantsListQuery,
+
+  // Admin - Vendor Management
+  useGetAdminVendorsQuery,
+  useGetPendingVendorsQuery,
+  useVerifyVendorMutation,
+
+  // Admin - Restaurant Management (Extended)
+  useGetAdminRestaurantsQuery,
+  useGetPendingRestaurantsQuery,
+  useVerifyRestaurantMutation,
+
+  // Admin - Listings Management
+  useGetAdminListingsQuery,
+  useGetAdminListingQuery,
+  useUpdateAdminListingMutation,
+  useDeleteAdminListingMutation,
+  useApproveAdminListingMutation,
+
+  // Admin - Featured Listings
+  useToggleFeaturedListingMutation,
+
+  // System Health
+  useGetSystemHealthQuery,
 } = apiSlice;

@@ -49,17 +49,20 @@ const CategoryManagement = () => {
     useUpdateAdminCategoryMutation();
   const [deleteCategory] = useDeleteAdminCategoryMutation();
 
-  const categories = categoriesData?.data?.categories || [];
+  const categories = categoriesData?.data || [];
 
   // Form state for create/edit modal
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    icon: '',
-    color: '#10B981',
+    image: '',
+    parentCategory: null,
+    level: 0,
     isActive: true,
     sortOrder: 0,
-    parentId: null,
+    metaTitle: '',
+    metaDescription: '',
+    metaKeywords: [],
   });
 
   const [formErrors, setFormErrors] = useState({});

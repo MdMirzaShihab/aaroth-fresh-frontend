@@ -13,9 +13,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { selectAuth } from '../../store/slices/authSlice';
-import {
-  useUpdateRestaurantProfileMutation,
-} from '../../store/slices/apiSlice';
+import { useUpdateRestaurantProfileMutation } from '../../store/slices/apiSlice';
 
 const RestaurantProfile = () => {
   const { user } = useSelector(selectAuth);
@@ -57,16 +55,19 @@ const RestaurantProfile = () => {
         return;
       }
 
-      if (!restaurantData.restaurantAddress.street || !restaurantData.restaurantAddress.city) {
+      if (
+        !restaurantData.restaurantAddress.street ||
+        !restaurantData.restaurantAddress.city
+      ) {
         alert('Restaurant address is required');
         return;
       }
 
       // Send only restaurant-specific data to the API
       await updateRestaurantProfile({
-        restaurant: restaurantData
+        restaurant: restaurantData,
       }).unwrap();
-      
+
       setIsEditing(false);
       alert('Restaurant profile updated successfully');
     } catch (error) {
@@ -106,7 +107,8 @@ const RestaurantProfile = () => {
             <div className="relative">
               <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center">
                 <span className="text-white text-2xl font-bold">
-                  {restaurantData.restaurantName?.charAt(0)?.toUpperCase() || 'R'}
+                  {restaurantData.restaurantName?.charAt(0)?.toUpperCase() ||
+                    'R'}
                 </span>
               </div>
               {isEditing && (
@@ -119,9 +121,7 @@ const RestaurantProfile = () => {
               <h3 className="text-xl font-semibold text-text-dark">
                 {restaurantData.restaurantName || 'Restaurant Name'}
               </h3>
-              <p className="text-text-muted">
-                Owner: {user?.name}
-              </p>
+              <p className="text-text-muted">Owner: {user?.name}</p>
               <div className="flex items-center gap-2 mt-1">
                 <div className="w-2 h-2 bg-mint-fresh rounded-full"></div>
                 <span className="text-sm text-text-muted">
@@ -405,11 +405,17 @@ const RestaurantProfile = () => {
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5" />
               <div>
-                <h5 className="font-medium text-blue-900">Profile Information</h5>
+                <h5 className="font-medium text-blue-900">
+                  Profile Information
+                </h5>
                 <p className="text-sm text-blue-700 mt-1">
-                  This page focuses on your restaurant business information. 
-                  For personal account settings, password changes, and user-specific preferences, 
-                  please visit your <a href="/profile" className="font-medium underline">User Profile</a>.
+                  This page focuses on your restaurant business information. For
+                  personal account settings, password changes, and user-specific
+                  preferences, please visit your{' '}
+                  <a href="/profile" className="font-medium underline">
+                    User Profile
+                  </a>
+                  .
                 </p>
               </div>
             </div>

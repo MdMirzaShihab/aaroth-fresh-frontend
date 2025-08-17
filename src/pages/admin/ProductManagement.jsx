@@ -69,18 +69,63 @@ const ProductManagement = () => {
     useUpdateAdminProductMutation();
   const [deleteProduct] = useDeleteAdminProductMutation();
 
-  const products = productsData?.data?.products || [];
-  const categories = categoriesData?.data?.categories || [];
-  const pagination = productsData?.data?.pagination || {};
+  const products = productsData?.data || [];
+  const categories = categoriesData?.data || [];
+  const totalProducts = productsData?.total || 0;
+  const totalPages = productsData?.pages || 1;
 
   // Form state for create/edit modal
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     category: '',
-    unit: '',
-    price: '',
-    image: null,
+    variety: '',
+    origin: '',
+    seasonality: [],
+    shelfLife: {
+      value: '',
+      unit: 'days',
+    },
+    storageRequirements: {
+      temperature: {
+        min: '',
+        max: '',
+        unit: 'celsius',
+      },
+      humidity: {
+        min: '',
+        max: '',
+      },
+      conditions: [],
+    },
+    nutritionalInfo: {
+      calories: '',
+      protein: '',
+      carbs: '',
+      fat: '',
+      fiber: '',
+    },
+    standardUnits: [
+      {
+        name: 'kg',
+        abbreviation: 'kg',
+        baseUnit: true,
+        conversionRate: 1,
+      },
+    ],
+    qualityGrades: [
+      {
+        name: 'Premium',
+        description: 'Highest quality grade',
+        priceMultiplier: 1.5,
+      },
+    ],
+    tags: [],
+    isActive: true,
+    isSeasonal: false,
+    isOrganic: false,
+    isLocallySourced: false,
+    images: [],
   });
 
   const [formErrors, setFormErrors] = useState({});

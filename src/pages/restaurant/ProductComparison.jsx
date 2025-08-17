@@ -34,12 +34,12 @@ import Button from '../../components/ui/Button';
 const ProductComparison = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const comparisonItems = useSelector(selectComparisonItems);
   const tableData = useSelector(selectComparisonTableData);
   const stats = useSelector(selectComparisonStats);
   const error = useSelector(selectComparisonError);
-  
+
   const [showStats, setShowStats] = useState(false);
 
   const handleAddToCart = (product) => {
@@ -105,14 +105,14 @@ const ProductComparison = () => {
             <Package className="w-6 h-6 text-gray-400" />
           </div>
         );
-      
+
       case 'currency':
         return (
           <span className="font-semibold text-text-dark">
             {formatCurrency(value)}
           </span>
         );
-      
+
       case 'rating':
         return value > 0 ? (
           <div className="flex items-center gap-1 justify-center">
@@ -122,14 +122,16 @@ const ProductComparison = () => {
         ) : (
           <span className="text-gray-400">No rating</span>
         );
-      
+
       case 'availability':
         return (
-          <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getAvailabilityColor(value)}`}>
+          <span
+            className={`px-2 py-1 rounded-lg text-xs font-medium ${getAvailabilityColor(value)}`}
+          >
             {getAvailabilityText(value)}
           </span>
         );
-      
+
       case 'boolean':
         return (
           <div className="flex justify-center">
@@ -140,7 +142,7 @@ const ProductComparison = () => {
             )}
           </div>
         );
-      
+
       case 'text':
       default:
         return <span className="text-text-dark">{value || 'N/A'}</span>;
@@ -178,7 +180,7 @@ const ProductComparison = () => {
             No Products to Compare
           </h2>
           <p className="text-text-muted mb-8 max-w-md mx-auto">
-            Add products to comparison from the browse page to see a detailed 
+            Add products to comparison from the browse page to see a detailed
             side-by-side comparison of features, prices, and specifications.
           </p>
           <Button
@@ -213,7 +215,7 @@ const ProductComparison = () => {
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowStats(!showStats)}
@@ -255,7 +257,7 @@ const ProductComparison = () => {
             <Award className="w-5 h-5 text-bottle-green" />
             Comparison Statistics
           </h2>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-green-50 rounded-2xl p-4">
               <div className="text-2xl font-bold text-bottle-green">
@@ -263,21 +265,21 @@ const ProductComparison = () => {
               </div>
               <div className="text-sm text-green-700">Average Price</div>
             </div>
-            
+
             <div className="bg-blue-50 rounded-2xl p-4">
               <div className="text-2xl font-bold text-blue-600">
                 {stats.averageRating.toFixed(1)}★
               </div>
               <div className="text-sm text-blue-700">Average Rating</div>
             </div>
-            
+
             <div className="bg-purple-50 rounded-2xl p-4">
               <div className="text-2xl font-bold text-purple-600">
                 {stats.vendorCount}
               </div>
               <div className="text-sm text-purple-700">Vendors</div>
             </div>
-            
+
             <div className="bg-amber-50 rounded-2xl p-4">
               <div className="text-2xl font-bold text-amber-600">
                 {formatCurrency(stats.priceRange.max - stats.priceRange.min)}
@@ -308,7 +310,9 @@ const ProductComparison = () => {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-text-dark">{product.name}</h3>
+                  <h3 className="font-semibold text-text-dark">
+                    {product.name}
+                  </h3>
                   <p className="text-sm text-text-muted flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
                     {product.vendorName}
@@ -330,7 +334,7 @@ const ProductComparison = () => {
                   {formatCurrency(product.price)} per {product.unit}
                 </span>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-text-muted">Rating:</span>
                 {product.rating > 0 ? (
@@ -342,10 +346,12 @@ const ProductComparison = () => {
                   <span className="text-gray-400">No rating</span>
                 )}
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-text-muted">Availability:</span>
-                <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getAvailabilityColor(product.availability)}`}>
+                <span
+                  className={`px-2 py-1 rounded-lg text-xs font-medium ${getAvailabilityColor(product.availability)}`}
+                >
                   {getAvailabilityText(product.availability)}
                 </span>
               </div>
@@ -383,9 +389,15 @@ const ProductComparison = () => {
                       header
                     ) : (
                       <div className="space-y-2">
-                        <div className="font-semibold text-sm truncate">{header}</div>
+                        <div className="font-semibold text-sm truncate">
+                          {header}
+                        </div>
                         <button
-                          onClick={() => handleRemoveFromComparison(comparisonItems[index - 1].id)}
+                          onClick={() =>
+                            handleRemoveFromComparison(
+                              comparisonItems[index - 1].id
+                            )
+                          }
                           className="text-gray-400 hover:text-tomato-red transition-colors p-1 touch-target"
                         >
                           <X className="w-4 h-4" />
@@ -398,7 +410,10 @@ const ProductComparison = () => {
             </thead>
             <tbody>
               {tableData.rows.map((row, rowIndex) => (
-                <tr key={rowIndex} className="border-b border-gray-100 last:border-b-0">
+                <tr
+                  key={rowIndex}
+                  className="border-b border-gray-100 last:border-b-0"
+                >
                   <td className="p-4 font-medium text-text-dark bg-gray-50 sticky left-0">
                     {row.feature}
                   </td>
@@ -439,7 +454,7 @@ const ProductComparison = () => {
           <Info className="w-4 h-4 inline mr-2" />
           Maximum 4 products can be compared at once
         </div>
-        
+
         <div className="flex gap-3">
           <Button
             variant="outline"

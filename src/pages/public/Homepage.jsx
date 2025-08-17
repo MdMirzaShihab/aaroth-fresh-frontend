@@ -33,10 +33,7 @@ const Homepage = () => {
   const featuredListings = featuredData?.data || [];
   const categories = categoriesData?.data || [];
 
-  // Debug logging - remove in production
-  console.log('Homepage - Featured Data:', featuredData);
-  console.log('Homepage - Categories Data:', categoriesData);
-  console.log('Homepage - Transformed Products:', featuredListings.slice(0, 1));
+  // Debug logging removed
 
   // Transform featured listings to expected product format
   const featuredProducts = featuredListings.map((listing) => ({

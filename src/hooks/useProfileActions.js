@@ -118,7 +118,8 @@ export const useManagerActions = () => {
 
       return { success: false, message: result.message };
     } catch (error) {
-      const message = error?.data?.message || 'Failed to update manager profile';
+      const message =
+        error?.data?.message || 'Failed to update manager profile';
       toast.error(message);
       return { success: false, message };
     }
@@ -180,7 +181,12 @@ export const useManagerActions = () => {
     isDeletingManager,
     isLoadingManagers,
     refetchManagers,
-    isLoading: isCreatingManager || isUpdatingManager || isDeactivatingManager || isDeletingManager || isLoadingManagers,
+    isLoading:
+      isCreatingManager ||
+      isUpdatingManager ||
+      isDeactivatingManager ||
+      isDeletingManager ||
+      isLoadingManagers,
   };
 };
 

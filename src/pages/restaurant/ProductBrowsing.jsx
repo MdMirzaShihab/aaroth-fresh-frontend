@@ -519,6 +519,7 @@ const ProductBrowsing = () => {
       </div>
     </div>
   );
+  };
 
   return (
     <div className="space-y-6">
@@ -846,3 +847,4 @@ const ProductBrowsing = () => {
 };
 
 export default ProductBrowsing;
+

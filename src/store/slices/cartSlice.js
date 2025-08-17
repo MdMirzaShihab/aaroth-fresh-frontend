@@ -28,7 +28,7 @@ const cartSlice = createSlice({
     },
     addBulkToCart: (state, action) => {
       const bulkItems = action.payload;
-      
+
       if (!Array.isArray(bulkItems)) {
         console.error('addBulkToCart expects an array of items');
         return;
@@ -36,7 +36,7 @@ const cartSlice = createSlice({
 
       bulkItems.forEach((item) => {
         const existingItem = state.items.find((i) => i.id === item.id);
-        
+
         if (existingItem) {
           existingItem.quantity += item.quantity || 1;
         } else {
@@ -51,15 +51,17 @@ const cartSlice = createSlice({
     },
     bulkUpdateQuantities: (state, action) => {
       const updates = action.payload; // Array of {id, quantity} objects
-      
+
       if (!Array.isArray(updates)) {
-        console.error('bulkUpdateQuantities expects an array of {id, quantity} objects');
+        console.error(
+          'bulkUpdateQuantities expects an array of {id, quantity} objects'
+        );
         return;
       }
 
       updates.forEach(({ id, quantity }) => {
         const item = state.items.find((i) => i.id === id);
-        
+
         if (item) {
           if (quantity <= 0) {
             state.items = state.items.filter((i) => i.id !== id);
@@ -78,7 +80,7 @@ const cartSlice = createSlice({
     },
     removeBulkFromCart: (state, action) => {
       const itemIds = action.payload; // Array of item IDs
-      
+
       if (!Array.isArray(itemIds)) {
         console.error('removeBulkFromCart expects an array of item IDs');
         return;

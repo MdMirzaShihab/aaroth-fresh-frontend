@@ -41,8 +41,12 @@ const MobileStepCard = ({ title, icon: Icon, step, totalSteps, children }) => (
         <Icon className="w-5 h-5" />
       </div>
       <div>
-        <h2 className="text-lg font-medium text-text-dark dark:text-white">{title}</h2>
-        <p className="text-sm text-text-muted">Step {step} of {totalSteps}</p>
+        <h2 className="text-lg font-medium text-text-dark dark:text-white">
+          {title}
+        </h2>
+        <p className="text-sm text-text-muted">
+          Step {step} of {totalSteps}
+        </p>
       </div>
     </div>
     {children}
@@ -149,15 +153,15 @@ const BasicInfoFields = ({ register, errors, categories, validationRules }) => (
 );
 
 // Image Upload Section Component (this will contain the existing image upload logic)
-const ImageUploadSection = ({ 
-  imagePreviewUrls, 
-  selectedImageIndex, 
+const ImageUploadSection = ({
+  imagePreviewUrls,
+  selectedImageIndex,
   setSelectedImageIndex,
   handleImageUpload,
   handleImageDelete,
   setPrimaryImage,
   uploadingImages,
-  setShowImageModal 
+  setShowImageModal,
 }) => (
   <div className="space-y-4">
     {imagePreviewUrls.length > 0 ? (
@@ -391,7 +395,7 @@ const ProductForm = ({ isEditing = false }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  
+
   // Mobile form steps
   const formSteps = [
     { id: 'basic', title: 'Basic Info', icon: Info },
@@ -687,13 +691,13 @@ const ProductForm = ({ isEditing = false }) => {
       setCurrentStep(currentStep + 1);
     }
   };
-  
+
   const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
-  
+
   const goToStep = (stepIndex) => {
     setCurrentStep(stepIndex);
   };
@@ -759,200 +763,198 @@ const ProductForm = ({ isEditing = false }) => {
       </div>
 
       <div className="md:p-6 md:max-w-4xl md:mx-auto">
+        <form onSubmit={handleSubmit(onSubmit)} className="md:space-y-6">
+          {/* Desktop: All steps visible */}
+          <div className="hidden md:block space-y-6">
+            {/* Basic Information */}
+            <Card className="p-6">
+              <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
+                <Info className="w-5 h-5" />
+                Basic Information
+              </h2>
+              <BasicInfoFields
+                register={register}
+                errors={errors}
+                categories={categories}
+                validationRules={validationRules}
+              />
+            </Card>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="md:space-y-6">
-        {/* Desktop: All steps visible */}
-        <div className="hidden md:block space-y-6">
-          {/* Basic Information */}
-          <Card className="p-6">
-            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
-              <Info className="w-5 h-5" />
-              Basic Information
-            </h2>
-            <BasicInfoFields 
-              register={register}
-              errors={errors}
-              categories={categories}
-              validationRules={validationRules}
-            />
-          </Card>
+            {/* Images */}
+            <Card className="p-6">
+              <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
+                <ImageIcon className="w-5 h-5" />
+                Product Images
+              </h2>
+              <ImageUploadSection
+                imagePreviewUrls={imagePreviewUrls}
+                selectedImageIndex={selectedImageIndex}
+                setSelectedImageIndex={setSelectedImageIndex}
+                handleImageUpload={handleImageUpload}
+                handleImageDelete={handleImageDelete}
+                setPrimaryImage={setPrimaryImage}
+                uploadingImages={uploadingImages}
+                setShowImageModal={setShowImageModal}
+              />
+            </Card>
 
-          {/* Images */}
-          <Card className="p-6">
-            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5" />
-              Product Images
-            </h2>
-            <ImageUploadSection 
-              imagePreviewUrls={imagePreviewUrls}
-              selectedImageIndex={selectedImageIndex}
-              setSelectedImageIndex={setSelectedImageIndex}
-              handleImageUpload={handleImageUpload}
-              handleImageDelete={handleImageDelete}
-              setPrimaryImage={setPrimaryImage}
-              uploadingImages={uploadingImages}
-              setShowImageModal={setShowImageModal}
-            />
-          </Card>
+            {/* Additional Details */}
+            <Card className="p-6">
+              <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
+                Additional Details
+              </h2>
+              <AdditionalDetailsFields register={register} />
+            </Card>
 
-          {/* Additional Details */}
-          <Card className="p-6">
-            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
-              Additional Details
-            </h2>
-            <AdditionalDetailsFields register={register} />
-          </Card>
+            {/* Nutritional Information */}
+            <Card className="p-6">
+              <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
+                Nutritional Information (per 100g)
+              </h2>
+              <NutritionalInfoFields register={register} />
+            </Card>
 
-          {/* Nutritional Information */}
-          <Card className="p-6">
-            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
-              Nutritional Information (per 100g)
-            </h2>
-            <NutritionalInfoFields register={register} />
-          </Card>
-
-          {/* Form Actions */}
-          <Card className="p-6">
-            <div className="flex justify-end gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate('/admin/products')}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                isLoading={isSubmitting}
-                className="flex items-center gap-2"
-              >
-                <Save className="w-4 h-4" />
-                {isEditing ? 'Update Product' : 'Create Product'}
-              </Button>
-            </div>
-          </Card>
-        </div>
-
-        {/* Mobile: Step-based form */}
-        <div className="md:hidden">
-          {currentStep === 0 && (
-            <div className="p-4 space-y-4">
-              <MobileStepCard 
-                title="Basic Information"
-                icon={Info}
-                step={currentStep + 1}
-                totalSteps={formSteps.length}
-              >
-                <BasicInfoFields 
-                  register={register}
-                  errors={errors}
-                  categories={categories}
-                  validationRules={validationRules}
-                />
-              </MobileStepCard>
-            </div>
-          )}
-
-          {currentStep === 1 && (
-            <div className="p-4 space-y-4">
-              <MobileStepCard 
-                title="Product Images"
-                icon={ImageIcon}
-                step={currentStep + 1}
-                totalSteps={formSteps.length}
-              >
-                <ImageUploadSection 
-                  imagePreviewUrls={imagePreviewUrls}
-                  selectedImageIndex={selectedImageIndex}
-                  setSelectedImageIndex={setSelectedImageIndex}
-                  handleImageUpload={handleImageUpload}
-                  handleImageDelete={handleImageDelete}
-                  setPrimaryImage={setPrimaryImage}
-                  uploadingImages={uploadingImages}
-                  setShowImageModal={setShowImageModal}
-                />
-              </MobileStepCard>
-            </div>
-          )}
-
-          {currentStep === 2 && (
-            <div className="p-4 space-y-4">
-              <MobileStepCard 
-                title="Additional Details"
-                icon={Plus}
-                step={currentStep + 1}
-                totalSteps={formSteps.length}
-              >
-                <AdditionalDetailsFields register={register} />
-              </MobileStepCard>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="p-4 space-y-4">
-              <MobileStepCard 
-                title="Nutritional Information"
-                icon={Star}
-                step={currentStep + 1}
-                totalSteps={formSteps.length}
-              >
-                <NutritionalInfoFields register={register} />
-              </MobileStepCard>
-            </div>
-          )}
-
-          {/* Mobile Navigation */}
-          <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
-            <div className="flex justify-between gap-3">
-              {currentStep > 0 ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={prevStep}
-                  className="flex items-center gap-2 min-h-[48px]"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
-                </Button>
-              ) : (
+            {/* Form Actions */}
+            <Card className="p-6">
+              <div className="flex justify-end gap-3">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate('/admin/products')}
-                  className="min-h-[48px]"
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-              )}
-
-              {currentStep < formSteps.length - 1 ? (
-                <Button
-                  type="button"
-                  onClick={nextStep}
-                  className="flex items-center gap-2 min-h-[48px]"
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              ) : (
                 <Button
                   type="submit"
                   disabled={isSubmitting}
                   isLoading={isSubmitting}
-                  className="flex items-center gap-2 min-h-[48px]"
+                  className="flex items-center gap-2"
                 >
-                  <Check className="w-4 h-4" />
-                  {isEditing ? 'Update' : 'Create'}
+                  <Save className="w-4 h-4" />
+                  {isEditing ? 'Update Product' : 'Create Product'}
                 </Button>
-              )}
+              </div>
+            </Card>
+          </div>
+
+          {/* Mobile: Step-based form */}
+          <div className="md:hidden">
+            {currentStep === 0 && (
+              <div className="p-4 space-y-4">
+                <MobileStepCard
+                  title="Basic Information"
+                  icon={Info}
+                  step={currentStep + 1}
+                  totalSteps={formSteps.length}
+                >
+                  <BasicInfoFields
+                    register={register}
+                    errors={errors}
+                    categories={categories}
+                    validationRules={validationRules}
+                  />
+                </MobileStepCard>
+              </div>
+            )}
+
+            {currentStep === 1 && (
+              <div className="p-4 space-y-4">
+                <MobileStepCard
+                  title="Product Images"
+                  icon={ImageIcon}
+                  step={currentStep + 1}
+                  totalSteps={formSteps.length}
+                >
+                  <ImageUploadSection
+                    imagePreviewUrls={imagePreviewUrls}
+                    selectedImageIndex={selectedImageIndex}
+                    setSelectedImageIndex={setSelectedImageIndex}
+                    handleImageUpload={handleImageUpload}
+                    handleImageDelete={handleImageDelete}
+                    setPrimaryImage={setPrimaryImage}
+                    uploadingImages={uploadingImages}
+                    setShowImageModal={setShowImageModal}
+                  />
+                </MobileStepCard>
+              </div>
+            )}
+
+            {currentStep === 2 && (
+              <div className="p-4 space-y-4">
+                <MobileStepCard
+                  title="Additional Details"
+                  icon={Plus}
+                  step={currentStep + 1}
+                  totalSteps={formSteps.length}
+                >
+                  <AdditionalDetailsFields register={register} />
+                </MobileStepCard>
+              </div>
+            )}
+
+            {currentStep === 3 && (
+              <div className="p-4 space-y-4">
+                <MobileStepCard
+                  title="Nutritional Information"
+                  icon={Star}
+                  step={currentStep + 1}
+                  totalSteps={formSteps.length}
+                >
+                  <NutritionalInfoFields register={register} />
+                </MobileStepCard>
+              </div>
+            )}
+
+            {/* Mobile Navigation */}
+            <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+              <div className="flex justify-between gap-3">
+                {currentStep > 0 ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={prevStep}
+                    className="flex items-center gap-2 min-h-[48px]"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate('/admin/products')}
+                    className="min-h-[48px]"
+                  >
+                    Cancel
+                  </Button>
+                )}
+
+                {currentStep < formSteps.length - 1 ? (
+                  <Button
+                    type="button"
+                    onClick={nextStep}
+                    className="flex items-center gap-2 min-h-[48px]"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    isLoading={isSubmitting}
+                    className="flex items-center gap-2 min-h-[48px]"
+                  >
+                    <Check className="w-4 h-4" />
+                    {isEditing ? 'Update' : 'Create'}
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
       </div>
-
 
       {/* Image Preview Modal */}
       {showImageModal && (

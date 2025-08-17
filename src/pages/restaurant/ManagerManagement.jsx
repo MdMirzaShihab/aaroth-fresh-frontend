@@ -204,7 +204,9 @@ const ManagerManagement = () => {
         isActive: !manager.isActive,
       }).unwrap();
       refetch();
-      alert(`Manager ${!manager.isActive ? 'activated' : 'deactivated'} successfully`);
+      alert(
+        `Manager ${!manager.isActive ? 'activated' : 'deactivated'} successfully`
+      );
     } catch (error) {
       console.error('Failed to update manager status:', error);
       alert('Failed to update manager status. Please try again.');
@@ -254,137 +256,141 @@ const ManagerManagement = () => {
     const [showActions, setShowActions] = useState(false);
 
     return (
-    <div className="glass rounded-3xl p-6 hover:shadow-soft transition-all duration-200">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
-            <span className="text-white font-semibold">
-              {manager.name?.charAt(0)?.toUpperCase() || 'M'}
+      <div className="glass rounded-3xl p-6 hover:shadow-soft transition-all duration-200">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {manager.name?.charAt(0)?.toUpperCase() || 'M'}
+              </span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-text-dark">{manager.name}</h3>
+              <p className="text-sm text-text-muted">{manager.email}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span
+                  className={`px-2 py-1 rounded-lg text-xs font-medium border flex items-center gap-1 ${getStatusColor(manager.status)}`}
+                >
+                  {getStatusIcon(manager.status)}
+                  {manager.status || 'Active'}
+                </span>
+                <span className="text-xs text-text-muted">
+                  {manager.role === 'restaurantManager' ? 'Manager' : 'Owner'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowActions(!showActions)}
+              className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+            >
+              <MoreVertical className="w-4 h-4 text-gray-400" />
+            </button>
+
+            {showActions && (
+              <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-2xl shadow-lg z-10 py-2 min-w-[160px]">
+                <button
+                  onClick={() => {
+                    openEditModal(manager);
+                    setShowActions(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit Manager
+                </button>
+                <button
+                  onClick={() => {
+                    handleToggleManagerStatus(manager);
+                    setShowActions(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                >
+                  {manager.isActive ? (
+                    <>
+                      <Ban className="w-4 h-4" />
+                      Deactivate
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      Activate
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedManager(manager);
+                    setShowDeleteConfirm(true);
+                    setShowActions(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 text-tomato-red flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Manager
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center gap-2 text-sm">
+            <Phone className="w-3 h-3 text-gray-400" />
+            <span className="text-text-muted">
+              {formatPhoneForDisplay(manager.phone)}
             </span>
           </div>
-          <div>
-            <h3 className="font-semibold text-text-dark">{manager.name}</h3>
-            <p className="text-sm text-text-muted">{manager.email}</p>
-            <div className="flex items-center gap-2 mt-1">
-              <span
-                className={`px-2 py-1 rounded-lg text-xs font-medium border flex items-center gap-1 ${getStatusColor(manager.status)}`}
-              >
-                {getStatusIcon(manager.status)}
-                {manager.status || 'Active'}
-              </span>
-              <span className="text-xs text-text-muted">
-                {manager.role === 'restaurantManager' ? 'Manager' : 'Owner'}
-              </span>
-            </div>
+          <div className="flex items-center gap-2 text-sm">
+            <Calendar className="w-3 h-3 text-gray-400" />
+            <span className="text-text-muted">
+              Joined {formatDate(manager.createdAt)}
+            </span>
           </div>
         </div>
 
-        <div className="relative">
-          <button 
-            onClick={() => setShowActions(!showActions)}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          >
-            <MoreVertical className="w-4 h-4 text-gray-400" />
-          </button>
-          
-          {showActions && (
-            <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-2xl shadow-lg z-10 py-2 min-w-[160px]">
-              <button
-                onClick={() => {
-                  openEditModal(manager);
-                  setShowActions(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
-              >
-                <Edit className="w-4 h-4" />
-                Edit Manager
-              </button>
-              <button
-                onClick={() => {
-                  handleToggleManagerStatus(manager);
-                  setShowActions(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
-              >
-                {manager.isActive ? (
-                  <>
-                    <Ban className="w-4 h-4" />
-                    Deactivate
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="w-4 h-4" />
-                    Activate
-                  </>
-                )}
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedManager(manager);
-                  setShowDeleteConfirm(true);
-                  setShowActions(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 text-tomato-red flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete Manager
-              </button>
-            </div>
-          )}
+        {/* Permissions Summary */}
+        <div className="bg-white/50 border border-gray-100 rounded-2xl p-3 mb-4">
+          <div className="text-xs font-medium text-text-dark mb-2">
+            Permissions
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {Object.entries(manager.permissions || {}).map(
+              ([key, value]) =>
+                value && (
+                  <span
+                    key={key}
+                    className="px-2 py-1 bg-mint-fresh/10 text-bottle-green text-xs rounded-lg"
+                  >
+                    {key
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (str) => str.toUpperCase())}
+                  </span>
+                )
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-sm">
-          <Phone className="w-3 h-3 text-gray-400" />
-          <span className="text-text-muted">
-            {formatPhoneForDisplay(manager.phone)}
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <span className="text-xs text-text-muted">
+            Last active:{' '}
+            {manager.lastLoginAt ? formatDate(manager.lastLoginAt) : 'Never'}
           </span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <Calendar className="w-3 h-3 text-gray-400" />
-          <span className="text-text-muted">
-            Joined {formatDate(manager.createdAt)}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                manager.isActive
+                  ? 'bg-mint-fresh/20 text-bottle-green'
+                  : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              {manager.isActive ? 'Active' : 'Inactive'}
+            </span>
+          </div>
         </div>
       </div>
-
-      {/* Permissions Summary */}
-      <div className="bg-white/50 border border-gray-100 rounded-2xl p-3 mb-4">
-        <div className="text-xs font-medium text-text-dark mb-2">
-          Permissions
-        </div>
-        <div className="flex flex-wrap gap-1">
-          {Object.entries(manager.permissions || {}).map(
-            ([key, value]) =>
-              value && (
-                <span
-                  key={key}
-                  className="px-2 py-1 bg-mint-fresh/10 text-bottle-green text-xs rounded-lg"
-                >
-                  {key
-                    .replace(/([A-Z])/g, ' $1')
-                    .replace(/^./, (str) => str.toUpperCase())}
-                </span>
-              )
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <span className="text-xs text-text-muted">
-          Last active:{' '}
-          {manager.lastLoginAt ? formatDate(manager.lastLoginAt) : 'Never'}
-        </span>
-        <div className="flex items-center gap-2">
-          <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-            manager.isActive ? 'bg-mint-fresh/20 text-bottle-green' : 'bg-gray-100 text-gray-600'
-          }`}>
-            {manager.isActive ? 'Active' : 'Inactive'}
-          </span>
-        </div>
-      </div>
-    </div>
     );
   };
 

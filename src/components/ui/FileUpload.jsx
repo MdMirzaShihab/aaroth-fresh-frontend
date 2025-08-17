@@ -156,14 +156,18 @@ const FileUpload = ({
             </h3>
 
             <p className="text-sm sm:text-base text-text-muted mb-3 sm:mb-4 max-w-xs sm:max-w-none mx-auto">
-              <span className="hidden sm:inline">Drag and drop files here, or </span>
+              <span className="hidden sm:inline">
+                Drag and drop files here, or{' '}
+              </span>
               <span className="sm:hidden">Tap to select files or </span>
               <span>click to select files</span>
             </p>
 
             <div className="text-xs text-text-muted/80 space-y-1">
               <p>Max: {(maxSize / 1024 / 1024).toFixed(1)}MB</p>
-              {multiple && <p className="hidden sm:block">Maximum files: {maxFiles}</p>}
+              {multiple && (
+                <p className="hidden sm:block">Maximum files: {maxFiles}</p>
+              )}
               <p className="hidden sm:block">Supported formats: {accept}</p>
             </div>
           </>
@@ -235,13 +239,15 @@ const FilePreview = ({ file, onRemove, disabled }) => {
               // On mobile, allow tapping image to view full size
               if (window.innerWidth < 640 && preview) {
                 const modal = document.createElement('div');
-                modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4';
+                modal.className =
+                  'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4';
                 modal.onclick = () => document.body.removeChild(modal);
-                
+
                 const img = document.createElement('img');
                 img.src = preview;
-                img.className = 'max-w-full max-h-full object-contain rounded-2xl';
-                
+                img.className =
+                  'max-w-full max-h-full object-contain rounded-2xl';
+
                 modal.appendChild(img);
                 document.body.appendChild(modal);
               }
