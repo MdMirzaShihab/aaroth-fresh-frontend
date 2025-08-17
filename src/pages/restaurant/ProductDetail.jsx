@@ -29,7 +29,7 @@ const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('overview');
   const [quantity, setQuantity] = useState(1);
@@ -56,8 +56,10 @@ const ProductDetail = () => {
   const isInSeason = availabilityObj.isInSeason;
 
   // Handle images
-  const imageUrls = listing?.images?.map(img => img.url || img) || 
-                   product.images?.map(img => img.url || img) || [];
+  const imageUrls =
+    listing?.images?.map((img) => img.url || img) ||
+    product.images?.map((img) => img.url || img) ||
+    [];
 
   // Handle rating
   const rating = listing?.rating?.average || product.rating?.average || 0;
@@ -90,11 +92,15 @@ const ProductDetail = () => {
 
   const handleImageNavigation = (direction) => {
     if (imageUrls.length <= 1) return;
-    
+
     if (direction === 'prev') {
-      setCurrentImageIndex(prev => prev === 0 ? imageUrls.length - 1 : prev - 1);
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? imageUrls.length - 1 : prev - 1
+      );
     } else {
-      setCurrentImageIndex(prev => prev === imageUrls.length - 1 ? 0 : prev + 1);
+      setCurrentImageIndex((prev) =>
+        prev === imageUrls.length - 1 ? 0 : prev + 1
+      );
     }
   };
 
@@ -133,7 +139,7 @@ const ProductDetail = () => {
   const currentImage = imageUrls[currentImageIndex];
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto" data-testid="product-detail-container">
       {/* Breadcrumb */}
       <div className="mb-6">
         <button
@@ -147,7 +153,7 @@ const ProductDetail = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Side - Images */}
-        <div className="space-y-4">
+        <div className="space-y-4" data-testid="image-gallery">
           {/* Main Image */}
           <div className="relative aspect-square bg-gray-100 rounded-3xl overflow-hidden">
             {currentImage ? (
@@ -242,27 +248,39 @@ const ProductDetail = () => {
           {/* Product Header */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-text-muted dark:text-gray-300">{product.category?.name}</span>
+              <span className="text-text-muted dark:text-gray-300">
+                {product.category?.name}
+              </span>
               {rating > 0 && (
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-earthy-yellow fill-current" />
-                  <span className="text-sm text-text-muted dark:text-gray-300">{rating.toFixed(1)}</span>
+                  <span className="text-sm text-text-muted dark:text-gray-300">
+                    {rating.toFixed(1)}
+                  </span>
                 </div>
               )}
             </div>
-            <h1 className="text-3xl font-bold text-text-dark dark:text-white mb-4">{product.name}</h1>
-            <p className="text-text-dark/80 dark:text-gray-300 leading-relaxed">{product.description}</p>
+            <h1 className="text-3xl font-bold text-text-dark dark:text-white mb-4">
+              {product.name}
+            </h1>
+            <p className="text-text-dark/80 dark:text-gray-300 leading-relaxed">
+              {product.description}
+            </p>
           </div>
 
           {/* Vendor Info */}
           <div className="glass rounded-2xl p-4">
-            <h3 className="font-semibold text-text-dark dark:text-white mb-2">Vendor Information</h3>
+            <h3 className="font-semibold text-text-dark dark:text-white mb-2">
+              Vendor Information
+            </h3>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-bottle-green/20 to-mint-fresh/20 rounded-xl flex items-center justify-center">
                 <Package className="w-6 h-6 text-bottle-green dark:text-green-400" />
               </div>
               <div>
-                <p className="font-medium text-text-dark dark:text-white">{vendor.businessName || vendor.name}</p>
+                <p className="font-medium text-text-dark dark:text-white">
+                  {vendor.businessName || vendor.name}
+                </p>
                 <p className="text-text-muted dark:text-gray-300 text-sm flex items-center gap-1">
                   <MapPin className="w-3 h-3" />
                   {vendor.address?.city || 'Local Vendor'}
@@ -281,7 +299,9 @@ const ProductDetail = () => {
                 <p className="text-text-muted dark:text-gray-300">per {unit}</p>
               </div>
               <div className="text-right">
-                <p className={`font-medium ${quantityAvailable > 0 ? 'text-mint-fresh dark:text-green-400' : 'text-tomato-red'}`}>
+                <p
+                  className={`font-medium ${quantityAvailable > 0 ? 'text-mint-fresh dark:text-green-400' : 'text-tomato-red'}`}
+                >
                   {quantityAvailable > 0 ? 'In Stock' : 'Out of Stock'}
                 </p>
                 <p className="text-text-muted dark:text-gray-300 text-sm">
@@ -294,7 +314,9 @@ const ProductDetail = () => {
             {quantityAvailable > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-text-dark dark:text-white">Quantity</span>
+                  <span className="font-medium text-text-dark dark:text-white">
+                    Quantity
+                  </span>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => handleQuantityChange(-1)}
@@ -318,7 +340,9 @@ const ProductDetail = () => {
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div>
-                    <p className="text-sm text-text-muted dark:text-gray-300">Total Price</p>
+                    <p className="text-sm text-text-muted dark:text-gray-300">
+                      Total Price
+                    </p>
                     <p className="text-xl font-bold text-text-dark dark:text-white">
                       {formatCurrency(price * quantity)}
                     </p>
@@ -368,10 +392,12 @@ const ProductDetail = () => {
                         <MapPin className="w-4 h-4" />
                         Origin
                       </h5>
-                      <p className="text-text-muted dark:text-gray-300">{product.origin}</p>
+                      <p className="text-text-muted dark:text-gray-300">
+                        {product.origin}
+                      </p>
                     </div>
                   )}
-                  
+
                   {product.seasonality && product.seasonality.length > 0 && (
                     <div>
                       <h5 className="font-medium text-text-dark dark:text-white mb-2 flex items-center gap-2">
@@ -393,10 +419,16 @@ const ProductDetail = () => {
 
                   {isInSeason !== undefined && (
                     <div>
-                      <h5 className="font-medium text-text-dark dark:text-white mb-2">Current Season</h5>
-                      <span className={`px-3 py-1 rounded-lg text-sm font-medium ${
-                        isInSeason ? 'bg-mint-fresh/20 text-bottle-green dark:text-green-400' : 'bg-gray-100 text-gray-600'
-                      }`}>
+                      <h5 className="font-medium text-text-dark dark:text-white mb-2">
+                        Current Season
+                      </h5>
+                      <span
+                        className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                          isInSeason
+                            ? 'bg-mint-fresh/20 text-bottle-green dark:text-green-400'
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
                         {isInSeason ? 'In Season' : 'Out of Season'}
                       </span>
                     </div>
@@ -412,7 +444,9 @@ const ProductDetail = () => {
                         <Award className="w-4 h-4" />
                         Quality Grade
                       </h5>
-                      <p className="text-text-muted dark:text-gray-300">{listing.qualityGrade}</p>
+                      <p className="text-text-muted dark:text-gray-300">
+                        {listing.qualityGrade}
+                      </p>
                     </div>
                   )}
 
@@ -424,42 +458,50 @@ const ProductDetail = () => {
                       </h5>
                       <div className="space-y-2 text-text-muted dark:text-gray-300">
                         {product.storageRequirements.temperature && (
-                          <p>Temperature: {product.storageRequirements.temperature.min}° - {product.storageRequirements.temperature.max}°C</p>
+                          <p>
+                            Temperature:{' '}
+                            {product.storageRequirements.temperature.min}° -{' '}
+                            {product.storageRequirements.temperature.max}°C
+                          </p>
                         )}
-                        {product.storageRequirements.conditions && product.storageRequirements.conditions.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {product.storageRequirements.conditions.map((condition, index) => (
-                              <span
-                                key={index}
-                                className="bg-bottle-green/10 text-bottle-green dark:text-green-400 px-2 py-1 rounded text-sm"
-                              >
-                                {condition}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                        {product.storageRequirements.conditions &&
+                          product.storageRequirements.conditions.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {product.storageRequirements.conditions.map(
+                                (condition, index) => (
+                                  <span
+                                    key={index}
+                                    className="bg-bottle-green/10 text-bottle-green dark:text-green-400 px-2 py-1 rounded text-sm"
+                                  >
+                                    {condition}
+                                  </span>
+                                )
+                              )}
+                            </div>
+                          )}
                       </div>
                     </div>
                   )}
 
-                  {listing.certifications && listing.certifications.length > 0 && (
-                    <div>
-                      <h5 className="font-medium text-text-dark dark:text-white mb-2 flex items-center gap-2">
-                        <ShieldCheck className="w-4 h-4" />
-                        Certifications
-                      </h5>
-                      <div className="flex flex-wrap gap-2">
-                        {listing.certifications.map((cert, index) => (
-                          <span
-                            key={index}
-                            className="bg-mint-fresh/10 text-bottle-green dark:text-green-400 px-3 py-1 rounded-lg text-sm font-medium"
-                          >
-                            {cert}
-                          </span>
-                        ))}
+                  {listing.certifications &&
+                    listing.certifications.length > 0 && (
+                      <div>
+                        <h5 className="font-medium text-text-dark dark:text-white mb-2 flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4" />
+                          Certifications
+                        </h5>
+                        <div className="flex flex-wrap gap-2">
+                          {listing.certifications.map((cert, index) => (
+                            <span
+                              key={index}
+                              className="bg-mint-fresh/10 text-bottle-green dark:text-green-400 px-3 py-1 rounded-lg text-sm font-medium"
+                            >
+                              {cert}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               )}
 
@@ -467,14 +509,20 @@ const ProductDetail = () => {
                 <div className="space-y-4">
                   {listing.deliveryOptions && (
                     <div>
-                      <h5 className="font-medium text-text-dark dark:text-white mb-3">Delivery Options</h5>
+                      <h5 className="font-medium text-text-dark dark:text-white mb-3">
+                        Delivery Options
+                      </h5>
                       <div className="space-y-3">
                         {listing.deliveryOptions.selfPickup?.enabled && (
                           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                             <Package className="w-5 h-5 text-bottle-green dark:text-green-400" />
                             <div>
-                              <p className="font-medium text-text-dark dark:text-white">Self Pickup</p>
-                              <p className="text-text-muted dark:text-gray-300 text-sm">Pick up from vendor location</p>
+                              <p className="font-medium text-text-dark dark:text-white">
+                                Self Pickup
+                              </p>
+                              <p className="text-text-muted dark:text-gray-300 text-sm">
+                                Pick up from vendor location
+                              </p>
                             </div>
                           </div>
                         )}
@@ -482,12 +530,13 @@ const ProductDetail = () => {
                           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                             <Truck className="w-5 h-5 text-bottle-green dark:text-green-400" />
                             <div>
-                              <p className="font-medium text-text-dark dark:text-white">Home Delivery</p>
+                              <p className="font-medium text-text-dark dark:text-white">
+                                Home Delivery
+                              </p>
                               <p className="text-text-muted dark:text-gray-300 text-sm">
-                                {listing.deliveryOptions.delivery.fee > 0 
+                                {listing.deliveryOptions.delivery.fee > 0
                                   ? `Delivery fee: ${formatCurrency(listing.deliveryOptions.delivery.fee)}`
-                                  : 'Free delivery'
-                                }
+                                  : 'Free delivery'}
                               </p>
                             </div>
                           </div>
@@ -503,14 +552,18 @@ const ProductDetail = () => {
                         Lead Time
                       </h5>
                       <p className="text-text-muted dark:text-gray-300">
-                        {listing.leadTime === 0 ? 'Available immediately' : `${listing.leadTime} days`}
+                        {listing.leadTime === 0
+                          ? 'Available immediately'
+                          : `${listing.leadTime} days`}
                       </p>
                     </div>
                   )}
 
                   {listing.minimumOrderValue > 0 && (
                     <div>
-                      <h5 className="font-medium text-text-dark dark:text-white mb-2">Minimum Order</h5>
+                      <h5 className="font-medium text-text-dark dark:text-white mb-2">
+                        Minimum Order
+                      </h5>
                       <p className="text-text-muted dark:text-gray-300">
                         {formatCurrency(listing.minimumOrderValue)}
                       </p>

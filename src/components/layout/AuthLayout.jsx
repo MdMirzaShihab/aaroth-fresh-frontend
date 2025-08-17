@@ -57,9 +57,9 @@ const AuthLayout = ({
             className="inline-flex items-center gap-3 mb-8 group focus:outline-none focus:ring-2 focus:ring-bottle-green/40 focus:ring-offset-4 rounded-2xl"
           >
             <div className="p-3 rounded-2xl shadow-lg group-hover:shadow-xl group-hover:shadow-glow-green/20 transition-all duration-300 group-hover:scale-105">
-              <img 
-                src={AarothLogo} 
-                alt="Aaroth Fresh" 
+              <img
+                src={AarothLogo}
+                alt="Aaroth Fresh"
                 className="w-12 h-12 object-contain"
               />
             </div>

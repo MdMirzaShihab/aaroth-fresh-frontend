@@ -217,7 +217,7 @@ const RestaurantDashboard = () => {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 px-4 sm:px-0 min-h-screen">
+    <div className="space-y-8 min-h-screen">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
@@ -266,7 +266,7 @@ const RestaurantDashboard = () => {
       />
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpiData.map((kpi, index) => (
           <KPICard
             key={index}
@@ -277,7 +277,7 @@ const RestaurantDashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Spending Trends */}
         <ChartContainer
           title="Spending Trends"

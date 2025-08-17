@@ -129,8 +129,12 @@ const PlaceOrder = () => {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-dark dark:text-white">Place Order</h1>
-        <p className="text-text-muted dark:text-gray-300 mt-2">Review and confirm your order</p>
+        <h1 className="text-3xl font-bold text-text-dark dark:text-white">
+          Place Order
+        </h1>
+        <p className="text-text-muted dark:text-gray-300 mt-2">
+          Review and confirm your order
+        </p>
       </div>
 
       {/* Step Progress */}
@@ -158,7 +162,9 @@ const PlaceOrder = () => {
               </div>
               <span
                 className={`ml-3 font-medium hidden sm:inline ${
-                  step >= stepNum ? 'text-text-dark dark:text-white' : 'text-text-muted dark:text-gray-300'
+                  step >= stepNum
+                    ? 'text-text-dark dark:text-white'
+                    : 'text-text-muted dark:text-gray-300'
                 }`}
               >
                 {title}
@@ -372,7 +378,9 @@ const PlaceOrder = () => {
                         }
                         className="text-bottle-green focus:ring-bottle-green/20"
                       />
-                      <span className="text-text-dark dark:text-white">Schedule for later</span>
+                      <span className="text-text-dark dark:text-white">
+                        Schedule for later
+                      </span>
                     </label>
                     {deliveryInfo.preferredDeliveryTime === 'custom' && (
                       <input
@@ -603,7 +611,9 @@ const PlaceOrder = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-5 h-5 text-gray-400" />
-                    <span className="text-text-muted dark:text-gray-300">Cash on Delivery</span>
+                    <span className="text-text-muted dark:text-gray-300">
+                      Cash on Delivery
+                    </span>
                   </div>
                 </div>
               </div>
@@ -654,10 +664,14 @@ const PlaceOrder = () => {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-muted dark:text-gray-300">Delivery Fee</span>
+                <span className="text-text-muted dark:text-gray-300">
+                  Delivery Fee
+                </span>
                 <span className="font-medium text-text-dark dark:text-white">
                   {deliveryFee === 0 ? (
-                    <span className="text-mint-fresh dark:text-green-400">Free</span>
+                    <span className="text-mint-fresh dark:text-green-400">
+                      Free
+                    </span>
                   ) : (
                     formatCurrency(deliveryFee)
                   )}

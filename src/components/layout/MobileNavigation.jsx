@@ -47,7 +47,7 @@ const MobileNavigation = () => {
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-white/20 dark:border-gray-800/20">
-      <div className="flex items-center justify-around py-2 px-4">
+      <div className="flex items-center justify-around py-3 px-6">
         {navigationItems.map((item) => {
           const isActive = isActivePath(item.path);
           const badgeCount = getBadgeCount(item.id);
@@ -56,7 +56,7 @@ const MobileNavigation = () => {
             <button
               key={item.id}
               onClick={() => handleNavigation(item.path)}
-              className={`flex flex-col items-center justify-center min-h-[72px] min-w-[60px] px-2 py-3 rounded-2xl transition-all duration-200 group ${
+              className={`flex flex-col items-center justify-center min-h-[64px] min-w-[56px] px-2 py-2 rounded-xl transition-all duration-200 group ${
                 isActive
                   ? 'bg-bottle-green/10 text-bottle-green'
                   : 'text-text-muted hover:text-bottle-green hover:bg-bottle-green/5'

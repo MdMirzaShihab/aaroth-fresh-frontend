@@ -3,6 +3,8 @@ import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
 import notificationReducer from './slices/notificationSlice';
 import themeReducer from './slices/themeSlice';
+import favoritesReducer from './slices/favoritesSlice';
+import comparisonReducer from './slices/comparisonSlice';
 import { apiSlice } from './slices/apiSlice';
 import { authMiddlewareWithRetry } from './middleware/authMiddleware';
 
@@ -12,6 +14,8 @@ export const store = configureStore({
     cart: cartReducer,
     notification: notificationReducer,
     theme: themeReducer,
+    favorites: favoritesReducer,
+    comparison: comparisonReducer,
     api: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

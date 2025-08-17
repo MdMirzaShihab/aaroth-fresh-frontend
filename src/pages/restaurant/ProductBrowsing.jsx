@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Search,
   Filter,
@@ -13,17 +13,36 @@ import {
   Minus,
   Heart,
   Info,
+  Check,
+  Package,
+  X,
+  Scale,
 } from 'lucide-react';
 import {
   useGetListingsQuery,
   useGetCategoriesQuery,
 } from '../../store/slices/apiSlice';
 import { addToCart } from '../../store/slices/cartSlice';
+import { 
+  toggleFavorite, 
+  selectIsProductFavorited 
+} from '../../store/slices/favoritesSlice';
+import { 
+  toggleComparison, 
+  selectIsProductInComparison,
+  selectIsComparisonFull,
+  selectComparisonCount
+} from '../../store/slices/comparisonSlice';
 import { formatCurrency, debounce } from '../../utils';
+import BulkOrderModal from '../../components/restaurant/BulkOrderModal';
 
 const ProductBrowsing = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Redux selectors
+  const comparisonCount = useSelector(selectComparisonCount);
+  const isComparisonFull = useSelector(selectIsComparisonFull);
 
   // State management
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +57,11 @@ const ProductBrowsing = () => {
     availability: 'available',
   });
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Bulk selection state
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [showBulkModal, setShowBulkModal] = useState(false);
 
   // API queries
   const {
@@ -55,7 +79,7 @@ const ProductBrowsing = () => {
   // Handle listings data structure - backend returns nested objects
   const listings = useMemo(() => {
     if (!listingsResponse) return [];
-    
+
     // Extract data array from API response
     const rawListings = Array.isArray(listingsResponse)
       ? listingsResponse
@@ -67,17 +91,17 @@ const ProductBrowsing = () => {
     const transformedListings = rawListings.map((listing) => {
       const product = listing.product || {};
       const vendor = listing.vendor || {};
-      
+
       // Handle pricing structure - extract from pricing array
       const pricing = listing.pricing?.[0] || {};
       const price = pricing.pricePerUnit || listing.price || 0;
       const unit = pricing.unit || listing.availability?.unit || 'unit';
-      
+
       // Handle availability object - convert to status string
       const availabilityObj = listing.availability || {};
       const quantityAvailable = availabilityObj.quantityAvailable || 0;
       const isInSeason = availabilityObj.isInSeason;
-      
+
       let availabilityStatus = 'available';
       if (quantityAvailable === 0) {
         availabilityStatus = 'out-of-stock';
@@ -86,14 +110,16 @@ const ProductBrowsing = () => {
       } else {
         availabilityStatus = 'in-stock';
       }
-      
+
       // Handle images structure - extract URLs from image objects
-      const imageUrls = listing.images?.map(img => img.url || img) || 
-                       product.images?.map(img => img.url || img) || [];
-      
+      const imageUrls =
+        listing.images?.map((img) => img.url || img) ||
+        product.images?.map((img) => img.url || img) ||
+        [];
+
       // Handle rating structure
       const rating = listing.rating?.average || product.rating?.average || 0;
-      
+
       const transformed = {
         // Listing properties
         _id: listing._id,
@@ -103,40 +129,45 @@ const ProductBrowsing = () => {
         quantity: quantityAvailable,
         unit: unit,
         availability: availabilityStatus,
-        
+
         // Product properties (from nested object)
         name: product.name,
         description: product.description,
         images: imageUrls,
         category: product.category,
         rating: rating,
-        
+
         // Vendor properties (from nested object)
         vendorName: vendor.businessName || vendor.name || listing.vendorName,
         vendorLocation: vendor.address?.city || vendor.location,
         vendorRating: vendor.rating?.average || 0,
-        
+
         // Additional useful properties
         qualityGrade: listing.qualityGrade,
         isInSeason: isInSeason,
-        minimumOrderValue: listing.minimumOrderValue || vendor.minimumOrderValue,
+        minimumOrderValue:
+          listing.minimumOrderValue || vendor.minimumOrderValue,
         deliveryOptions: listing.deliveryOptions,
         featured: listing.featured,
       };
-      
+
       return transformed;
     });
 
     return transformedListings;
   }, [listingsResponse]);
 
-  const { data: categoriesData = [], isLoading: categoriesLoading, error: categoriesError } = useGetCategoriesQuery();
-  
+  const {
+    data: categoriesData = [],
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useGetCategoriesQuery();
+
   // Handle categories data structure safely
-  const categories = Array.isArray(categoriesData) 
-    ? categoriesData 
-    : Array.isArray(categoriesData?.data) 
-      ? categoriesData.data 
+  const categories = Array.isArray(categoriesData)
+    ? categoriesData
+    : Array.isArray(categoriesData?.data)
+      ? categoriesData.data
       : Array.isArray(categoriesData?.categories)
         ? categoriesData.categories
         : [];
@@ -187,10 +218,77 @@ const ProductBrowsing = () => {
     return texts[availability] || 'Available';
   };
 
-  const ProductCard = ({ product }) => (
-    <div 
-      onClick={() => navigate(`/restaurant/browse/${product._id}`)}
-      className="glass rounded-3xl p-4 hover:shadow-soft transition-all duration-200 cursor-pointer group"
+  // Bulk selection handlers
+  const handleToggleBulkMode = () => {
+    setBulkMode(!bulkMode);
+    setSelectedProducts([]);
+  };
+
+  const handleProductSelect = (product, selected) => {
+    if (selected) {
+      setSelectedProducts(prev => [...prev, product]);
+    } else {
+      setSelectedProducts(prev => prev.filter(p => p._id !== product._id));
+    }
+  };
+
+  const handleSelectAll = () => {
+    const availableProducts = listings.filter(p => p.availability !== 'out-of-stock');
+    setSelectedProducts(availableProducts);
+  };
+
+  const handleClearSelection = (productIdsToRemove = null) => {
+    if (productIdsToRemove) {
+      setSelectedProducts(prev => 
+        prev.filter(p => !productIdsToRemove.includes(p._id))
+      );
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const isProductSelected = (productId) => {
+    return selectedProducts.some(p => p._id === productId);
+  };
+
+  // Favorites and comparison handlers
+  const handleToggleFavorite = (product) => {
+    dispatch(toggleFavorite(product));
+  };
+
+  const handleToggleComparison = (product) => {
+    dispatch(toggleComparison(product));
+  };
+
+  // Helper function to check if product is favorited
+  const isProductFavorited = (productId) => {
+    return useSelector(state => selectIsProductFavorited(state, productId));
+  };
+
+  // Helper function to check if product is in comparison
+  const isProductInComparison = (productId) => {
+    return useSelector(state => selectIsProductInComparison(state, productId));
+  };
+
+  const ProductCard = ({ product }) => {
+    const isSelected = isProductSelected(product._id);
+    const isOutOfStock = product.availability === 'out-of-stock';
+    const isFavorited = useSelector(state => selectIsProductFavorited(state, product._id));
+    const inComparison = useSelector(state => selectIsProductInComparison(state, product._id));
+    
+    return (
+    <div
+      onClick={() => {
+        if (bulkMode && !isOutOfStock) {
+          handleProductSelect(product, !isSelected);
+        } else if (!bulkMode) {
+          navigate(`/restaurant/browse/${product._id}`);
+        }
+      }}
+      className={`glass rounded-3xl p-4 hover:shadow-soft transition-all duration-200 cursor-pointer group relative ${
+        bulkMode && isSelected ? 'ring-2 ring-bottle-green bg-bottle-green/5' : ''
+      } ${bulkMode && isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+      data-testid="product-card"
     >
       {/* Product Image */}
       <div className="relative mb-4">
@@ -218,27 +316,91 @@ const ProductBrowsing = () => {
           {getAvailabilityText(product.availability)}
         </span>
 
+        {/* Bulk Selection Checkbox */}
+        {bulkMode && (
+          <div className="absolute top-3 left-3">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                isSelected
+                  ? 'bg-bottle-green text-white'
+                  : 'bg-white/90 backdrop-blur-sm border-2 border-gray-300'
+              } ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isOutOfStock) {
+                  handleProductSelect(product, !isSelected);
+                }
+              }}
+            >
+              {isSelected && <Check className="w-4 h-4" />}
+            </div>
+          </div>
+        )}
+
         {/* Favorite Button */}
-        <button 
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors"
-        >
-          <Heart className="w-4 h-4 text-gray-600 hover:text-tomato-red transition-colors" />
-        </button>
+        {!bulkMode && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleFavorite(product);
+            }}
+            className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors touch-target"
+          >
+            <Heart 
+              className={`w-4 h-4 transition-colors ${
+                isFavorited 
+                  ? 'text-tomato-red fill-current' 
+                  : 'text-gray-600 hover:text-tomato-red'
+              }`} 
+            />
+          </button>
+        )}
       </div>
 
       {/* Product Info */}
       <div className="space-y-2">
         <div className="flex items-start justify-between">
-          <h3 className="font-semibold text-text-dark dark:text-white text-sm line-clamp-2">
+          <h3 className="font-semibold text-text-dark dark:text-white text-sm line-clamp-2 flex-1 mr-2">
             {product.name}
           </h3>
-          <button 
-            onClick={(e) => e.stopPropagation()}
-            className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 ml-2"
-          >
-            <Info className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            {/* Comparison Checkbox */}
+            {!bulkMode && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleComparison(product);
+                }}
+                disabled={!inComparison && isComparisonFull}
+                className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 touch-target ${
+                  inComparison
+                    ? 'bg-blue-500 border-blue-500 text-white'
+                    : isComparisonFull
+                      ? 'border-gray-300 text-gray-300 cursor-not-allowed opacity-50'
+                      : 'border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-500'
+                }`}
+                title={
+                  inComparison 
+                    ? 'Remove from comparison' 
+                    : isComparisonFull 
+                      ? 'Comparison is full (max 4 products)'
+                      : 'Add to comparison'
+                }
+              >
+                {inComparison ? (
+                  <Check className="w-3 h-3" />
+                ) : (
+                  <Scale className="w-3 h-3" />
+                )}
+              </button>
+            )}
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 touch-target p-1"
+            >
+              <Info className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Vendor Info */}
@@ -268,23 +430,25 @@ const ProductBrowsing = () => {
             </p>
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAddToCart(product);
-            }}
-            disabled={product.availability === 'out-of-stock'}
-            className="bg-gradient-primary text-white p-2 rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
+          {!bulkMode && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart(product);
+              }}
+              disabled={product.availability === 'out-of-stock'}
+              className="bg-gradient-primary text-white p-2 rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 
   const ProductListItem = ({ product }) => (
-    <div 
+    <div
       onClick={() => navigate(`/restaurant/browse/${product._id}`)}
       className="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-soft transition-all duration-200 cursor-pointer group"
     >
@@ -361,7 +525,9 @@ const ProductBrowsing = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-dark dark:text-white">Browse Products</h1>
+          <h1 className="text-3xl font-bold text-text-dark dark:text-white">
+            Browse Products
+          </h1>
           <p className="text-text-muted dark:text-gray-300 mt-2">
             Fresh vegetables from local vendors
           </p>
@@ -399,16 +565,17 @@ const ProductBrowsing = () => {
               <option value="">All Categories</option>
               {categories && categories.length > 0 ? (
                 categories.map((category) => (
-                  <option key={category._id || category.id} value={category._id || category.id}>
+                  <option
+                    key={category._id || category.id}
+                    value={category._id || category.id}
+                  >
                     {category.name}
                   </option>
                 ))
+              ) : categoriesLoading ? (
+                <option disabled>Loading categories...</option>
               ) : (
-                categoriesLoading ? (
-                  <option disabled>Loading categories...</option>
-                ) : (
-                  <option disabled>No categories available</option>
-                )
+                <option disabled>No categories available</option>
               )}
             </select>
 
@@ -460,6 +627,21 @@ const ProductBrowsing = () => {
                 <List className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Bulk Mode Toggle */}
+            <button
+              onClick={handleToggleBulkMode}
+              className={`p-3 rounded-2xl border transition-all duration-200 touch-target flex items-center gap-2 ${
+                bulkMode
+                  ? 'bg-bottle-green text-white border-bottle-green'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30'
+              }`}
+            >
+              <Package className="w-5 h-5" />
+              <span className="hidden sm:inline">
+                {bulkMode ? 'Exit Bulk' : 'Bulk Select'}
+              </span>
+            </button>
           </div>
         </div>
 
@@ -540,6 +722,49 @@ const ProductBrowsing = () => {
         )}
       </div>
 
+      {/* Bulk Action Toolbar */}
+      {bulkMode && (
+        <div className="glass rounded-2xl p-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-text-dark">
+                {selectedProducts.length} selected
+              </span>
+              {selectedProducts.length > 0 && (
+                <button
+                  onClick={handleClearSelection}
+                  className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                >
+                  <X className="w-3 h-3" />
+                  Clear
+                </button>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-3">
+              {listings.length > 0 && (
+                <button
+                  onClick={handleSelectAll}
+                  className="text-sm text-bottle-green hover:text-bottle-green/80 font-medium"
+                >
+                  Select All Available
+                </button>
+              )}
+              
+              {selectedProducts.length > 0 && (
+                <button
+                  onClick={() => setShowBulkModal(true)}
+                  className="bg-gradient-primary text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-200 flex items-center gap-2 min-h-[44px]"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Add {selectedProducts.length} to Cart
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Products Grid/List */}
       <div>
         {listingsLoading ? (
@@ -557,7 +782,9 @@ const ProductBrowsing = () => {
             <div className="text-tomato-red mb-4">
               <ShoppingCart className="w-12 h-12 mx-auto" />
             </div>
-            <p className="text-text-muted dark:text-gray-300">Failed to load products</p>
+            <p className="text-text-muted dark:text-gray-300">
+              Failed to load products
+            </p>
             <button
               onClick={() => window.location.reload()}
               className="mt-4 bg-gradient-primary text-white px-6 py-2 rounded-xl hover:shadow-lg transition-all duration-200"
@@ -582,13 +809,38 @@ const ProductBrowsing = () => {
         ) : (
           <div className="text-center py-12">
             <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-text-muted dark:text-gray-300">No products found</p>
+            <p className="text-text-muted dark:text-gray-300">
+              No products found
+            </p>
             <p className="text-sm text-text-muted/70 dark:text-gray-400 mt-1">
               Try adjusting your search or filters
             </p>
           </div>
         )}
       </div>
+
+      {/* Bulk Order Modal */}
+      <BulkOrderModal
+        isOpen={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        selectedProducts={selectedProducts}
+        onClearSelection={handleClearSelection}
+      />
+
+      {/* Floating Comparison Button */}
+      {comparisonCount > 0 && (
+        <div className="fixed bottom-6 right-6 z-40">
+          <button
+            onClick={() => navigate('/restaurant/comparison')}
+            className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-3 min-h-[56px] touch-target"
+          >
+            <Scale className="w-6 h-6" />
+            <span className="font-medium">
+              Compare ({comparisonCount})
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

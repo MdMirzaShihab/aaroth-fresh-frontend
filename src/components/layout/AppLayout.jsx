@@ -83,13 +83,13 @@ const AppLayout = ({ children }) => {
           className={`flex-1 transition-all duration-300 ${
             !hideNavigation
               ? isAuthenticated
-                ? 'pt-16 lg:pt-16 pb-20 lg:pb-6 lg:ml-80' // Account for mobile nav height
+                ? 'pt-16 lg:pt-16 pb-20' // Adjusted for new sidebar width
                 : 'pt-16'
               : ''
           }`}
         >
           {/* Content Container */}
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-6">
             {/* Breadcrumb */}
             {!hideNavigation && isAuthenticated && <Breadcrumb />}
 

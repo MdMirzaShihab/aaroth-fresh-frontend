@@ -133,8 +133,8 @@ const Sidebar = ({ isOpen, onClose }) => {
               handleNavigation(item.path);
             }
           }}
-          className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 group min-h-[44px] ${
-            level > 0 ? 'ml-4 text-sm' : 'text-base'
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group min-h-[44px] ${
+            level > 0 ? 'ml-4 text-sm' : 'text-sm font-medium'
           } ${
             isActive
               ? 'bg-gradient-secondary text-white shadow-md'
@@ -188,7 +188,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         {/* Child Items */}
         {hasChildren && isExpanded && (
-          <div className="mt-2 space-y-1">
+          <div className="mt-1 space-y-0.5">
             {item.children.map((child) => {
               const childPath = `${item.path}/${child.id}`;
               const isChildActive = isActivePath(child.path || childPath);
@@ -197,7 +197,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <button
                   key={child.id}
                   onClick={() => handleNavigation(child.path || childPath)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 ml-8 rounded-2xl transition-all duration-200 text-sm min-h-[40px] ${
+                  className={`w-full flex items-center gap-3 px-3 py-2 ml-6 rounded-lg transition-all duration-200 text-sm min-h-[36px] ${
                     isChildActive
                       ? 'bg-bottle-green/10 text-bottle-green font-medium'
                       : 'text-text-muted hover:text-bottle-green hover:bg-bottle-green/5 dark:hover:bg-gray-800'
@@ -230,17 +230,17 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:shadow-none ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 flex items-center justify-center">
-              <img 
-                src={AarothLogo} 
-                alt="Aaroth Fresh" 
+              <img
+                src={AarothLogo}
+                alt="Aaroth Fresh"
                 className="w-8 h-8 object-contain"
               />
             </div>
@@ -273,15 +273,15 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-6 overflow-y-auto">
-          <div className="space-y-2">
+        <nav className="flex-1 px-4 py-6 overflow-y-auto">
+          <div className="space-y-1">
             {navigationItems.map((item) => renderNavigationItem(item))}
           </div>
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-earthy-beige/30 dark:bg-gray-800/50">
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-earthy-beige/30 dark:bg-gray-800/50">
             <div className="w-10 h-10 bg-gradient-secondary rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">
                 {user?.name?.charAt(0) || user?.phone?.charAt(0) || 'U'}

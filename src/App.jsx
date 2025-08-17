@@ -80,6 +80,9 @@ const RestaurantDashboard = lazy(
 const ProductBrowsing = lazy(
   () => import('./pages/restaurant/ProductBrowsing')
 );
+const ProductComparison = lazy(
+  () => import('./pages/restaurant/ProductComparison')
+);
 const ProductDetail = lazy(() => import('./pages/restaurant/ProductDetail'));
 const PlaceOrder = lazy(() => import('./pages/restaurant/PlaceOrder'));
 const OrderHistory = lazy(() => import('./pages/restaurant/OrderHistory'));
@@ -107,9 +110,9 @@ const MaintenancePage = lazy(() => import('./pages/error/MaintenancePage'));
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[50vh]">
     <div className="text-center">
-      <img 
-        src={AarothLogo} 
-        alt="Aaroth Fresh" 
+      <img
+        src={AarothLogo}
+        alt="Aaroth Fresh"
         className="w-12 h-12 mx-auto mb-4 animate-pulse"
       />
       <LoadingSpinner size="large" />
@@ -139,9 +142,9 @@ const App = () => {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10">
         <div className="text-center">
           <div className="relative mb-8">
-            <img 
-              src={AarothLogo} 
-              alt="Aaroth Fresh" 
+            <img
+              src={AarothLogo}
+              alt="Aaroth Fresh"
               className="w-24 h-24 mx-auto mb-4 animate-pulse"
             />
             <div className="w-16 h-16 border-4 border-bottle-green/20 border-t-bottle-green rounded-full animate-spin mx-auto"></div>
@@ -370,6 +373,14 @@ const App = () => {
               }
             />
             <Route
+              path="comparison"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductComparison />
+                </Suspense>
+              }
+            />
+            <Route
               path="browse/:productId"
               element={
                 <Suspense fallback={<PageLoader />}>
@@ -419,6 +430,17 @@ const App = () => {
             />
             <Route
               path="managers"
+              element={
+                <RestaurantOwnerRoute>
+                  <Suspense fallback={<PageLoader />}>
+                    <ManagerManagement />
+                  </Suspense>
+                </RestaurantOwnerRoute>
+              }
+            />
+            {/* Restaurant Management Routes */}
+            <Route
+              path="manage/managers"
               element={
                 <RestaurantOwnerRoute>
                   <Suspense fallback={<PageLoader />}>

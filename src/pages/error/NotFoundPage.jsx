@@ -8,9 +8,9 @@ const NotFoundPage = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-2xl mx-auto text-center">
         <div className="glass rounded-3xl p-12">
-          <img 
-            src={AarothLogo} 
-            alt="Aaroth Fresh" 
+          <img
+            src={AarothLogo}
+            alt="Aaroth Fresh"
             className="w-16 h-16 mx-auto mb-6 opacity-80"
           />
           <div className="text-8xl font-bold text-bottle-green mb-4">404</div>

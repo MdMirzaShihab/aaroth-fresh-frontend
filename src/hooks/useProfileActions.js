@@ -7,9 +7,11 @@ import { toast } from 'react-toastify';
 import {
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
-  useCreateManagerMutation,
-  useGetManagersQuery,
-  useDeactivateManagerMutation,
+  useCreateRestaurantManagerMutation,
+  useUpdateRestaurantManagerMutation,
+  useGetRestaurantManagersQuery,
+  useDeactivateRestaurantManagerMutation,
+  useDeleteRestaurantManagerMutation,
 } from '../store/slices/apiSlice';
 
 /**
@@ -69,14 +71,18 @@ export const useProfileActions = () => {
  */
 export const useManagerActions = () => {
   const [createManager, { isLoading: isCreatingManager }] =
-    useCreateManagerMutation();
+    useCreateRestaurantManagerMutation();
+  const [updateManager, { isLoading: isUpdatingManager }] =
+    useUpdateRestaurantManagerMutation();
   const [deactivateManager, { isLoading: isDeactivatingManager }] =
-    useDeactivateManagerMutation();
+    useDeactivateRestaurantManagerMutation();
+  const [deleteManager, { isLoading: isDeletingManager }] =
+    useDeleteRestaurantManagerMutation();
   const {
     data: managersData,
     isLoading: isLoadingManagers,
     refetch: refetchManagers,
-  } = useGetManagersQuery();
+  } = useGetRestaurantManagersQuery();
 
   const addManager = async (managerData) => {
     try {
@@ -92,6 +98,27 @@ export const useManagerActions = () => {
     } catch (error) {
       const message =
         error?.data?.message || 'Failed to create manager account';
+      toast.error(message);
+      return { success: false, message };
+    }
+  };
+
+  const updateManagerProfile = async (managerId, managerData) => {
+    try {
+      const result = await updateManager({
+        id: managerId,
+        ...managerData,
+      }).unwrap();
+
+      if (result.success) {
+        toast.success('Manager profile updated successfully');
+        refetchManagers(); // Refresh the managers list
+        return { success: true, manager: result.manager };
+      }
+
+      return { success: false, message: result.message };
+    } catch (error) {
+      const message = error?.data?.message || 'Failed to update manager profile';
       toast.error(message);
       return { success: false, message };
     }
@@ -119,17 +146,41 @@ export const useManagerActions = () => {
     }
   };
 
+  const removeManager = async (managerId) => {
+    try {
+      const result = await deleteManager({
+        id: managerId,
+      }).unwrap();
+
+      if (result.success) {
+        toast.success('Manager deleted successfully');
+        refetchManagers(); // Refresh the managers list
+        return { success: true };
+      }
+
+      return { success: false, message: result.message };
+    } catch (error) {
+      const message = error?.data?.message || 'Failed to delete manager';
+      toast.error(message);
+      return { success: false, message };
+    }
+  };
+
   const managers = managersData?.managers || [];
 
   return {
     addManager,
+    updateManagerProfile,
     toggleManagerStatus,
+    removeManager,
     managers,
     isCreatingManager,
+    isUpdatingManager,
     isDeactivatingManager,
+    isDeletingManager,
     isLoadingManagers,
     refetchManagers,
-    isLoading: isCreatingManager || isDeactivatingManager || isLoadingManagers,
+    isLoading: isCreatingManager || isUpdatingManager || isDeactivatingManager || isDeletingManager || isLoadingManagers,
   };
 };
 
@@ -149,10 +200,14 @@ export const useCompleteProfile = () => {
 
     // Manager actions (for restaurant owners)
     addManager: managerActions.addManager,
+    updateManagerProfile: managerActions.updateManagerProfile,
     toggleManagerStatus: managerActions.toggleManagerStatus,
+    removeManager: managerActions.removeManager,
     managers: managerActions.managers,
     isCreatingManager: managerActions.isCreatingManager,
+    isUpdatingManager: managerActions.isUpdatingManager,
     isDeactivatingManager: managerActions.isDeactivatingManager,
+    isDeletingManager: managerActions.isDeletingManager,
     isLoadingManagers: managerActions.isLoadingManagers,
     refetchManagers: managerActions.refetchManagers,
 

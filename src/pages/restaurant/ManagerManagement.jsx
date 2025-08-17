@@ -19,9 +19,10 @@ import {
 } from 'lucide-react';
 import {
   useGetRestaurantManagersQuery,
-  useCreateManagerMutation,
-  useUpdateManagerMutation,
-  useDeleteManagerMutation,
+  useCreateRestaurantManagerMutation,
+  useUpdateRestaurantManagerMutation,
+  useDeactivateRestaurantManagerMutation,
+  useDeleteRestaurantManagerMutation,
 } from '../../store/slices/apiSlice';
 import {
   formatPhoneForDisplay,
@@ -58,13 +59,20 @@ const ManagerManagement = () => {
 
   // API queries and mutations
   const {
-    data: managers = [],
+    data: managersResponse,
     isLoading,
     refetch,
   } = useGetRestaurantManagersQuery();
-  const [createManager, { isLoading: isCreating }] = useCreateManagerMutation();
-  const [updateManager, { isLoading: isUpdating }] = useUpdateManagerMutation();
-  const [deleteManager, { isLoading: isDeleting }] = useDeleteManagerMutation();
+  const [createManager, { isLoading: isCreating }] =
+    useCreateRestaurantManagerMutation();
+  const [updateManager, { isLoading: isUpdating }] =
+    useUpdateRestaurantManagerMutation();
+  const [deactivateManager, { isLoading: isDeactivating }] =
+    useDeactivateRestaurantManagerMutation();
+  const [deleteManager, { isLoading: isDeleting }] =
+    useDeleteRestaurantManagerMutation();
+
+  const managers = managersResponse?.managers || [];
 
   // Filter managers based on search and status
   const filteredManagers = managers.filter((manager) => {
@@ -152,18 +160,20 @@ const ManagerManagement = () => {
     }
 
     try {
-      await updateManager({
+      const updateData = {
         id: selectedManager._id,
-        data: {
-          ...managerForm,
-          phone: phoneInputUtils.getCleanValue(managerForm.phone),
-        },
-      }).unwrap();
+        name: managerForm.name,
+        email: managerForm.email,
+        phone: phoneInputUtils.getCleanValue(managerForm.phone),
+        permissions: managerForm.permissions,
+      };
+
+      await updateManager(updateData).unwrap();
       setShowEditModal(false);
       setSelectedManager(null);
       resetForm();
       refetch();
-      // Show success message
+      alert('Manager updated successfully');
     } catch (error) {
       console.error('Failed to update manager:', error);
       alert('Failed to update manager. Please try again.');
@@ -174,14 +184,30 @@ const ManagerManagement = () => {
     if (!selectedManager) return;
 
     try {
-      await deleteManager(selectedManager._id).unwrap();
+      await deleteManager({
+        id: selectedManager._id,
+      }).unwrap();
       setShowDeleteConfirm(false);
       setSelectedManager(null);
       refetch();
-      // Show success message
+      alert('Manager deleted successfully');
     } catch (error) {
       console.error('Failed to delete manager:', error);
       alert('Failed to delete manager. Please try again.');
+    }
+  };
+
+  const handleToggleManagerStatus = async (manager) => {
+    try {
+      await deactivateManager({
+        id: manager._id,
+        isActive: !manager.isActive,
+      }).unwrap();
+      refetch();
+      alert(`Manager ${!manager.isActive ? 'activated' : 'deactivated'} successfully`);
+    } catch (error) {
+      console.error('Failed to update manager status:', error);
+      alert('Failed to update manager status. Please try again.');
     }
   };
 
@@ -224,7 +250,10 @@ const ManagerManagement = () => {
     return <Icon className="w-3 h-3" />;
   };
 
-  const ManagerCard = ({ manager }) => (
+  const ManagerCard = ({ manager }) => {
+    const [showActions, setShowActions] = useState(false);
+
+    return (
     <div className="glass rounded-3xl p-6 hover:shadow-soft transition-all duration-200">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-4">
@@ -251,9 +280,57 @@ const ManagerManagement = () => {
         </div>
 
         <div className="relative">
-          <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+          <button 
+            onClick={() => setShowActions(!showActions)}
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+          >
             <MoreVertical className="w-4 h-4 text-gray-400" />
           </button>
+          
+          {showActions && (
+            <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-2xl shadow-lg z-10 py-2 min-w-[160px]">
+              <button
+                onClick={() => {
+                  openEditModal(manager);
+                  setShowActions(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                <Edit className="w-4 h-4" />
+                Edit Manager
+              </button>
+              <button
+                onClick={() => {
+                  handleToggleManagerStatus(manager);
+                  setShowActions(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                {manager.isActive ? (
+                  <>
+                    <Ban className="w-4 h-4" />
+                    Deactivate
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    Activate
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedManager(manager);
+                  setShowDeleteConfirm(true);
+                  setShowActions(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 text-tomato-red flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Manager
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -300,27 +377,16 @@ const ManagerManagement = () => {
           {manager.lastLoginAt ? formatDate(manager.lastLoginAt) : 'Never'}
         </span>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => openEditModal(manager)}
-            className="text-bottle-green hover:text-bottle-green/80 p-1 transition-colors"
-            title="Edit Manager"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => {
-              setSelectedManager(manager);
-              setShowDeleteConfirm(true);
-            }}
-            className="text-tomato-red hover:text-tomato-red/80 p-1 transition-colors"
-            title="Delete Manager"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+            manager.isActive ? 'bg-mint-fresh/20 text-bottle-green' : 'bg-gray-100 text-gray-600'
+          }`}>
+            {manager.isActive ? 'Active' : 'Inactive'}
+          </span>
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   const FormModal = ({ isOpen, onClose, title, onSubmit, isSubmitting }) => {
     if (!isOpen) return null;

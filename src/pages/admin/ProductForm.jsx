@@ -13,6 +13,9 @@ import {
   Eye,
   Star,
   Info,
+  ChevronLeft,
+  ChevronRight,
+  Check,
 } from 'lucide-react';
 import {
   useGetAdminProductQuery,
@@ -30,6 +33,354 @@ import { Input } from '../../components/ui/Input';
 import EmptyState from '../../components/ui/EmptyState';
 import FileUpload from '../../components/ui/FileUpload';
 
+// Mobile Step Card Component
+const MobileStepCard = ({ title, icon: Icon, step, totalSteps, children }) => (
+  <Card className="p-6">
+    <div className="flex items-center gap-3 mb-6">
+      <div className="w-10 h-10 bg-bottle-green rounded-2xl flex items-center justify-center text-white">
+        <Icon className="w-5 h-5" />
+      </div>
+      <div>
+        <h2 className="text-lg font-medium text-text-dark dark:text-white">{title}</h2>
+        <p className="text-sm text-text-muted">Step {step} of {totalSteps}</p>
+      </div>
+    </div>
+    {children}
+  </Card>
+);
+
+// Basic Info Fields Component
+const BasicInfoFields = ({ register, errors, categories, validationRules }) => (
+  <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-4">
+      <FormField label="Product Name" error={errors.name?.message}>
+        <Input
+          {...register('name', validationRules.name)}
+          placeholder="Enter product name"
+          hasError={!!errors.name}
+        />
+      </FormField>
+
+      <FormField label="SKU (Optional)">
+        <Input {...register('sku')} placeholder="Product SKU" />
+      </FormField>
+
+      <FormField label="Category" error={errors.category?.message}>
+        <select
+          {...register('category', validationRules.category)}
+          className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
+            errors.category
+              ? 'border-tomato-red/30 bg-tomato-red/5'
+              : 'border-gray-200 dark:border-gray-700'
+          }`}
+        >
+          <option value="">Select category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </FormField>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField label="Unit" error={errors.unit?.message}>
+          <select
+            {...register('unit', validationRules.unit)}
+            className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
+              errors.unit
+                ? 'border-tomato-red/30 bg-tomato-red/5'
+                : 'border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            <option value="">Select unit</option>
+            <option value="kg">Kilogram (kg)</option>
+            <option value="g">Gram (g)</option>
+            <option value="lb">Pound (lb)</option>
+            <option value="oz">Ounce (oz)</option>
+            <option value="piece">Piece</option>
+            <option value="bunch">Bunch</option>
+            <option value="bag">Bag</option>
+            <option value="box">Box</option>
+            <option value="dozen">Dozen</option>
+          </select>
+        </FormField>
+
+        <FormField label="Base Price" error={errors.basePrice?.message}>
+          <Input
+            {...register('basePrice', validationRules.basePrice)}
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            hasError={!!errors.basePrice}
+          />
+        </FormField>
+      </div>
+
+      <FormField label="Status">
+        <select
+          {...register('status')}
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
+        >
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="pending">Pending Review</option>
+        </select>
+      </FormField>
+
+      <FormField label="Description">
+        <textarea
+          {...register('description')}
+          placeholder="Enter product description"
+          rows={3}
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+        />
+      </FormField>
+
+      <FormField label="Tags (comma-separated)">
+        <Input
+          {...register('tags')}
+          placeholder="organic, fresh, local, seasonal"
+        />
+      </FormField>
+    </div>
+  </div>
+);
+
+// Image Upload Section Component (this will contain the existing image upload logic)
+const ImageUploadSection = ({ 
+  imagePreviewUrls, 
+  selectedImageIndex, 
+  setSelectedImageIndex,
+  handleImageUpload,
+  handleImageDelete,
+  setPrimaryImage,
+  uploadingImages,
+  setShowImageModal 
+}) => (
+  <div className="space-y-4">
+    {imagePreviewUrls.length > 0 ? (
+      <div className="space-y-4">
+        {/* Main Image Preview */}
+        <div className="relative aspect-video bg-gray-100 rounded-2xl overflow-hidden max-w-md mx-auto">
+          <img
+            src={imagePreviewUrls[selectedImageIndex]?.url}
+            alt={imagePreviewUrls[selectedImageIndex]?.alt}
+            className="w-full h-full object-cover"
+          />
+          {imagePreviewUrls[selectedImageIndex]?.isPrimary && (
+            <div className="absolute top-3 left-3">
+              <span className="bg-earthy-yellow text-earthy-brown text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1">
+                <Star className="w-3 h-3 fill-current" />
+                Primary
+              </span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => setShowImageModal(true)}
+            className="absolute top-3 right-3 bg-black/50 text-white p-2 rounded-xl hover:bg-black/70 transition-colors"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Image Thumbnails */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          {imagePreviewUrls.map((image, index) => (
+            <div key={index} className="relative group">
+              <button
+                type="button"
+                onClick={() => setSelectedImageIndex(index)}
+                className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                  selectedImageIndex === index
+                    ? 'border-bottle-green shadow-lg'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+
+              {/* Action Buttons */}
+              <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                {!image.isPrimary && (
+                  <button
+                    type="button"
+                    onClick={() => setPrimaryImage(index)}
+                    className="bg-earthy-yellow text-earthy-brown p-1 rounded-full text-xs hover:bg-earthy-yellow/80 transition-colors"
+                    title="Set as primary"
+                  >
+                    <Star className="w-3 h-3" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleImageDelete(index)}
+                  className="bg-tomato-red text-white p-1 rounded-full text-xs hover:bg-tomato-red/80 transition-colors"
+                  title="Delete image"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : (
+      <div className="text-center py-8">
+        <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <p className="text-text-muted mb-4">No images uploaded yet</p>
+      </div>
+    )}
+
+    {/* Upload Area */}
+    <div className="mt-4">
+      <FileUpload
+        onFilesSelected={handleImageUpload}
+        accept="image/*"
+        multiple
+        maxFiles={5}
+        maxFileSize={5 * 1024 * 1024} // 5MB
+        disabled={uploadingImages.size > 0}
+      >
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-bottle-green transition-colors">
+          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+          <p className="text-text-muted mb-1">
+            {uploadingImages.size > 0
+              ? `Uploading ${uploadingImages.size} image(s)...`
+              : 'Click to upload or drag and drop'}
+          </p>
+          <p className="text-sm text-text-muted">
+            PNG, JPG, WebP up to 5MB (max 5 images)
+          </p>
+        </div>
+      </FileUpload>
+    </div>
+  </div>
+);
+
+// Additional Details Fields Component
+const AdditionalDetailsFields = ({ register }) => (
+  <div className="space-y-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <FormField label="Origin/Source">
+        <Input
+          {...register('origin')}
+          placeholder="e.g., Local Farm, California, USA"
+        />
+      </FormField>
+
+      <FormField label="Shelf Life (days)">
+        <Input
+          {...register('shelfLife')}
+          type="number"
+          min="1"
+          placeholder="e.g., 7"
+        />
+      </FormField>
+
+      <FormField label="Min Order Quantity">
+        <Input
+          {...register('minOrderQuantity')}
+          type="number"
+          min="1"
+          placeholder="1"
+        />
+      </FormField>
+
+      <FormField label="Max Order Quantity">
+        <Input
+          {...register('maxOrderQuantity')}
+          type="number"
+          min="1"
+          placeholder="Leave empty for no limit"
+        />
+      </FormField>
+    </div>
+
+    <FormField label="Storage Instructions">
+      <textarea
+        {...register('storageInstructions')}
+        placeholder="Storage and handling instructions"
+        rows={3}
+        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+      />
+    </FormField>
+
+    <div className="mt-4">
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          {...register('isOrganic')}
+          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+        />
+        <span className="text-text-dark dark:text-white font-medium">
+          Organic Product
+        </span>
+      </label>
+    </div>
+  </div>
+);
+
+// Nutritional Info Fields Component
+const NutritionalInfoFields = ({ register }) => (
+  <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+    <FormField label="Calories">
+      <Input
+        {...register('nutritionalInfo.calories')}
+        type="number"
+        min="0"
+        placeholder="0"
+      />
+    </FormField>
+
+    <FormField label="Protein (g)">
+      <Input
+        {...register('nutritionalInfo.protein')}
+        type="number"
+        step="0.1"
+        min="0"
+        placeholder="0.0"
+      />
+    </FormField>
+
+    <FormField label="Carbs (g)">
+      <Input
+        {...register('nutritionalInfo.carbs')}
+        type="number"
+        step="0.1"
+        min="0"
+        placeholder="0.0"
+      />
+    </FormField>
+
+    <FormField label="Fat (g)">
+      <Input
+        {...register('nutritionalInfo.fat')}
+        type="number"
+        step="0.1"
+        min="0"
+        placeholder="0.0"
+      />
+    </FormField>
+
+    <FormField label="Fiber (g)">
+      <Input
+        {...register('nutritionalInfo.fiber')}
+        type="number"
+        step="0.1"
+        min="0"
+        placeholder="0.0"
+      />
+    </FormField>
+  </div>
+);
+
 const ProductForm = ({ isEditing = false }) => {
   const navigate = useNavigate();
   const { id: productId } = useParams();
@@ -39,6 +390,15 @@ const ProductForm = ({ isEditing = false }) => {
   const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  
+  // Mobile form steps
+  const formSteps = [
+    { id: 'basic', title: 'Basic Info', icon: Info },
+    { id: 'images', title: 'Images', icon: ImageIcon },
+    { id: 'details', title: 'Details', icon: Plus },
+    { id: 'nutrition', title: 'Nutrition', icon: Star },
+  ];
 
   // RTK Query hooks
   const {
@@ -321,391 +681,278 @@ const ProductForm = ({ isEditing = false }) => {
     );
   }
 
+  // Step navigation functions
+  const nextStep = () => {
+    if (currentStep < formSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+  
+  const goToStep = (stepIndex) => {
+    setCurrentStep(stepIndex);
+  };
+
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <button
-          onClick={() => navigate('/admin/products')}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-2xl transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="text-2xl font-semibold text-text-dark dark:text-white">
-            {isEditing ? 'Edit Product' : 'Create Product'}
-          </h1>
-          <p className="text-text-muted">
-            {isEditing
-              ? 'Update product information and settings'
-              : 'Add a new product to the catalog'}
-          </p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:bg-transparent">
+      {/* Mobile Header */}
+      <div className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 sticky top-0 z-10">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => navigate('/admin/products')}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="text-center">
+            <h1 className="text-lg font-semibold text-text-dark dark:text-white">
+              {isEditing ? 'Edit Product' : 'Create Product'}
+            </h1>
+            <p className="text-sm text-text-muted">
+              Step {currentStep + 1} of {formSteps.length}
+            </p>
+          </div>
+          <div className="w-10"> {/* Spacer for alignment */}</div>
+        </div>
+
+        {/* Mobile Step Indicator */}
+        <div className="flex items-center gap-2 mt-3 px-2">
+          {formSteps.map((step, index) => (
+            <button
+              key={step.id}
+              onClick={() => goToStep(index)}
+              className={`flex-1 h-2 rounded-full transition-colors ${
+                index <= currentStep
+                  ? 'bg-bottle-green'
+                  : 'bg-gray-200 dark:bg-gray-600'
+              }`}
+            />
+          ))}
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Basic Information */}
-        <Card className="p-6">
-          <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
-            <Info className="w-5 h-5" />
-            Basic Information
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Product Name" error={errors.name?.message}>
-              <Input
-                {...register('name', validationRules.name)}
-                placeholder="Enter product name"
-                hasError={!!errors.name}
-              />
-            </FormField>
-
-            <FormField label="SKU (Optional)">
-              <Input {...register('sku')} placeholder="Product SKU" />
-            </FormField>
-
-            <FormField label="Category" error={errors.category?.message}>
-              <select
-                {...register('category', validationRules.category)}
-                className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
-                  errors.category
-                    ? 'border-tomato-red/30 bg-tomato-red/5'
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                <option value="">Select category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </FormField>
-
-            <FormField label="Unit" error={errors.unit?.message}>
-              <select
-                {...register('unit', validationRules.unit)}
-                className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
-                  errors.unit
-                    ? 'border-tomato-red/30 bg-tomato-red/5'
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                <option value="">Select unit</option>
-                <option value="kg">Kilogram (kg)</option>
-                <option value="g">Gram (g)</option>
-                <option value="lb">Pound (lb)</option>
-                <option value="oz">Ounce (oz)</option>
-                <option value="piece">Piece</option>
-                <option value="bunch">Bunch</option>
-                <option value="bag">Bag</option>
-                <option value="box">Box</option>
-                <option value="dozen">Dozen</option>
-              </select>
-            </FormField>
-
-            <FormField label="Base Price" error={errors.basePrice?.message}>
-              <Input
-                {...register('basePrice', validationRules.basePrice)}
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                hasError={!!errors.basePrice}
-              />
-            </FormField>
-
-            <FormField label="Status">
-              <select
-                {...register('status')}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="pending">Pending Review</option>
-              </select>
-            </FormField>
+      {/* Desktop Header */}
+      <div className="hidden md:block p-6 max-w-4xl mx-auto">
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={() => navigate('/admin/products')}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-2xl transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-semibold text-text-dark dark:text-white">
+              {isEditing ? 'Edit Product' : 'Create Product'}
+            </h1>
+            <p className="text-text-muted">
+              {isEditing
+                ? 'Update product information and settings'
+                : 'Add a new product to the catalog'}
+            </p>
           </div>
+        </div>
+      </div>
 
-          <div className="mt-4">
-            <FormField label="Description">
-              <textarea
-                {...register('description')}
-                placeholder="Enter product description"
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
-              />
-            </FormField>
-          </div>
+      <div className="md:p-6 md:max-w-4xl md:mx-auto">
 
-          <div className="mt-4">
-            <FormField label="Tags (comma-separated)">
-              <Input
-                {...register('tags')}
-                placeholder="organic, fresh, local, seasonal"
-              />
-            </FormField>
-          </div>
-        </Card>
+      <form onSubmit={handleSubmit(onSubmit)} className="md:space-y-6">
+        {/* Desktop: All steps visible */}
+        <div className="hidden md:block space-y-6">
+          {/* Basic Information */}
+          <Card className="p-6">
+            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
+              <Info className="w-5 h-5" />
+              Basic Information
+            </h2>
+            <BasicInfoFields 
+              register={register}
+              errors={errors}
+              categories={categories}
+              validationRules={validationRules}
+            />
+          </Card>
 
-        {/* Images */}
-        <Card className="p-6">
-          <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
-            <ImageIcon className="w-5 h-5" />
-            Product Images
-          </h2>
+          {/* Images */}
+          <Card className="p-6">
+            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4 flex items-center gap-2">
+              <ImageIcon className="w-5 h-5" />
+              Product Images
+            </h2>
+            <ImageUploadSection 
+              imagePreviewUrls={imagePreviewUrls}
+              selectedImageIndex={selectedImageIndex}
+              setSelectedImageIndex={setSelectedImageIndex}
+              handleImageUpload={handleImageUpload}
+              handleImageDelete={handleImageDelete}
+              setPrimaryImage={setPrimaryImage}
+              uploadingImages={uploadingImages}
+              setShowImageModal={setShowImageModal}
+            />
+          </Card>
 
-          {imagePreviewUrls.length > 0 ? (
-            <div className="space-y-4">
-              {/* Main Image Preview */}
-              <div className="relative aspect-video bg-gray-100 rounded-2xl overflow-hidden max-w-md mx-auto">
-                <img
-                  src={imagePreviewUrls[selectedImageIndex]?.url}
-                  alt={imagePreviewUrls[selectedImageIndex]?.alt}
-                  className="w-full h-full object-cover"
-                />
-                {imagePreviewUrls[selectedImageIndex]?.isPrimary && (
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-earthy-yellow text-earthy-brown text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-current" />
-                      Primary
-                    </span>
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setShowImageModal(true)}
-                  className="absolute top-3 right-3 bg-black/50 text-white p-2 rounded-xl hover:bg-black/70 transition-colors"
-                >
-                  <Eye className="w-4 h-4" />
-                </button>
-              </div>
+          {/* Additional Details */}
+          <Card className="p-6">
+            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
+              Additional Details
+            </h2>
+            <AdditionalDetailsFields register={register} />
+          </Card>
 
-              {/* Image Thumbnails */}
-              <div className="flex flex-wrap gap-2 justify-center">
-                {imagePreviewUrls.map((image, index) => (
-                  <div key={index} className="relative group">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedImageIndex(index)}
-                      className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
-                        selectedImageIndex === index
-                          ? 'border-bottle-green shadow-lg'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.alt}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
+          {/* Nutritional Information */}
+          <Card className="p-6">
+            <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
+              Nutritional Information (per 100g)
+            </h2>
+            <NutritionalInfoFields register={register} />
+          </Card>
 
-                    {/* Action Buttons */}
-                    <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                      {!image.isPrimary && (
-                        <button
-                          type="button"
-                          onClick={() => setPrimaryImage(index)}
-                          className="bg-earthy-yellow text-earthy-brown p-1 rounded-full text-xs hover:bg-earthy-yellow/80 transition-colors"
-                          title="Set as primary"
-                        >
-                          <Star className="w-3 h-3" />
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleImageDelete(index)}
-                        className="bg-tomato-red text-white p-1 rounded-full text-xs hover:bg-tomato-red/80 transition-colors"
-                        title="Delete image"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {/* Form Actions */}
+          <Card className="p-6">
+            <div className="flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/admin/products')}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                isLoading={isSubmitting}
+                className="flex items-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                {isEditing ? 'Update Product' : 'Create Product'}
+              </Button>
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-text-muted mb-4">No images uploaded yet</p>
+          </Card>
+        </div>
+
+        {/* Mobile: Step-based form */}
+        <div className="md:hidden">
+          {currentStep === 0 && (
+            <div className="p-4 space-y-4">
+              <MobileStepCard 
+                title="Basic Information"
+                icon={Info}
+                step={currentStep + 1}
+                totalSteps={formSteps.length}
+              >
+                <BasicInfoFields 
+                  register={register}
+                  errors={errors}
+                  categories={categories}
+                  validationRules={validationRules}
+                />
+              </MobileStepCard>
             </div>
           )}
 
-          {/* Upload Area */}
-          <div className="mt-4">
-            <FileUpload
-              onFilesSelected={handleImageUpload}
-              accept="image/*"
-              multiple
-              maxFiles={5}
-              maxFileSize={5 * 1024 * 1024} // 5MB
-              disabled={uploadingImages.size > 0}
-            >
-              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-bottle-green transition-colors">
-                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-text-muted mb-1">
-                  {uploadingImages.size > 0
-                    ? `Uploading ${uploadingImages.size} image(s)...`
-                    : 'Click to upload or drag and drop'}
-                </p>
-                <p className="text-sm text-text-muted">
-                  PNG, JPG, WebP up to 5MB (max 5 images)
-                </p>
-              </div>
-            </FileUpload>
+          {currentStep === 1 && (
+            <div className="p-4 space-y-4">
+              <MobileStepCard 
+                title="Product Images"
+                icon={ImageIcon}
+                step={currentStep + 1}
+                totalSteps={formSteps.length}
+              >
+                <ImageUploadSection 
+                  imagePreviewUrls={imagePreviewUrls}
+                  selectedImageIndex={selectedImageIndex}
+                  setSelectedImageIndex={setSelectedImageIndex}
+                  handleImageUpload={handleImageUpload}
+                  handleImageDelete={handleImageDelete}
+                  setPrimaryImage={setPrimaryImage}
+                  uploadingImages={uploadingImages}
+                  setShowImageModal={setShowImageModal}
+                />
+              </MobileStepCard>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="p-4 space-y-4">
+              <MobileStepCard 
+                title="Additional Details"
+                icon={Plus}
+                step={currentStep + 1}
+                totalSteps={formSteps.length}
+              >
+                <AdditionalDetailsFields register={register} />
+              </MobileStepCard>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="p-4 space-y-4">
+              <MobileStepCard 
+                title="Nutritional Information"
+                icon={Star}
+                step={currentStep + 1}
+                totalSteps={formSteps.length}
+              >
+                <NutritionalInfoFields register={register} />
+              </MobileStepCard>
+            </div>
+          )}
+
+          {/* Mobile Navigation */}
+          <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex justify-between gap-3">
+              {currentStep > 0 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  className="flex items-center gap-2 min-h-[48px]"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/admin/products')}
+                  className="min-h-[48px]"
+                >
+                  Cancel
+                </Button>
+              )}
+
+              {currentStep < formSteps.length - 1 ? (
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  className="flex items-center gap-2 min-h-[48px]"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  isLoading={isSubmitting}
+                  className="flex items-center gap-2 min-h-[48px]"
+                >
+                  <Check className="w-4 h-4" />
+                  {isEditing ? 'Update' : 'Create'}
+                </Button>
+              )}
+            </div>
           </div>
-        </Card>
-
-        {/* Additional Details */}
-        <Card className="p-6">
-          <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
-            Additional Details
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Origin/Source">
-              <Input
-                {...register('origin')}
-                placeholder="e.g., Local Farm, California, USA"
-              />
-            </FormField>
-
-            <FormField label="Shelf Life (days)">
-              <Input
-                {...register('shelfLife')}
-                type="number"
-                min="1"
-                placeholder="e.g., 7"
-              />
-            </FormField>
-
-            <FormField label="Min Order Quantity">
-              <Input
-                {...register('minOrderQuantity')}
-                type="number"
-                min="1"
-                placeholder="1"
-              />
-            </FormField>
-
-            <FormField label="Max Order Quantity">
-              <Input
-                {...register('maxOrderQuantity')}
-                type="number"
-                min="1"
-                placeholder="Leave empty for no limit"
-              />
-            </FormField>
-          </div>
-
-          <div className="mt-4">
-            <FormField label="Storage Instructions">
-              <textarea
-                {...register('storageInstructions')}
-                placeholder="Storage and handling instructions"
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
-              />
-            </FormField>
-          </div>
-
-          <div className="mt-4">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                {...register('isOrganic')}
-                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
-              />
-              <span className="text-text-dark dark:text-white font-medium">
-                Organic Product
-              </span>
-            </label>
-          </div>
-        </Card>
-
-        {/* Nutritional Information */}
-        <Card className="p-6">
-          <h2 className="text-lg font-medium text-text-dark dark:text-white mb-4">
-            Nutritional Information (per 100g)
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <FormField label="Calories">
-              <Input
-                {...register('nutritionalInfo.calories')}
-                type="number"
-                min="0"
-                placeholder="0"
-              />
-            </FormField>
-
-            <FormField label="Protein (g)">
-              <Input
-                {...register('nutritionalInfo.protein')}
-                type="number"
-                step="0.1"
-                min="0"
-                placeholder="0.0"
-              />
-            </FormField>
-
-            <FormField label="Carbs (g)">
-              <Input
-                {...register('nutritionalInfo.carbs')}
-                type="number"
-                step="0.1"
-                min="0"
-                placeholder="0.0"
-              />
-            </FormField>
-
-            <FormField label="Fat (g)">
-              <Input
-                {...register('nutritionalInfo.fat')}
-                type="number"
-                step="0.1"
-                min="0"
-                placeholder="0.0"
-              />
-            </FormField>
-
-            <FormField label="Fiber (g)">
-              <Input
-                {...register('nutritionalInfo.fiber')}
-                type="number"
-                step="0.1"
-                min="0"
-                placeholder="0.0"
-              />
-            </FormField>
-          </div>
-        </Card>
-
-        {/* Form Actions */}
-        <Card className="p-6">
-          <div className="flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate('/admin/products')}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              isLoading={isSubmitting}
-              className="flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {isEditing ? 'Update Product' : 'Create Product'}
-            </Button>
-          </div>
-        </Card>
+        </div>
       </form>
+      </div>
+
 
       {/* Image Preview Modal */}
       {showImageModal && (

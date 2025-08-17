@@ -114,12 +114,13 @@ const FileUpload = ({
       {/* Main Upload Area */}
       <div
         className={cn(
-          'relative border-2 border-dashed rounded-3xl p-8 text-center transition-all duration-300 cursor-pointer min-h-[200px] flex flex-col items-center justify-center',
+          'relative border-2 border-dashed rounded-3xl p-6 sm:p-8 text-center transition-all duration-300 cursor-pointer min-h-[160px] sm:min-h-[200px] flex flex-col items-center justify-center',
           dragActive && 'border-bottle-green bg-bottle-green/5 scale-[1.02]',
           !dragActive &&
             'border-gray-300 hover:border-bottle-green hover:bg-bottle-green/5',
           disabled && 'opacity-50 cursor-not-allowed',
-          error && 'border-tomato-red/50 bg-tomato-red/5'
+          error && 'border-tomato-red/50 bg-tomato-red/5',
+          'touch-manipulation' // Better touch responsiveness
         )}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -141,27 +142,29 @@ const FileUpload = ({
           <>
             <div
               className={cn(
-                'w-16 h-16 mb-4 rounded-2xl flex items-center justify-center transition-colors duration-300',
+                'w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 rounded-2xl flex items-center justify-center transition-colors duration-300',
                 dragActive
                   ? 'bg-bottle-green text-white'
                   : 'bg-earthy-beige/30 text-text-muted'
               )}
             >
-              <Upload className="w-8 h-8" />
+              <Upload className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
 
-            <h3 className="text-lg font-medium text-text-dark mb-2">
+            <h3 className="text-base sm:text-lg font-medium text-text-dark mb-2">
               {dragActive ? 'Drop files here' : 'Upload Files'}
             </h3>
 
-            <p className="text-text-muted mb-4">
-              Drag and drop files here, or click to select files
+            <p className="text-sm sm:text-base text-text-muted mb-3 sm:mb-4 max-w-xs sm:max-w-none mx-auto">
+              <span className="hidden sm:inline">Drag and drop files here, or </span>
+              <span className="sm:hidden">Tap to select files or </span>
+              <span>click to select files</span>
             </p>
 
             <div className="text-xs text-text-muted/80 space-y-1">
-              <p>Maximum file size: {(maxSize / 1024 / 1024).toFixed(1)}MB</p>
-              {multiple && <p>Maximum files: {maxFiles}</p>}
-              <p>Supported formats: {accept}</p>
+              <p>Max: {(maxSize / 1024 / 1024).toFixed(1)}MB</p>
+              {multiple && <p className="hidden sm:block">Maximum files: {maxFiles}</p>}
+              <p className="hidden sm:block">Supported formats: {accept}</p>
             </div>
           </>
         )}
@@ -220,21 +223,36 @@ const FilePreview = ({ file, onRemove, disabled }) => {
   };
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-2xl bg-earthy-beige/20 border border-gray-200">
+    <div className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-earthy-beige/20 border border-gray-200 touch-manipulation">
       {/* File Icon/Preview */}
       <div className="flex-shrink-0">
         {preview ? (
           <img
             src={preview}
             alt={file.name}
-            className="w-12 h-12 rounded-xl object-cover"
+            className="w-14 h-14 sm:w-12 sm:h-12 rounded-xl object-cover cursor-pointer"
+            onClick={() => {
+              // On mobile, allow tapping image to view full size
+              if (window.innerWidth < 640 && preview) {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4';
+                modal.onclick = () => document.body.removeChild(modal);
+                
+                const img = document.createElement('img');
+                img.src = preview;
+                img.className = 'max-w-full max-h-full object-contain rounded-2xl';
+                
+                modal.appendChild(img);
+                document.body.appendChild(modal);
+              }
+            }}
           />
         ) : (
-          <div className="w-12 h-12 rounded-xl bg-earthy-beige/50 flex items-center justify-center">
+          <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-xl bg-earthy-beige/50 flex items-center justify-center">
             {file.type.startsWith('image/') ? (
-              <Image className="w-6 h-6 text-text-muted" />
+              <Image className="w-7 h-7 sm:w-6 sm:h-6 text-text-muted" />
             ) : (
-              <File className="w-6 h-6 text-text-muted" />
+              <File className="w-7 h-7 sm:w-6 sm:h-6 text-text-muted" />
             )}
           </div>
         )}
@@ -246,6 +264,11 @@ const FilePreview = ({ file, onRemove, disabled }) => {
           {file.name}
         </p>
         <p className="text-xs text-text-muted">{formatFileSize(file.size)}</p>
+        {preview && (
+          <p className="text-xs text-bottle-green mt-1 sm:hidden">
+            Tap image to preview
+          </p>
+        )}
       </div>
 
       {/* Remove Button */}
@@ -254,10 +277,10 @@ const FilePreview = ({ file, onRemove, disabled }) => {
         size="icon"
         onClick={onRemove}
         disabled={disabled}
-        className="text-tomato-red hover:text-tomato-red hover:bg-tomato-red/10 min-h-[36px] min-w-[36px] h-9 w-9"
+        className="text-tomato-red hover:text-tomato-red hover:bg-tomato-red/10 min-h-[44px] min-w-[44px] h-11 w-11 sm:min-h-[36px] sm:min-w-[36px] sm:h-9 sm:w-9 touch-manipulation"
         aria-label={`Remove ${file.name}`}
       >
-        <X className="w-4 h-4" />
+        <X className="w-5 h-5 sm:w-4 sm:h-4" />
       </Button>
     </div>
   );

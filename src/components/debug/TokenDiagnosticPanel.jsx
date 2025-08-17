@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectAuth } from '../../store/slices/authSlice';
-import { 
-  checkTokenStorage, 
-  checkReduxAuthState, 
-  checkAPIHeaders, 
+import {
+  checkTokenStorage,
+  checkReduxAuthState,
+  checkAPIHeaders,
   checkTokenSync,
   checkRequestInterceptors,
   simulateLoginResponseCheck,
   checkNetworkRequests,
   runCompleteTokenDiagnostic,
-  fixTokenIssues 
+  fixTokenIssues,
 } from '../../utils/tokenDiagnostic';
 
 /**
  * Token Diagnostic Panel Component
- * 
+ *
  * Temporary component for debugging authentication issues
  * Add this to your app during development to diagnose token problems
  */
@@ -61,7 +61,9 @@ const TokenDiagnosticPanel = () => {
           🔧 Token Diagnostic
         </h3>
         <div className="text-xs">
-          <span className={`px-2 py-1 rounded ${authState.isAuthenticated ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          <span
+            className={`px-2 py-1 rounded ${authState.isAuthenticated ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+          >
             {authState.isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
           </span>
         </div>
@@ -72,13 +74,17 @@ const TokenDiagnosticPanel = () => {
         <div className="grid grid-cols-2 gap-2">
           <div>
             <span className="font-medium">Token:</span>
-            <span className={`ml-2 px-2 py-1 rounded text-xs ${authState.token ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            <span
+              className={`ml-2 px-2 py-1 rounded text-xs ${authState.token ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+            >
               {authState.token ? 'Present' : 'Missing'}
             </span>
           </div>
           <div>
             <span className="font-medium">User:</span>
-            <span className={`ml-2 px-2 py-1 rounded text-xs ${authState.user ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            <span
+              className={`ml-2 px-2 py-1 rounded text-xs ${authState.user ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+            >
               {authState.user?.role || 'None'}
             </span>
           </div>
@@ -99,25 +105,37 @@ const TokenDiagnosticPanel = () => {
         <p className="text-sm font-medium mb-2">Individual Checks:</p>
         <div className="grid grid-cols-2 gap-1 text-xs">
           <button
-            onClick={() => { checkRequestInterceptors(); console.log('Check console for interceptor results'); }}
+            onClick={() => {
+              checkRequestInterceptors();
+              console.log('Check console for interceptor results');
+            }}
             className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-2 rounded"
           >
             Test Interceptors
           </button>
           <button
-            onClick={() => { simulateLoginResponseCheck(); console.log('Check console for login state'); }}
+            onClick={() => {
+              simulateLoginResponseCheck();
+              console.log('Check console for login state');
+            }}
             className="bg-indigo-500 hover:bg-indigo-600 text-white py-1 px-2 rounded"
           >
             Check Login State
           </button>
           <button
-            onClick={() => { checkAPIHeaders(); console.log('Check console for API headers'); }}
+            onClick={() => {
+              checkAPIHeaders();
+              console.log('Check console for API headers');
+            }}
             className="bg-cyan-500 hover:bg-cyan-600 text-white py-1 px-2 rounded"
           >
             API Headers
           </button>
           <button
-            onClick={() => { checkNetworkRequests(); console.log('Check console for network test'); }}
+            onClick={() => {
+              checkNetworkRequests();
+              console.log('Check console for network test');
+            }}
             className="bg-emerald-500 hover:bg-emerald-600 text-white py-1 px-2 rounded"
           >
             Network Test
@@ -154,7 +172,7 @@ const TokenDiagnosticPanel = () => {
       {diagnosticResult && (
         <div className="border-t pt-4">
           <h4 className="font-medium text-sm mb-2">Diagnostic Results:</h4>
-          
+
           {diagnosticResult.error ? (
             <div className="text-red-600 text-sm">
               Error: {diagnosticResult.error}
@@ -162,35 +180,45 @@ const TokenDiagnosticPanel = () => {
           ) : (
             <div className="text-xs space-y-2">
               {/* Issues */}
-              {diagnosticResult.issues && diagnosticResult.issues.length > 0 && (
-                <div>
-                  <p className="font-medium text-red-600">❌ Issues:</p>
-                  <ul className="list-disc list-inside pl-2">
-                    {diagnosticResult.issues.map((issue, index) => (
-                      <li key={index} className="text-red-600">{issue}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {diagnosticResult.issues &&
+                diagnosticResult.issues.length > 0 && (
+                  <div>
+                    <p className="font-medium text-red-600">❌ Issues:</p>
+                    <ul className="list-disc list-inside pl-2">
+                      {diagnosticResult.issues.map((issue, index) => (
+                        <li key={index} className="text-red-600">
+                          {issue}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
               {/* Recommendations */}
-              {diagnosticResult.recommendations && diagnosticResult.recommendations.length > 0 && (
-                <div>
-                  <p className="font-medium text-yellow-600">💡 Recommendations:</p>
-                  <ul className="list-disc list-inside pl-2">
-                    {diagnosticResult.recommendations.map((rec, index) => (
-                      <li key={index} className="text-yellow-600">{rec}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {diagnosticResult.recommendations &&
+                diagnosticResult.recommendations.length > 0 && (
+                  <div>
+                    <p className="font-medium text-yellow-600">
+                      💡 Recommendations:
+                    </p>
+                    <ul className="list-disc list-inside pl-2">
+                      {diagnosticResult.recommendations.map((rec, index) => (
+                        <li key={index} className="text-yellow-600">
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
               {/* Network Test */}
               {diagnosticResult.network && (
                 <div>
                   <p className="font-medium">🌐 Network Test:</p>
-                  <p className={`text-xs ${diagnosticResult.network.ok ? 'text-green-600' : 'text-red-600'}`}>
-                    Status: {diagnosticResult.network.status} 
+                  <p
+                    className={`text-xs ${diagnosticResult.network.ok ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    Status: {diagnosticResult.network.status}
                     {diagnosticResult.network.ok ? ' ✅' : ' ❌'}
                   </p>
                 </div>
@@ -201,13 +229,19 @@ const TokenDiagnosticPanel = () => {
                 <div>
                   <p className="font-medium">🔑 Token Info:</p>
                   <p className="text-xs">
-                    Expires: {diagnosticResult.storage.localStorageDecoded.expiresAt?.toLocaleString()}
+                    Expires:{' '}
+                    {diagnosticResult.storage.localStorageDecoded.expiresAt?.toLocaleString()}
                   </p>
                   <p className="text-xs">
-                    Role: {diagnosticResult.storage.localStorageDecoded.payload?.role}
+                    Role:{' '}
+                    {diagnosticResult.storage.localStorageDecoded.payload?.role}
                   </p>
-                  <p className={`text-xs ${diagnosticResult.storage.localStorageDecoded.isExpired ? 'text-red-600' : 'text-green-600'}`}>
-                    {diagnosticResult.storage.localStorageDecoded.isExpired ? 'EXPIRED ❌' : 'VALID ✅'}
+                  <p
+                    className={`text-xs ${diagnosticResult.storage.localStorageDecoded.isExpired ? 'text-red-600' : 'text-green-600'}`}
+                  >
+                    {diagnosticResult.storage.localStorageDecoded.isExpired
+                      ? 'EXPIRED ❌'
+                      : 'VALID ✅'}
                   </p>
                 </div>
               )}

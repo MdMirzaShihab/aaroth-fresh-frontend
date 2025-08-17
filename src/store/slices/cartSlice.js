@@ -26,9 +26,65 @@ const cartSlice = createSlice({
 
       cartSlice.caseReducers.calculateTotals(state);
     },
+    addBulkToCart: (state, action) => {
+      const bulkItems = action.payload;
+      
+      if (!Array.isArray(bulkItems)) {
+        console.error('addBulkToCart expects an array of items');
+        return;
+      }
+
+      bulkItems.forEach((item) => {
+        const existingItem = state.items.find((i) => i.id === item.id);
+        
+        if (existingItem) {
+          existingItem.quantity += item.quantity || 1;
+        } else {
+          state.items.push({
+            ...item,
+            quantity: item.quantity || 1,
+          });
+        }
+      });
+
+      cartSlice.caseReducers.calculateTotals(state);
+    },
+    bulkUpdateQuantities: (state, action) => {
+      const updates = action.payload; // Array of {id, quantity} objects
+      
+      if (!Array.isArray(updates)) {
+        console.error('bulkUpdateQuantities expects an array of {id, quantity} objects');
+        return;
+      }
+
+      updates.forEach(({ id, quantity }) => {
+        const item = state.items.find((i) => i.id === id);
+        
+        if (item) {
+          if (quantity <= 0) {
+            state.items = state.items.filter((i) => i.id !== id);
+          } else {
+            item.quantity = quantity;
+          }
+        }
+      });
+
+      cartSlice.caseReducers.calculateTotals(state);
+    },
     removeFromCart: (state, action) => {
       const itemId = action.payload;
       state.items = state.items.filter((item) => item.id !== itemId);
+      cartSlice.caseReducers.calculateTotals(state);
+    },
+    removeBulkFromCart: (state, action) => {
+      const itemIds = action.payload; // Array of item IDs
+      
+      if (!Array.isArray(itemIds)) {
+        console.error('removeBulkFromCart expects an array of item IDs');
+        return;
+      }
+
+      state.items = state.items.filter((item) => !itemIds.includes(item.id));
       cartSlice.caseReducers.calculateTotals(state);
     },
     updateQuantity: (state, action) => {
@@ -76,7 +132,10 @@ const cartSlice = createSlice({
 
 export const {
   addToCart,
+  addBulkToCart,
+  bulkUpdateQuantities,
   removeFromCart,
+  removeBulkFromCart,
   updateQuantity,
   clearCart,
   toggleCart,

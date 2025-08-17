@@ -41,6 +41,20 @@ export default {
       backdropBlur: {
         xs: '2px',
       },
+      spacing: {
+        '0.5': '2px',   // 0.5 * 4px = 2px
+        '1.5': '6px',   // 1.5 * 4px = 6px
+        '2.5': '10px',  // 2.5 * 4px = 10px
+        '3.5': '14px',  // 3.5 * 4px = 14px
+        '4.5': '18px',  // 4.5 * 4px = 18px
+        '5.5': '22px',  // 5.5 * 4px = 22px
+        '6.5': '26px',  // 6.5 * 4px = 26px
+        '7.5': '30px',  // 7.5 * 4px = 30px
+        '15': '60px',   // Professional spacing for large components
+        '18': '72px',   // Large section spacing
+        '22': '88px',   // Extra large spacing
+        '72': '288px',  // Sidebar width
+      },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
         'slide-up': 'slideUp 0.4s ease-out',
@@ -68,6 +82,33 @@ export default {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-5px)' },
+        },
+      },
+      utilities: {
+        '.glass-card': {
+          background: 'rgba(255, 255, 255, 0.7)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+        },
+        '.glass-card-dark': {
+          background: 'rgba(31, 41, 55, 0.8)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(75, 85, 99, 0.3)',
+        },
+        '.focus-ring': {
+          outline: '2px solid transparent',
+          outlineOffset: '2px',
+          boxShadow: '0 0 0 2px rgba(0, 106, 78, 0.2)',
+        },
+        '.touch-target': {
+          minHeight: '44px',
+          minWidth: '44px',
+        },
+        '.professional-shadow': {
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        },
+        '.professional-shadow-lg': {
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         },
       },
     },

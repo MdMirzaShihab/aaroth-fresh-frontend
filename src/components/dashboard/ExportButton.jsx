@@ -135,8 +135,10 @@ const ExportButton = ({
   const buttonVariants = {
     primary: 'bg-gradient-primary text-white hover:shadow-lg',
     secondary: 'bg-gradient-secondary text-white hover:shadow-lg',
-    outline: 'border border-gray-300 dark:border-gray-600 text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700',
-    ghost: 'text-text-muted dark:text-gray-300 hover:text-text-dark dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700',
+    outline:
+      'border border-gray-300 dark:border-gray-600 text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700',
+    ghost:
+      'text-text-muted dark:text-gray-300 hover:text-text-dark dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700',
   };
 
   const sizeVariants = {
@@ -370,7 +372,9 @@ export const ExportModal = ({
 
       {/* Modal */}
       <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl max-w-md w-full mx-4 p-6">
-        <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-4">{title}</h2>
+        <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-4">
+          {title}
+        </h2>
 
         <div className="space-y-4">
           {/* Format Selection */}

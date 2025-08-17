@@ -20,6 +20,9 @@ import {
   Clock,
   TrendingUp,
   TrendingDown,
+  Grid3X3,
+  List,
+  MoreHorizontal,
 } from 'lucide-react';
 import {
   useGetAdminProductsQuery,
@@ -50,6 +53,7 @@ const ProductList = () => {
   const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [confirmAction, setConfirmAction] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState('table'); // 'table' or 'cards'
 
   const itemsPerPage = 15;
 
@@ -231,6 +235,126 @@ const ProductList = () => {
       },
     };
     return statusMap[status] || statusMap.active;
+  };
+
+  // Mobile Card Component
+  const ProductCard = ({ product, isSelected, onSelect, onStatusToggle, onEdit, onDelete }) => {
+    const badge = getStatusBadge(product.status);
+    
+    return (
+      <Card className={`p-4 hover:shadow-lg transition-all duration-300 ${
+        isSelected ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' : ''
+      }`}>
+        {/* Header with selection and actions */}
+        <div className="flex items-start justify-between mb-3">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onSelect(product.id)}
+            className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green mt-1"
+          />
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => onEdit(product.id)}
+              className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              title="Edit product"
+            >
+              <Edit3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onStatusToggle(product.id, product.status)}
+              className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                product.status === 'active'
+                  ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                  : 'text-green-600 hover:text-green-800 hover:bg-green-100'
+              }`}
+              title={product.status === 'active' ? 'Deactivate' : 'Activate'}
+            >
+              {product.status === 'active' ? (
+                <XCircle className="w-4 h-4" />
+              ) : (
+                <CheckCircle className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Product Image and Info */}
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 flex-shrink-0 overflow-hidden">
+            {product.images && product.images.length > 0 ? (
+              <img
+                src={product.images[0].url}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <ImageIcon className="w-8 h-8" />
+            )}
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-text-dark dark:text-white truncate text-lg">
+              {product.name}
+            </h3>
+            {product.sku && (
+              <p className="text-sm text-text-muted">SKU: {product.sku}</p>
+            )}
+            <div className="flex items-center gap-2 mt-1">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-bottle-green/20 text-bottle-green">
+                <Tag className="w-3 h-3" />
+                {getCategoryName(product.category)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Status and Price */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1">
+            <badge.icon className="w-4 h-4" />
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}>
+              {badge.text}
+            </span>
+          </div>
+          <div className="text-right">
+            <div className="flex items-center gap-1 font-medium text-text-dark dark:text-white">
+              <DollarSign className="w-4 h-4" />
+              {product.price ? `${product.price}/${product.unit}` : 'N/A'}
+            </div>
+          </div>
+        </div>
+
+        {/* Analytics */}
+        <div className="flex items-center justify-between text-sm text-text-muted border-t border-gray-100 dark:border-gray-700 pt-3">
+          <div className="flex items-center gap-1">
+            <BarChart3 className="w-4 h-4" />
+            <span>{product.listingsCount || 0} listings</span>
+          </div>
+          <div className="text-xs">
+            Updated {product.updatedAt ? new Date(product.updatedAt).toLocaleDateString() : 'Unknown'}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+          <button
+            onClick={() => navigate(`/admin/products/${product.id}`)}
+            className="flex-1 px-3 py-2 text-sm border border-gray-200 text-text-muted hover:text-bottle-green hover:border-bottle-green rounded-xl transition-colors min-h-[44px] flex items-center justify-center gap-2"
+          >
+            <Eye className="w-4 h-4" />
+            View
+          </button>
+          <button
+            onClick={() => onDelete(product)}
+            className="px-3 py-2 text-sm text-tomato-red hover:bg-tomato-red hover:text-white border border-tomato-red rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            title="Delete"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </Card>
+    );
   };
 
   // Table columns configuration
@@ -521,9 +645,9 @@ const ProductList = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Bulk Actions */}
+          {/* Bulk Actions - Desktop */}
           {selectedProducts.size > 0 && (
-            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-2xl border border-gray-200 dark:border-gray-700">
+            <div className="hidden md:flex items-center gap-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-2xl border border-gray-200 dark:border-gray-700">
               <span className="text-sm text-text-muted">
                 {selectedProducts.size} selected
               </span>
@@ -604,13 +728,39 @@ const ProductList = () => {
             </div>
 
             <div className="flex gap-3">
+              {/* View Mode Toggle - Hidden on desktop, shown on tablet/mobile */}
+              <div className="md:hidden flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-1">
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-2 rounded-xl transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                    viewMode === 'table'
+                      ? 'bg-bottle-green text-white'
+                      : 'text-text-muted hover:text-bottle-green'
+                  }`}
+                  title="Table view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('cards')}
+                  className={`p-2 rounded-xl transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                    viewMode === 'cards'
+                      ? 'bg-bottle-green text-white'
+                      : 'text-text-muted hover:text-bottle-green'
+                  }`}
+                  title="Card view"
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+              </div>
+
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2"
               >
                 <Filter className="w-4 h-4" />
-                Filters
+                <span className="hidden sm:inline">Filters</span>
                 {(selectedCategory !== 'all' || selectedStatus !== 'all') && (
                   <span className="w-2 h-2 bg-bottle-green rounded-full" />
                 )}
@@ -700,13 +850,46 @@ const ProductList = () => {
         </div>
       </Card>
 
-      {/* Products Table */}
-      <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table
-            data={products}
-            columns={columns}
-            emptyState={
+      {/* Products Display */}
+      {viewMode === 'table' ? (
+        /* Table View */
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table
+              data={products}
+              columns={columns}
+              emptyState={
+                <EmptyState
+                  icon={Package}
+                  title="No products found"
+                  description="No products match your current filters."
+                  action={{
+                    label: 'Add Product',
+                    onClick: () => navigate('/admin/products/create'),
+                  }}
+                />
+              }
+            />
+          </div>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={pagination.totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={pagination.totalProducts}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
+          )}
+        </Card>
+      ) : (
+        /* Card View */
+        <div className="space-y-6">
+          {products.length === 0 ? (
+            <Card className="p-12">
               <EmptyState
                 icon={Package}
                 title="No products found"
@@ -716,23 +899,120 @@ const ProductList = () => {
                   onClick: () => navigate('/admin/products/create'),
                 }}
               />
-            }
-          />
-        </div>
+            </Card>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    isSelected={selectedProducts.has(product.id)}
+                    onSelect={handleSelectProduct}
+                    onStatusToggle={handleStatusToggle}
+                    onEdit={(id) => navigate(`/admin/products/${id}/edit`)}
+                    onDelete={(product) =>
+                      setConfirmAction({
+                        type: 'delete',
+                        product,
+                        title: 'Delete Product',
+                        message: `Are you sure you want to permanently delete "${product.name}"? This action cannot be undone and will affect all related listings.`,
+                        confirmText: 'Delete',
+                        isDangerous: true,
+                        onConfirm: () => handleDelete(product.id),
+                      })
+                    }
+                  />
+                ))}
+              </div>
 
-        {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={pagination.totalPages}
-              onPageChange={setCurrentPage}
-              totalItems={pagination.totalProducts}
-              itemsPerPage={itemsPerPage}
-            />
-          </div>
-        )}
-      </Card>
+              {/* Pagination for Card View */}
+              {pagination.totalPages > 1 && (
+                <Card className="p-4">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={pagination.totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={pagination.totalProducts}
+                    itemsPerPage={itemsPerPage}
+                  />
+                </Card>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Mobile Bulk Actions - Floating Bottom Bar */}
+      {selectedProducts.size > 0 && (
+        <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
+          <Card className="p-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-text-dark dark:text-white">
+                {selectedProducts.size} product{selectedProducts.size !== 1 ? 's' : ''} selected
+              </span>
+              <button
+                onClick={() => setSelectedProducts(new Set())}
+                className="p-1 text-text-muted hover:text-text-dark dark:hover:text-white transition-colors"
+                title="Clear selection"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'bulk-activate',
+                    title: 'Bulk Activate Products',
+                    message: `Activate ${selectedProducts.size} selected products?`,
+                    confirmText: 'Activate',
+                    onConfirm: () => handleBulkStatusUpdate('active'),
+                  })
+                }
+                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 transition-colors min-h-[60px] justify-center"
+              >
+                <CheckCircle className="w-5 h-5" />
+                <span className="text-xs font-medium">Activate</span>
+              </button>
+              
+              <button
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'bulk-deactivate',
+                    title: 'Bulk Deactivate Products',
+                    message: `Deactivate ${selectedProducts.size} selected products?`,
+                    confirmText: 'Deactivate',
+                    onConfirm: () => handleBulkStatusUpdate('inactive'),
+                  })
+                }
+                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors min-h-[60px] justify-center"
+              >
+                <XCircle className="w-5 h-5" />
+                <span className="text-xs font-medium">Deactivate</span>
+              </button>
+              
+              <button
+                onClick={() =>
+                  setConfirmAction({
+                    type: 'bulk-delete',
+                    title: 'Bulk Delete Products',
+                    message: `Permanently delete ${selectedProducts.size} selected products? This action cannot be undone.`,
+                    confirmText: 'Delete All',
+                    isDangerous: true,
+                    onConfirm: handleBulkDelete,
+                  })
+                }
+                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 transition-colors min-h-[60px] justify-center"
+              >
+                <Trash2 className="w-5 h-5" />
+                <span className="text-xs font-medium">Delete</span>
+              </button>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Confirmation Dialog */}
       {confirmAction && (

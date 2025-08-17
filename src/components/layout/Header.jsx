@@ -61,8 +61,8 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-white/20 dark:border-gray-800/20 transition-all duration-300">
-      <div className="flex items-center justify-between h-16 px-4 sm:px-6">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 transition-all duration-300">
+      <div className="flex items-center justify-between h-16 px-6 sm:px-8 lg:px-12">
         {/* Left Section - Menu Toggle & Logo */}
         <div className="flex items-center gap-4">
           {isAuthenticated && (
@@ -81,9 +81,9 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
 
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 flex items-center justify-center">
-              <img 
-                src={AarothLogo} 
-                alt="Aaroth Fresh" 
+              <img
+                src={AarothLogo}
+                alt="Aaroth Fresh"
                 className="w-8 h-8 object-contain"
               />
             </div>
@@ -271,7 +271,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
 
       {/* Mobile Search Bar */}
       {isAuthenticated && (
-        <div className="md:hidden px-4 pb-4">
+        <div className="md:hidden px-6 pb-3">
           <form onSubmit={handleSearch} className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted" />
             <input

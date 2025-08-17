@@ -101,7 +101,7 @@ const Breadcrumb = ({ customItems = null }) => {
 
   return (
     <nav
-      className="flex items-center gap-2 text-sm text-text-muted mb-6"
+      className="flex items-center gap-2 text-sm text-text-muted mb-8"
       aria-label="Breadcrumb"
     >
       <Home className="w-4 h-4 text-text-muted/60" />

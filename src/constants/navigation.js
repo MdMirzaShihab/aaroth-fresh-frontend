@@ -214,17 +214,19 @@ export const NAVIGATION_ITEMS = {
       label: 'Restaurant',
       icon: Utensils,
       path: '/restaurant/manage',
-      roles: ['restaurantOwner'],
+      roles: ['restaurantOwner', 'restaurantManager'],
       children: [
         {
           id: 'profile',
           label: 'Restaurant Profile',
-          path: '/restaurant/manage/profile',
+          path: '/restaurant/profile', // Use the simpler path that both roles can access
+          roles: ['restaurantOwner', 'restaurantManager'],
         },
         {
           id: 'locations',
           label: 'Locations',
           path: '/restaurant/manage/locations',
+          roles: ['restaurantOwner'], // Only owners can manage locations
         },
         {
           id: 'managers',
@@ -233,13 +235,6 @@ export const NAVIGATION_ITEMS = {
           roles: ['restaurantOwner'], // Only owners can manage managers
         },
       ],
-    },
-    {
-      id: 'profile',
-      label: 'Profile',
-      icon: User,
-      path: '/restaurant/profile',
-      roles: ['restaurantOwner', 'restaurantManager'],
     },
   ],
 

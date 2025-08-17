@@ -1379,7 +1379,7 @@ export const apiSlice = createApi({
 
     updateRestaurantProfile: builder.mutation({
       query: (profileData) => ({
-        url: '/restaurant/profile',
+        url: '/auth/me',
         method: 'PUT',
         body: profileData,
       }),
@@ -1387,31 +1387,40 @@ export const apiSlice = createApi({
     }),
 
     getRestaurantManagers: builder.query({
-      query: () => '/restaurant/managers',
+      query: () => '/auth/managers',
       providesTags: ['User'],
     }),
 
-    createManager: builder.mutation({
+    createRestaurantManager: builder.mutation({
       query: (managerData) => ({
-        url: '/restaurant/managers',
+        url: '/auth/create-manager',
         method: 'POST',
         body: managerData,
       }),
       invalidatesTags: ['User'],
     }),
 
-    updateManager: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/restaurant/managers/${id}`,
+    updateRestaurantManager: builder.mutation({
+      query: ({ id, ...managerData }) => ({
+        url: `/auth/managers/${id}`,
         method: 'PUT',
-        body: data,
+        body: managerData,
       }),
       invalidatesTags: ['User'],
     }),
 
-    deleteManager: builder.mutation({
-      query: (id) => ({
-        url: `/restaurant/managers/${id}`,
+    deactivateRestaurantManager: builder.mutation({
+      query: ({ id, isActive }) => ({
+        url: `/auth/managers/${id}/deactivate`,
+        method: 'PUT',
+        body: { isActive },
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    deleteRestaurantManager: builder.mutation({
+      query: ({ id }) => ({
+        url: `/auth/managers/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['User'],
@@ -1589,9 +1598,10 @@ export const {
 
   // Restaurant - Manager Management
   useGetRestaurantManagersQuery,
-  useCreateManagerMutation,
-  useUpdateManagerMutation,
-  useDeleteManagerMutation,
+  useCreateRestaurantManagerMutation,
+  useUpdateRestaurantManagerMutation,
+  useDeactivateRestaurantManagerMutation,
+  useDeleteRestaurantManagerMutation,
 
   // Admin - Restaurant Management
   useCreateAdminRestaurantOwnerMutation,
