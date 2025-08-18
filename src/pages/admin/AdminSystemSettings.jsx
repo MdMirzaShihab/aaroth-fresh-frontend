@@ -16,7 +16,15 @@ import {
   Zap,
   DollarSign,
 } from 'lucide-react';
-import { useGetSystemHealthQuery } from '../../store/slices/apiSlice';
+import { 
+  useGetSystemSettingsQuery,
+  useUpdateSystemSettingMutation,
+  useCreateSettingMutation,
+  useBulkUpdateSettingsMutation,
+  useResetSystemSettingsMutation,
+  useClearAnalyticsCacheMutation,
+  useGetSystemHealthQuery 
+} from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -26,64 +34,77 @@ import EmptyState from '../../components/ui/EmptyState';
 import SystemHealthWidget from '../../components/admin/SystemHealthWidget';
 
 const AdminSystemSettings = () => {
-  // Local state for settings
-  const [settings, setSettings] = useState({
-    // Platform Settings
-    siteName: 'Aaroth Fresh',
-    siteDescription: 'B2B Fresh Produce Marketplace',
-    supportEmail: 'support@aarothfresh.com',
-    adminEmail: 'admin@aarothfresh.com',
-
-    // Feature Toggles
-    maintenanceMode: false,
-    newRegistrations: true,
-    vendorApprovalRequired: true,
-    restaurantApprovalRequired: false,
-    emailNotifications: true,
-    smsNotifications: false,
-
-    // Business Settings
-    platformCommission: 5.0,
-    minOrderAmount: 100.0,
-    maxOrderAmount: 10000.0,
-    deliveryRadius: 50,
-
-    // Security Settings
-    sessionTimeout: 24,
-    maxLoginAttempts: 5,
-    passwordMinLength: 8,
-    twoFactorRequired: false,
-  });
-
-  const [isSaving, setIsSaving] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('platform');
+  const [editingSettings, setEditingSettings] = useState({});
   const [lastSaved, setLastSaved] = useState(null);
 
-  // Get system health for monitoring
+  // API hooks
+  const { 
+    data: settingsData, 
+    isLoading, 
+    error, 
+    refetch: refetchSettings 
+  } = useGetSystemSettingsQuery();
+  
+  const [updateSetting, { isLoading: isUpdating }] = useUpdateSystemSettingMutation();
+  const [createSetting, { isLoading: isCreating }] = useCreateSettingMutation();
+  const [bulkUpdateSettings, { isLoading: isBulkUpdating }] = useBulkUpdateSettingsMutation();
+  const [resetSettings, { isLoading: isResetting }] = useResetSystemSettingsMutation();
+  const [clearCache, { isLoading: isClearingCache }] = useClearAnalyticsCacheMutation();
   const { refetch: refetchHealth } = useGetSystemHealthQuery();
 
+  // Parse settings data from API
+  const settings = settingsData?.data || {};
+  const isSaving = isUpdating || isCreating || isBulkUpdating;
+
   const handleSettingChange = (key, value) => {
-    setSettings((prev) => ({
+    setEditingSettings((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
 
-  const handleSaveSettings = async () => {
-    setIsSaving(true);
+  const handleSaveSetting = async (key, value) => {
     try {
-      // In a real implementation, this would call an API endpoint
-      // await saveSystemSettings(settings);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      await updateSetting({ 
+        key, 
+        value, 
+        changeReason: `Updated ${key} setting from admin panel` 
+      }).unwrap();
       setLastSaved(new Date());
-      // Show success toast or notification here
+      refetchSettings();
     } catch (error) {
-      console.error('Failed to save settings:', error);
-      // Show error toast here
-    } finally {
-      setIsSaving(false);
+      console.error('Failed to save setting:', error);
+    }
+  };
+
+  const handleBulkSaveSettings = async () => {
+    try {
+      await bulkUpdateSettings(editingSettings).unwrap();
+      setLastSaved(new Date());
+      setEditingSettings({});
+      refetchSettings();
+    } catch (error) {
+      console.error('Failed to bulk save settings:', error);
+    }
+  };
+
+  const handleResetSettings = async () => {
+    try {
+      await resetSettings().unwrap();
+      setLastSaved(new Date());
+      setEditingSettings({});
+      refetchSettings();
+    } catch (error) {
+      console.error('Failed to reset settings:', error);
+    }
+  };
+
+  const handleClearCache = async () => {
+    try {
+      await clearCache().unwrap();
+    } catch (error) {
+      console.error('Failed to clear cache:', error);
     }
   };
 
@@ -247,7 +268,10 @@ const AdminSystemSettings = () => {
   ];
 
   const renderField = (field) => {
-    const value = settings[field.key];
+    const currentValue = settings[field.key];
+    const editedValue = editingSettings[field.key];
+    const value = editedValue !== undefined ? editedValue : currentValue;
+    const hasChanges = editedValue !== undefined && editedValue !== currentValue;
 
     if (field.type === 'toggle') {
       return (
@@ -257,6 +281,9 @@ const AdminSystemSettings = () => {
               {field.label}
               {field.warning && (
                 <AlertTriangle className="inline w-4 h-4 ml-1 text-amber-500" />
+              )}
+              {hasChanges && (
+                <span className="inline-block w-2 h-2 bg-amber-500 rounded-full ml-2"></span>
               )}
             </label>
             <p className="text-xs text-text-muted mt-1">{field.description}</p>
@@ -281,24 +308,61 @@ const AdminSystemSettings = () => {
 
     return (
       <FormField label={field.label} description={field.description}>
-        <Input
-          type={field.type}
-          value={value}
-          onChange={(e) => {
-            const newValue =
-              field.type === 'number'
-                ? parseFloat(e.target.value) || 0
-                : e.target.value;
-            handleSettingChange(field.key, newValue);
-          }}
-          min={field.min}
-          max={field.max}
-          step={field.step}
-          className="w-full"
-        />
+        <div className="flex items-center gap-2">
+          <Input
+            type={field.type}
+            value={value || ''}
+            onChange={(e) => {
+              const newValue =
+                field.type === 'number'
+                  ? parseFloat(e.target.value) || 0
+                  : e.target.value;
+              handleSettingChange(field.key, newValue);
+            }}
+            min={field.min}
+            max={field.max}
+            step={field.step}
+            className={`flex-1 ${hasChanges ? 'border-amber-500' : ''}`}
+          />
+          {hasChanges && (
+            <Button
+              size="sm"
+              onClick={() => handleSaveSetting(field.key, value)}
+              disabled={isUpdating}
+            >
+              {isUpdating ? 'Saving...' : 'Save'}
+            </Button>
+          )}
+        </div>
       </FormField>
     );
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6 max-w-7xl mx-auto">
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <LoadingSpinner size="lg" />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="p-6 space-y-6 max-w-7xl mx-auto">
+        <EmptyState
+          icon={AlertTriangle}
+          title="Failed to load system settings"
+          description="There was an error loading system settings. Please try again."
+          actionLabel="Retry"
+          onAction={refetchSettings}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
@@ -323,17 +387,32 @@ const AdminSystemSettings = () => {
             <RefreshCw className="w-4 h-4" />
             Refresh Status
           </Button>
+          {Object.keys(editingSettings).length > 0 && (
+            <Button
+              onClick={handleBulkSaveSettings}
+              disabled={isBulkUpdating}
+              className="flex items-center gap-2"
+            >
+              {isBulkUpdating ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              {isBulkUpdating ? 'Saving...' : `Save ${Object.keys(editingSettings).length} Changes`}
+            </Button>
+          )}
           <Button
-            onClick={handleSaveSettings}
-            disabled={isSaving}
-            className="flex items-center gap-2"
+            variant="outline"
+            onClick={handleResetSettings}
+            disabled={isResetting}
+            className="flex items-center gap-2 text-amber-600 border-amber-600 hover:bg-amber-50"
           >
-            {isSaving ? (
+            {isResetting ? (
               <LoadingSpinner size="sm" />
             ) : (
-              <Save className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4" />
             )}
-            {isSaving ? 'Saving...' : 'Save Settings'}
+            {isResetting ? 'Resetting...' : 'Reset to Defaults'}
           </Button>
         </div>
       </div>
@@ -432,12 +511,15 @@ const AdminSystemSettings = () => {
                 variant="outline"
                 size="sm"
                 className="w-full justify-start"
-                onClick={() => {
-                  // Handle cache clear
-                }}
+                onClick={handleClearCache}
+                disabled={isClearingCache}
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Clear Cache
+                {isClearingCache ? (
+                  <LoadingSpinner size="sm" className="mr-2" />
+                ) : (
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                )}
+                {isClearingCache ? 'Clearing...' : 'Clear Cache'}
               </Button>
               <Button
                 variant="outline"

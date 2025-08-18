@@ -5,6 +5,7 @@ const SimpleBarChart = ({
   height = 200,
   colors = ['#0EA5E9', '#10B981', '#F59E0B', '#EF4444'],
 }) => {
+  // Validate data
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-text-muted">
@@ -13,12 +14,39 @@ const SimpleBarChart = ({
     );
   }
 
-  const maxValue = Math.max(...data.map((d) => d.value));
+  // Filter out invalid data and ensure numeric values
+  const validData = data.filter(item => 
+    item && 
+    typeof item.value === 'number' && 
+    !isNaN(item.value) && 
+    isFinite(item.value) && 
+    item.value >= 0 &&
+    item.label
+  );
+
+  if (validData.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-text-muted">
+        No valid data available
+      </div>
+    );
+  }
+
+  const maxValue = Math.max(...validData.map((d) => d.value));
+  
+  // Handle edge case where maxValue is 0 or invalid
+  if (maxValue === 0 || !isFinite(maxValue)) {
+    return (
+      <div className="flex items-center justify-center h-full text-text-muted">
+        No data to display
+      </div>
+    );
+  }
   const padding = 40;
   const chartWidth = 400;
   const chartHeight = height - padding * 2;
-  const barWidth = ((chartWidth - padding * 2) / data.length) * 0.8;
-  const barSpacing = ((chartWidth - padding * 2) / data.length) * 0.2;
+  const barWidth = ((chartWidth - padding * 2) / validData.length) * 0.8;
+  const barSpacing = ((chartWidth - padding * 2) / validData.length) * 0.2;
 
   return (
     <div className="w-full">
@@ -57,7 +85,7 @@ const SimpleBarChart = ({
         </g>
 
         {/* Bars */}
-        {data.map((item, index) => {
+        {validData.map((item, index) => {
           const barHeight = (item.value / maxValue) * chartHeight;
           const x = padding + index * (barWidth + barSpacing) + barSpacing / 2;
           const y = height - padding - barHeight;
@@ -94,7 +122,7 @@ const SimpleBarChart = ({
 
         {/* X-axis labels */}
         <g className="text-xs fill-current text-text-muted">
-          {data.map((item, index) => {
+          {validData.map((item, index) => {
             const x =
               padding +
               index * (barWidth + barSpacing) +

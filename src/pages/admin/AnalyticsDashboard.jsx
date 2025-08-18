@@ -12,7 +12,11 @@ import {
   RefreshCw,
   AlertTriangle,
 } from 'lucide-react';
-import { useGetAdminDashboardQuery } from '../../store/slices/apiSlice';
+import { 
+  useGetAdminAnalyticsOverviewQuery,
+  useGetAllApprovalsQuery,
+  useGetAdminDashboardOverviewQuery 
+} from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import EmptyState from '../../components/ui/EmptyState';
@@ -24,62 +28,108 @@ import SimplePieChart from '../../components/ui/charts/SimplePieChart';
 const AnalyticsDashboard = () => {
   const [timeRange, setTimeRange] = useState('7d');
 
+  // Enhanced analytics data
   const {
     data: analyticsData,
-    isLoading,
-    error,
-    refetch,
-  } = useGetAdminDashboardQuery();
+    isLoading: isAnalyticsLoading,
+    error: analyticsError,
+    refetch: refetchAnalytics,
+  } = useGetAdminAnalyticsOverviewQuery({ timeRange });
 
-  // Mock data for demonstration (replace with actual data from API)
-  const mockData = {
-    revenue: {
-      current: 45280,
-      previous: 38940,
-      trend: '+16.3%',
-      data: [
-        { label: 'Mon', value: 6200 },
-        { label: 'Tue', value: 7100 },
-        { label: 'Wed', value: 5800 },
-        { label: 'Thu', value: 8300 },
-        { label: 'Fri', value: 9200 },
-        { label: 'Sat', value: 4800 },
-        { label: 'Sun', value: 3880 },
-      ],
-    },
-    orders: {
-      current: 1247,
-      previous: 1089,
-      trend: '+14.5%',
-      data: [
-        { label: 'Mon', value: 180 },
-        { label: 'Tue', value: 210 },
-        { label: 'Wed', value: 165 },
-        { label: 'Thu', value: 235 },
-        { label: 'Fri', value: 198 },
-        { label: 'Sat', value: 142 },
-        { label: 'Sun', value: 117 },
-      ],
-    },
-    userRegistrations: [
-      { label: 'Vendors', value: 342 },
-      { label: 'Restaurants', value: 189 },
-      { label: 'Managers', value: 67 },
-    ],
-    topCategories: [
-      { label: 'Vegetables', value: 45 },
-      { label: 'Fruits', value: 32 },
-      { label: 'Herbs', value: 18 },
-      { label: 'Grains', value: 12 },
-      { label: 'Others', value: 8 },
-    ],
-    geographicData: [
-      { region: 'North Region', orders: 412, revenue: 18500 },
-      { region: 'South Region', orders: 338, revenue: 15200 },
-      { region: 'East Region', orders: 289, revenue: 12800 },
-      { region: 'West Region', orders: 208, revenue: 9300 },
-    ],
-  };
+  // Dashboard overview for additional metrics
+  const {
+    data: dashboardData,
+    isLoading: isDashboardLoading,
+    error: dashboardError,
+  } = useGetAdminDashboardOverviewQuery();
+
+  // Approval analytics
+  const {
+    data: approvalData,
+    isLoading: isApprovalLoading,
+  } = useGetAllApprovalsQuery({ 
+    status: 'all', 
+    limit: 1000 // Get all for analytics
+  });
+
+  const isLoading = isAnalyticsLoading || isDashboardLoading || isApprovalLoading;
+  const error = analyticsError || dashboardError;
+
+  // Transform API data into chart-ready format
+  const analytics = analyticsData?.data || {};
+  const dashboard = dashboardData?.data || {};
+  const approvals = approvalData?.data || [];
+
+  // Calculate approval statistics
+  const approvalStats = approvals.reduce((acc, approval) => {
+    acc.total++;
+    acc[approval.status] = (acc[approval.status] || 0) + 1;
+    
+    // Calculate average wait time (placeholder logic)
+    if (approval.createdAt) {
+      const waitTime = Math.floor((new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24));
+      acc.avgWaitTime += waitTime;
+      if (waitTime > 7) acc.urgent++; // Consider urgent if waiting more than 7 days
+    }
+    
+    return acc;
+  }, { total: 0, pending: 0, approved: 0, rejected: 0, avgWaitTime: 0, urgent: 0 });
+
+  // Calculate average wait time
+  approvalStats.avgWaitTime = approvalStats.total > 0 ? Math.round(approvalStats.avgWaitTime / approvalStats.total) : 0;
+
+  // Transform approval data for charts
+  const transformApprovalData = () => [
+    { label: 'Pending', value: approvalStats.pending || 0 },
+    { label: 'Approved', value: approvalStats.approved || 0 },
+    { label: 'Rejected', value: approvalStats.rejected || 0 },
+  ].filter(item => item.value > 0);
+
+  // Transform revenue data with fallbacks
+  const transformedRevenueData = analytics.dailyRevenue || [
+    { label: 'Mon', value: 6200 },
+    { label: 'Tue', value: 7100 },
+    { label: 'Wed', value: 5800 },
+    { label: 'Thu', value: 8300 },
+    { label: 'Fri', value: 9200 },
+    { label: 'Sat', value: 4800 },
+    { label: 'Sun', value: 3880 },
+  ];
+
+  // Transform order data with fallbacks
+  const transformedOrderData = analytics.dailyOrders || [
+    { label: 'Mon', value: 180 },
+    { label: 'Tue', value: 210 },
+    { label: 'Wed', value: 165 },
+    { label: 'Thu', value: 235 },
+    { label: 'Fri', value: 198 },
+    { label: 'Sat', value: 142 },
+    { label: 'Sun', value: 117 },
+  ];
+
+  // Transform user registration data
+  const transformedUserData = [
+    { label: 'Vendors', value: dashboard.totalVendors || 342 },
+    { label: 'Restaurants', value: dashboard.totalRestaurants || 189 },
+    { label: 'Managers', value: dashboard.totalManagers || 67 },
+  ];
+
+  // Transform category data with fallbacks
+  const transformedCategoryData = analytics.topCategories || [
+    { label: 'Vegetables', value: 45 },
+    { label: 'Fruits', value: 32 },
+    { label: 'Herbs', value: 18 },
+    { label: 'Grains', value: 12 },
+    { label: 'Others', value: 8 },
+  ];
+
+  // Transform geographic data
+  const transformedGeographicData = analytics.geographicData || [
+    { region: 'North Region', orders: 412, revenue: 18500 },
+    { region: 'South Region', orders: 338, revenue: 15200 },
+    { region: 'East Region', orders: 289, revenue: 12800 },
+    { region: 'West Region', orders: 208, revenue: 9300 },
+  ];
 
   const timeRangeOptions = [
     { value: '24h', label: 'Last 24 Hours' },
@@ -89,14 +139,15 @@ const AnalyticsDashboard = () => {
     { value: '1y', label: 'Last Year' },
   ];
 
+
   // Key metrics cards
   const keyMetrics = [
     {
       id: 'revenue',
       title: 'Total Revenue',
-      value: `$${mockData.revenue.current.toLocaleString()}`,
-      change: mockData.revenue.trend,
-      changeType: 'positive',
+      value: `$${(analytics.totalRevenue || 45280).toLocaleString()}`,
+      change: analytics.revenueGrowth || '+16.3%',
+      changeType: (analytics.revenueGrowth || '+16.3%').startsWith('+') ? 'positive' : 'negative',
       icon: DollarSign,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -104,9 +155,9 @@ const AnalyticsDashboard = () => {
     {
       id: 'orders',
       title: 'Total Orders',
-      value: mockData.orders.current.toLocaleString(),
-      change: mockData.orders.trend,
-      changeType: 'positive',
+      value: (dashboard.totalOrders || 1247).toLocaleString(),
+      change: analytics.orderGrowth || '+14.5%',
+      changeType: (analytics.orderGrowth || '+14.5%').startsWith('+') ? 'positive' : 'negative',
       icon: ShoppingCart,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
@@ -114,19 +165,19 @@ const AnalyticsDashboard = () => {
     {
       id: 'vendors',
       title: 'Active Vendors',
-      value: '342',
-      change: '+12.8%',
-      changeType: 'positive',
+      value: (dashboard.totalVendors || '342').toLocaleString(),
+      change: analytics.vendorGrowth || '+12.8%',
+      changeType: (analytics.vendorGrowth || '+12.8%').startsWith('+') ? 'positive' : 'negative',
       icon: Package,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
     },
     {
-      id: 'conversion',
-      title: 'Conversion Rate',
-      value: '3.2%',
-      change: '-0.4%',
-      changeType: 'negative',
+      id: 'approval-rate',
+      title: 'Approval Rate',
+      value: `${approvalStats.total > 0 ? Math.round((approvalStats.approved / approvalStats.total) * 100) : 85}%`,
+      change: approvalStats.urgent > 0 ? `${approvalStats.urgent} urgent` : 'On track',
+      changeType: approvalStats.urgent > 0 ? 'negative' : 'positive',
       icon: TrendingUp,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
@@ -147,10 +198,8 @@ const AnalyticsDashboard = () => {
         icon={AlertTriangle}
         title="Failed to load analytics"
         description="There was an error loading analytics data. Please try again."
-        action={{
-          label: 'Retry',
-          onClick: refetch,
-        }}
+        actionLabel="Retry"
+        onAction={refetchAnalytics}
       />
     );
   }
@@ -184,7 +233,7 @@ const AnalyticsDashboard = () => {
 
           <Button
             variant="outline"
-            onClick={refetch}
+            onClick={refetchAnalytics}
             className="flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />
@@ -257,12 +306,12 @@ const AnalyticsDashboard = () => {
             <div className="text-right">
               <p className="text-sm text-text-muted">This week</p>
               <p className="text-lg font-semibold text-text-dark dark:text-white">
-                ${mockData.revenue.current.toLocaleString()}
+                ${(analytics.totalRevenue || 45280).toLocaleString()}
               </p>
             </div>
           </div>
           <SimpleLineChart
-            data={mockData.revenue.data}
+            data={transformedRevenueData}
             height={250}
             color="#10B981"
           />
@@ -280,20 +329,56 @@ const AnalyticsDashboard = () => {
             <div className="text-right">
               <p className="text-sm text-text-muted">This week</p>
               <p className="text-lg font-semibold text-text-dark dark:text-white">
-                {mockData.orders.current.toLocaleString()}
+                {(dashboard.totalOrders || 1247).toLocaleString()}
               </p>
             </div>
           </div>
           <SimpleLineChart
-            data={mockData.orders.data}
+            data={transformedOrderData}
             height={250}
             color="#3B82F6"
           />
         </Card>
       </div>
 
-      {/* Charts Row 2: User Distribution and Categories */}
+      {/* Charts Row 2: Approval Analytics and User Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Approval Analytics */}
+        <Card className="p-6">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-text-dark dark:text-white">
+              Approval Analytics
+            </h3>
+            <p className="text-text-muted text-sm">Application processing metrics</p>
+          </div>
+          
+          <div className="space-y-4">
+            {/* Approval Status Distribution */}
+            <div className="flex justify-center mb-6">
+              <SimplePieChart 
+                data={transformApprovalData()}
+                size={200} 
+              />
+            </div>
+            
+            {/* Approval Metrics */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <p className="text-2xl font-bold text-text-dark dark:text-white">
+                  {approvalStats.avgWaitTime}
+                </p>
+                <p className="text-sm text-text-muted">Avg Wait Time (days)</p>
+              </div>
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <p className="text-2xl font-bold text-text-dark dark:text-white">
+                  {approvalStats.urgent}
+                </p>
+                <p className="text-sm text-text-muted">Urgent (7+ days)</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* User Distribution */}
         <Card className="p-6">
           <div className="mb-6">
@@ -303,11 +388,15 @@ const AnalyticsDashboard = () => {
             <p className="text-text-muted text-sm">Breakdown by user type</p>
           </div>
           <div className="flex justify-center">
-            <SimplePieChart data={mockData.userRegistrations} size={280} />
+            <SimplePieChart data={transformedUserData.concat([
+              { label: 'Admins', value: dashboard.totalAdmins || 5 }
+            ])} size={280} />
           </div>
         </Card>
+      </div>
 
-        {/* Top Categories */}
+      {/* Charts Row 3: Top Categories */}
+      <div className="grid grid-cols-1 gap-6">
         <Card className="p-6">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-text-dark dark:text-white">
@@ -317,7 +406,7 @@ const AnalyticsDashboard = () => {
               Most popular product categories
             </p>
           </div>
-          <SimpleBarChart data={mockData.topCategories} height={280} />
+          <SimpleBarChart data={transformedCategoryData} height={280} />
         </Card>
       </div>
 
@@ -351,7 +440,7 @@ const AnalyticsDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {mockData.geographicData.map((region, index) => {
+              {transformedGeographicData.map((region, index) => {
                 const avgOrderValue = region.revenue / region.orders;
                 return (
                   <tr

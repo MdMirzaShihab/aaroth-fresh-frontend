@@ -41,7 +41,10 @@ const PendingApprovalPage = lazy(
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const ApprovalManagement = lazy(() => import('./pages/admin/ApprovalManagement'));
 const UserManagement = lazy(() => import('./pages/admin/UserManagement'));
+const VendorManagement = lazy(() => import('./pages/admin/VendorManagement'));
+const RestaurantManagement = lazy(() => import('./pages/admin/RestaurantManagement'));
 const VendorApproval = lazy(() => import('./pages/admin/VendorApproval'));
 const ProductManagement = lazy(() => import('./pages/admin/ProductManagement'));
 const ProductList = lazy(() => import('./pages/admin/ProductList'));
@@ -249,6 +252,14 @@ const App = () => {
               }
             />
             <Route
+              path="approvals"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ApprovalManagement />
+                </Suspense>
+              }
+            />
+            <Route
               path="users"
               element={
                 <Suspense fallback={<PageLoader />}>
@@ -260,7 +271,7 @@ const App = () => {
               path="users/vendors"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <UserManagement />
+                  <VendorManagement />
                 </Suspense>
               }
             />
@@ -268,20 +279,28 @@ const App = () => {
               path="users/restaurants"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <UserManagement />
+                  <RestaurantManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="restaurant-management"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <RestaurantManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="vendor-management"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorManagement />
                 </Suspense>
               }
             />
             <Route
               path="users/approvals"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <VendorApproval />
-                </Suspense>
-              }
-            />
-            <Route
-              path="vendors/approval"
               element={
                 <Suspense fallback={<PageLoader />}>
                   <VendorApproval />
@@ -365,6 +384,14 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <AnalyticsDashboard />
+                </Suspense>
+              }
+            />
+            <Route
+              path="listing-management"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminListingsManagement />
                 </Suspense>
               }
             />

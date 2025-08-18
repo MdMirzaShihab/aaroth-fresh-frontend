@@ -14,6 +14,7 @@ import {
   User,
   MapPin,
   Tag,
+  CheckCircle,
 } from 'lucide-react';
 
 // Navigation items configuration with role-based access
@@ -28,6 +29,14 @@ export const NAVIGATION_ITEMS = {
       roles: ['admin'],
     },
     {
+      id: 'approvals',
+      label: 'Approval Management',
+      icon: CheckCircle,
+      path: '/admin/approvals',
+      roles: ['admin'],
+      description: 'Review and approve vendor/restaurant applications',
+    },
+    {
       id: 'users',
       label: 'User Management',
       icon: Users,
@@ -36,12 +45,12 @@ export const NAVIGATION_ITEMS = {
       children: [
         {
           id: 'vendors',
-          label: 'Vendors',
+          label: 'All Vendors',
           path: '/admin/users/vendors',
         },
         {
           id: 'restaurants',
-          label: 'Restaurants',
+          label: 'All Restaurants',
           path: '/admin/users/restaurants',
         },
         {

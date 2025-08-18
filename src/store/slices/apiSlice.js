@@ -592,6 +592,325 @@ export const apiSlice = createApi({
       ],
     }),
 
+    // Admin - Unified Approval System (NEW - replaces legacy endpoints)
+    getAllApprovals: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/approvals',
+        params: filters,
+      }),
+      providesTags: ['Approvals'],
+    }),
+
+    approveVendor: builder.mutation({
+      query: ({ id, approvalNotes }) => ({
+        url: `/admin/approvals/vendor/${id}/approve`,
+        method: 'PUT',
+        body: { approvalNotes },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Vendor'],
+    }),
+
+    rejectVendor: builder.mutation({
+      query: ({ id, rejectionReason }) => ({
+        url: `/admin/approvals/vendor/${id}/reject`,
+        method: 'PUT',
+        body: { rejectionReason },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Vendor'],
+    }),
+
+    approveRestaurant: builder.mutation({
+      query: ({ id, approvalNotes }) => ({
+        url: `/admin/approvals/restaurant/${id}/approve`,
+        method: 'PUT',
+        body: { approvalNotes },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
+    }),
+
+    rejectRestaurant: builder.mutation({
+      query: ({ id, rejectionReason }) => ({
+        url: `/admin/approvals/restaurant/${id}/reject`,
+        method: 'PUT',
+        body: { rejectionReason },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
+    }),
+
+    // Enhanced Admin Dashboard
+    getAdminDashboardOverview: builder.query({
+      query: (dateFilter = {}) => ({
+        url: '/admin/dashboard',
+        params: dateFilter,
+      }),
+      providesTags: ['AdminDashboard'],
+      keepUnusedDataFor: 300, // Cache for 5 minutes
+    }),
+
+    // Advanced Analytics System
+    getAnalyticsOverview: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/analytics/overview',
+        params: filters,
+      }),
+      providesTags: ['Analytics'],
+    }),
+
+    getSalesAnalytics: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/analytics/sales',
+        params: filters,
+      }),
+      providesTags: ['SalesAnalytics'],
+    }),
+
+    getUserAnalytics: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/analytics/users',
+        params: filters,
+      }),
+      providesTags: ['UserAnalytics'],
+    }),
+
+    getProductAnalytics: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/analytics/products',
+        params: filters,
+      }),
+      providesTags: ['ProductAnalytics'],
+    }),
+
+    clearAnalyticsCache: builder.mutation({
+      query: () => ({
+        url: '/admin/analytics/cache',
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Analytics', 'SalesAnalytics', 'UserAnalytics'],
+    }),
+
+    // System Settings Management
+    getSystemSettings: builder.query({
+      query: (filter = {}) => ({
+        url: '/admin/settings',
+        params: filter,
+      }),
+      providesTags: ['Settings'],
+    }),
+
+    updateSystemSetting: builder.mutation({
+      query: ({ key, value, changeReason }) => ({
+        url: `/admin/settings/key/${key}`,
+        method: 'PUT',
+        body: { value, changeReason },
+      }),
+      invalidatesTags: ['Settings'],
+    }),
+
+    resetSystemSettings: builder.mutation({
+      query: () => ({
+        url: '/admin/settings/reset',
+        method: 'POST',
+      }),
+      invalidatesTags: ['Settings'],
+    }),
+
+    getSettingsByCategory: builder.query({
+      query: (category) => `/admin/settings/${category}`,
+      providesTags: ['Settings'],
+    }),
+
+    getSetting: builder.query({
+      query: (key) => `/admin/settings/key/${key}`,
+      providesTags: ['Settings'],
+    }),
+
+    getSettingHistory: builder.query({
+      query: (key) => `/admin/settings/key/${key}/history`,
+      providesTags: ['Settings'],
+    }),
+
+    createSetting: builder.mutation({
+      query: (settingData) => ({
+        url: '/admin/settings',
+        method: 'POST',
+        body: settingData,
+      }),
+      invalidatesTags: ['Settings'],
+    }),
+
+    deleteSetting: builder.mutation({
+      query: (key) => ({
+        url: `/admin/settings/key/${key}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Settings'],
+    }),
+
+    bulkUpdateSettings: builder.mutation({
+      query: (settingsData) => ({
+        url: '/admin/settings/bulk',
+        method: 'PUT',
+        body: settingsData,
+      }),
+      invalidatesTags: ['Settings'],
+    }),
+
+    // Content Moderation System
+    getFlaggedListings: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/listings/flagged',
+        params: filters,
+      }),
+      providesTags: ['FlaggedContent'],
+    }),
+
+    flagListing: builder.mutation({
+      query: ({ id, flagReason, moderationNotes }) => ({
+        url: `/admin/listings/${id}/flag`,
+        method: 'PUT',
+        body: { flagReason, moderationNotes },
+      }),
+      invalidatesTags: ['FlaggedContent', 'Listing'],
+    }),
+
+    // Enhanced User Management
+    getVendors: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/vendors',
+        params: filters,
+      }),
+      providesTags: ['Vendor'],
+    }),
+
+    deactivateVendor: builder.mutation({
+      query: ({ id, reason, adminNotes }) => ({
+        url: `/admin/vendors/${id}/deactivate`,
+        method: 'PUT',
+        body: { reason, adminNotes },
+      }),
+      invalidatesTags: ['Vendor'],
+    }),
+
+    getRestaurants: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/restaurants',
+        params: filters,
+      }),
+      providesTags: ['Restaurant'],
+    }),
+
+    toggleRestaurantStatus: builder.mutation({
+      query: ({ id, isActive, reason }) => ({
+        url: `/admin/restaurants/${id}/toggle-status`,
+        method: 'PUT',
+        body: { isActive, reason },
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    // Additional User Management Endpoints
+    getAllVendors: builder.query({
+      query: (filters = {}) => {
+        const params = {};
+        if (filters.search && filters.search.trim()) {
+          params.search = filters.search.trim();
+        }
+        if (filters.status && filters.status !== 'all') {
+          params.status = filters.status;
+        }
+        if (filters.limit) {
+          params.limit = filters.limit;
+        }
+        return {
+          url: '/admin/vendors',
+          params: Object.keys(params).length > 0 ? params : undefined,
+        };
+      },
+      providesTags: ['Vendor'],
+    }),
+
+    getAllRestaurants: builder.query({
+      query: (filters = {}) => {
+        const params = {};
+        if (filters.search && filters.search.trim()) {
+          params.search = filters.search.trim();
+        }
+        if (filters.status && filters.status !== 'all') {
+          params.status = filters.status;
+        }
+        if (filters.limit) {
+          params.limit = filters.limit;
+        }
+        return {
+          url: '/admin/restaurants',
+          params: Object.keys(params).length > 0 ? params : undefined,
+        };
+      },
+      providesTags: ['Restaurant'],
+    }),
+
+    updateVendorStatus: builder.mutation({
+      query: ({ id, status }) => ({
+        url: `/admin/vendors/${id}`,
+        method: 'PUT',
+        body: { status },
+      }),
+      invalidatesTags: ['Vendor'],
+    }),
+
+    updateRestaurantStatus: builder.mutation({
+      query: ({ id, status }) => ({
+        url: `/admin/restaurants/${id}`,
+        method: 'PUT',
+        body: { status },
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    deleteVendor: builder.mutation({
+      query: (id) => ({
+        url: `/admin/vendors/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Vendor'],
+    }),
+
+    deleteRestaurant: builder.mutation({
+      query: (id) => ({
+        url: `/admin/restaurants/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    // Enhanced Analytics Endpoint
+    getAdminAnalyticsOverview: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/dashboard',
+        params: filters,
+      }),
+      providesTags: ['Analytics'],
+    }),
+
+    // Safe Deletion with Dependency Checking
+    safeDeleteProduct: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/products/${id}/safe-delete`,
+        method: 'DELETE',
+        body: { reason },
+      }),
+      invalidatesTags: ['Product'],
+    }),
+
+    safeDeleteCategory: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/categories/${id}/safe-delete`,
+        method: 'DELETE',
+        body: { reason },
+      }),
+      invalidatesTags: ['Category'],
+    }),
+
     // Admin Analytics - correct endpoint is /admin/dashboard
     getAdminDashboard: builder.query({
       query: () => '/admin/dashboard',
@@ -1558,17 +1877,7 @@ export const apiSlice = createApi({
       providesTags: ['Vendor'],
     }),
 
-    verifyVendor: builder.mutation({
-      query: (id) => ({
-        url: `/admin/vendors/${id}/verify`,
-        method: 'PUT',
-      }),
-      invalidatesTags: (result, error, id) => [
-        { type: 'Vendor', id },
-        { type: 'Vendor', id: 'ADMIN_LIST' },
-        'Vendor',
-      ],
-    }),
+    // Legacy verifyVendor removed - replaced by unified approval system
 
     // Admin - Restaurant Management
     getAdminRestaurants: builder.query({
@@ -1590,26 +1899,31 @@ export const apiSlice = createApi({
       providesTags: ['Restaurant'],
     }),
 
-    verifyRestaurant: builder.mutation({
-      query: (id) => ({
-        url: `/admin/restaurants/${id}/verify`,
-        method: 'PUT',
-      }),
-      invalidatesTags: (result, error, id) => [
-        { type: 'Restaurant', id },
-        { type: 'Restaurant', id: 'ADMIN_LIST' },
-        'Restaurant',
-      ],
-    }),
+    // Legacy verifyRestaurant removed - replaced by unified approval system
 
     // Admin - Listings Management
     getAdminListings: builder.query({
       query: (params = {}) => ({
-        url: '/admin/listings',
+        url: '/listings', // Use general listings endpoint for admin view
         params,
       }),
       providesTags: (result) => [
         { type: 'Listing', id: 'ADMIN_LIST' },
+        ...(result?.data?.listings || result?.data || []).map(({ _id }) => ({
+          type: 'Listing',
+          id: _id,
+        })),
+      ],
+    }),
+
+    // Get flagged listings (specific admin feature)
+    getFlaggedListings: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/listings/flagged',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'Listing', id: 'FLAGGED_LIST' },
         ...(result?.data || []).map(({ _id }) => ({
           type: 'Listing',
           id: _id,
@@ -1733,7 +2047,6 @@ export const {
   useDeleteProductImageMutation,
 
   // Admin - Product Analytics
-  useGetProductAnalyticsQuery,
   useGetProductPerformanceQuery,
 
   // Admin - Analytics
@@ -1833,12 +2146,12 @@ export const {
   // Admin - Vendor Management
   useGetAdminVendorsQuery,
   useGetPendingVendorsQuery,
-  useVerifyVendorMutation,
+  // Legacy useVerifyVendorMutation removed - use unified approval system
 
   // Admin - Restaurant Management (Extended)
   useGetAdminRestaurantsQuery,
   useGetPendingRestaurantsQuery,
-  useVerifyRestaurantMutation,
+  // Legacy useVerifyRestaurantMutation removed - use unified approval system
 
   // Admin - Listings Management
   useGetAdminListingsQuery,
@@ -1846,6 +2159,59 @@ export const {
   useUpdateAdminListingMutation,
   useDeleteAdminListingMutation,
   useApproveAdminListingMutation,
+
+  // Admin - Unified Approval System (NEW)
+  useGetAllApprovalsQuery,
+  useApproveVendorMutation,
+  useRejectVendorMutation,
+  useApproveRestaurantMutation,
+  useRejectRestaurantMutation,
+
+  // Enhanced Admin Dashboard
+  useGetAdminDashboardOverviewQuery,
+
+  // Advanced Analytics System
+  useGetAnalyticsOverviewQuery,
+  useGetSalesAnalyticsQuery,
+  useGetUserAnalyticsQuery,
+  useGetProductAnalyticsQuery,
+  useClearAnalyticsCacheMutation,
+
+  // System Settings Management
+  useGetSystemSettingsQuery,
+  useGetSettingsByCategoryQuery,
+  useGetSettingQuery,
+  useGetSettingHistoryQuery,
+  useCreateSettingMutation,
+  useUpdateSystemSettingMutation,
+  useDeleteSettingMutation,
+  useBulkUpdateSettingsMutation,
+  useResetSystemSettingsMutation,
+
+  // Content Moderation System
+  useGetFlaggedListingsQuery,
+  useFlagListingMutation,
+
+  // Enhanced User Management
+  useGetVendorsQuery,
+  useDeactivateVendorMutation,
+  useGetRestaurantsQuery,
+  useToggleRestaurantStatusMutation,
+  
+  // Additional User Management
+  useGetAllVendorsQuery,
+  useGetAllRestaurantsQuery,
+  useUpdateVendorStatusMutation,
+  useUpdateRestaurantStatusMutation,
+  useDeleteVendorMutation,
+  useDeleteRestaurantMutation,
+  
+  // Enhanced Analytics
+  useGetAdminAnalyticsOverviewQuery,
+
+  // Safe Deletion Operations
+  useSafeDeleteProductMutation,
+  useSafeDeleteCategoryMutation,
 
   // Admin - Featured Listings
   useToggleFeaturedListingMutation,

@@ -5,6 +5,7 @@ const SimplePieChart = ({
   size = 200,
   colors = ['#0EA5E9', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
 }) => {
+  // Validate data
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-text-muted">
@@ -13,14 +14,41 @@ const SimplePieChart = ({
     );
   }
 
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  // Filter out invalid data and ensure numeric values
+  const validData = data.filter(item => 
+    item && 
+    typeof item.value === 'number' && 
+    !isNaN(item.value) && 
+    isFinite(item.value) && 
+    item.value >= 0 &&
+    item.label
+  );
+
+  if (validData.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-text-muted">
+        No valid data available
+      </div>
+    );
+  }
+
+  const total = validData.reduce((sum, item) => sum + item.value, 0);
+  
+  // Handle edge case where total is 0
+  if (total === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-text-muted">
+        No data to display (total is 0)
+      </div>
+    );
+  }
   const radius = size / 2 - 20;
   const centerX = size / 2;
   const centerY = size / 2;
 
   let currentAngle = -90; // Start from top
 
-  const slices = data.map((item, index) => {
+  const slices = validData.map((item, index) => {
     const percentage = (item.value / total) * 100;
     const angle = (item.value / total) * 360;
 

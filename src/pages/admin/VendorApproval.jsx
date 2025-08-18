@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   UserCheck,
   UserX,
@@ -11,11 +11,11 @@ import {
   CheckCircle2,
   XCircle,
   Eye,
+  Filter,
 } from 'lucide-react';
 import {
-  useGetPendingVendorsQuery,
-  useVerifyVendorMutation,
-  useGetAdminVendorsQuery,
+  useGetAllApprovalsQuery,
+  useApproveUserMutation,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -31,26 +31,50 @@ const VendorApproval = () => {
   const [selectedVendors, setSelectedVendors] = useState(new Set());
   const [confirmAction, setConfirmAction] = useState(null);
   const [viewingVendor, setViewingVendor] = useState(null);
+  const [typeFilter, setTypeFilter] = useState('all');
 
   const itemsPerPage = 12;
 
-  // Query for pending vendor approvals
+  // Query for all approvals
   const {
-    data: vendorsData,
+    data: approvalsData,
     isLoading,
     error,
     refetch,
-  } = useGetPendingVendorsQuery();
+  } = useGetAllApprovalsQuery();
 
-  const [verifyVendor, { isLoading: isVerifying }] = useVerifyVendorMutation();
+  const [approveUser, { isLoading: isApproving }] = useApproveUserMutation();
 
-  const pendingVendors = vendorsData?.data || [];
-  const totalVendors = vendorsData?.count || 0;
+  // Filter pending approvals for vendors only
+  const allApprovals = approvalsData?.data || [];
+  const pendingVendors = allApprovals.filter(approval => 
+    approval.userType === 'vendor' && approval.status === 'pending'
+  );
+
+  // Apply search and pagination
+  const filteredVendors = useMemo(() => {
+    if (!searchTerm) return pendingVendors;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return pendingVendors.filter(vendor => 
+      vendor.name?.toLowerCase().includes(searchLower) ||
+      vendor.phone?.toLowerCase().includes(searchLower) ||
+      vendor.businessName?.toLowerCase().includes(searchLower) ||
+      vendor.businessType?.toLowerCase().includes(searchLower)
+    );
+  }, [pendingVendors, searchTerm]);
+
+  const totalVendors = filteredVendors.length;
+  const totalPages = Math.ceil(totalVendors / itemsPerPage);
+  const paginatedVendors = filteredVendors.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   // Handle vendor approval
-  const handleApproval = async (vendorId) => {
+  const handleApproval = async (vendorId, isApproved) => {
     try {
-      await verifyVendor(vendorId).unwrap();
+      await approveUser({ id: vendorId, isApproved }).unwrap();
       setConfirmAction(null);
       setSelectedVendors((prev) => {
         const newSet = new Set(prev);
@@ -59,31 +83,31 @@ const VendorApproval = () => {
       });
       refetch(); // Refresh the list
     } catch (error) {
-      console.error('Failed to verify vendor:', error);
+      console.error('Failed to process vendor approval:', error);
     }
   };
 
   // Handle bulk approvals
-  const handleBulkApproval = async () => {
+  const handleBulkApproval = async (isApproved) => {
     try {
       const promises = Array.from(selectedVendors).map((vendorId) =>
-        verifyVendor(vendorId).unwrap()
+        approveUser({ id: vendorId, isApproved }).unwrap()
       );
       await Promise.all(promises);
       setSelectedVendors(new Set());
       setConfirmAction(null);
       refetch(); // Refresh the list
     } catch (error) {
-      console.error('Failed to bulk verify vendors:', error);
+      console.error('Failed to bulk process vendor approvals:', error);
     }
   };
 
   // Handle selection
   const handleSelectAll = () => {
-    if (selectedVendors.size === pendingVendors.length) {
+    if (selectedVendors.size === paginatedVendors.length) {
       setSelectedVendors(new Set());
     } else {
-      setSelectedVendors(new Set(pendingVendors.map((vendor) => vendor._id)));
+      setSelectedVendors(new Set(paginatedVendors.map((vendor) => vendor._id)));
     }
   };
 
@@ -146,11 +170,11 @@ const VendorApproval = () => {
           <p className="text-text-muted mt-1">
             Review and approve vendor applications
           </p>
-          {vendors.length > 0 && (
+          {totalVendors > 0 && (
             <div className="flex items-center gap-2 mt-2">
               <Clock className="w-4 h-4 text-earthy-yellow" />
               <span className="text-sm text-earthy-brown font-medium">
-                {vendors.length} pending applications
+                {totalVendors} pending applications
               </span>
             </div>
           )}
@@ -211,14 +235,14 @@ const VendorApproval = () => {
             />
           </div>
 
-          {vendors.length > 0 && (
+          {paginatedVendors.length > 0 && (
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={
-                    selectedVendors.size === vendors.length &&
-                    vendors.length > 0
+                    selectedVendors.size === paginatedVendors.length &&
+                    paginatedVendors.length > 0
                   }
                   onChange={handleSelectAll}
                   className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
@@ -231,7 +255,7 @@ const VendorApproval = () => {
       </Card>
 
       {/* Vendor Applications */}
-      {vendors.length === 0 ? (
+      {paginatedVendors.length === 0 ? (
         <EmptyState
           icon={UserCheck}
           title="No pending approvals"
@@ -240,11 +264,11 @@ const VendorApproval = () => {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {vendors.map((vendor) => (
+            {paginatedVendors.map((vendor) => (
               <Card
-                key={vendor.id}
+                key={vendor._id}
                 className={`p-6 hover:shadow-lg transition-all duration-300 ${
-                  selectedVendors.has(vendor.id)
+                  selectedVendors.has(vendor._id)
                     ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5'
                     : ''
                 }`}
@@ -253,8 +277,8 @@ const VendorApproval = () => {
                 <div className="flex items-start justify-between mb-4">
                   <input
                     type="checkbox"
-                    checked={selectedVendors.has(vendor.id)}
-                    onChange={() => handleSelectVendor(vendor.id)}
+                    checked={selectedVendors.has(vendor._id)}
+                    onChange={() => handleSelectVendor(vendor._id)}
                     className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green mt-1"
                   />
                   <div className="flex items-center gap-1 text-xs text-earthy-brown bg-earthy-yellow/20 px-2 py-1 rounded-full">
@@ -333,7 +357,7 @@ const VendorApproval = () => {
                         title: 'Approve Vendor',
                         message: `Approve ${vendor.name || vendor.phone}? They will be able to create and manage listings.`,
                         confirmText: 'Approve',
-                        onConfirm: () => handleApproval(vendor.id, true),
+                        onConfirm: () => handleApproval(vendor._id, true),
                       })
                     }
                     className="flex-1 px-3 py-2 text-sm bg-bottle-green text-white hover:bg-bottle-green/90 rounded-xl transition-colors min-h-[36px] flex items-center justify-center gap-1"
@@ -351,7 +375,7 @@ const VendorApproval = () => {
                         message: `Reject ${vendor.name || vendor.phone}? This will deny their application.`,
                         confirmText: 'Reject',
                         isDangerous: true,
-                        onConfirm: () => handleApproval(vendor.id, false),
+                        onConfirm: () => handleApproval(vendor._id, false),
                       })
                     }
                     className="px-3 py-2 text-sm text-tomato-red hover:bg-tomato-red hover:text-white border border-tomato-red rounded-xl transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
@@ -364,13 +388,13 @@ const VendorApproval = () => {
           </div>
 
           {/* Pagination */}
-          {pagination.totalPages > 1 && (
+          {totalPages > 1 && (
             <Card className="p-4">
               <Pagination
                 currentPage={currentPage}
-                totalPages={pagination.totalPages}
+                totalPages={totalPages}
                 onPageChange={setCurrentPage}
-                totalItems={pagination.totalUsers}
+                totalItems={totalVendors}
                 itemsPerPage={itemsPerPage}
               />
             </Card>
@@ -489,7 +513,7 @@ const VendorApproval = () => {
                       message: `Approve ${viewingVendor.name || viewingVendor.phone}? They will be able to create and manage listings.`,
                       confirmText: 'Approve',
                       onConfirm: () => {
-                        handleApproval(viewingVendor.id, true);
+                        handleApproval(viewingVendor._id, true);
                         setViewingVendor(null);
                       },
                     });
@@ -510,7 +534,7 @@ const VendorApproval = () => {
                       confirmText: 'Reject',
                       isDangerous: true,
                       onConfirm: () => {
-                        handleApproval(viewingVendor.id, false);
+                        handleApproval(viewingVendor._id, false);
                         setViewingVendor(null);
                       },
                     });

@@ -81,10 +81,10 @@ const AdminProductManagement = () => {
   const [updateProduct, { isLoading: isUpdating }] = useUpdateAdminProductMutation();
   const [deleteProduct] = useDeleteAdminProductMutation();
 
-  const products = productsData?.data || [];
-  const totalProducts = productsData?.total || 0;
-  const totalPages = productsData?.pages || 1;
-  const categories = categoriesData?.data || [];
+  const products = productsData?.data?.products || productsData?.data || [];
+  const totalProducts = productsData?.total || productsData?.data?.totalProducts || 0;
+  const totalPages = productsData?.pages || productsData?.data?.totalPages || 1;
+  const categories = categoriesData?.data?.categories || categoriesData?.data || [];
 
   // Handle form submission
   const handleSubmit = async (e) => {

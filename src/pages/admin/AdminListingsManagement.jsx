@@ -67,10 +67,10 @@ const AdminListingsManagement = () => {
   const [deleteListing] = useDeleteAdminListingMutation();
   const [approveListing] = useApproveAdminListingMutation();
 
-  const listings = listingsData?.data || [];
-  const totalListings = listingsData?.total || 0;
-  const totalPages = listingsData?.pages || 1;
-  const categories = categoriesData?.data || [];
+  const listings = listingsData?.data?.listings || listingsData?.data || [];
+  const totalListings = listingsData?.total || listingsData?.data?.totalListings || 0;
+  const totalPages = listingsData?.pages || listingsData?.data?.totalPages || 1;
+  const categories = categoriesData?.data?.categories || categoriesData?.data || [];
 
   // Status options
   const statusOptions = [
@@ -453,10 +453,8 @@ const AdminListingsManagement = () => {
         icon={AlertTriangle}
         title="Failed to load listings"
         description="There was an error loading listing data. Please try again."
-        action={{
-          label: 'Retry',
-          onClick: refetch,
-        }}
+        actionLabel="Retry"
+        onAction={refetch}
       />
     );
   }

@@ -1,124 +1,206 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Outlet, useLocation, Navigate } from 'react-router-dom';
-import { AlertTriangle } from 'lucide-react';
-import {
-  selectIsAdmin,
-  selectCanAccessAdminDashboard,
-} from '../../store/selectors/adminSelectors';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import Breadcrumb from './Breadcrumb';
+import { useState, useMemo } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { 
+  LayoutDashboard, 
+  CheckCircle, 
+  Store, 
+  Truck, 
+  Tag, 
+  Package, 
+  List, 
+  BarChart3, 
+  Settings,
+  Menu,
+  X,
+  LogOut,
+  User
+} from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../store/slices/authSlice';
+import { useGetAllApprovalsQuery } from '../../store/slices/apiSlice';
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
-  const isAdmin = useSelector(selectIsAdmin);
-  const canAccess = useSelector(selectCanAccessAdminDashboard);
+  // Get pending approvals count for badge
+  const { data: allApprovals } = useGetAllApprovalsQuery();
+  const pendingApprovals = allApprovals?.data?.filter(approval => approval.status === 'pending') || [];
+  const pendingApprovalsCount = pendingApprovals.length;
 
-  // Debug logging
-  // console.log('AdminLayout Debug:', {
-  //   path: location.pathname,
-  //   isAdmin,
-  //   canAccess,
-  // });
+  const adminNavItems = useMemo(() => [
+    { 
+      path: '/admin/dashboard', 
+      label: 'Dashboard', 
+      icon: LayoutDashboard,
+      description: 'Platform overview and key metrics'
+    },
+    { 
+      path: '/admin/users/approvals', 
+      label: 'Approval Management', 
+      icon: CheckCircle,
+      badge: pendingApprovalsCount > 0 ? pendingApprovalsCount : null,
+      description: 'Review and approve vendor/restaurant applications'
+    },
+    { 
+      path: '/admin/restaurant-management', 
+      label: 'Restaurant Management', 
+      icon: Store,
+      description: 'CRUD restaurant owners/managers, enable/disable restaurants'
+    },
+    { 
+      path: '/admin/vendor-management', 
+      label: 'Vendor Management', 
+      icon: Truck,
+      description: 'Manage vendors, view performance, enable/disable accounts'
+    },
+    { 
+      path: '/admin/categories', 
+      label: 'Categories', 
+      icon: Tag,
+      description: 'CRUD product categories'
+    },
+    { 
+      path: '/admin/products', 
+      label: 'Products', 
+      icon: Package,
+      description: 'CRUD products, manage status (active/inactive/discontinued)'
+    },
+    { 
+      path: '/admin/listing-management', 
+      label: 'Listing Management', 
+      icon: List,
+      description: 'Flag/unflag listings, feature management, status updates'
+    },
+    { 
+      path: '/admin/analytics', 
+      label: 'Analytics', 
+      icon: BarChart3,
+      description: 'Advanced platform analytics with caching'
+    },
+    { 
+      path: '/admin/system-settings', 
+      label: 'System Settings', 
+      icon: Settings,
+      description: 'Platform configuration management'
+    }
+  ], [pendingApprovalsCount]);
 
-  // If not admin or can't access, redirect to appropriate page
-  if (!canAccess) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
 
-  // Admin access denied page
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center p-8">
-          <AlertTriangle className="w-16 h-16 text-tomato-red mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-text-dark dark:text-white mb-2">
-            Access Denied
-          </h1>
-          <p className="text-text-muted mb-6">
-            You don't have permission to access the admin panel.
-          </p>
-          <button
-            onClick={() => window.history.back()}
-            className="bg-gradient-secondary text-white px-6 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200"
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Get admin breadcrumb data
-  const getAdminBreadcrumbs = () => {
-    const pathSegments = location.pathname.split('/').filter(Boolean);
-
-    const breadcrumbMap = {
-      admin: { label: 'Admin', path: '/admin' },
-      dashboard: { label: 'Dashboard', path: '/admin/dashboard' },
-      users: { label: 'User Management', path: '/admin/users' },
-      approvals: { label: 'Vendor Approvals', path: '/admin/users/approvals' },
-      products: { label: 'Product Management', path: '/admin/products' },
-      categories: { label: 'Categories', path: '/admin/products/categories' },
-      analytics: { label: 'Analytics', path: '/admin/analytics' },
-      settings: { label: 'Settings', path: '/admin/settings' },
-      'create-restaurant-owner': {
-        label: 'Create Restaurant Owner',
-        path: '/admin/create-restaurant-owner',
-      },
-      'create-restaurant-manager': {
-        label: 'Create Restaurant Manager',
-        path: '/admin/create-restaurant-manager',
-      },
-    };
-
-    return pathSegments.map((segment, index) => {
-      const path = '/' + pathSegments.slice(0, index + 1).join('/');
-      return {
-        label:
-          breadcrumbMap[segment]?.label ||
-          segment.charAt(0).toUpperCase() + segment.slice(1),
-        path,
-        isCurrentPage: index === pathSegments.length - 1,
-      };
-    });
+  const isActivePath = (path) => {
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Fixed Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+          <div className="flex items-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-bottle-green to-mint-fresh rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">A</span>
+            </div>
+            <span className="ml-3 text-xl font-semibold text-gray-900">Aaroth Admin</span>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden text-gray-500 hover:text-gray-700"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col lg:ml-0">
-        {/* Header */}
-        <Header onMenuClick={() => setSidebarOpen(true)} showAdminBadge />
+        {/* Navigation */}
+        <nav className="mt-6 px-3">
+          {adminNavItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = isActivePath(item.path);
+            
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
+                className={`group flex items-center px-3 py-3 text-sm font-medium rounded-xl mb-1 transition-all duration-200 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-bottle-green/10 to-mint-fresh/10 text-bottle-green border-l-4 border-bottle-green'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <Icon className={`mr-3 h-5 w-5 flex-shrink-0 ${
+                  isActive ? 'text-bottle-green' : 'text-gray-400 group-hover:text-gray-500'
+                }`} />
+                <span className="flex-1">{item.label}</span>
+                {item.badge && (
+                  <span className="bg-tomato-red text-white text-xs font-medium px-2 py-1 rounded-full">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
-        {/* Main Content */}
-        <main className="flex-1 relative">
-          {/* Admin Breadcrumb */}
-          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-            <div className="max-w-7xl mx-auto">
-              <Breadcrumb items={getAdminBreadcrumbs()} />
-
-              {/* Admin Panel Indicator */}
-              <div className="flex items-center gap-2 mt-2">
-                <div className="w-2 h-2 bg-gradient-secondary rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-bottle-green">
-                  Admin Panel
-                </span>
-                <span className="text-xs text-text-muted">
-                  You have full system access
-                </span>
-              </div>
+        {/* Admin Profile & Logout */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
+          <div className="flex items-center mb-3 p-2 rounded-lg bg-gray-50">
+            <div className="w-8 h-8 bg-gradient-to-br from-bottle-green to-mint-fresh rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-white" />
+            </div>
+            <div className="ml-3 flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {user?.name || 'Admin User'}
+              </p>
+              <p className="text-xs text-gray-500 truncate">Administrator</p>
             </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors duration-200"
+          >
+            <LogOut className="mr-3 h-4 w-4" />
+            Sign out
+          </button>
+        </div>
+      </div>
 
-          {/* Page Content */}
-          <div className="min-h-[calc(100vh-8rem)]">
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 lg:ml-0">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200">
+          <div className="flex items-center justify-between h-16 px-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h1 className="text-lg font-semibold text-gray-900">Admin Panel</h1>
+            <div className="w-6 h-6" /> {/* Spacer */}
+          </div>
+        </div>
+
+        {/* Page Content */}
+        <main className="flex-1 relative overflow-y-auto focus:outline-none">
+          <div className="py-6">
             <Outlet />
           </div>
         </main>
