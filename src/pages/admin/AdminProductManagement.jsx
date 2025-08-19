@@ -42,7 +42,7 @@ const AdminProductManagement = () => {
 
   const itemsPerPage = 10;
 
-  // Form state for create/edit
+  // Form state for create/edit - Updated to match complete backend Product model
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -52,8 +52,21 @@ const AdminProductManagement = () => {
     seasonality: [],
     isOrganic: false,
     isLocallySourced: false,
+    isSeasonal: false,
+    tags: [],
+    searchKeywords: [],
     standardUnits: [{ name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 }],
     qualityGrades: [{ name: 'Premium', description: 'Highest quality', priceMultiplier: 1.2 }],
+    // Storage requirements
+    storageRequirements: {
+      temperature: { unit: 'celsius' },
+      conditions: []
+    },
+    // Nutritional info
+    nutritionalInfo: {
+      vitamins: [],
+      minerals: []
+    }
   });
 
   // Query params for API call
@@ -81,10 +94,11 @@ const AdminProductManagement = () => {
   const [updateProduct, { isLoading: isUpdating }] = useUpdateAdminProductMutation();
   const [deleteProduct] = useDeleteAdminProductMutation();
 
-  const products = productsData?.data?.products || productsData?.data || [];
-  const totalProducts = productsData?.total || productsData?.data?.totalProducts || 0;
-  const totalPages = productsData?.pages || productsData?.data?.totalPages || 1;
-  const categories = categoriesData?.data?.categories || categoriesData?.data || [];
+  // Fix data extraction to match backend response structure
+  const products = productsData?.data || [];
+  const totalProducts = productsData?.total || 0;
+  const totalPages = productsData?.pages || 1;
+  const categories = categoriesData?.data || [];
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -104,7 +118,7 @@ const AdminProductManagement = () => {
     }
   };
 
-  // Reset form
+  // Reset form - Updated to match complete backend Product model
   const resetForm = () => {
     setFormData({
       name: '',
@@ -115,12 +129,25 @@ const AdminProductManagement = () => {
       seasonality: [],
       isOrganic: false,
       isLocallySourced: false,
+      isSeasonal: false,
+      tags: [],
+      searchKeywords: [],
       standardUnits: [{ name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 }],
       qualityGrades: [{ name: 'Premium', description: 'Highest quality', priceMultiplier: 1.2 }],
+      // Storage requirements
+      storageRequirements: {
+        temperature: { unit: 'celsius' },
+        conditions: []
+      },
+      // Nutritional info
+      nutritionalInfo: {
+        vitamins: [],
+        minerals: []
+      }
     });
   };
 
-  // Handle edit
+  // Handle edit - Updated to map all backend fields
   const handleEdit = (product) => {
     setFormData({
       name: product.name || '',
@@ -131,8 +158,21 @@ const AdminProductManagement = () => {
       seasonality: product.seasonality || [],
       isOrganic: product.isOrganic || false,
       isLocallySourced: product.isLocallySourced || false,
+      isSeasonal: product.isSeasonal || false,
+      tags: product.tags || [],
+      searchKeywords: product.searchKeywords || [],
       standardUnits: product.standardUnits || [{ name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 }],
       qualityGrades: product.qualityGrades || [{ name: 'Premium', description: 'Highest quality', priceMultiplier: 1.2 }],
+      // Storage requirements
+      storageRequirements: product.storageRequirements || {
+        temperature: { unit: 'celsius' },
+        conditions: []
+      },
+      // Nutritional info
+      nutritionalInfo: product.nutritionalInfo || {
+        vitamins: [],
+        minerals: []
+      }
     });
     setEditingProduct(product);
     setIsCreateModalOpen(true);
@@ -290,6 +330,22 @@ const AdminProductManagement = () => {
       sortable: true,
     },
     {
+      id: 'adminStatus',
+      header: 'Admin Status',
+      cell: (product) => (
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+          product.adminStatus === 'active' 
+            ? 'bg-mint-fresh/20 text-bottle-green' 
+            : product.adminStatus === 'inactive'
+              ? 'bg-amber-100 text-amber-800'
+              : 'bg-gray-100 text-gray-600'
+        }`}>
+          {product.adminStatus ? product.adminStatus.charAt(0).toUpperCase() + product.adminStatus.slice(1) : 'Active'}
+        </span>
+      ),
+      sortable: true,
+    },
+    {
       id: 'created',
       header: 'Created',
       cell: (product) => (
@@ -375,10 +431,10 @@ const AdminProductManagement = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold text-text-dark dark:text-white">
-            Product Management
+            Product Management (UPDATED - AdminProductManagement.jsx)
           </h1>
           <p className="text-text-muted mt-1">
-            Manage product master data, categories, and specifications
+            Manage product master data, categories, and specifications - Backend Model Aligned
           </p>
         </div>
 
@@ -531,7 +587,7 @@ const AdminProductManagement = () => {
             </FormField>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -551,7 +607,28 @@ const AdminProductManagement = () => {
               />
               <span className="text-sm text-text-dark dark:text-white">Locally Sourced</span>
             </label>
+
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.isSeasonal}
+                onChange={(e) => setFormData(prev => ({ ...prev, isSeasonal: e.target.checked }))}
+                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+              />
+              <span className="text-sm text-text-dark dark:text-white">Seasonal Product</span>
+            </label>
           </div>
+
+          <FormField label="Tags">
+            <Input
+              value={formData.tags.join(', ')}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean)
+              }))}
+              placeholder="Enter tags separated by commas (e.g., fresh, premium, local)"
+            />
+          </FormField>
 
           <div className="flex justify-end gap-3 pt-4">
             <Button
