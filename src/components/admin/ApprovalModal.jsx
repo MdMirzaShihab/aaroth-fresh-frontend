@@ -23,12 +23,12 @@ import { Card } from '../ui/Card';
 import FormField from '../ui/FormField';
 import { Input } from '../ui/Input';
 
-const ApprovalModal = ({ 
-  approval, 
-  onClose, 
-  onApprove, 
-  onReject, 
-  isLoading 
+const ApprovalModal = ({
+  approval,
+  onClose,
+  onApprove,
+  onReject,
+  isLoading,
 }) => {
   const [actionType, setActionType] = useState(null); // 'approve' or 'reject'
   const [notes, setNotes] = useState('');
@@ -98,7 +98,9 @@ const ApprovalModal = ({
 
   const typeDisplay = getTypeDisplay(approval.type);
   const daysWaiting = approval.createdAt
-    ? Math.floor((new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24))
+    ? Math.floor(
+        (new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24)
+      )
     : 0;
 
   // Common rejection reasons
@@ -113,19 +115,21 @@ const ApprovalModal = ({
   ];
 
   return (
-    <Modal 
-      isOpen={true} 
-      onClose={onClose} 
+    <Modal
+      isOpen={true}
+      onClose={onClose}
       title="Application Review"
       maxWidth="4xl"
     >
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex items-start gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
-          <div className={`w-16 h-16 rounded-2xl ${typeDisplay.bgColor} flex items-center justify-center flex-shrink-0`}>
+          <div
+            className={`w-16 h-16 rounded-2xl ${typeDisplay.bgColor} flex items-center justify-center flex-shrink-0`}
+          >
             <typeDisplay.icon className={`w-8 h-8 ${typeDisplay.color}`} />
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
               <div>
@@ -133,25 +137,35 @@ const ApprovalModal = ({
                   {approval.businessName || approval.name || 'Unknown Business'}
                 </h2>
                 <p className="text-text-muted mb-2">{typeDisplay.label}</p>
-                
+
                 {/* Status and Urgency */}
                 <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    approval.status === 'pending' 
-                      ? 'bg-earthy-yellow/20 text-earthy-brown' 
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      approval.status === 'pending'
+                        ? 'bg-earthy-yellow/20 text-earthy-brown'
+                        : approval.status === 'approved'
+                          ? 'bg-mint-fresh/20 text-bottle-green'
+                          : 'bg-tomato-red/20 text-tomato-red'
+                    }`}
+                  >
+                    {approval.status === 'pending'
+                      ? 'Pending Review'
                       : approval.status === 'approved'
-                        ? 'bg-mint-fresh/20 text-bottle-green'
-                        : 'bg-tomato-red/20 text-tomato-red'
-                  }`}>
-                    {approval.status === 'pending' ? 'Pending Review' : 
-                     approval.status === 'approved' ? 'Approved' : 'Rejected'}
+                        ? 'Approved'
+                        : 'Rejected'}
                   </span>
-                  
+
                   {daysWaiting > 0 && (
-                    <span className={`text-sm flex items-center gap-1 ${
-                      daysWaiting > 7 ? 'text-tomato-red' :
-                      daysWaiting > 3 ? 'text-earthy-brown' : 'text-text-muted'
-                    }`}>
+                    <span
+                      className={`text-sm flex items-center gap-1 ${
+                        daysWaiting > 7
+                          ? 'text-tomato-red'
+                          : daysWaiting > 3
+                            ? 'text-earthy-brown'
+                            : 'text-text-muted'
+                      }`}
+                    >
                       <Clock className="w-4 h-4" />
                       {daysWaiting} days waiting
                       {daysWaiting > 7 && <AlertTriangle className="w-4 h-4" />}
@@ -181,7 +195,7 @@ const ApprovalModal = ({
                     </p>
                   </div>
                 </div>
-                
+
                 {approval.email && (
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-text-muted flex-shrink-0" />
@@ -199,12 +213,11 @@ const ApprovalModal = ({
                   <div>
                     <p className="text-sm text-text-muted">Address</p>
                     <p className="font-medium text-text-dark dark:text-white">
-                      {typeof approval.address === 'string' 
-                        ? approval.address 
+                      {typeof approval.address === 'string'
+                        ? approval.address
                         : approval.address
                           ? `${approval.address.street || ''}, ${approval.address.city || ''}, ${approval.address.state || ''} ${approval.address.zipCode || ''}`
-                          : 'Not provided'
-                      }
+                          : 'Not provided'}
                     </p>
                   </div>
                 </div>
@@ -214,16 +227,18 @@ const ApprovalModal = ({
                   <div>
                     <p className="text-sm text-text-muted">Application Date</p>
                     <p className="font-medium text-text-dark dark:text-white">
-                      {approval.createdAt 
-                        ? new Date(approval.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })
-                        : 'Unknown'
-                      }
+                      {approval.createdAt
+                        ? new Date(approval.createdAt).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }
+                          )
+                        : 'Unknown'}
                     </p>
                   </div>
                 </div>
@@ -240,7 +255,9 @@ const ApprovalModal = ({
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-5 h-5 text-text-muted flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-text-muted">Business License</p>
+                      <p className="text-sm text-text-muted">
+                        Business License
+                      </p>
                       <p className="font-medium text-text-dark dark:text-white">
                         {approval.businessLicense}
                       </p>
@@ -276,7 +293,9 @@ const ApprovalModal = ({
                   <div className="flex items-start gap-3">
                     <FileText className="w-5 h-5 text-text-muted flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm text-text-muted">Business Description</p>
+                      <p className="text-sm text-text-muted">
+                        Business Description
+                      </p>
                       <p className="font-medium text-text-dark dark:text-white">
                         {approval.description}
                       </p>
@@ -297,7 +316,10 @@ const ApprovalModal = ({
                 </h3>
                 <div className="space-y-3">
                   {approval.documents.map((doc, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <FileText className="w-5 h-5 text-text-muted" />
                         <div>
@@ -305,7 +327,8 @@ const ApprovalModal = ({
                             {doc.name || `Document ${index + 1}`}
                           </p>
                           <p className="text-sm text-text-muted">
-                            {doc.type || 'Unknown type'} • {doc.size || 'Unknown size'}
+                            {doc.type || 'Unknown type'} •{' '}
+                            {doc.size || 'Unknown size'}
                           </p>
                         </div>
                       </div>
@@ -335,19 +358,20 @@ const ApprovalModal = ({
                       {approval.status === 'approved' ? 'Approved' : 'Rejected'}
                     </span>
                   </div>
-                  
+
                   {approval.processedBy && (
                     <p className="text-sm text-text-muted">
                       By: {approval.processedBy}
                     </p>
                   )}
-                  
+
                   {approval.processedAt && (
                     <p className="text-sm text-text-muted">
-                      Date: {new Date(approval.processedAt).toLocaleDateString()}
+                      Date:{' '}
+                      {new Date(approval.processedAt).toLocaleDateString()}
                     </p>
                   )}
-                  
+
                   <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <p className="text-sm text-text-dark dark:text-white">
                       "{approval.approvalNotes || approval.rejectionReason}"
@@ -391,7 +415,7 @@ const ApprovalModal = ({
                       <CheckCircle className="w-5 h-5" />
                       <span className="font-medium">Approve Application</span>
                     </div>
-                    
+
                     <FormField label="Approval Notes" required>
                       <textarea
                         value={notes}
@@ -401,7 +425,7 @@ const ApprovalModal = ({
                         className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
                       />
                     </FormField>
-                    
+
                     <div className="flex gap-3">
                       <Button
                         className="flex-1 bg-bottle-green hover:bg-bottle-green/90"
@@ -449,7 +473,7 @@ const ApprovalModal = ({
                         ))}
                       </div>
                     </div>
-                    
+
                     <FormField label="Rejection Reason" required>
                       <textarea
                         value={reason}
@@ -459,7 +483,7 @@ const ApprovalModal = ({
                         className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-tomato-red/20"
                       />
                     </FormField>
-                    
+
                     <div className="flex gap-3">
                       <Button
                         className="flex-1 bg-tomato-red hover:bg-tomato-red/90 text-white"

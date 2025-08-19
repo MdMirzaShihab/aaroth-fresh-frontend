@@ -12,12 +12,18 @@ import {
   TrendingUp,
   Eye,
   Save,
+  Image as ImageIcon,
+  Flag,
+  BarChart3,
+  Filter,
+  RefreshCw,
 } from 'lucide-react';
 import {
   useGetAdminCategoriesQuery,
   useCreateAdminCategoryMutation,
   useUpdateAdminCategoryMutation,
   useDeleteAdminCategoryMutation,
+  useGetCategoryStatsQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -28,6 +34,14 @@ import EmptyState from '../../components/ui/EmptyState';
 import { Modal } from '../../components/ui/Modal';
 import FormField from '../../components/ui/FormField';
 import { Input } from '../../components/ui/Input';
+import FileUpload from '../../components/ui/FileUpload';
+
+// Import new components
+import CategoryStatistics from '../../components/admin/CategoryStatistics';
+import CategoryFilters from '../../components/admin/CategoryFilters';
+import CategoryFlagModal from '../../components/admin/CategoryFlagModal';
+import CategoryUsageModal from '../../components/admin/CategoryUsageModal';
+import SafeDeleteModal from '../../components/admin/SafeDeleteModal';
 
 const CategoryManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,13 +49,47 @@ const CategoryManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
 
+  // Image upload state
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // New modal states
+  const [flagModalData, setFlagModalData] = useState({
+    isOpen: false,
+    category: null,
+  });
+  const [usageModalData, setUsageModalData] = useState({
+    isOpen: false,
+    category: null,
+  });
+  const [deleteModalData, setDeleteModalData] = useState({
+    isOpen: false,
+    category: null,
+  });
+
+  // Enhanced filters state
+  const [filters, setFilters] = useState({
+    search: '',
+    isActive: undefined,
+    isAvailable: undefined,
+    adminStatus: '',
+    level: undefined,
+    page: 1,
+    limit: 20,
+    sortBy: 'name',
+    sortOrder: 'asc',
+  });
+
   // RTK Query hooks
   const {
     data: categoriesData,
     isLoading,
     error,
     refetch,
-  } = useGetAdminCategoriesQuery();
+  } = useGetAdminCategoriesQuery(filters);
+
+  const { data: statsData, isLoading: statsLoading } =
+    useGetCategoryStatsQuery();
 
   const [createCategory, { isLoading: isCreating }] =
     useCreateAdminCategoryMutation();
@@ -49,7 +97,11 @@ const CategoryManagement = () => {
     useUpdateAdminCategoryMutation();
   const [deleteCategory] = useDeleteAdminCategoryMutation();
 
-  const categories = categoriesData?.data || [];
+  const categories = categoriesData?.data?.categories || [];
+  const totalCount = categoriesData?.data?.total || 0;
+  const currentPage = categoriesData?.data?.page || 1;
+  const totalPages = categoriesData?.data?.totalPages || 1;
+  const stats = statsData?.data || null;
 
   // Form state for create/edit modal
   const [formData, setFormData] = useState({
@@ -67,13 +119,51 @@ const CategoryManagement = () => {
 
   const [formErrors, setFormErrors] = useState({});
 
-  // Filter categories based on search
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (category.description &&
-        category.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Handle image upload
+  const handleImageUpload = (file) => {
+    setImageFile(file);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(null);
+    }
+  };
+
+  // Handle filter changes
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      search: '',
+      isActive: undefined,
+      isAvailable: undefined,
+      adminStatus: '',
+      level: undefined,
+      page: 1,
+      limit: 20,
+      sortBy: 'name',
+      sortOrder: 'asc',
+    });
+  };
+
+  // Handle modal operations
+  const handleFlagCategory = (category) => {
+    setFlagModalData({ isOpen: true, category });
+  };
+
+  const handleViewUsage = (category) => {
+    setUsageModalData({ isOpen: true, category });
+  };
+
+  const handleSafeDelete = (category) => {
+    setDeleteModalData({ isOpen: true, category });
+  };
+
+  const handleModalSuccess = () => {
+    refetch();
+  };
 
   // Form validation
   const validateForm = () => {
@@ -91,6 +181,11 @@ const CategoryManagement = () => {
       errors.name = 'Category name must be less than 50 characters';
     }
 
+    // Validate image for new categories
+    if (!editingCategory && !imageFile) {
+      errors.image = 'Category image is required';
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -102,41 +197,55 @@ const CategoryManagement = () => {
     if (!validateForm()) return;
 
     try {
-      const categoryData = {
-        name: formData.name.trim(),
-        description: formData.description.trim(),
-        icon: formData.icon.trim(),
-        color: formData.color,
-        isActive: formData.isActive,
-        sortOrder: parseInt(formData.sortOrder) || 0,
-        parentId: formData.parentId || null,
-      };
+      // Create FormData for multipart upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name.trim());
+      formDataToSend.append('description', formData.description.trim());
+      formDataToSend.append('icon', formData.icon.trim());
+      formDataToSend.append('color', formData.color);
+      formDataToSend.append('isActive', formData.isActive);
+      formDataToSend.append('sortOrder', parseInt(formData.sortOrder) || 0);
+      if (formData.parentId) {
+        formDataToSend.append('parentId', formData.parentId);
+      }
+
+      // Add image file if selected
+      if (imageFile) {
+        formDataToSend.append('image', imageFile);
+      }
 
       if (editingCategory) {
         await updateCategory({
           id: editingCategory.id,
-          ...categoryData,
+          formData: formDataToSend,
         }).unwrap();
       } else {
-        await createCategory(categoryData).unwrap();
+        await createCategory(formDataToSend).unwrap();
       }
 
       // Reset form and close modal
-      setFormData({
-        name: '',
-        description: '',
-        icon: '',
-        color: '#10B981',
-        isActive: true,
-        sortOrder: 0,
-        parentId: null,
-      });
-      setFormErrors({});
-      setIsCreateModalOpen(false);
-      setEditingCategory(null);
+      resetForm();
     } catch (error) {
       console.error('Failed to save category:', error);
     }
+  };
+
+  // Reset form function
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      icon: '',
+      color: '#10B981',
+      isActive: true,
+      sortOrder: 0,
+      parentId: null,
+    });
+    setFormErrors({});
+    setImageFile(null);
+    setImagePreview(null);
+    setIsCreateModalOpen(false);
+    setEditingCategory(null);
   };
 
   // Handle edit
@@ -150,6 +259,15 @@ const CategoryManagement = () => {
       sortOrder: category.sortOrder || 0,
       parentId: category.parentId || null,
     });
+
+    // Set existing image preview
+    if (category.image) {
+      setImagePreview(category.image);
+    } else {
+      setImagePreview(null);
+    }
+    setImageFile(null); // Reset file input for editing
+
     setEditingCategory(category);
     setIsCreateModalOpen(true);
   };
@@ -198,15 +316,25 @@ const CategoryManagement = () => {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 flex-1">
-              {/* Category Icon and Color */}
-              <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-sm font-medium"
-                style={{ backgroundColor: category.color || '#10B981' }}
-              >
-                {category.icon ? (
-                  <span>{category.icon}</span>
+              {/* Category Image or Icon */}
+              <div className="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0">
+                {category.image ? (
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <Tag className="w-5 h-5" />
+                  <div
+                    className="w-full h-full flex items-center justify-center text-white text-sm font-medium"
+                    style={{ backgroundColor: category.color || '#10B981' }}
+                  >
+                    {category.icon ? (
+                      <span>{category.icon}</span>
+                    ) : (
+                      <Tag className="w-5 h-5" />
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -257,13 +385,27 @@ const CategoryManagement = () => {
             {/* Actions */}
             <div className="flex items-center gap-1">
               <button
-                onClick={() => {
-                  /* Handle view products */
-                }}
-                className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="View products"
+                onClick={() => handleViewUsage(category)}
+                className="p-2 text-text-muted hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                title="View usage statistics"
               >
-                <Eye className="w-4 h-4" />
+                <BarChart3 className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => handleFlagCategory(category)}
+                className={`p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                  category.isAvailable === false
+                    ? 'text-tomato-red hover:bg-tomato-red/20'
+                    : 'text-text-muted hover:text-amber-600 hover:bg-amber-50'
+                }`}
+                title={
+                  category.isAvailable === false
+                    ? 'Category is flagged'
+                    : 'Flag category'
+                }
+              >
+                <Flag className="w-4 h-4" />
               </button>
 
               <button
@@ -275,20 +417,9 @@ const CategoryManagement = () => {
               </button>
 
               <button
-                onClick={() =>
-                  setConfirmAction({
-                    type: 'delete',
-                    category,
-                    title: 'Delete Category',
-                    message: `Are you sure you want to delete "${category.name}"? This action cannot be undone and may affect related products.`,
-                    confirmText: 'Delete',
-                    isDangerous: true,
-                    onConfirm: () => handleDelete(category.id),
-                  })
-                }
+                onClick={() => handleSafeDelete(category)}
                 className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                 title="Delete category"
-                disabled={(category.productCount || 0) > 0}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -345,16 +476,7 @@ const CategoryManagement = () => {
 
         <Button
           onClick={() => {
-            setFormData({
-              name: '',
-              description: '',
-              icon: '',
-              color: '#10B981',
-              isActive: true,
-              sortOrder: 0,
-              parentId: null,
-            });
-            setEditingCategory(null);
+            resetForm();
             setIsCreateModalOpen(true);
           }}
           className="flex items-center gap-2"
@@ -364,26 +486,21 @@ const CategoryManagement = () => {
         </Button>
       </div>
 
-      {/* Search */}
-      <Card className="p-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-center">
-          <div className="flex-1 lg:max-w-md">
-            <SearchBar
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="Search categories..."
-              className="w-full"
-            />
-          </div>
+      {/* Statistics Dashboard */}
+      <CategoryStatistics stats={stats} isLoading={statsLoading} />
 
-          <div className="text-sm text-text-muted">
-            {filteredCategories.length} of {categories.length} categories
-          </div>
-        </div>
-      </Card>
+      {/* Enhanced Filters */}
+      <CategoryFilters
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        onReset={handleResetFilters}
+        isLoading={isLoading}
+        resultCount={categories.length}
+        totalCount={totalCount}
+      />
 
       {/* Categories */}
-      {filteredCategories.length === 0 ? (
+      {categories.length === 0 && !isLoading ? (
         <EmptyState
           icon={Tag}
           title="No categories found"
@@ -395,35 +512,224 @@ const CategoryManagement = () => {
         />
       ) : (
         <div className="space-y-4">
-          {renderCategoryTree(
-            searchTerm ? filteredCategories : categoryHierarchy
-          )}
+          {categories.map((category) => (
+            <Card
+              key={category._id}
+              className="p-4 hover:shadow-md transition-shadow duration-300"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1">
+                  {/* Category Image */}
+                  <div className="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0">
+                    {category.image ? (
+                      <img
+                        src={category.image}
+                        alt={category.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <Tag className="w-5 h-5 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Category Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-medium text-text-dark truncate">
+                        {category.name}
+                      </h3>
+
+                      {/* Status badges */}
+                      {!category.isActive && (
+                        <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+                          Inactive
+                        </span>
+                      )}
+
+                      {category.isAvailable === false && (
+                        <span className="bg-tomato-red/10 text-tomato-red text-xs px-2 py-1 rounded-full">
+                          Flagged
+                        </span>
+                      )}
+
+                      {category.adminStatus &&
+                        category.adminStatus !== 'active' && (
+                          <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">
+                            {category.adminStatus}
+                          </span>
+                        )}
+                    </div>
+
+                    {category.description && (
+                      <p className="text-sm text-text-muted truncate">
+                        {category.description}
+                      </p>
+                    )}
+
+                    <div className="flex items-center gap-4 mt-2 text-xs text-text-muted">
+                      <span>Level {category.level || 0}</span>
+                      {category.parentCategory && (
+                        <span>Parent: {category.parentCategory.name}</span>
+                      )}
+                      <span>Order: {category.sortOrder || 0}</span>
+                      {category.createdAt && (
+                        <span>
+                          Created{' '}
+                          {new Date(category.createdAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleViewUsage(category)}
+                    className="p-2 text-text-muted hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                    title="View usage statistics"
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => handleFlagCategory(category)}
+                    className={`p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                      category.isAvailable === false
+                        ? 'text-tomato-red hover:bg-tomato-red/20'
+                        : 'text-text-muted hover:text-amber-600 hover:bg-amber-50'
+                    }`}
+                    title={
+                      category.isAvailable === false
+                        ? 'Category is flagged'
+                        : 'Flag category'
+                    }
+                  >
+                    <Flag className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => handleEdit(category)}
+                    className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                    title="Edit category"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => handleSafeDelete(category)}
+                    className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                    title="Delete category"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-text-muted">
+              Showing {(currentPage - 1) * filters.limit + 1} to{' '}
+              {Math.min(currentPage * filters.limit, totalCount)} of{' '}
+              {totalCount} categories
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === 1 || isLoading}
+                onClick={() =>
+                  handleFiltersChange({ ...filters, page: currentPage - 1 })
+                }
+              >
+                Previous
+              </Button>
+
+              <span className="text-sm text-text-muted px-3">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={currentPage === totalPages || isLoading}
+                onClick={() =>
+                  handleFiltersChange({ ...filters, page: currentPage + 1 })
+                }
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
 
       {/* Create/Edit Category Modal */}
       <Modal
         isOpen={isCreateModalOpen}
-        onClose={() => {
-          setIsCreateModalOpen(false);
-          setEditingCategory(null);
-          setFormData({
-            name: '',
-            description: '',
-            icon: '',
-            color: '#10B981',
-            isActive: true,
-            sortOrder: 0,
-            parentId: null,
-          });
-          setFormErrors({});
-        }}
+        onClose={resetForm}
         title={editingCategory ? 'Edit Category' : 'Create New Category'}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Category Image Upload - Full Width */}
+          <div className="col-span-full">
+            <FormField
+              label={`Category Image ${!editingCategory ? '*' : ''}`}
+              error={formErrors.image}
+              description="Upload an image for this category. Max size: 1MB. Supported formats: JPG, PNG, GIF"
+            >
+              <FileUpload
+                onFileSelect={handleImageUpload}
+                accept="image/*"
+                maxSize={1024 * 1024} // 1MB
+                maxFiles={1}
+                multiple={false}
+                className="w-full"
+              >
+                <div className="text-center py-8">
+                  {imagePreview ? (
+                    <div className="flex flex-col items-center gap-4">
+                      <img
+                        src={imagePreview}
+                        alt="Category preview"
+                        className="w-32 h-32 object-cover rounded-2xl border-2 border-gray-200"
+                      />
+                      <p className="text-sm text-text-muted">
+                        Click or drag to replace image
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-16 h-16 bg-earthy-beige/30 rounded-2xl flex items-center justify-center">
+                        <ImageIcon className="w-8 h-8 text-text-muted" />
+                      </div>
+                      <div>
+                        <p className="text-lg font-medium text-text-dark mb-2">
+                          Upload Category Image{!editingCategory && ' *'}
+                        </p>
+                        <p className="text-sm text-text-muted">
+                          Drag and drop an image or click to select
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </FileUpload>
+            </FormField>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Category Name" error={formErrors.name}>
+            <FormField label="Category Name *" error={formErrors.name}>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -436,55 +742,26 @@ const CategoryManagement = () => {
 
             <FormField label="Parent Category">
               <select
-                value={formData.parentId || ''}
+                value={formData.parentCategory || ''}
                 onChange={(e) =>
-                  setFormData({ ...formData, parentId: e.target.value || null })
+                  setFormData({
+                    ...formData,
+                    parentCategory: e.target.value || null,
+                  })
                 }
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
               >
                 <option value="">None (Root Category)</option>
                 {categories
                   .filter(
-                    (cat) => !editingCategory || cat.id !== editingCategory.id
+                    (cat) => !editingCategory || cat._id !== editingCategory._id
                   )
                   .map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
+                    <option key={category._id} value={category._id}>
+                      {category.name} (Level {category.level || 0})
                     </option>
                   ))}
               </select>
-            </FormField>
-
-            <FormField label="Icon (Emoji or Unicode)">
-              <Input
-                value={formData.icon}
-                onChange={(e) =>
-                  setFormData({ ...formData, icon: e.target.value })
-                }
-                placeholder="🥬 or leave empty"
-                maxLength={2}
-              />
-            </FormField>
-
-            <FormField label="Color">
-              <div className="flex gap-2">
-                <input
-                  type="color"
-                  value={formData.color}
-                  onChange={(e) =>
-                    setFormData({ ...formData, color: e.target.value })
-                  }
-                  className="w-12 h-12 border border-gray-200 dark:border-gray-700 rounded-xl"
-                />
-                <Input
-                  value={formData.color}
-                  onChange={(e) =>
-                    setFormData({ ...formData, color: e.target.value })
-                  }
-                  placeholder="#10B981"
-                  className="flex-1"
-                />
-              </div>
             </FormField>
 
             <FormField label="Sort Order">
@@ -512,7 +789,7 @@ const CategoryManagement = () => {
                   }
                   className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
                 />
-                <span className="text-text-dark dark:text-white font-medium">
+                <span className="text-text-dark font-medium">
                   Active Category
                 </span>
               </label>
@@ -527,22 +804,76 @@ const CategoryManagement = () => {
               }
               placeholder="Optional category description"
               rows={3}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
             />
           </FormField>
 
+          {/* SEO Fields */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-text-dark">
+              SEO Settings
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField label="Meta Title">
+                <Input
+                  value={formData.metaTitle}
+                  onChange={(e) =>
+                    setFormData({ ...formData, metaTitle: e.target.value })
+                  }
+                  placeholder="SEO title for this category"
+                  maxLength={60}
+                />
+              </FormField>
+
+              <FormField label="Meta Keywords">
+                <Input
+                  value={formData.metaKeywords?.join(', ') || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      metaKeywords: e.target.value
+                        .split(',')
+                        .map((k) => k.trim())
+                        .filter((k) => k),
+                    })
+                  }
+                  placeholder="keyword1, keyword2, keyword3"
+                />
+              </FormField>
+            </div>
+
+            <FormField label="Meta Description">
+              <textarea
+                value={formData.metaDescription}
+                onChange={(e) =>
+                  setFormData({ ...formData, metaDescription: e.target.value })
+                }
+                placeholder="SEO description for this category"
+                rows={2}
+                maxLength={160}
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+              />
+            </FormField>
+          </div>
+
           {/* Preview */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
+          <div className="p-4 bg-gray-50 rounded-2xl">
             <p className="text-sm text-text-muted mb-2">Preview:</p>
             <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-sm font-medium"
-                style={{ backgroundColor: formData.color }}
-              >
-                {formData.icon || <Tag className="w-5 h-5" />}
-              </div>
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-10 h-10 rounded-2xl object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-gray-200 rounded-2xl flex items-center justify-center">
+                  <Tag className="w-5 h-5 text-gray-400" />
+                </div>
+              )}
               <div>
-                <p className="font-medium text-text-dark dark:text-white">
+                <p className="font-medium text-text-dark">
                   {formData.name || 'Category Name'}
                 </p>
                 {formData.description && (
@@ -555,27 +886,48 @@ const CategoryManagement = () => {
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setIsCreateModalOpen(false);
-                setEditingCategory(null);
-              }}
-            >
+            <Button type="button" variant="outline" onClick={resetForm}>
               Cancel
             </Button>
             <Button
               type="submit"
               isLoading={isCreating || isUpdating}
+              disabled={
+                isCreating || isUpdating || (!editingCategory && !imageFile)
+              }
               className="flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
-              {editingCategory ? 'Update Category' : 'Create Category'}
+              {isCreating || isUpdating
+                ? 'Saving...'
+                : editingCategory
+                  ? 'Update Category'
+                  : 'Create Category'}
             </Button>
           </div>
         </form>
       </Modal>
+
+      {/* Enhanced Modals */}
+      <CategoryFlagModal
+        isOpen={flagModalData.isOpen}
+        onClose={() => setFlagModalData({ isOpen: false, category: null })}
+        category={flagModalData.category}
+        onSuccess={handleModalSuccess}
+      />
+
+      <CategoryUsageModal
+        isOpen={usageModalData.isOpen}
+        onClose={() => setUsageModalData({ isOpen: false, category: null })}
+        category={usageModalData.category}
+      />
+
+      <SafeDeleteModal
+        isOpen={deleteModalData.isOpen}
+        onClose={() => setDeleteModalData({ isOpen: false, category: null })}
+        category={deleteModalData.category}
+        onSuccess={handleModalSuccess}
+      />
 
       {/* Confirmation Dialog */}
       {confirmAction && (

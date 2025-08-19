@@ -23,15 +23,15 @@ import {
   useGetCategoriesQuery,
 } from '../../store/slices/apiSlice';
 import { addToCart } from '../../store/slices/cartSlice';
-import { 
-  toggleFavorite, 
-  selectIsProductFavorited 
+import {
+  toggleFavorite,
+  selectIsProductFavorited,
 } from '../../store/slices/favoritesSlice';
-import { 
-  toggleComparison, 
+import {
+  toggleComparison,
   selectIsProductInComparison,
   selectIsComparisonFull,
-  selectComparisonCount
+  selectComparisonCount,
 } from '../../store/slices/comparisonSlice';
 import { formatCurrency, debounce } from '../../utils';
 import BulkOrderModal from '../../components/restaurant/BulkOrderModal';
@@ -57,7 +57,7 @@ const ProductBrowsing = () => {
     availability: 'available',
   });
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Bulk selection state
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -226,21 +226,23 @@ const ProductBrowsing = () => {
 
   const handleProductSelect = (product, selected) => {
     if (selected) {
-      setSelectedProducts(prev => [...prev, product]);
+      setSelectedProducts((prev) => [...prev, product]);
     } else {
-      setSelectedProducts(prev => prev.filter(p => p._id !== product._id));
+      setSelectedProducts((prev) => prev.filter((p) => p._id !== product._id));
     }
   };
 
   const handleSelectAll = () => {
-    const availableProducts = listings.filter(p => p.availability !== 'out-of-stock');
+    const availableProducts = listings.filter(
+      (p) => p.availability !== 'out-of-stock'
+    );
     setSelectedProducts(availableProducts);
   };
 
   const handleClearSelection = (productIdsToRemove = null) => {
     if (productIdsToRemove) {
-      setSelectedProducts(prev => 
-        prev.filter(p => !productIdsToRemove.includes(p._id))
+      setSelectedProducts((prev) =>
+        prev.filter((p) => !productIdsToRemove.includes(p._id))
       );
     } else {
       setSelectedProducts([]);
@@ -248,7 +250,7 @@ const ProductBrowsing = () => {
   };
 
   const isProductSelected = (productId) => {
-    return selectedProducts.some(p => p._id === productId);
+    return selectedProducts.some((p) => p._id === productId);
   };
 
   // Favorites and comparison handlers
@@ -262,37 +264,206 @@ const ProductBrowsing = () => {
 
   // Helper function to check if product is favorited
   const isProductFavorited = (productId) => {
-    return useSelector(state => selectIsProductFavorited(state, productId));
+    return useSelector((state) => selectIsProductFavorited(state, productId));
   };
 
   // Helper function to check if product is in comparison
   const isProductInComparison = (productId) => {
-    return useSelector(state => selectIsProductInComparison(state, productId));
+    return useSelector((state) =>
+      selectIsProductInComparison(state, productId)
+    );
   };
 
   const ProductCard = ({ product }) => {
     const isSelected = isProductSelected(product._id);
     const isOutOfStock = product.availability === 'out-of-stock';
-    const isFavorited = useSelector(state => selectIsProductFavorited(state, product._id));
-    const inComparison = useSelector(state => selectIsProductInComparison(state, product._id));
-    
+    const isFavorited = useSelector((state) =>
+      selectIsProductFavorited(state, product._id)
+    );
+    const inComparison = useSelector((state) =>
+      selectIsProductInComparison(state, product._id)
+    );
+
     return (
-    <div
-      onClick={() => {
-        if (bulkMode && !isOutOfStock) {
-          handleProductSelect(product, !isSelected);
-        } else if (!bulkMode) {
-          navigate(`/restaurant/browse/${product._id}`);
-        }
-      }}
-      className={`glass rounded-3xl p-4 hover:shadow-soft transition-all duration-200 cursor-pointer group relative ${
-        bulkMode && isSelected ? 'ring-2 ring-bottle-green bg-bottle-green/5' : ''
-      } ${bulkMode && isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
-      data-testid="product-card"
-    >
-      {/* Product Image */}
-      <div className="relative mb-4">
-        <div className="aspect-square bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-2xl overflow-hidden">
+      <div
+        onClick={() => {
+          if (bulkMode && !isOutOfStock) {
+            handleProductSelect(product, !isSelected);
+          } else if (!bulkMode) {
+            navigate(`/restaurant/browse/${product._id}`);
+          }
+        }}
+        className={`glass rounded-3xl p-4 hover:shadow-soft transition-all duration-200 cursor-pointer group relative ${
+          bulkMode && isSelected
+            ? 'ring-2 ring-bottle-green bg-bottle-green/5'
+            : ''
+        } ${bulkMode && isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+        data-testid="product-card"
+      >
+        {/* Product Image */}
+        <div className="relative mb-4">
+          <div className="aspect-square bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-2xl overflow-hidden">
+            {product.images && product.images[0] ? (
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                  <ShoppingCart className="w-8 h-8 text-gray-400" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Availability Badge */}
+          <span
+            className={`absolute top-3 right-3 px-2 py-1 rounded-xl text-xs font-medium ${getAvailabilityColor(product.availability)}`}
+          >
+            {getAvailabilityText(product.availability)}
+          </span>
+
+          {/* Bulk Selection Checkbox */}
+          {bulkMode && (
+            <div className="absolute top-3 left-3">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isSelected
+                    ? 'bg-bottle-green text-white'
+                    : 'bg-white/90 backdrop-blur-sm border-2 border-gray-300'
+                } ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isOutOfStock) {
+                    handleProductSelect(product, !isSelected);
+                  }
+                }}
+              >
+                {isSelected && <Check className="w-4 h-4" />}
+              </div>
+            </div>
+          )}
+
+          {/* Favorite Button */}
+          {!bulkMode && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleFavorite(product);
+              }}
+              className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors touch-target"
+            >
+              <Heart
+                className={`w-4 h-4 transition-colors ${
+                  isFavorited
+                    ? 'text-tomato-red fill-current'
+                    : 'text-gray-600 hover:text-tomato-red'
+                }`}
+              />
+            </button>
+          )}
+        </div>
+
+        {/* Product Info */}
+        <div className="space-y-2">
+          <div className="flex items-start justify-between">
+            <h3 className="font-semibold text-text-dark dark:text-white text-sm line-clamp-2 flex-1 mr-2">
+              {product.name}
+            </h3>
+            <div className="flex items-center gap-1">
+              {/* Comparison Checkbox */}
+              {!bulkMode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleComparison(product);
+                  }}
+                  disabled={!inComparison && isComparisonFull}
+                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 touch-target ${
+                    inComparison
+                      ? 'bg-blue-500 border-blue-500 text-white'
+                      : isComparisonFull
+                        ? 'border-gray-300 text-gray-300 cursor-not-allowed opacity-50'
+                        : 'border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-500'
+                  }`}
+                  title={
+                    inComparison
+                      ? 'Remove from comparison'
+                      : isComparisonFull
+                        ? 'Comparison is full (max 4 products)'
+                        : 'Add to comparison'
+                  }
+                >
+                  {inComparison ? (
+                    <Check className="w-3 h-3" />
+                  ) : (
+                    <Scale className="w-3 h-3" />
+                  )}
+                </button>
+              )}
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 touch-target p-1"
+              >
+                <Info className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Vendor Info */}
+          <div className="flex items-center gap-1 text-xs text-text-muted dark:text-gray-300">
+            <MapPin className="w-3 h-3" />
+            <span className="truncate">{product.vendorName}</span>
+          </div>
+
+          {/* Rating */}
+          {product.rating && (
+            <div className="flex items-center gap-1">
+              <Star className="w-3 h-3 text-earthy-yellow fill-current" />
+              <span className="text-xs text-text-muted dark:text-gray-300">
+                {product.rating.toFixed(1)}
+              </span>
+            </div>
+          )}
+
+          {/* Price and Add to Cart */}
+          <div className="flex items-center justify-between mt-4">
+            <div>
+              <p className="font-bold text-text-dark dark:text-white">
+                {formatCurrency(product.price)}
+              </p>
+              <p className="text-xs text-text-muted dark:text-gray-300">
+                per {product.unit || 'unit'}
+              </p>
+            </div>
+
+            {!bulkMode && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart(product);
+                }}
+                disabled={product.availability === 'out-of-stock'}
+                className="bg-gradient-primary text-white p-2 rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+
+    const ProductListItem = ({ product }) => (
+      <div
+        onClick={() => navigate(`/restaurant/browse/${product._id}`)}
+        className="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-soft transition-all duration-200 cursor-pointer group"
+      >
+        {/* Product Image */}
+        <div className="w-20 h-20 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
           {product.images && product.images[0] ? (
             <img
               src={product.images[0]}
@@ -302,223 +473,62 @@ const ProductBrowsing = () => {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                <ShoppingCart className="w-8 h-8 text-gray-400" />
-              </div>
+              <ShoppingCart className="w-6 h-6 text-gray-400" />
             </div>
           )}
         </div>
 
-        {/* Availability Badge */}
-        <span
-          className={`absolute top-3 right-3 px-2 py-1 rounded-xl text-xs font-medium ${getAvailabilityColor(product.availability)}`}
-        >
-          {getAvailabilityText(product.availability)}
-        </span>
-
-        {/* Bulk Selection Checkbox */}
-        {bulkMode && (
-          <div className="absolute top-3 left-3">
-            <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
-                isSelected
-                  ? 'bg-bottle-green text-white'
-                  : 'bg-white/90 backdrop-blur-sm border-2 border-gray-300'
-              } ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!isOutOfStock) {
-                  handleProductSelect(product, !isSelected);
-                }
-              }}
+        {/* Product Details */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="font-semibold text-text-dark dark:text-white truncate pr-2">
+              {product.name}
+            </h3>
+            <span
+              className={`px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${getAvailabilityColor(product.availability)}`}
             >
-              {isSelected && <Check className="w-4 h-4" />}
-            </div>
-          </div>
-        )}
-
-        {/* Favorite Button */}
-        {!bulkMode && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleToggleFavorite(product);
-            }}
-            className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors touch-target"
-          >
-            <Heart 
-              className={`w-4 h-4 transition-colors ${
-                isFavorited 
-                  ? 'text-tomato-red fill-current' 
-                  : 'text-gray-600 hover:text-tomato-red'
-              }`} 
-            />
-          </button>
-        )}
-      </div>
-
-      {/* Product Info */}
-      <div className="space-y-2">
-        <div className="flex items-start justify-between">
-          <h3 className="font-semibold text-text-dark dark:text-white text-sm line-clamp-2 flex-1 mr-2">
-            {product.name}
-          </h3>
-          <div className="flex items-center gap-1">
-            {/* Comparison Checkbox */}
-            {!bulkMode && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleToggleComparison(product);
-                }}
-                disabled={!inComparison && isComparisonFull}
-                className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 touch-target ${
-                  inComparison
-                    ? 'bg-blue-500 border-blue-500 text-white'
-                    : isComparisonFull
-                      ? 'border-gray-300 text-gray-300 cursor-not-allowed opacity-50'
-                      : 'border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-500'
-                }`}
-                title={
-                  inComparison 
-                    ? 'Remove from comparison' 
-                    : isComparisonFull 
-                      ? 'Comparison is full (max 4 products)'
-                      : 'Add to comparison'
-                }
-              >
-                {inComparison ? (
-                  <Check className="w-3 h-3" />
-                ) : (
-                  <Scale className="w-3 h-3" />
-                )}
-              </button>
-            )}
-            <button
-              onClick={(e) => e.stopPropagation()}
-              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 touch-target p-1"
-            >
-              <Info className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Vendor Info */}
-        <div className="flex items-center gap-1 text-xs text-text-muted dark:text-gray-300">
-          <MapPin className="w-3 h-3" />
-          <span className="truncate">{product.vendorName}</span>
-        </div>
-
-        {/* Rating */}
-        {product.rating && (
-          <div className="flex items-center gap-1">
-            <Star className="w-3 h-3 text-earthy-yellow fill-current" />
-            <span className="text-xs text-text-muted dark:text-gray-300">
-              {product.rating.toFixed(1)}
+              {getAvailabilityText(product.availability)}
             </span>
           </div>
-        )}
 
-        {/* Price and Add to Cart */}
-        <div className="flex items-center justify-between mt-4">
-          <div>
-            <p className="font-bold text-text-dark dark:text-white">
-              {formatCurrency(product.price)}
-            </p>
-            <p className="text-xs text-text-muted dark:text-gray-300">
-              per {product.unit || 'unit'}
-            </p>
+          <div className="flex items-center gap-3 text-sm text-text-muted dark:text-gray-300 mb-2">
+            <div className="flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
+              <span className="truncate">{product.vendorName}</span>
+            </div>
+            {product.rating && (
+              <div className="flex items-center gap-1">
+                <Star className="w-3 h-3 text-earthy-yellow fill-current" />
+                <span>{product.rating.toFixed(1)}</span>
+              </div>
+            )}
           </div>
 
-          {!bulkMode && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-bold text-text-dark dark:text-white">
+                {formatCurrency(product.price)}
+              </p>
+              <p className="text-xs text-text-muted dark:text-gray-300">
+                per {product.unit || 'unit'}
+              </p>
+            </div>
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleAddToCart(product);
               }}
               disabled={product.availability === 'out-of-stock'}
-              className="bg-gradient-primary text-white p-2 rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+              className="bg-gradient-primary text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
+              Add to Cart
             </button>
-          )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-
-  const ProductListItem = ({ product }) => (
-    <div
-      onClick={() => navigate(`/restaurant/browse/${product._id}`)}
-      className="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-soft transition-all duration-200 cursor-pointer group"
-    >
-      {/* Product Image */}
-      <div className="w-20 h-20 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
-        {product.images && product.images[0] ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <ShoppingCart className="w-6 h-6 text-gray-400" />
-          </div>
-        )}
-      </div>
-
-      {/* Product Details */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-text-dark dark:text-white truncate pr-2">
-            {product.name}
-          </h3>
-          <span
-            className={`px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${getAvailabilityColor(product.availability)}`}
-          >
-            {getAvailabilityText(product.availability)}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3 text-sm text-text-muted dark:text-gray-300 mb-2">
-          <div className="flex items-center gap-1">
-            <MapPin className="w-3 h-3" />
-            <span className="truncate">{product.vendorName}</span>
-          </div>
-          {product.rating && (
-            <div className="flex items-center gap-1">
-              <Star className="w-3 h-3 text-earthy-yellow fill-current" />
-              <span>{product.rating.toFixed(1)}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-bold text-text-dark dark:text-white">
-              {formatCurrency(product.price)}
-            </p>
-            <p className="text-xs text-text-muted dark:text-gray-300">
-              per {product.unit || 'unit'}
-            </p>
-          </div>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAddToCart(product);
-            }}
-            disabled={product.availability === 'out-of-stock'}
-            className="bg-gradient-primary text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
   };
 
   return (
@@ -741,7 +751,7 @@ const ProductBrowsing = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="flex items-center gap-3">
               {listings.length > 0 && (
                 <button
@@ -751,7 +761,7 @@ const ProductBrowsing = () => {
                   Select All Available
                 </button>
               )}
-              
+
               {selectedProducts.length > 0 && (
                 <button
                   onClick={() => setShowBulkModal(true)}
@@ -836,9 +846,7 @@ const ProductBrowsing = () => {
             className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-3 min-h-[56px] touch-target"
           >
             <Scale className="w-6 h-6" />
-            <span className="font-medium">
-              Compare ({comparisonCount})
-            </span>
+            <span className="font-medium">Compare ({comparisonCount})</span>
           </button>
         </div>
       )}
@@ -847,4 +855,3 @@ const ProductBrowsing = () => {
 };
 
 export default ProductBrowsing;
-

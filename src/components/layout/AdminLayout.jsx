@@ -1,19 +1,19 @@
 import { useState, useMemo } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  CheckCircle, 
-  Store, 
-  Truck, 
-  Tag, 
-  Package, 
-  List, 
-  BarChart3, 
+import {
+  LayoutDashboard,
+  CheckCircle,
+  Store,
+  Truck,
+  Tag,
+  Package,
+  List,
+  BarChart3,
   Settings,
   Menu,
   X,
   LogOut,
-  User
+  User,
 } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
@@ -28,66 +28,74 @@ const AdminLayout = () => {
 
   // Get pending approvals count for badge
   const { data: allApprovals } = useGetAllApprovalsQuery();
-  const pendingApprovals = allApprovals?.data?.filter(approval => approval.status === 'pending') || [];
+  const pendingApprovals =
+    allApprovals?.data?.filter((approval) => approval.status === 'pending') ||
+    [];
   const pendingApprovalsCount = pendingApprovals.length;
 
-  const adminNavItems = useMemo(() => [
-    { 
-      path: '/admin/dashboard', 
-      label: 'Dashboard', 
-      icon: LayoutDashboard,
-      description: 'Platform overview and key metrics'
-    },
-    { 
-      path: '/admin/users/approvals', 
-      label: 'Approval Management', 
-      icon: CheckCircle,
-      badge: pendingApprovalsCount > 0 ? pendingApprovalsCount : null,
-      description: 'Review and approve vendor/restaurant applications'
-    },
-    { 
-      path: '/admin/restaurant-management', 
-      label: 'Restaurant Management', 
-      icon: Store,
-      description: 'CRUD restaurant owners/managers, enable/disable restaurants'
-    },
-    { 
-      path: '/admin/vendor-management', 
-      label: 'Vendor Management', 
-      icon: Truck,
-      description: 'Manage vendors, view performance, enable/disable accounts'
-    },
-    { 
-      path: '/admin/categories', 
-      label: 'Categories', 
-      icon: Tag,
-      description: 'CRUD product categories'
-    },
-    { 
-      path: '/admin/products', 
-      label: 'Products', 
-      icon: Package,
-      description: 'CRUD products, manage status (active/inactive/discontinued)'
-    },
-    { 
-      path: '/admin/listing-management', 
-      label: 'Listing Management', 
-      icon: List,
-      description: 'Flag/unflag listings, feature management, status updates'
-    },
-    { 
-      path: '/admin/analytics', 
-      label: 'Analytics', 
-      icon: BarChart3,
-      description: 'Advanced platform analytics with caching'
-    },
-    { 
-      path: '/admin/system-settings', 
-      label: 'System Settings', 
-      icon: Settings,
-      description: 'Platform configuration management'
-    }
-  ], [pendingApprovalsCount]);
+  const adminNavItems = useMemo(
+    () => [
+      {
+        path: '/admin/dashboard',
+        label: 'Dashboard',
+        icon: LayoutDashboard,
+        description: 'Platform overview and key metrics',
+      },
+      {
+        path: '/admin/approvals',
+        label: 'Approval Management',
+        icon: CheckCircle,
+        badge: pendingApprovalsCount > 0 ? pendingApprovalsCount : null,
+        description: 'Review and approve vendor/restaurant applications',
+      },
+      {
+        path: '/admin/restaurant-management',
+        label: 'Restaurant Management',
+        icon: Store,
+        description:
+          'CRUD restaurant owners/managers, enable/disable restaurants',
+      },
+      {
+        path: '/admin/vendor-management',
+        label: 'Vendor Management',
+        icon: Truck,
+        description:
+          'Manage vendors, view performance, enable/disable accounts',
+      },
+      {
+        path: '/admin/categories',
+        label: 'Categories',
+        icon: Tag,
+        description: 'CRUD product categories',
+      },
+      {
+        path: '/admin/products',
+        label: 'Products',
+        icon: Package,
+        description:
+          'CRUD products, manage status (active/inactive/discontinued)',
+      },
+      {
+        path: '/admin/listing-management',
+        label: 'Listing Management',
+        icon: List,
+        description: 'Flag/unflag listings, feature management, status updates',
+      },
+      {
+        path: '/admin/analytics',
+        label: 'Analytics',
+        icon: BarChart3,
+        description: 'Advanced platform analytics with caching',
+      },
+      {
+        path: '/admin/system-settings',
+        label: 'System Settings',
+        icon: Settings,
+        description: 'Platform configuration management',
+      },
+    ],
+    [pendingApprovalsCount]
+  );
 
   const handleLogout = () => {
     dispatch(logout());
@@ -95,22 +103,28 @@ const AdminLayout = () => {
   };
 
   const isActivePath = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+    return (
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Fixed Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-gradient-to-br from-bottle-green to-mint-fresh rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>
-            <span className="ml-3 text-xl font-semibold text-gray-900">Aaroth Admin</span>
+            <span className="ml-3 text-xl font-semibold text-gray-900">
+              Aaroth Admin
+            </span>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -125,7 +139,7 @@ const AdminLayout = () => {
           {adminNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = isActivePath(item.path);
-            
+
             return (
               <Link
                 key={item.path}
@@ -137,9 +151,13 @@ const AdminLayout = () => {
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
-                <Icon className={`mr-3 h-5 w-5 flex-shrink-0 ${
-                  isActive ? 'text-bottle-green' : 'text-gray-400 group-hover:text-gray-500'
-                }`} />
+                <Icon
+                  className={`mr-3 h-5 w-5 flex-shrink-0 ${
+                    isActive
+                      ? 'text-bottle-green'
+                      : 'text-gray-400 group-hover:text-gray-500'
+                  }`}
+                />
                 <span className="flex-1">{item.label}</span>
                 {item.badge && (
                   <span className="bg-tomato-red text-white text-xs font-medium px-2 py-1 rounded-full">
@@ -176,7 +194,7 @@ const AdminLayout = () => {
 
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />

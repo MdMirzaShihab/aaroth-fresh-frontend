@@ -16,14 +16,14 @@ import {
   Zap,
   DollarSign,
 } from 'lucide-react';
-import { 
+import {
   useGetSystemSettingsQuery,
   useUpdateSystemSettingMutation,
   useCreateSettingMutation,
   useBulkUpdateSettingsMutation,
   useResetSystemSettingsMutation,
   useClearAnalyticsCacheMutation,
-  useGetSystemHealthQuery 
+  useGetSystemHealthQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
@@ -39,18 +39,22 @@ const AdminSystemSettings = () => {
   const [lastSaved, setLastSaved] = useState(null);
 
   // API hooks
-  const { 
-    data: settingsData, 
-    isLoading, 
-    error, 
-    refetch: refetchSettings 
+  const {
+    data: settingsData,
+    isLoading,
+    error,
+    refetch: refetchSettings,
   } = useGetSystemSettingsQuery();
-  
-  const [updateSetting, { isLoading: isUpdating }] = useUpdateSystemSettingMutation();
+
+  const [updateSetting, { isLoading: isUpdating }] =
+    useUpdateSystemSettingMutation();
   const [createSetting, { isLoading: isCreating }] = useCreateSettingMutation();
-  const [bulkUpdateSettings, { isLoading: isBulkUpdating }] = useBulkUpdateSettingsMutation();
-  const [resetSettings, { isLoading: isResetting }] = useResetSystemSettingsMutation();
-  const [clearCache, { isLoading: isClearingCache }] = useClearAnalyticsCacheMutation();
+  const [bulkUpdateSettings, { isLoading: isBulkUpdating }] =
+    useBulkUpdateSettingsMutation();
+  const [resetSettings, { isLoading: isResetting }] =
+    useResetSystemSettingsMutation();
+  const [clearCache, { isLoading: isClearingCache }] =
+    useClearAnalyticsCacheMutation();
   const { refetch: refetchHealth } = useGetSystemHealthQuery();
 
   // Parse settings data from API
@@ -66,10 +70,10 @@ const AdminSystemSettings = () => {
 
   const handleSaveSetting = async (key, value) => {
     try {
-      await updateSetting({ 
-        key, 
-        value, 
-        changeReason: `Updated ${key} setting from admin panel` 
+      await updateSetting({
+        key,
+        value,
+        changeReason: `Updated ${key} setting from admin panel`,
       }).unwrap();
       setLastSaved(new Date());
       refetchSettings();
@@ -271,7 +275,8 @@ const AdminSystemSettings = () => {
     const currentValue = settings[field.key];
     const editedValue = editingSettings[field.key];
     const value = editedValue !== undefined ? editedValue : currentValue;
-    const hasChanges = editedValue !== undefined && editedValue !== currentValue;
+    const hasChanges =
+      editedValue !== undefined && editedValue !== currentValue;
 
     if (field.type === 'toggle') {
       return (
@@ -398,7 +403,9 @@ const AdminSystemSettings = () => {
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              {isBulkUpdating ? 'Saving...' : `Save ${Object.keys(editingSettings).length} Changes`}
+              {isBulkUpdating
+                ? 'Saving...'
+                : `Save ${Object.keys(editingSettings).length} Changes`}
             </Button>
           )}
           <Button

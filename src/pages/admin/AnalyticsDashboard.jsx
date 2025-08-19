@@ -12,10 +12,10 @@ import {
   RefreshCw,
   AlertTriangle,
 } from 'lucide-react';
-import { 
+import {
   useGetAdminAnalyticsOverviewQuery,
   useGetAllApprovalsQuery,
-  useGetAdminDashboardOverviewQuery 
+  useGetAdminDashboardOverviewQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
@@ -44,15 +44,14 @@ const AnalyticsDashboard = () => {
   } = useGetAdminDashboardOverviewQuery();
 
   // Approval analytics
-  const {
-    data: approvalData,
-    isLoading: isApprovalLoading,
-  } = useGetAllApprovalsQuery({ 
-    status: 'all', 
-    limit: 1000 // Get all for analytics
-  });
+  const { data: approvalData, isLoading: isApprovalLoading } =
+    useGetAllApprovalsQuery({
+      status: 'all',
+      limit: 1000, // Get all for analytics
+    });
 
-  const isLoading = isAnalyticsLoading || isDashboardLoading || isApprovalLoading;
+  const isLoading =
+    isAnalyticsLoading || isDashboardLoading || isApprovalLoading;
   const error = analyticsError || dashboardError;
 
   // Transform API data into chart-ready format
@@ -61,29 +60,45 @@ const AnalyticsDashboard = () => {
   const approvals = approvalData?.data || [];
 
   // Calculate approval statistics
-  const approvalStats = approvals.reduce((acc, approval) => {
-    acc.total++;
-    acc[approval.status] = (acc[approval.status] || 0) + 1;
-    
-    // Calculate average wait time (placeholder logic)
-    if (approval.createdAt) {
-      const waitTime = Math.floor((new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24));
-      acc.avgWaitTime += waitTime;
-      if (waitTime > 7) acc.urgent++; // Consider urgent if waiting more than 7 days
+  const approvalStats = approvals.reduce(
+    (acc, approval) => {
+      acc.total++;
+      acc[approval.status] = (acc[approval.status] || 0) + 1;
+
+      // Calculate average wait time (placeholder logic)
+      if (approval.createdAt) {
+        const waitTime = Math.floor(
+          (new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24)
+        );
+        acc.avgWaitTime += waitTime;
+        if (waitTime > 7) acc.urgent++; // Consider urgent if waiting more than 7 days
+      }
+
+      return acc;
+    },
+    {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      avgWaitTime: 0,
+      urgent: 0,
     }
-    
-    return acc;
-  }, { total: 0, pending: 0, approved: 0, rejected: 0, avgWaitTime: 0, urgent: 0 });
+  );
 
   // Calculate average wait time
-  approvalStats.avgWaitTime = approvalStats.total > 0 ? Math.round(approvalStats.avgWaitTime / approvalStats.total) : 0;
+  approvalStats.avgWaitTime =
+    approvalStats.total > 0
+      ? Math.round(approvalStats.avgWaitTime / approvalStats.total)
+      : 0;
 
   // Transform approval data for charts
-  const transformApprovalData = () => [
-    { label: 'Pending', value: approvalStats.pending || 0 },
-    { label: 'Approved', value: approvalStats.approved || 0 },
-    { label: 'Rejected', value: approvalStats.rejected || 0 },
-  ].filter(item => item.value > 0);
+  const transformApprovalData = () =>
+    [
+      { label: 'Pending', value: approvalStats.pending || 0 },
+      { label: 'Approved', value: approvalStats.approved || 0 },
+      { label: 'Rejected', value: approvalStats.rejected || 0 },
+    ].filter((item) => item.value > 0);
 
   // Transform revenue data with fallbacks
   const transformedRevenueData = analytics.dailyRevenue || [
@@ -139,7 +154,6 @@ const AnalyticsDashboard = () => {
     { value: '1y', label: 'Last Year' },
   ];
 
-
   // Key metrics cards
   const keyMetrics = [
     {
@@ -147,7 +161,9 @@ const AnalyticsDashboard = () => {
       title: 'Total Revenue',
       value: `$${(analytics.totalRevenue || 45280).toLocaleString()}`,
       change: analytics.revenueGrowth || '+16.3%',
-      changeType: (analytics.revenueGrowth || '+16.3%').startsWith('+') ? 'positive' : 'negative',
+      changeType: (analytics.revenueGrowth || '+16.3%').startsWith('+')
+        ? 'positive'
+        : 'negative',
       icon: DollarSign,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -157,7 +173,9 @@ const AnalyticsDashboard = () => {
       title: 'Total Orders',
       value: (dashboard.totalOrders || 1247).toLocaleString(),
       change: analytics.orderGrowth || '+14.5%',
-      changeType: (analytics.orderGrowth || '+14.5%').startsWith('+') ? 'positive' : 'negative',
+      changeType: (analytics.orderGrowth || '+14.5%').startsWith('+')
+        ? 'positive'
+        : 'negative',
       icon: ShoppingCart,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
@@ -167,7 +185,9 @@ const AnalyticsDashboard = () => {
       title: 'Active Vendors',
       value: (dashboard.totalVendors || '342').toLocaleString(),
       change: analytics.vendorGrowth || '+12.8%',
-      changeType: (analytics.vendorGrowth || '+12.8%').startsWith('+') ? 'positive' : 'negative',
+      changeType: (analytics.vendorGrowth || '+12.8%').startsWith('+')
+        ? 'positive'
+        : 'negative',
       icon: Package,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
@@ -176,7 +196,10 @@ const AnalyticsDashboard = () => {
       id: 'approval-rate',
       title: 'Approval Rate',
       value: `${approvalStats.total > 0 ? Math.round((approvalStats.approved / approvalStats.total) * 100) : 85}%`,
-      change: approvalStats.urgent > 0 ? `${approvalStats.urgent} urgent` : 'On track',
+      change:
+        approvalStats.urgent > 0
+          ? `${approvalStats.urgent} urgent`
+          : 'On track',
       changeType: approvalStats.urgent > 0 ? 'negative' : 'positive',
       icon: TrendingUp,
       color: 'text-orange-600',
@@ -349,18 +372,17 @@ const AnalyticsDashboard = () => {
             <h3 className="text-lg font-semibold text-text-dark dark:text-white">
               Approval Analytics
             </h3>
-            <p className="text-text-muted text-sm">Application processing metrics</p>
+            <p className="text-text-muted text-sm">
+              Application processing metrics
+            </p>
           </div>
-          
+
           <div className="space-y-4">
             {/* Approval Status Distribution */}
             <div className="flex justify-center mb-6">
-              <SimplePieChart 
-                data={transformApprovalData()}
-                size={200} 
-              />
+              <SimplePieChart data={transformApprovalData()} size={200} />
             </div>
-            
+
             {/* Approval Metrics */}
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
@@ -388,9 +410,12 @@ const AnalyticsDashboard = () => {
             <p className="text-text-muted text-sm">Breakdown by user type</p>
           </div>
           <div className="flex justify-center">
-            <SimplePieChart data={transformedUserData.concat([
-              { label: 'Admins', value: dashboard.totalAdmins || 5 }
-            ])} size={280} />
+            <SimplePieChart
+              data={transformedUserData.concat([
+                { label: 'Admins', value: dashboard.totalAdmins || 5 },
+              ])}
+              size={280}
+            />
           </div>
         </Card>
       </div>

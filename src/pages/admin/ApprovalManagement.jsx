@@ -65,10 +65,14 @@ const ApprovalManagement = () => {
     refetch,
   } = useGetAllApprovalsQuery(queryParams);
 
-  const [approveVendor, { isLoading: isApprovingVendor }] = useApproveVendorMutation();
-  const [rejectVendor, { isLoading: isRejectingVendor }] = useRejectVendorMutation();
-  const [approveRestaurant, { isLoading: isApprovingRestaurant }] = useApproveRestaurantMutation();
-  const [rejectRestaurant, { isLoading: isRejectingRestaurant }] = useRejectRestaurantMutation();
+  const [approveVendor, { isLoading: isApprovingVendor }] =
+    useApproveVendorMutation();
+  const [rejectVendor, { isLoading: isRejectingVendor }] =
+    useRejectVendorMutation();
+  const [approveRestaurant, { isLoading: isApprovingRestaurant }] =
+    useApproveRestaurantMutation();
+  const [rejectRestaurant, { isLoading: isRejectingRestaurant }] =
+    useRejectRestaurantMutation();
 
   const approvals = approvalsData?.data || [];
   const totalApprovals = approvalsData?.total || 0;
@@ -186,7 +190,9 @@ const ApprovalManagement = () => {
       header: (
         <input
           type="checkbox"
-          checked={selectedApprovals.size === approvals.length && approvals.length > 0}
+          checked={
+            selectedApprovals.size === approvals.length && approvals.length > 0
+          }
           onChange={handleSelectAll}
           className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
         />
@@ -215,12 +221,8 @@ const ApprovalManagement = () => {
               <p className="font-medium text-text-dark dark:text-white">
                 {approval.businessName || approval.name || 'Unknown'}
               </p>
-              <p className="text-sm text-text-muted">
-                {approval.phone}
-              </p>
-              <p className="text-xs text-text-muted">
-                {typeDisplay.label}
-              </p>
+              <p className="text-sm text-text-muted">{approval.phone}</p>
+              <p className="text-xs text-text-muted">{typeDisplay.label}</p>
             </div>
           </div>
         );
@@ -236,7 +238,9 @@ const ApprovalManagement = () => {
         return (
           <div className="flex items-center gap-2">
             <badge.icon className="w-4 h-4" />
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}
+            >
               {badge.text}
             </span>
           </div>
@@ -261,12 +265,15 @@ const ApprovalManagement = () => {
       header: 'Urgency',
       cell: (approval) => {
         const daysWaiting = approval.createdAt
-          ? Math.floor((new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24))
+          ? Math.floor(
+              (new Date() - new Date(approval.createdAt)) /
+                (1000 * 60 * 60 * 24)
+            )
           : 0;
-        
+
         let urgencyClass = 'bg-gray-100 text-gray-600';
         let urgencyText = 'Normal';
-        
+
         if (daysWaiting > 7) {
           urgencyClass = 'bg-tomato-red/20 text-tomato-red';
           urgencyText = 'Urgent';
@@ -276,7 +283,9 @@ const ApprovalManagement = () => {
         }
 
         return (
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyClass}`}>
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyClass}`}
+          >
             {urgencyText} ({daysWaiting}d)
           </span>
         );
@@ -295,7 +304,7 @@ const ApprovalManagement = () => {
           >
             <Eye className="w-4 h-4" />
           </button>
-          
+
           {approval.status === 'pending' && (
             <>
               <button
@@ -495,9 +504,28 @@ const ApprovalManagement = () => {
             setShowModal(false);
             setSelectedApproval(null);
           }}
-          onApprove={(data) => handleApproval(selectedApproval.type, selectedApproval._id, 'approve', data)}
-          onReject={(data) => handleApproval(selectedApproval.type, selectedApproval._id, 'reject', data)}
-          isLoading={isApprovingVendor || isRejectingVendor || isApprovingRestaurant || isRejectingRestaurant}
+          onApprove={(data) =>
+            handleApproval(
+              selectedApproval.type,
+              selectedApproval._id,
+              'approve',
+              data
+            )
+          }
+          onReject={(data) =>
+            handleApproval(
+              selectedApproval.type,
+              selectedApproval._id,
+              'reject',
+              data
+            )
+          }
+          isLoading={
+            isApprovingVendor ||
+            isRejectingVendor ||
+            isApprovingRestaurant ||
+            isRejectingRestaurant
+          }
         />
       )}
     </div>

@@ -38,7 +38,7 @@ import { Modal } from '../../components/ui/Modal';
 
 const RestaurantManagement = () => {
   const navigate = useNavigate();
-  
+
   // State management
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -61,7 +61,8 @@ const RestaurantManagement = () => {
   const [updateRestaurantStatus] = useUpdateRestaurantStatusMutation();
   const [deleteRestaurant] = useDeleteRestaurantMutation();
 
-  const restaurants = restaurantsData?.data || restaurantsData?.restaurants || [];
+  const restaurants =
+    restaurantsData?.data || restaurantsData?.restaurants || [];
   const summary = restaurantsData?.summary || {};
 
   // Filter options
@@ -76,16 +77,25 @@ const RestaurantManagement = () => {
   // Handlers
   const handleStatusUpdate = async (restaurantId, newStatus) => {
     try {
-      await updateRestaurantStatus({ id: restaurantId, status: newStatus }).unwrap();
+      await updateRestaurantStatus({
+        id: restaurantId,
+        status: newStatus,
+      }).unwrap();
       console.log(`Restaurant status updated to ${newStatus}`);
       refetch();
     } catch (error) {
-      console.error(error.data?.message || 'Failed to update restaurant status');
+      console.error(
+        error.data?.message || 'Failed to update restaurant status'
+      );
     }
   };
 
   const handleDeleteRestaurant = async (restaurantId) => {
-    if (!window.confirm('Are you sure you want to delete this restaurant? This action cannot be undone.')) {
+    if (
+      !window.confirm(
+        'Are you sure you want to delete this restaurant? This action cannot be undone.'
+      )
+    ) {
       return;
     }
 
@@ -105,10 +115,22 @@ const RestaurantManagement = () => {
 
   const getStatusDisplay = (status) => {
     const statusMap = {
-      active: { color: 'text-bottle-green', bgColor: 'bg-mint-fresh/20', icon: CheckCircle },
+      active: {
+        color: 'text-bottle-green',
+        bgColor: 'bg-mint-fresh/20',
+        icon: CheckCircle,
+      },
       inactive: { color: 'text-gray-600', bgColor: 'bg-gray-100', icon: Clock },
-      suspended: { color: 'text-tomato-red', bgColor: 'bg-tomato-red/20', icon: XCircle },
-      pending: { color: 'text-earthy-brown', bgColor: 'bg-earthy-yellow/20', icon: Clock },
+      suspended: {
+        color: 'text-tomato-red',
+        bgColor: 'bg-tomato-red/20',
+        icon: XCircle,
+      },
+      pending: {
+        color: 'text-earthy-brown',
+        bgColor: 'bg-earthy-yellow/20',
+        icon: Clock,
+      },
     };
     return statusMap[status] || statusMap.inactive;
   };
@@ -292,7 +314,9 @@ const RestaurantManagement = () => {
                           </div>
                         </div>
 
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color} flex items-center gap-1`}>
+                        <div
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color} flex items-center gap-1`}
+                        >
                           <StatusIcon className="w-3 h-3" />
                           {restaurant.status}
                         </div>
@@ -312,10 +336,9 @@ const RestaurantManagement = () => {
                           <div className="flex items-start gap-2 text-sm text-text-muted">
                             <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                             <span className="line-clamp-2">
-                              {typeof restaurant.address === 'string' 
-                                ? restaurant.address 
-                                : `${restaurant.address.street || ''}, ${restaurant.address.city || ''}`
-                              }
+                              {typeof restaurant.address === 'string'
+                                ? restaurant.address
+                                : `${restaurant.address.street || ''}, ${restaurant.address.city || ''}`}
                             </span>
                           </div>
                         )}
@@ -327,12 +350,19 @@ const RestaurantManagement = () => {
                           <div className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             <span>
-                              Joined {restaurant.createdAt ? new Date(restaurant.createdAt).toLocaleDateString() : 'Recently'}
+                              Joined{' '}
+                              {restaurant.createdAt
+                                ? new Date(
+                                    restaurant.createdAt
+                                  ).toLocaleDateString()
+                                : 'Recently'}
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Users className="w-3 h-3" />
-                            <span>{restaurant.managersCount || 0} managers</span>
+                            <span>
+                              {restaurant.managersCount || 0} managers
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -348,7 +378,7 @@ const RestaurantManagement = () => {
                           <Eye className="w-4 h-4 mr-1" />
                           Details
                         </Button>
-                        
+
                         <div className="relative group">
                           <Button size="sm" variant="outline">
                             <Settings className="w-4 h-4" />
@@ -356,20 +386,36 @@ const RestaurantManagement = () => {
                           <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                             <div className="p-2">
                               <button
-                                onClick={() => handleStatusUpdate(restaurant._id, restaurant.status === 'active' ? 'inactive' : 'active')}
+                                onClick={() =>
+                                  handleStatusUpdate(
+                                    restaurant._id,
+                                    restaurant.status === 'active'
+                                      ? 'inactive'
+                                      : 'active'
+                                  )
+                                }
                                 className="w-full text-left px-3 py-2 text-sm text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                               >
-                                {restaurant.status === 'active' ? 'Deactivate' : 'Activate'}
+                                {restaurant.status === 'active'
+                                  ? 'Deactivate'
+                                  : 'Activate'}
                               </button>
                               <button
-                                onClick={() => handleStatusUpdate(restaurant._id, 'suspended')}
+                                onClick={() =>
+                                  handleStatusUpdate(
+                                    restaurant._id,
+                                    'suspended'
+                                  )
+                                }
                                 className="w-full text-left px-3 py-2 text-sm text-tomato-red hover:bg-tomato-red/10 rounded-lg transition-colors"
                                 disabled={restaurant.status === 'suspended'}
                               >
                                 Suspend
                               </button>
                               <button
-                                onClick={() => handleDeleteRestaurant(restaurant._id)}
+                                onClick={() =>
+                                  handleDeleteRestaurant(restaurant._id)
+                                }
                                 className="w-full text-left px-3 py-2 text-sm text-tomato-red hover:bg-tomato-red/10 rounded-lg transition-colors"
                               >
                                 Delete
@@ -448,13 +494,19 @@ const RestaurantManagement = () => {
                             </div>
                           </td>
                           <td className="py-4 px-6">
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color}`}>
+                            <div
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color}`}
+                            >
                               <StatusIcon className="w-3 h-3" />
                               {restaurant.status}
                             </div>
                           </td>
                           <td className="py-4 px-6 text-sm text-text-dark dark:text-white">
-                            {restaurant.createdAt ? new Date(restaurant.createdAt).toLocaleDateString() : 'Recently'}
+                            {restaurant.createdAt
+                              ? new Date(
+                                  restaurant.createdAt
+                                ).toLocaleDateString()
+                              : 'Recently'}
                           </td>
                           <td className="py-4 px-6 text-sm text-text-dark dark:text-white">
                             {restaurant.managersCount || 0}
@@ -471,7 +523,14 @@ const RestaurantManagement = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleStatusUpdate(restaurant._id, restaurant.status === 'active' ? 'inactive' : 'active')}
+                                onClick={() =>
+                                  handleStatusUpdate(
+                                    restaurant._id,
+                                    restaurant.status === 'active'
+                                      ? 'inactive'
+                                      : 'active'
+                                  )
+                                }
                               >
                                 <Settings className="w-4 h-4" />
                               </Button>
@@ -505,20 +564,26 @@ const RestaurantManagement = () => {
                 </h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm text-text-muted">Restaurant Name</label>
+                    <label className="text-sm text-text-muted">
+                      Restaurant Name
+                    </label>
                     <p className="font-medium text-text-dark dark:text-white">
                       {selectedRestaurant.name}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm text-text-muted">Cuisine Type</label>
+                    <label className="text-sm text-text-muted">
+                      Cuisine Type
+                    </label>
                     <p className="font-medium text-text-dark dark:text-white">
                       {selectedRestaurant.cuisineType || 'Not specified'}
                     </p>
                   </div>
                   <div>
                     <label className="text-sm text-text-muted">Status</label>
-                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusDisplay(selectedRestaurant.status).bgColor} ${getStatusDisplay(selectedRestaurant.status).color}`}>
+                    <div
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusDisplay(selectedRestaurant.status).bgColor} ${getStatusDisplay(selectedRestaurant.status).color}`}
+                    >
                       <CheckCircle className="w-3 h-3" />
                       {selectedRestaurant.status}
                     </div>
@@ -546,13 +611,11 @@ const RestaurantManagement = () => {
                   <div>
                     <label className="text-sm text-text-muted">Address</label>
                     <p className="font-medium text-text-dark dark:text-white">
-                      {selectedRestaurant.address 
-                        ? (typeof selectedRestaurant.address === 'string' 
-                            ? selectedRestaurant.address 
-                            : `${selectedRestaurant.address.street || ''}, ${selectedRestaurant.address.city || ''}, ${selectedRestaurant.address.state || ''} ${selectedRestaurant.address.zipCode || ''}`
-                          )
-                        : 'Not provided'
-                      }
+                      {selectedRestaurant.address
+                        ? typeof selectedRestaurant.address === 'string'
+                          ? selectedRestaurant.address
+                          : `${selectedRestaurant.address.street || ''}, ${selectedRestaurant.address.city || ''}, ${selectedRestaurant.address.state || ''} ${selectedRestaurant.address.zipCode || ''}`
+                        : 'Not provided'}
                     </p>
                   </div>
                 </div>
@@ -562,14 +625,25 @@ const RestaurantManagement = () => {
             {/* Actions */}
             <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button
-                onClick={() => handleStatusUpdate(selectedRestaurant._id, selectedRestaurant.status === 'active' ? 'inactive' : 'active')}
+                onClick={() =>
+                  handleStatusUpdate(
+                    selectedRestaurant._id,
+                    selectedRestaurant.status === 'active'
+                      ? 'inactive'
+                      : 'active'
+                  )
+                }
                 className="flex-1"
               >
-                {selectedRestaurant.status === 'active' ? 'Deactivate' : 'Activate'}
+                {selectedRestaurant.status === 'active'
+                  ? 'Deactivate'
+                  : 'Activate'}
               </Button>
               <Button
                 variant="outline"
-                onClick={() => handleStatusUpdate(selectedRestaurant._id, 'suspended')}
+                onClick={() =>
+                  handleStatusUpdate(selectedRestaurant._id, 'suspended')
+                }
                 className="flex-1 text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"
                 disabled={selectedRestaurant.status === 'suspended'}
               >

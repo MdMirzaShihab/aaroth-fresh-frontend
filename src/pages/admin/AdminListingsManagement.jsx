@@ -68,9 +68,11 @@ const AdminListingsManagement = () => {
   const [approveListing] = useApproveAdminListingMutation();
 
   const listings = listingsData?.data?.listings || listingsData?.data || [];
-  const totalListings = listingsData?.total || listingsData?.data?.totalListings || 0;
+  const totalListings =
+    listingsData?.total || listingsData?.data?.totalListings || 0;
   const totalPages = listingsData?.pages || listingsData?.data?.totalPages || 1;
-  const categories = categoriesData?.data?.categories || categoriesData?.data || [];
+  const categories =
+    categoriesData?.data?.categories || categoriesData?.data || [];
 
   // Status options
   const statusOptions = [
@@ -216,7 +218,9 @@ const AdminListingsManagement = () => {
           <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
             {listing.images?.[0]?.url || listing.product?.images?.[0]?.url ? (
               <img
-                src={listing.images?.[0]?.url || listing.product?.images?.[0]?.url}
+                src={
+                  listing.images?.[0]?.url || listing.product?.images?.[0]?.url
+                }
                 alt={listing.product?.name || listing.name}
                 className="w-full h-full object-cover"
               />
@@ -250,7 +254,9 @@ const AdminListingsManagement = () => {
           <User className="w-4 h-4 text-text-muted" />
           <div>
             <p className="text-sm font-medium text-text-dark dark:text-white">
-              {listing.vendor?.businessName || listing.vendor?.name || 'Unknown Vendor'}
+              {listing.vendor?.businessName ||
+                listing.vendor?.name ||
+                'Unknown Vendor'}
             </p>
             <p className="text-xs text-text-muted">
               {listing.vendor?.phone || 'No contact'}
@@ -270,7 +276,9 @@ const AdminListingsManagement = () => {
         <div className="flex items-center gap-1">
           <DollarSign className="w-3 h-3 text-text-muted" />
           <span className="text-sm font-medium text-text-dark dark:text-white">
-            {listing.pricing?.[0]?.pricePerUnit?.toFixed(2) || listing.price?.toFixed(2) || '0.00'}
+            {listing.pricing?.[0]?.pricePerUnit?.toFixed(2) ||
+              listing.price?.toFixed(2) ||
+              '0.00'}
           </span>
           <span className="text-xs text-text-muted">
             /{listing.pricing?.[0]?.unit || listing.availability?.unit || 'kg'}
@@ -292,11 +300,13 @@ const AdminListingsManagement = () => {
           </span>
           {listing.availability?.isInSeason !== undefined && (
             <div className="text-xs">
-              <span className={`px-1 py-0.5 rounded text-xs ${
-                listing.availability.isInSeason 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-orange-100 text-orange-700'
-              }`}>
+              <span
+                className={`px-1 py-0.5 rounded text-xs ${
+                  listing.availability.isInSeason
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-orange-100 text-orange-700'
+                }`}
+              >
                 {listing.availability.isInSeason ? 'In Season' : 'Off Season'}
               </span>
             </div>
@@ -309,7 +319,10 @@ const AdminListingsManagement = () => {
       id: 'status',
       header: 'Status',
       cell: (listing) => {
-        const badge = getStatusBadge(listing.status, listing.featured || listing.isFeatured);
+        const badge = getStatusBadge(
+          listing.status,
+          listing.featured || listing.isFeatured
+        );
         return (
           <div className="flex items-center gap-1">
             <badge.icon className="w-3 h-3" />
@@ -351,7 +364,8 @@ const AdminListingsManagement = () => {
                     ? 'remove this listing from'
                     : 'add this listing to'
                 } featured products?`,
-                confirmText: listing.featured || listing.isFeatured ? 'Remove' : 'Feature',
+                confirmText:
+                  listing.featured || listing.isFeatured ? 'Remove' : 'Feature',
                 onConfirm: () => handleToggleFeatured(listing._id),
               })
             }
@@ -361,7 +375,9 @@ const AdminListingsManagement = () => {
                 : 'text-text-muted hover:text-amber-600 hover:bg-amber-50'
             }`}
             title={
-              listing.featured || listing.isFeatured ? 'Remove from featured' : 'Add to featured'
+              listing.featured || listing.isFeatured
+                ? 'Remove from featured'
+                : 'Add to featured'
             }
           >
             <Star
@@ -468,7 +484,8 @@ const AdminListingsManagement = () => {
             Vendor Listings Management
           </h1>
           <p className="text-text-muted mt-1">
-            Manage vendor listings for products, approvals, and featured listings
+            Manage vendor listings for products, approvals, and featured
+            listings
           </p>
         </div>
 

@@ -27,16 +27,41 @@ const ApprovalFilters = ({
 }) => {
   // Filter options
   const typeOptions = [
-    { value: 'all', label: 'All Applications', icon: Users, color: 'text-gray-600' },
+    {
+      value: 'all',
+      label: 'All Applications',
+      icon: Users,
+      color: 'text-gray-600',
+    },
     { value: 'vendor', label: 'Vendors', icon: Store, color: 'text-green-600' },
-    { value: 'restaurant', label: 'Restaurants', icon: Utensils, color: 'text-blue-600' },
+    {
+      value: 'restaurant',
+      label: 'Restaurants',
+      icon: Utensils,
+      color: 'text-blue-600',
+    },
   ];
 
   const statusOptions = [
     { value: 'all', label: 'All Status', icon: Users, color: 'text-gray-600' },
-    { value: 'pending', label: 'Pending', icon: Clock, color: 'text-earthy-brown' },
-    { value: 'approved', label: 'Approved', icon: CheckCircle, color: 'text-bottle-green' },
-    { value: 'rejected', label: 'Rejected', icon: XCircle, color: 'text-tomato-red' },
+    {
+      value: 'pending',
+      label: 'Pending',
+      icon: Clock,
+      color: 'text-earthy-brown',
+    },
+    {
+      value: 'approved',
+      label: 'Approved',
+      icon: CheckCircle,
+      color: 'text-bottle-green',
+    },
+    {
+      value: 'rejected',
+      label: 'Rejected',
+      icon: XCircle,
+      color: 'text-tomato-red',
+    },
   ];
 
   // Quick filter presets
@@ -169,7 +194,9 @@ const ApprovalFilters = ({
           </div>
 
           {/* Clear Filters Button */}
-          {(searchTerm || selectedType !== 'all' || selectedStatus !== 'pending') && (
+          {(searchTerm ||
+            selectedType !== 'all' ||
+            selectedStatus !== 'pending') && (
             <Button
               variant="outline"
               size="sm"
@@ -184,12 +211,18 @@ const ApprovalFilters = ({
 
       {/* Quick Filter Chips */}
       <div className="flex flex-wrap gap-2">
-        <span className="text-sm font-medium text-text-muted">Quick Filters:</span>
+        <span className="text-sm font-medium text-text-muted">
+          Quick Filters:
+        </span>
         {quickFilters.map((filter) => {
           const Icon = filter.icon;
-          const isActive = 
-            (filter.id === 'vendors-pending' && selectedType === 'vendor' && selectedStatus === 'pending') ||
-            (filter.id === 'restaurants-pending' && selectedType === 'restaurant' && selectedStatus === 'pending');
+          const isActive =
+            (filter.id === 'vendors-pending' &&
+              selectedType === 'vendor' &&
+              selectedStatus === 'pending') ||
+            (filter.id === 'restaurants-pending' &&
+              selectedType === 'restaurant' &&
+              selectedStatus === 'pending');
 
           return (
             <button
@@ -201,7 +234,9 @@ const ApprovalFilters = ({
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-white' : filter.color}`} />
+              <Icon
+                className={`w-4 h-4 ${isActive ? 'text-white' : filter.color}`}
+              />
               {filter.label}
             </button>
           );
@@ -212,19 +247,21 @@ const ApprovalFilters = ({
       {(selectedType !== 'all' || selectedStatus !== 'all' || searchTerm) && (
         <div className="flex flex-wrap items-center gap-2 text-sm text-text-muted">
           <span>Showing:</span>
-          
+
           {selectedStatus !== 'all' && (
             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">
-              {statusOptions.find(opt => opt.value === selectedStatus)?.label} applications
+              {statusOptions.find((opt) => opt.value === selectedStatus)?.label}{' '}
+              applications
             </span>
           )}
-          
+
           {selectedType !== 'all' && (
             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">
-              from {typeOptions.find(opt => opt.value === selectedType)?.label}
+              from{' '}
+              {typeOptions.find((opt) => opt.value === selectedType)?.label}
             </span>
           )}
-          
+
           {searchTerm && (
             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">
               matching "{searchTerm}"

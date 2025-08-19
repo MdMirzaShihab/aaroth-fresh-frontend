@@ -15,13 +15,14 @@ const SimplePieChart = ({
   }
 
   // Filter out invalid data and ensure numeric values
-  const validData = data.filter(item => 
-    item && 
-    typeof item.value === 'number' && 
-    !isNaN(item.value) && 
-    isFinite(item.value) && 
-    item.value >= 0 &&
-    item.label
+  const validData = data.filter(
+    (item) =>
+      item &&
+      typeof item.value === 'number' &&
+      !isNaN(item.value) &&
+      isFinite(item.value) &&
+      item.value >= 0 &&
+      item.label
   );
 
   if (validData.length === 0) {
@@ -33,7 +34,7 @@ const SimplePieChart = ({
   }
 
   const total = validData.reduce((sum, item) => sum + item.value, 0);
-  
+
   // Handle edge case where total is 0
   if (total === 0) {
     return (

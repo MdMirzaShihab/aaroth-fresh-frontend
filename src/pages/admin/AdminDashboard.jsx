@@ -16,7 +16,7 @@ import {
   Activity,
   DollarSign,
 } from 'lucide-react';
-import { 
+import {
   useGetAdminDashboardOverviewQuery,
   useGetAllApprovalsQuery,
 } from '../../store/slices/apiSlice';
@@ -41,9 +41,9 @@ const AdminDashboard = () => {
     data: approvalsData,
     isLoading: isApprovalsLoading,
     error: approvalsError,
-  } = useGetAllApprovalsQuery({ 
+  } = useGetAllApprovalsQuery({
     status: 'pending',
-    limit: 10 
+    limit: 10,
   });
 
   const isLoading = isDashboardLoading || isApprovalsLoading;
@@ -76,14 +76,17 @@ const AdminDashboard = () => {
   const approvalMetrics = approvalsData?.data?.summary || {};
 
   // Calculate urgency metrics for approvals
-  const urgentApprovals = pendingApprovals.filter(approval => {
-    const daysWaiting = approval.createdAt 
-      ? Math.floor((new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24))
+  const urgentApprovals = pendingApprovals.filter((approval) => {
+    const daysWaiting = approval.createdAt
+      ? Math.floor(
+          (new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24)
+        )
       : 0;
     return daysWaiting > 7;
   }).length;
 
-  const totalPendingApprovals = (approvalMetrics.vendor || 0) + (approvalMetrics.restaurant || 0);
+  const totalPendingApprovals =
+    (approvalMetrics.vendor || 0) + (approvalMetrics.restaurant || 0);
 
   const metricCards = [
     {
@@ -109,16 +112,20 @@ const AdminDashboard = () => {
     {
       id: 'pending-vendor-approvals',
       title: 'Pending Vendor Approvals',
-      value: approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0,
+      value:
+        approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0,
       change: '0',
       changeType:
-        (approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0) > 5
+        (approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0) >
+        5
           ? 'negative'
           : 'positive',
       icon: UserCheck,
       color: 'bg-gradient-to-br from-earthy-yellow to-amber-500',
       description: 'Vendors awaiting approval',
-      urgent: (approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0) > 5,
+      urgent:
+        (approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0) >
+        5,
       clickable: true,
       onClick: () => navigate('/admin/approvals?type=vendor&status=pending'),
     },
@@ -135,18 +142,27 @@ const AdminDashboard = () => {
     {
       id: 'pending-restaurant-approvals',
       title: 'Pending Restaurant Approvals',
-      value: approvalMetrics.restaurant || metrics.pendingVerifications?.restaurants || 0,
+      value:
+        approvalMetrics.restaurant ||
+        metrics.pendingVerifications?.restaurants ||
+        0,
       change: '0',
       changeType:
-        (approvalMetrics.restaurant || metrics.pendingVerifications?.restaurants || 0) > 3
+        (approvalMetrics.restaurant ||
+          metrics.pendingVerifications?.restaurants ||
+          0) > 3
           ? 'negative'
           : 'positive',
       icon: UserCheck,
       color: 'bg-gradient-to-br from-orange-500 to-orange-600',
       description: 'Restaurants awaiting approval',
-      urgent: (approvalMetrics.restaurant || metrics.pendingVerifications?.restaurants || 0) > 3,
+      urgent:
+        (approvalMetrics.restaurant ||
+          metrics.pendingVerifications?.restaurants ||
+          0) > 3,
       clickable: true,
-      onClick: () => navigate('/admin/approvals?type=restaurant&status=pending'),
+      onClick: () =>
+        navigate('/admin/approvals?type=restaurant&status=pending'),
     },
     {
       id: 'total-orders',
@@ -179,19 +195,23 @@ const AdminDashboard = () => {
       description: 'Active product listings',
     },
     // Urgent Approvals Card (only show if there are urgent approvals)
-    ...(urgentApprovals > 0 ? [{
-      id: 'urgent-approvals',
-      title: 'Urgent Approvals',
-      value: urgentApprovals,
-      change: '7+ days waiting',
-      changeType: 'negative',
-      icon: AlertTriangle,
-      color: 'bg-gradient-to-br from-tomato-red to-red-600',
-      description: 'Applications waiting > 7 days',
-      urgent: true,
-      clickable: true,
-      onClick: () => navigate('/admin/approvals?status=pending'),
-    }] : []),
+    ...(urgentApprovals > 0
+      ? [
+          {
+            id: 'urgent-approvals',
+            title: 'Urgent Approvals',
+            value: urgentApprovals,
+            change: '7+ days waiting',
+            changeType: 'negative',
+            icon: AlertTriangle,
+            color: 'bg-gradient-to-br from-tomato-red to-red-600',
+            description: 'Applications waiting > 7 days',
+            urgent: true,
+            clickable: true,
+            onClick: () => navigate('/admin/approvals?status=pending'),
+          },
+        ]
+      : []),
   ];
 
   const recentActivity = metrics.recentOrders || [];
@@ -213,11 +233,11 @@ const AdminDashboard = () => {
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3">
           {totalPendingApprovals > 0 && (
-            <button 
+            <button
               onClick={() => navigate('/admin/users/approvals')}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
-                urgentApprovals > 0 
-                  ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200' 
+                urgentApprovals > 0
+                  ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200'
                   : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200'
               }`}
             >
@@ -230,7 +250,7 @@ const AdminDashboard = () => {
               )}
             </button>
           )}
-          <button 
+          <button
             onClick={() => navigate('/admin/analytics')}
             className="bg-gradient-secondary text-white px-6 py-2 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 min-h-[44px]"
           >
@@ -290,12 +310,12 @@ const AdminDashboard = () => {
                     metric.urgent
                       ? 'bg-amber-100 text-amber-600'
                       : metric.color.includes('bottle-green')
-                      ? 'bg-green-100 text-green-600'
-                      : metric.color.includes('mint-fresh')
-                      ? 'bg-emerald-100 text-emerald-600'
-                      : metric.color.includes('earthy-brown')
-                      ? 'bg-orange-100 text-orange-600'
-                      : 'bg-gray-100 text-gray-600'
+                        ? 'bg-green-100 text-green-600'
+                        : metric.color.includes('mint-fresh')
+                          ? 'bg-emerald-100 text-emerald-600'
+                          : metric.color.includes('earthy-brown')
+                            ? 'bg-orange-100 text-orange-600'
+                            : 'bg-gray-100 text-gray-600'
                   } group-hover:scale-105 transition-transform duration-200`}
                 >
                   <metric.icon className="w-6 h-6" />
@@ -303,9 +323,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* Description */}
-              <p className="text-gray-500 text-sm mt-4">
-                {metric.description}
-              </p>
+              <p className="text-gray-500 text-sm mt-4">{metric.description}</p>
             </div>
           </div>
         ))}
@@ -324,7 +342,7 @@ const AdminDashboard = () => {
                 {pendingApprovals.length} pending
               </span>
             </div>
-            <Button 
+            <Button
               size="sm"
               onClick={() => navigate('/admin/approvals')}
               className="text-sm"
@@ -335,17 +353,20 @@ const AdminDashboard = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {pendingApprovals.slice(0, 5).map((approval, index) => {
-              const daysWaiting = approval.createdAt 
-                ? Math.floor((new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24))
+              const daysWaiting = approval.createdAt
+                ? Math.floor(
+                    (new Date() - new Date(approval.createdAt)) /
+                      (1000 * 60 * 60 * 24)
+                  )
                 : 0;
               const isUrgent = daysWaiting > 7;
 
               return (
-                <div 
+                <div
                   key={approval._id || index}
                   className={`p-4 rounded-xl border transition-all duration-200 hover:shadow-md cursor-pointer ${
-                    isUrgent 
-                      ? 'border-tomato-red/30 bg-tomato-red/5 hover:bg-tomato-red/10' 
+                    isUrgent
+                      ? 'border-tomato-red/30 bg-tomato-red/5 hover:bg-tomato-red/10'
                       : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                   onClick={() => navigate('/admin/approvals')}
@@ -363,14 +384,18 @@ const AdminDashboard = () => {
                       <AlertTriangle className="w-4 h-4 text-tomato-red" />
                     )}
                   </div>
-                  
+
                   <h4 className="font-semibold text-text-dark dark:text-white mb-1 truncate">
-                    {approval.businessName || approval.name || 'Unknown Business'}
+                    {approval.businessName ||
+                      approval.name ||
+                      'Unknown Business'}
                   </h4>
-                  
+
                   <div className="flex items-center gap-1 text-xs text-text-muted">
                     <Clock className="w-3 h-3" />
-                    <span className={isUrgent ? 'text-tomato-red font-medium' : ''}>
+                    <span
+                      className={isUrgent ? 'text-tomato-red font-medium' : ''}
+                    >
                       {daysWaiting === 0 ? 'Today' : `${daysWaiting} days`}
                     </span>
                   </div>

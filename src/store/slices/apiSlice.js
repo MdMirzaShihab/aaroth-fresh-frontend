@@ -82,7 +82,8 @@ export const apiSlice = createApi({
       query: (profileData) => ({
         url: '/auth/me',
         method: 'PUT',
-        body: profileData,
+        body: profileData, // This can be FormData with optional profile image
+        // Don't set Content-Type header - let browser set it for FormData
       }),
       invalidatesTags: ['User'],
     }),
@@ -941,16 +942,18 @@ export const apiSlice = createApi({
       query: (productData) => ({
         url: '/admin/products',
         method: 'POST',
-        body: productData,
+        body: productData, // This will be FormData with image
+        // Don't set Content-Type header - let browser set it for FormData
       }),
       invalidatesTags: [{ type: 'Product', id: 'ADMIN_LIST' }],
     }),
 
     updateAdminProduct: builder.mutation({
-      query: ({ id, ...productData }) => ({
+      query: ({ id, formData }) => ({
         url: `/admin/products/${id}`,
         method: 'PUT',
-        body: productData,
+        body: formData, // This will be FormData with optional image
+        // Don't set Content-Type header - let browser set it for FormData
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: 'Product', id },
@@ -973,13 +976,26 @@ export const apiSlice = createApi({
     getAdminCategories: builder.query({
       query: (params = {}) => ({
         url: '/admin/categories',
-        params,
+        params: {
+          // Advanced filtering parameters
+          search: params.search,
+          isActive: params.isActive,
+          isAvailable: params.isAvailable,
+          adminStatus: params.adminStatus,
+          level: params.level,
+
+          // Pagination and sorting
+          page: params.page || 1,
+          limit: params.limit || 20,
+          sortBy: params.sortBy || 'name',
+          sortOrder: params.sortOrder || 'asc',
+        },
       }),
       providesTags: (result) => [
         { type: 'Category', id: 'ADMIN_LIST' },
-        ...(result?.data?.categories || []).map(({ id }) => ({
+        ...(result?.data || []).map(({ _id }) => ({
           type: 'Category',
-          id,
+          id: _id,
         })),
       ],
     }),
@@ -993,7 +1009,8 @@ export const apiSlice = createApi({
       query: (categoryData) => ({
         url: '/admin/categories',
         method: 'POST',
-        body: categoryData,
+        body: categoryData, // This will be FormData with image
+        // Don't set Content-Type header - let browser set it for FormData
       }),
       invalidatesTags: [
         { type: 'Category', id: 'ADMIN_LIST' },
@@ -1002,10 +1019,11 @@ export const apiSlice = createApi({
     }),
 
     updateAdminCategory: builder.mutation({
-      query: ({ id, ...categoryData }) => ({
+      query: ({ id, formData }) => ({
         url: `/admin/categories/${id}`,
         method: 'PUT',
-        body: categoryData,
+        body: formData, // This will be FormData with optional image
+        // Don't set Content-Type header - let browser set it for FormData
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: 'Category', id },
@@ -1024,6 +1042,44 @@ export const apiSlice = createApi({
         { type: 'Category', id: 'ADMIN_LIST' },
         'Category', // Also invalidate public categories
       ],
+    }),
+
+    // Safe delete category with dependency check
+    safeDeleteCategory: builder.mutation({
+      query: (id) => ({
+        url: `/admin/categories/${id}/safe-delete`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Category', id },
+        { type: 'Category', id: 'ADMIN_LIST' },
+        'Category',
+      ],
+    }),
+
+    // Toggle category availability (flag/unflag system)
+    toggleCategoryAvailability: builder.mutation({
+      query: ({ id, isAvailable, flagReason }) => ({
+        url: `/admin/categories/${id}/availability`,
+        method: 'PUT',
+        body: { isAvailable, flagReason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Category', id },
+        { type: 'Category', id: 'ADMIN_LIST' },
+      ],
+    }),
+
+    // Get category statistics
+    getCategoryStats: builder.query({
+      query: () => '/admin/categories/stats',
+      providesTags: ['CategoryStats'],
+    }),
+
+    // Get category usage statistics
+    getCategoryUsageStats: builder.query({
+      query: (id) => `/admin/categories/${id}/usage`,
+      providesTags: (result, error, id) => [{ type: 'CategoryUsage', id }],
     }),
 
     // Bulk Operations
@@ -2065,6 +2121,9 @@ export const {
   useCreateAdminCategoryMutation,
   useUpdateAdminCategoryMutation,
   useDeleteAdminCategoryMutation,
+  useSafeDeleteCategoryMutation,
+  useToggleCategoryAvailabilityMutation,
+  useGetCategoryUsageStatsQuery,
 
   // Vendor - Dashboard & Analytics
   useGetVendorDashboardQuery,
@@ -2197,7 +2256,7 @@ export const {
   useDeactivateVendorMutation,
   useGetRestaurantsQuery,
   useToggleRestaurantStatusMutation,
-  
+
   // Additional User Management
   useGetAllVendorsQuery,
   useGetAllRestaurantsQuery,
@@ -2205,13 +2264,15 @@ export const {
   useUpdateRestaurantStatusMutation,
   useDeleteVendorMutation,
   useDeleteRestaurantMutation,
-  
+
   // Enhanced Analytics
   useGetAdminAnalyticsOverviewQuery,
+  
+  // Category Statistics
+  useGetCategoryStatsQuery,
 
   // Safe Deletion Operations
   useSafeDeleteProductMutation,
-  useSafeDeleteCategoryMutation,
 
   // Admin - Featured Listings
   useToggleFeaturedListingMutation,

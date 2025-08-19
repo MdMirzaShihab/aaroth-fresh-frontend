@@ -39,7 +39,7 @@ import { Modal } from '../../components/ui/Modal';
 
 const VendorManagement = () => {
   const navigate = useNavigate();
-  
+
   // State management
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -86,7 +86,11 @@ const VendorManagement = () => {
   };
 
   const handleDeleteVendor = async (vendorId) => {
-    if (!window.confirm('Are you sure you want to delete this vendor? This action cannot be undone.')) {
+    if (
+      !window.confirm(
+        'Are you sure you want to delete this vendor? This action cannot be undone.'
+      )
+    ) {
       return;
     }
 
@@ -106,10 +110,22 @@ const VendorManagement = () => {
 
   const getStatusDisplay = (status) => {
     const statusMap = {
-      active: { color: 'text-bottle-green', bgColor: 'bg-mint-fresh/20', icon: CheckCircle },
+      active: {
+        color: 'text-bottle-green',
+        bgColor: 'bg-mint-fresh/20',
+        icon: CheckCircle,
+      },
       inactive: { color: 'text-gray-600', bgColor: 'bg-gray-100', icon: Clock },
-      suspended: { color: 'text-tomato-red', bgColor: 'bg-tomato-red/20', icon: XCircle },
-      pending: { color: 'text-earthy-brown', bgColor: 'bg-earthy-yellow/20', icon: Clock },
+      suspended: {
+        color: 'text-tomato-red',
+        bgColor: 'bg-tomato-red/20',
+        icon: XCircle,
+      },
+      pending: {
+        color: 'text-earthy-brown',
+        bgColor: 'bg-earthy-yellow/20',
+        icon: Clock,
+      },
     };
     return statusMap[status] || statusMap.inactive;
   };
@@ -149,7 +165,9 @@ const VendorManagement = () => {
 
         <div className="flex flex-wrap items-center gap-3">
           <Button
-            onClick={() => navigate('/admin/approvals?type=vendor&status=pending')}
+            onClick={() =>
+              navigate('/admin/approvals?type=vendor&status=pending')
+            }
             variant="outline"
             className="text-earthy-brown border-earthy-brown hover:bg-earthy-brown hover:text-white"
           >
@@ -260,7 +278,8 @@ const VendorManagement = () => {
                   setSearchTerm('');
                   setStatusFilter('all');
                 }
-              : () => navigate('/admin/users/approvals?type=vendor&status=pending')
+              : () =>
+                  navigate('/admin/users/approvals?type=vendor&status=pending')
           }
         />
       ) : (
@@ -294,7 +313,9 @@ const VendorManagement = () => {
                           </div>
                         </div>
 
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color} flex items-center gap-1`}>
+                        <div
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color} flex items-center gap-1`}
+                        >
                           <StatusIcon className="w-3 h-3" />
                           {vendor.status}
                         </div>
@@ -314,10 +335,9 @@ const VendorManagement = () => {
                           <div className="flex items-start gap-2 text-sm text-text-muted">
                             <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                             <span className="line-clamp-2">
-                              {typeof vendor.address === 'string' 
-                                ? vendor.address 
-                                : `${vendor.address.street || ''}, ${vendor.address.city || ''}`
-                              }
+                              {typeof vendor.address === 'string'
+                                ? vendor.address
+                                : `${vendor.address.street || ''}, ${vendor.address.city || ''}`}
                             </span>
                           </div>
                         )}
@@ -345,13 +365,23 @@ const VendorManagement = () => {
                           <div className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             <span>
-                              Joined {vendor.createdAt ? new Date(vendor.createdAt).toLocaleDateString() : 'Recently'}
+                              Joined{' '}
+                              {vendor.createdAt
+                                ? new Date(
+                                    vendor.createdAt
+                                  ).toLocaleDateString()
+                                : 'Recently'}
                             </span>
                           </div>
                           {vendor.lastActive && (
                             <div className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
-                              <span>Last active {new Date(vendor.lastActive).toLocaleDateString()}</span>
+                              <span>
+                                Last active{' '}
+                                {new Date(
+                                  vendor.lastActive
+                                ).toLocaleDateString()}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -368,7 +398,7 @@ const VendorManagement = () => {
                           <Eye className="w-4 h-4 mr-1" />
                           Details
                         </Button>
-                        
+
                         <div className="relative group">
                           <Button size="sm" variant="outline">
                             <Settings className="w-4 h-4" />
@@ -376,20 +406,35 @@ const VendorManagement = () => {
                           <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                             <div className="p-2">
                               <button
-                                onClick={() => handleStatusUpdate(vendor._id, vendor.status === 'active' ? 'inactive' : 'active')}
+                                onClick={() =>
+                                  handleStatusUpdate(
+                                    vendor._id,
+                                    vendor.status === 'active'
+                                      ? 'inactive'
+                                      : 'active'
+                                  )
+                                }
                                 className="w-full text-left px-3 py-2 text-sm text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                               >
-                                {vendor.status === 'active' ? 'Deactivate' : 'Activate'}
+                                {vendor.status === 'active'
+                                  ? 'Deactivate'
+                                  : 'Activate'}
                               </button>
                               <button
-                                onClick={() => handleStatusUpdate(vendor._id, 'suspended')}
+                                onClick={() =>
+                                  handleStatusUpdate(vendor._id, 'suspended')
+                                }
                                 className="w-full text-left px-3 py-2 text-sm text-tomato-red hover:bg-tomato-red/10 rounded-lg transition-colors"
                                 disabled={vendor.status === 'suspended'}
                               >
                                 Suspend
                               </button>
                               <button
-                                onClick={() => navigate(`/admin/listings?vendor=${vendor._id}`)}
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/listings?vendor=${vendor._id}`
+                                  )
+                                }
                                 className="w-full text-left px-3 py-2 text-sm text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                               >
                                 View Listings
@@ -477,7 +522,9 @@ const VendorManagement = () => {
                             </div>
                           </td>
                           <td className="py-4 px-6">
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color}`}>
+                            <div
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusDisplay.bgColor} ${statusDisplay.color}`}
+                            >
                               <StatusIcon className="w-3 h-3" />
                               {vendor.status}
                             </div>
@@ -489,7 +536,9 @@ const VendorManagement = () => {
                             {vendor.ordersCount || 0}
                           </td>
                           <td className="py-4 px-6 text-sm text-text-dark dark:text-white">
-                            {vendor.createdAt ? new Date(vendor.createdAt).toLocaleDateString() : 'Recently'}
+                            {vendor.createdAt
+                              ? new Date(vendor.createdAt).toLocaleDateString()
+                              : 'Recently'}
                           </td>
                           <td className="py-4 px-6">
                             <div className="flex items-center justify-end gap-2">
@@ -503,7 +552,14 @@ const VendorManagement = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleStatusUpdate(vendor._id, vendor.status === 'active' ? 'inactive' : 'active')}
+                                onClick={() =>
+                                  handleStatusUpdate(
+                                    vendor._id,
+                                    vendor.status === 'active'
+                                      ? 'inactive'
+                                      : 'active'
+                                  )
+                                }
                               >
                                 <Settings className="w-4 h-4" />
                               </Button>
@@ -537,26 +593,34 @@ const VendorManagement = () => {
                 </h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm text-text-muted">Business Name</label>
+                    <label className="text-sm text-text-muted">
+                      Business Name
+                    </label>
                     <p className="font-medium text-text-dark dark:text-white">
                       {selectedVendor.businessName || selectedVendor.name}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm text-text-muted">Business Type</label>
+                    <label className="text-sm text-text-muted">
+                      Business Type
+                    </label>
                     <p className="font-medium text-text-dark dark:text-white">
                       {selectedVendor.businessType || 'Not specified'}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm text-text-muted">Business License</label>
+                    <label className="text-sm text-text-muted">
+                      Business License
+                    </label>
                     <p className="font-medium text-text-dark dark:text-white">
                       {selectedVendor.businessLicense || 'Not provided'}
                     </p>
                   </div>
                   <div>
                     <label className="text-sm text-text-muted">Status</label>
-                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusDisplay(selectedVendor.status).bgColor} ${getStatusDisplay(selectedVendor.status).color}`}>
+                    <div
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusDisplay(selectedVendor.status).bgColor} ${getStatusDisplay(selectedVendor.status).color}`}
+                    >
                       <CheckCircle className="w-3 h-3" />
                       {selectedVendor.status}
                     </div>
@@ -584,13 +648,11 @@ const VendorManagement = () => {
                   <div>
                     <label className="text-sm text-text-muted">Address</label>
                     <p className="font-medium text-text-dark dark:text-white">
-                      {selectedVendor.address 
-                        ? (typeof selectedVendor.address === 'string' 
-                            ? selectedVendor.address 
-                            : `${selectedVendor.address.street || ''}, ${selectedVendor.address.city || ''}, ${selectedVendor.address.state || ''} ${selectedVendor.address.zipCode || ''}`
-                          )
-                        : 'Not provided'
-                      }
+                      {selectedVendor.address
+                        ? typeof selectedVendor.address === 'string'
+                          ? selectedVendor.address
+                          : `${selectedVendor.address.street || ''}, ${selectedVendor.address.city || ''}, ${selectedVendor.address.state || ''} ${selectedVendor.address.zipCode || ''}`
+                        : 'Not provided'}
                     </p>
                   </div>
                 </div>
@@ -645,13 +707,20 @@ const VendorManagement = () => {
             {/* Actions */}
             <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button
-                onClick={() => navigate(`/admin/listings?vendor=${selectedVendor._id}`)}
+                onClick={() =>
+                  navigate(`/admin/listings?vendor=${selectedVendor._id}`)
+                }
                 className="flex-1"
               >
                 View Listings
               </Button>
               <Button
-                onClick={() => handleStatusUpdate(selectedVendor._id, selectedVendor.status === 'active' ? 'inactive' : 'active')}
+                onClick={() =>
+                  handleStatusUpdate(
+                    selectedVendor._id,
+                    selectedVendor.status === 'active' ? 'inactive' : 'active'
+                  )
+                }
                 variant="outline"
                 className="flex-1"
               >
@@ -659,7 +728,9 @@ const VendorManagement = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => handleStatusUpdate(selectedVendor._id, 'suspended')}
+                onClick={() =>
+                  handleStatusUpdate(selectedVendor._id, 'suspended')
+                }
                 className="flex-1 text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"
                 disabled={selectedVendor.status === 'suspended'}
               >

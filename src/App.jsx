@@ -41,12 +41,14 @@ const PendingApprovalPage = lazy(
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const ApprovalManagement = lazy(() => import('./pages/admin/ApprovalManagement'));
+const ApprovalManagement = lazy(
+  () => import('./pages/admin/ApprovalManagement')
+);
 const UserManagement = lazy(() => import('./pages/admin/UserManagement'));
 const VendorManagement = lazy(() => import('./pages/admin/VendorManagement'));
-const RestaurantManagement = lazy(() => import('./pages/admin/RestaurantManagement'));
-const VendorApproval = lazy(() => import('./pages/admin/VendorApproval'));
-const ProductManagement = lazy(() => import('./pages/admin/ProductManagement'));
+const RestaurantManagement = lazy(
+  () => import('./pages/admin/RestaurantManagement')
+);
 const ProductList = lazy(() => import('./pages/admin/ProductList'));
 const ProductForm = lazy(() => import('./pages/admin/ProductForm'));
 const CategoryManagement = lazy(
@@ -296,14 +298,6 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <VendorManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="users/approvals"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <VendorApproval />
                 </Suspense>
               }
             />

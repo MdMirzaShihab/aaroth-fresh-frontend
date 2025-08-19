@@ -20,7 +20,8 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
     switch (status) {
       case 'pending':
         return {
-          className: 'bg-earthy-yellow/20 text-earthy-brown border-earthy-yellow/30',
+          className:
+            'bg-earthy-yellow/20 text-earthy-brown border-earthy-yellow/30',
           icon: Clock,
           text: 'Pending Review',
         };
@@ -75,15 +76,17 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
   // Calculate urgency based on waiting time
   const getUrgencyLevel = (createdAt) => {
     if (!createdAt) return { level: 'normal', days: 0 };
-    
-    const daysWaiting = Math.floor((new Date() - new Date(createdAt)) / (1000 * 60 * 60 * 24));
-    
+
+    const daysWaiting = Math.floor(
+      (new Date() - new Date(createdAt)) / (1000 * 60 * 60 * 24)
+    );
+
     if (daysWaiting > 7) {
       return { level: 'urgent', days: daysWaiting };
     } else if (daysWaiting > 3) {
       return { level: 'high', days: daysWaiting };
     }
-    
+
     return { level: 'normal', days: daysWaiting };
   };
 
@@ -133,7 +136,9 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
       {/* Header */}
       <div className="flex items-start gap-4 mb-4 mt-8">
         {/* Type Icon */}
-        <div className={`w-12 h-12 rounded-2xl ${typeDisplay.bgColor} flex items-center justify-center flex-shrink-0`}>
+        <div
+          className={`w-12 h-12 rounded-2xl ${typeDisplay.bgColor} flex items-center justify-center flex-shrink-0`}
+        >
           <typeDisplay.icon className={`w-6 h-6 ${typeDisplay.color}`} />
         </div>
 
@@ -142,10 +147,8 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
           <h3 className="font-semibold text-text-dark dark:text-white text-lg truncate">
             {approval.businessName || approval.name || 'Unknown Business'}
           </h3>
-          <p className="text-sm text-text-muted mb-1">
-            {typeDisplay.label}
-          </p>
-          
+          <p className="text-sm text-text-muted mb-1">{typeDisplay.label}</p>
+
           {/* Contact Info */}
           <div className="flex items-center gap-1 text-xs text-text-muted">
             <Phone className="w-3 h-3" />
@@ -157,7 +160,9 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
       {/* Status Badge */}
       <div className="flex items-center gap-2 mb-4">
         <statusBadge.icon className="w-4 h-4" />
-        <span className={`px-3 py-1 rounded-full text-sm font-medium border ${statusBadge.className}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium border ${statusBadge.className}`}
+        >
           {statusBadge.text}
         </span>
       </div>
@@ -169,10 +174,9 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
           <div className="flex items-start gap-2">
             <MapPin className="w-4 h-4 text-text-muted mt-0.5 flex-shrink-0" />
             <p className="text-sm text-text-muted line-clamp-2">
-              {typeof approval.address === 'string' 
-                ? approval.address 
-                : `${approval.address?.street || ''}, ${approval.address?.city || ''}, ${approval.address?.state || ''}`
-              }
+              {typeof approval.address === 'string'
+                ? approval.address
+                : `${approval.address?.street || ''}, ${approval.address?.city || ''}, ${approval.address?.state || ''}`}
             </p>
           </div>
         )}
@@ -181,7 +185,10 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-text-muted" />
           <span className="text-sm text-text-muted">
-            Submitted {approval.createdAt ? new Date(approval.createdAt).toLocaleDateString() : 'Unknown'}
+            Submitted{' '}
+            {approval.createdAt
+              ? new Date(approval.createdAt).toLocaleDateString()
+              : 'Unknown'}
           </span>
         </div>
 
@@ -189,13 +196,15 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
         {urgency.days > 0 && (
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-text-muted" />
-            <span className={`text-sm font-medium ${
-              urgency.level === 'urgent' 
-                ? 'text-tomato-red' 
-                : urgency.level === 'high' 
-                  ? 'text-earthy-brown' 
-                  : 'text-text-muted'
-            }`}>
+            <span
+              className={`text-sm font-medium ${
+                urgency.level === 'urgent'
+                  ? 'text-tomato-red'
+                  : urgency.level === 'high'
+                    ? 'text-earthy-brown'
+                    : 'text-text-muted'
+              }`}
+            >
               Waiting {urgency.days} days
             </span>
           </div>
@@ -253,13 +262,14 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
           <div className="flex items-center gap-2 text-xs text-text-muted">
             <User className="w-3 h-3" />
             <span>
-              {approval.status === 'approved' ? 'Approved' : 'Rejected'} by {approval.processedBy || 'Admin'}
+              {approval.status === 'approved' ? 'Approved' : 'Rejected'} by{' '}
+              {approval.processedBy || 'Admin'}
               {approval.processedAt && (
                 <> on {new Date(approval.processedAt).toLocaleDateString()}</>
               )}
             </span>
           </div>
-          
+
           {(approval.approvalNotes || approval.rejectionReason) && (
             <p className="text-xs text-text-muted mt-1 line-clamp-2">
               "{approval.approvalNotes || approval.rejectionReason}"

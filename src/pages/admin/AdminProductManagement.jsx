@@ -29,6 +29,7 @@ import { Table } from '../../components/ui/Table';
 import { Modal } from '../../components/ui/Modal';
 import FormField from '../../components/ui/FormField';
 import { Input } from '../../components/ui/Input';
+import FileUpload from '../../components/ui/FileUpload';
 
 const AdminProductManagement = () => {
   // Local state for filtering and pagination
@@ -39,6 +40,10 @@ const AdminProductManagement = () => {
   const [confirmAction, setConfirmAction] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  // Image upload state
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const itemsPerPage = 10;
 
@@ -55,18 +60,22 @@ const AdminProductManagement = () => {
     isSeasonal: false,
     tags: [],
     searchKeywords: [],
-    standardUnits: [{ name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 }],
-    qualityGrades: [{ name: 'Premium', description: 'Highest quality', priceMultiplier: 1.2 }],
+    standardUnits: [
+      { name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 },
+    ],
+    qualityGrades: [
+      { name: 'Premium', description: 'Highest quality', priceMultiplier: 1.2 },
+    ],
     // Storage requirements
     storageRequirements: {
       temperature: { unit: 'celsius' },
-      conditions: []
+      conditions: [],
     },
     // Nutritional info
     nutritionalInfo: {
       vitamins: [],
-      minerals: []
-    }
+      minerals: [],
+    },
   });
 
   // Query params for API call
@@ -90,26 +99,94 @@ const AdminProductManagement = () => {
 
   const { data: categoriesData } = useGetAdminCategoriesQuery();
 
-  const [createProduct, { isLoading: isCreating }] = useCreateAdminProductMutation();
-  const [updateProduct, { isLoading: isUpdating }] = useUpdateAdminProductMutation();
+  const [createProduct, { isLoading: isCreating }] =
+    useCreateAdminProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] =
+    useUpdateAdminProductMutation();
   const [deleteProduct] = useDeleteAdminProductMutation();
 
-  // Fix data extraction to match backend response structure
+  // Enhanced data extraction to match backend response structure
   const products = productsData?.data || [];
-  const totalProducts = productsData?.total || 0;
-  const totalPages = productsData?.pages || 1;
-  const categories = categoriesData?.data || [];
+  const totalProducts = productsData?.total || productsData?.count || 0;
+  const totalPages =
+    productsData?.pages || Math.ceil(totalProducts / itemsPerPage) || 1;
+  const categories = categoriesData?.data || categoriesData || [];
+
+  // Handle image upload
+  const handleImageUpload = (file) => {
+    setImageFile(file);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(null);
+    }
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate required image for new products
+    if (!editingProduct && !imageFile) {
+      alert('Product image is required');
+      return;
+    }
+
     try {
-      if (editingProduct) {
-        await updateProduct({ id: editingProduct._id, ...formData }).unwrap();
-      } else {
-        await createProduct(formData).unwrap();
+      // Create FormData for multipart upload
+      const formDataToSend = new FormData();
+
+      // Append basic product fields
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('variety', formData.variety);
+      formDataToSend.append('origin', formData.origin);
+      formDataToSend.append('isOrganic', formData.isOrganic);
+      formDataToSend.append('isLocallySourced', formData.isLocallySourced);
+      formDataToSend.append('isSeasonal', formData.isSeasonal);
+
+      // Append arrays and objects as JSON strings
+      formDataToSend.append(
+        'seasonality',
+        JSON.stringify(formData.seasonality)
+      );
+      formDataToSend.append('tags', JSON.stringify(formData.tags));
+      formDataToSend.append(
+        'searchKeywords',
+        JSON.stringify(formData.searchKeywords)
+      );
+      formDataToSend.append(
+        'standardUnits',
+        JSON.stringify(formData.standardUnits)
+      );
+      formDataToSend.append(
+        'qualityGrades',
+        JSON.stringify(formData.qualityGrades)
+      );
+      formDataToSend.append(
+        'storageRequirements',
+        JSON.stringify(formData.storageRequirements)
+      );
+      formDataToSend.append(
+        'nutritionalInfo',
+        JSON.stringify(formData.nutritionalInfo)
+      );
+
+      // Add image file if selected
+      if (imageFile) {
+        formDataToSend.append('image', imageFile);
       }
-      
+
+      if (editingProduct) {
+        await updateProduct({
+          id: editingProduct._id,
+          formData: formDataToSend,
+        }).unwrap();
+      } else {
+        await createProduct(formDataToSend).unwrap();
+      }
+
       resetForm();
       setIsCreateModalOpen(false);
       setEditingProduct(null);
@@ -132,19 +209,31 @@ const AdminProductManagement = () => {
       isSeasonal: false,
       tags: [],
       searchKeywords: [],
-      standardUnits: [{ name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 }],
-      qualityGrades: [{ name: 'Premium', description: 'Highest quality', priceMultiplier: 1.2 }],
+      standardUnits: [
+        { name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 },
+      ],
+      qualityGrades: [
+        {
+          name: 'Premium',
+          description: 'Highest quality',
+          priceMultiplier: 1.2,
+        },
+      ],
       // Storage requirements
       storageRequirements: {
         temperature: { unit: 'celsius' },
-        conditions: []
+        conditions: [],
       },
       // Nutritional info
       nutritionalInfo: {
         vitamins: [],
-        minerals: []
-      }
+        minerals: [],
+      },
     });
+
+    // Reset image state
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   // Handle edit - Updated to map all backend fields
@@ -161,19 +250,47 @@ const AdminProductManagement = () => {
       isSeasonal: product.isSeasonal || false,
       tags: product.tags || [],
       searchKeywords: product.searchKeywords || [],
-      standardUnits: product.standardUnits || [{ name: 'kg', abbreviation: 'kg', baseUnit: true, conversionRate: 1 }],
-      qualityGrades: product.qualityGrades || [{ name: 'Premium', description: 'Highest quality', priceMultiplier: 1.2 }],
+      standardUnits: Array.isArray(product.standardUnits)
+        ? product.standardUnits
+        : [
+            {
+              name: 'kg',
+              abbreviation: 'kg',
+              baseUnit: true,
+              conversionRate: 1,
+            },
+          ],
+      qualityGrades: Array.isArray(product.qualityGrades)
+        ? product.qualityGrades
+        : [
+            {
+              name: 'Premium',
+              description: 'Highest quality',
+              priceMultiplier: 1.2,
+            },
+          ],
       // Storage requirements
       storageRequirements: product.storageRequirements || {
         temperature: { unit: 'celsius' },
-        conditions: []
+        conditions: [],
       },
       // Nutritional info
       nutritionalInfo: product.nutritionalInfo || {
         vitamins: [],
-        minerals: []
-      }
+        minerals: [],
+      },
     });
+
+    // Set existing image preview
+    if (product.image) {
+      setImagePreview(product.image);
+    } else if (product.images && product.images.length > 0) {
+      setImagePreview(product.images[0].url);
+    } else {
+      setImagePreview(null);
+    }
+    setImageFile(null); // Reset file input for editing
+
     setEditingProduct(product);
     setIsCreateModalOpen(true);
   };
@@ -221,7 +338,9 @@ const AdminProductManagement = () => {
       header: (
         <input
           type="checkbox"
-          checked={selectedProducts.size === products.length && products.length > 0}
+          checked={
+            selectedProducts.size === products.length && products.length > 0
+          }
           onChange={handleSelectAll}
           className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
         />
@@ -242,9 +361,9 @@ const AdminProductManagement = () => {
       cell: (product) => (
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-            {product.images?.[0]?.url ? (
+            {product.image || product.images?.[0]?.url ? (
               <img
-                src={product.images[0].url}
+                src={product.image || product.images[0].url}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -311,7 +430,8 @@ const AdminProductManagement = () => {
       header: 'Units',
       cell: (product) => (
         <div className="text-sm text-text-muted">
-          {product.standardUnits?.map(unit => unit.name).join(', ') || 'No units'}
+          {product.standardUnits?.map((unit) => unit.name).join(', ') ||
+            'No units'}
         </div>
       ),
     },
@@ -319,11 +439,13 @@ const AdminProductManagement = () => {
       id: 'status',
       header: 'Status',
       cell: (product) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          product.isActive 
-            ? 'bg-mint-fresh/20 text-bottle-green' 
-            : 'bg-gray-100 text-gray-600'
-        }`}>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            product.isActive
+              ? 'bg-mint-fresh/20 text-bottle-green'
+              : 'bg-gray-100 text-gray-600'
+          }`}
+        >
           {product.isActive ? 'Active' : 'Inactive'}
         </span>
       ),
@@ -333,14 +455,19 @@ const AdminProductManagement = () => {
       id: 'adminStatus',
       header: 'Admin Status',
       cell: (product) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          product.adminStatus === 'active' 
-            ? 'bg-mint-fresh/20 text-bottle-green' 
-            : product.adminStatus === 'inactive'
-              ? 'bg-amber-100 text-amber-800'
-              : 'bg-gray-100 text-gray-600'
-        }`}>
-          {product.adminStatus ? product.adminStatus.charAt(0).toUpperCase() + product.adminStatus.slice(1) : 'Active'}
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            product.adminStatus === 'active'
+              ? 'bg-mint-fresh/20 text-bottle-green'
+              : product.adminStatus === 'inactive'
+                ? 'bg-amber-100 text-amber-800'
+                : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          {product.adminStatus
+            ? product.adminStatus.charAt(0).toUpperCase() +
+              product.adminStatus.slice(1)
+            : 'Active'}
         </span>
       ),
       sortable: true,
@@ -417,10 +544,8 @@ const AdminProductManagement = () => {
         icon={AlertTriangle}
         title="Failed to load products"
         description="There was an error loading product data. Please try again."
-        action={{
-          label: 'Retry',
-          onClick: refetch,
-        }}
+        actionLabel="Retry"
+        onAction={refetch}
       />
     );
   }
@@ -434,7 +559,8 @@ const AdminProductManagement = () => {
             Product Management (UPDATED - AdminProductManagement.jsx)
           </h1>
           <p className="text-text-muted mt-1">
-            Manage product master data, categories, and specifications - Backend Model Aligned
+            Manage product master data, categories, and specifications - Backend
+            Model Aligned
           </p>
         </div>
 
@@ -490,23 +616,49 @@ const AdminProductManagement = () => {
 
       {/* Products Table */}
       <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table
-            data={products}
-            columns={columns}
-            emptyState={
-              <EmptyState
-                icon={Package}
-                title="No products found"
-                description="No products match your current filters."
-                action={{
-                  label: 'Add Product',
-                  onClick: () => setIsCreateModalOpen(true),
-                }}
-              />
-            }
-          />
-        </div>
+        {products.length === 0 ? (
+          <div className="p-8">
+            <EmptyState
+              icon={Package}
+              title="No products found"
+              description="No products match your current filters."
+              actionLabel="Add Product"
+              onAction={() => setIsCreateModalOpen(true)}
+            />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <thead className="bg-earthy-beige/10">
+                <tr>
+                  {columns.map((column) => (
+                    <th
+                      key={column.id}
+                      className="px-4 py-3 text-left text-sm font-medium text-text-dark"
+                      style={column.width ? { width: column.width } : {}}
+                    >
+                      {column.header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {products.map((product, index) => (
+                  <tr
+                    key={product._id || index}
+                    className="hover:bg-earthy-beige/20 transition-colors duration-200"
+                  >
+                    {columns.map((column) => (
+                      <td key={column.id} className="px-4 py-3">
+                        {column.cell(product)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -533,10 +685,58 @@ const AdminProductManagement = () => {
         title={editingProduct ? 'Edit Product' : 'Create Product'}
       >
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Product Image Upload - Full Width */}
+          <div className="col-span-full">
+            <FormField
+              label={`Product Image ${!editingProduct ? '*' : ''}`}
+              description="Upload an image for this product. Max size: 1MB. Supported formats: JPG, PNG, GIF"
+            >
+              <FileUpload
+                onFileSelect={handleImageUpload}
+                accept="image/*"
+                maxSize={1024 * 1024} // 1MB
+                maxFiles={1}
+                multiple={false}
+                className="w-full"
+              >
+                <div className="text-center py-8">
+                  {imagePreview ? (
+                    <div className="flex flex-col items-center gap-4">
+                      <img
+                        src={imagePreview}
+                        alt="Product preview"
+                        className="w-32 h-32 object-cover rounded-2xl border-2 border-gray-200"
+                      />
+                      <p className="text-sm text-text-muted">
+                        Click or drag to replace image
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-16 h-16 bg-earthy-beige/30 rounded-2xl flex items-center justify-center">
+                        <ImageIcon className="w-8 h-8 text-text-muted" />
+                      </div>
+                      <div>
+                        <p className="text-lg font-medium text-text-dark mb-2">
+                          Upload Product Image{!editingProduct && ' *'}
+                        </p>
+                        <p className="text-sm text-text-muted">
+                          Drag and drop an image or click to select
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </FileUpload>
+            </FormField>
+          </div>
+
           <FormField label="Product Name" required>
             <Input
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
               placeholder="Enter product name"
               required
             />
@@ -545,7 +745,12 @@ const AdminProductManagement = () => {
           <FormField label="Description" required>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               placeholder="Enter product description"
               rows={3}
               className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
@@ -556,7 +761,9 @@ const AdminProductManagement = () => {
           <FormField label="Category" required>
             <select
               value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, category: e.target.value }))
+              }
               className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
               required
             >
@@ -573,7 +780,9 @@ const AdminProductManagement = () => {
             <FormField label="Variety">
               <Input
                 value={formData.variety}
-                onChange={(e) => setFormData(prev => ({ ...prev, variety: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, variety: e.target.value }))
+                }
                 placeholder="e.g., Roma, Beefsteak"
               />
             </FormField>
@@ -581,7 +790,9 @@ const AdminProductManagement = () => {
             <FormField label="Origin">
               <Input
                 value={formData.origin}
-                onChange={(e) => setFormData(prev => ({ ...prev, origin: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, origin: e.target.value }))
+                }
                 placeholder="e.g., Local, California"
               />
             </FormField>
@@ -592,40 +803,66 @@ const AdminProductManagement = () => {
               <input
                 type="checkbox"
                 checked={formData.isOrganic}
-                onChange={(e) => setFormData(prev => ({ ...prev, isOrganic: e.target.checked }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    isOrganic: e.target.checked,
+                  }))
+                }
                 className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
               />
-              <span className="text-sm text-text-dark dark:text-white">Organic</span>
+              <span className="text-sm text-text-dark dark:text-white">
+                Organic
+              </span>
             </label>
 
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={formData.isLocallySourced}
-                onChange={(e) => setFormData(prev => ({ ...prev, isLocallySourced: e.target.checked }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    isLocallySourced: e.target.checked,
+                  }))
+                }
                 className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
               />
-              <span className="text-sm text-text-dark dark:text-white">Locally Sourced</span>
+              <span className="text-sm text-text-dark dark:text-white">
+                Locally Sourced
+              </span>
             </label>
 
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={formData.isSeasonal}
-                onChange={(e) => setFormData(prev => ({ ...prev, isSeasonal: e.target.checked }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    isSeasonal: e.target.checked,
+                  }))
+                }
                 className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
               />
-              <span className="text-sm text-text-dark dark:text-white">Seasonal Product</span>
+              <span className="text-sm text-text-dark dark:text-white">
+                Seasonal Product
+              </span>
             </label>
           </div>
 
           <FormField label="Tags">
             <Input
               value={formData.tags.join(', ')}
-              onChange={(e) => setFormData(prev => ({ 
-                ...prev, 
-                tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean)
-              }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  tags: e.target.value
+                    .split(',')
+                    .map((tag) => tag.trim())
+                    .filter(Boolean),
+                }))
+              }
               placeholder="Enter tags separated by commas (e.g., fresh, premium, local)"
             />
           </FormField>
@@ -642,8 +879,17 @@ const AdminProductManagement = () => {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isCreating || isUpdating}>
-              {isCreating || isUpdating ? 'Saving...' : editingProduct ? 'Update' : 'Create'}
+            <Button
+              type="submit"
+              disabled={
+                isCreating || isUpdating || (!editingProduct && !imageFile)
+              }
+            >
+              {isCreating || isUpdating
+                ? 'Saving...'
+                : editingProduct
+                  ? 'Update Product'
+                  : 'Create Product'}
             </Button>
           </div>
         </form>

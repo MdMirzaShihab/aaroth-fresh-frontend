@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Calendar,
 } from 'lucide-react';
+import FileUpload from '../../components/ui/FileUpload';
 import { selectAuth } from '../../store/slices/authSlice';
 import {
   useUpdateUserProfileMutation,
@@ -42,6 +43,10 @@ const Profile = () => {
     phone: user?.phone || '',
   });
 
+  // Image upload state
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(user?.profileImage || null);
+
   // Password change state
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -64,6 +69,14 @@ const Profile = () => {
   const [changeUserPassword, { isLoading: isChangingPassword }] =
     useChangePasswordMutation();
 
+  // Handle image upload
+  const handleImageUpload = (file) => {
+    setImageFile(file);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleProfileSave = async () => {
     try {
       // Validate phone number
@@ -73,8 +86,19 @@ const Profile = () => {
         return;
       }
 
-      await updateProfile(profileData).unwrap();
+      // Create FormData for multipart upload (optional image)
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', profileData.name);
+      formDataToSend.append('phone', profileData.phone);
+
+      // Add profile image if selected
+      if (imageFile) {
+        formDataToSend.append('profileImage', imageFile);
+      }
+
+      await updateProfile(formDataToSend).unwrap();
       setIsEditing(false);
+      setImageFile(null); // Reset file input after successful update
       alert('Profile updated successfully');
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -203,15 +227,35 @@ const Profile = () => {
             {/* Profile Photo & Basic Info */}
             <div className="flex items-center gap-6">
               <div className="relative">
-                <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">
-                    {profileData.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </span>
+                <div className="w-24 h-24 rounded-full overflow-hidden">
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt={profileData.name || 'Profile'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-primary flex items-center justify-center">
+                      <span className="text-white text-2xl font-bold">
+                        {profileData.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 {isEditing && (
-                  <button className="absolute bottom-0 right-0 w-8 h-8 bg-white shadow-lg rounded-full flex items-center justify-center hover:shadow-xl transition-all duration-200">
-                    <Camera className="w-4 h-4 text-gray-600" />
-                  </button>
+                  <div className="absolute bottom-0 right-0">
+                    <FileUpload
+                      onFileSelect={handleImageUpload}
+                      accept="image/*"
+                      maxSize={1024 * 1024} // 1MB
+                      maxFiles={1}
+                      multiple={false}
+                    >
+                      <button className="w-8 h-8 bg-white shadow-lg rounded-full flex items-center justify-center hover:shadow-xl transition-all duration-200">
+                        <Camera className="w-4 h-4 text-gray-600" />
+                      </button>
+                    </FileUpload>
+                  </div>
                 )}
               </div>
               <div>

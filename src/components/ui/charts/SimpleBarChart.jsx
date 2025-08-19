@@ -15,13 +15,14 @@ const SimpleBarChart = ({
   }
 
   // Filter out invalid data and ensure numeric values
-  const validData = data.filter(item => 
-    item && 
-    typeof item.value === 'number' && 
-    !isNaN(item.value) && 
-    isFinite(item.value) && 
-    item.value >= 0 &&
-    item.label
+  const validData = data.filter(
+    (item) =>
+      item &&
+      typeof item.value === 'number' &&
+      !isNaN(item.value) &&
+      isFinite(item.value) &&
+      item.value >= 0 &&
+      item.label
   );
 
   if (validData.length === 0) {
@@ -33,7 +34,7 @@ const SimpleBarChart = ({
   }
 
   const maxValue = Math.max(...validData.map((d) => d.value));
-  
+
   // Handle edge case where maxValue is 0 or invalid
   if (maxValue === 0 || !isFinite(maxValue)) {
     return (
