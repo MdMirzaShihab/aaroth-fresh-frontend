@@ -13,7 +13,8 @@ import {
 import { Card } from '../ui/Card';
 
 const CategoryStatistics = ({ stats, isLoading = false }) => {
-  if (isLoading) {
+  // Show loading if data is being fetched or stats not available yet
+  if (isLoading || !stats) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[...Array(4)].map((_, index) => (
@@ -188,39 +189,39 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
               </div>
             </div>
 
-            {/* Category Levels Distribution */}
+            {/* Category Status Overview */}
             <div>
               <h4 className="text-sm font-medium text-text-dark mb-3">
-                Level Distribution
+                Category Breakdown
               </h4>
               <div className="space-y-2">
-                {[0, 1, 2, 3].map((level) => {
-                  const levelCount = stats.levelDistribution?.[level] || 0;
-                  const levelPercentage =
-                    stats.totalCategories > 0
-                      ? (levelCount / stats.totalCategories) * 100
-                      : 0;
-
-                  return (
-                    <div
-                      key={level}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Layers className="w-3 h-3 text-text-muted" />
-                        <span className="text-text-muted">Level {level}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-text-dark font-medium">
-                          {levelCount}
-                        </span>
-                        <span className="text-text-muted">
-                          ({levelPercentage.toFixed(0)}%)
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-3 h-3 text-mint-fresh" />
+                    <span className="text-text-muted">Active Categories</span>
+                  </div>
+                  <span className="text-text-dark font-medium">
+                    {stats.activeCategories || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-3 h-3 text-blue-600" />
+                    <span className="text-text-muted">Available Categories</span>
+                  </div>
+                  <span className="text-text-dark font-medium">
+                    {stats.availableCategories || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-3 h-3 text-tomato-red" />
+                    <span className="text-text-muted">Flagged Categories</span>
+                  </div>
+                  <span className="text-text-dark font-medium">
+                    {stats.flaggedCategories || 0}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -246,9 +247,9 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                  <span className="text-text-muted">Root categories</span>
+                  <span className="text-text-muted">Inactive categories</span>
                   <span className="text-text-dark font-medium">
-                    {stats.levelDistribution?.[0] || 0}
+                    {(stats.totalCategories || 0) - (stats.activeCategories || 0)}
                   </span>
                 </div>
               </div>

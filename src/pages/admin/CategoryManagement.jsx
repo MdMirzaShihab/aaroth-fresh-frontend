@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Tag,
   Plus,
@@ -23,7 +24,6 @@ import {
   useCreateAdminCategoryMutation,
   useUpdateAdminCategoryMutation,
   useDeleteAdminCategoryMutation,
-  useGetCategoryStatsQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -44,6 +44,9 @@ import CategoryUsageModal from '../../components/admin/CategoryUsageModal';
 import SafeDeleteModal from '../../components/admin/SafeDeleteModal';
 
 const CategoryManagement = () => {
+  // Get current user for createdBy field
+  const { user } = useSelector((state) => state.auth);
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmAction, setConfirmAction] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -88,20 +91,19 @@ const CategoryManagement = () => {
     refetch,
   } = useGetAdminCategoriesQuery(filters);
 
-  const { data: statsData, isLoading: statsLoading } =
-    useGetCategoryStatsQuery();
-
   const [createCategory, { isLoading: isCreating }] =
     useCreateAdminCategoryMutation();
   const [updateCategory, { isLoading: isUpdating }] =
     useUpdateAdminCategoryMutation();
   const [deleteCategory] = useDeleteAdminCategoryMutation();
 
-  const categories = categoriesData?.data?.categories || [];
-  const totalCount = categoriesData?.data?.total || 0;
-  const currentPage = categoriesData?.data?.page || 1;
-  const totalPages = categoriesData?.data?.totalPages || 1;
-  const stats = statsData?.data || null;
+  const categories = categoriesData?.data || [];
+  const totalCount = categoriesData?.total || 0;
+  const currentPage = categoriesData?.page || 1;
+  const totalPages = categoriesData?.pages || 1;
+
+  // Use backend-provided statistics
+  const stats = categoriesData?.stats || null;
 
   // Form state for create/edit modal
   const [formData, setFormData] = useState({
@@ -168,22 +170,30 @@ const CategoryManagement = () => {
   // Form validation
   const validateForm = () => {
     const errors = {};
+    const nameValue = formData.name.trim();
 
-    if (!formData.name.trim()) {
+    // Check name field
+    if (!nameValue) {
       errors.name = 'Category name is required';
-    }
-
-    if (formData.name.length < 2) {
+    } else if (nameValue.length < 2) {
       errors.name = 'Category name must be at least 2 characters';
+    } else if (nameValue.length > 50) {
+      errors.name = 'Category name must be less than 50 characters';
     }
 
-    if (formData.name.length > 50) {
-      errors.name = 'Category name must be less than 50 characters';
+    // Check description length (align with backend validation: 200 chars)
+    if (formData.description && formData.description.length > 200) {
+      errors.description = 'Description cannot be more than 200 characters';
     }
 
     // Validate image for new categories
     if (!editingCategory && !imageFile) {
       errors.image = 'Category image is required';
+    }
+
+    // Check if user is authenticated (backend will add createdBy automatically)
+    if (!user || !user._id) {
+      errors.auth = 'User authentication required to create category';
     }
 
     setFormErrors(errors);
@@ -194,29 +204,60 @@ const CategoryManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    // Clear previous errors
+    setFormErrors({});
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       // Create FormData for multipart upload
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name.trim());
-      formDataToSend.append('description', formData.description.trim());
-      formDataToSend.append('icon', formData.icon.trim());
-      formDataToSend.append('color', formData.color);
-      formDataToSend.append('isActive', formData.isActive);
-      formDataToSend.append('sortOrder', parseInt(formData.sortOrder) || 0);
-      if (formData.parentId) {
-        formDataToSend.append('parentId', formData.parentId);
+      
+      // Add required fields - ensure name is properly set
+      const nameValue = formData.name.trim();
+      if (!nameValue) {
+        throw new Error('Name value is empty after trimming');
+      }
+      formDataToSend.append('name', nameValue);
+      
+      // Add description (optional)
+      if (formData.description && formData.description.trim()) {
+        formDataToSend.append('description', formData.description.trim());
+      }
+      
+      // Add boolean and number fields (FormData converts everything to strings)
+      formDataToSend.append('isActive', formData.isActive ? 'true' : 'false');
+      formDataToSend.append('sortOrder', String(parseInt(formData.sortOrder) || 0));
+      
+      // Add parent category if selected
+      if (formData.parentCategory && formData.parentCategory.trim()) {
+        formDataToSend.append('parentCategory', formData.parentCategory.trim());
       }
 
-      // Add image file if selected
+      // Add SEO fields (optional)
+      if (formData.metaTitle && formData.metaTitle.trim()) {
+        formDataToSend.append('metaTitle', formData.metaTitle.trim());
+      }
+      if (formData.metaDescription && formData.metaDescription.trim()) {
+        formDataToSend.append('metaDescription', formData.metaDescription.trim());
+      }
+      if (formData.metaKeywords && formData.metaKeywords.length > 0) {
+        // Send as comma-separated string instead of JSON
+        formDataToSend.append('metaKeywords', formData.metaKeywords.join(','));
+      }
+
+      // Add image file if selected (required for new categories)
       if (imageFile) {
         formDataToSend.append('image', imageFile);
       }
 
+      // FormData is ready for submission
+
       if (editingCategory) {
         await updateCategory({
-          id: editingCategory.id,
+          id: editingCategory._id,
           formData: formDataToSend,
         }).unwrap();
       } else {
@@ -226,7 +267,39 @@ const CategoryManagement = () => {
       // Reset form and close modal
       resetForm();
     } catch (error) {
-      console.error('Failed to save category:', error);
+      // Parse backend validation errors
+      let errorMessage = 'Failed to save category. Please try again.';
+      const formFieldErrors = {};
+      
+      if (error?.data?.error) {
+        errorMessage = error.data.error;
+        
+        // Parse specific field errors from backend message
+        const errorText = error.data.error.toLowerCase();
+        if (errorText.includes('name is required') || errorText.includes('category name')) {
+          formFieldErrors.name = 'Category name is required and must be 2-50 characters';
+        }
+        if (errorText.includes('image')) {
+          formFieldErrors.image = 'Category image is required - upload an image file';
+        }
+        if (errorText.includes('description')) {
+          formFieldErrors.description = 'Description cannot exceed 200 characters';
+        }
+        if (errorText.includes('unique') && errorText.includes('name')) {
+          formFieldErrors.name = 'Category name already exists - choose a different name';
+        }
+      } else if (error?.status === 400) {
+        errorMessage = 'Validation failed - please check your input';
+      } else if (error?.status === 401) {
+        errorMessage = 'Authentication failed - please log in again';
+      } else if (error?.status === 500) {
+        errorMessage = 'Server error - please try again later';
+      }
+      
+      setFormErrors({ 
+        submit: errorMessage,
+        ...formFieldErrors 
+      });
     }
   };
 
@@ -235,11 +308,14 @@ const CategoryManagement = () => {
     setFormData({
       name: '',
       description: '',
-      icon: '',
-      color: '#10B981',
+      image: '',
+      parentCategory: null,
+      level: 0,
       isActive: true,
       sortOrder: 0,
-      parentId: null,
+      metaTitle: '',
+      metaDescription: '',
+      metaKeywords: [],
     });
     setFormErrors({});
     setImageFile(null);
@@ -253,11 +329,14 @@ const CategoryManagement = () => {
     setFormData({
       name: category.name,
       description: category.description || '',
-      icon: category.icon || '',
-      color: category.color || '#10B981',
+      image: category.image || '',
+      parentCategory: category.parentCategory?._id || null,
+      level: category.level || 0,
       isActive: category.isActive !== false,
       sortOrder: category.sortOrder || 0,
-      parentId: category.parentId || null,
+      metaTitle: category.metaTitle || '',
+      metaDescription: category.metaDescription || '',
+      metaKeywords: category.metaKeywords || [],
     });
 
     // Set existing image preview
@@ -278,164 +357,11 @@ const CategoryManagement = () => {
       await deleteCategory(categoryId).unwrap();
       setConfirmAction(null);
     } catch (error) {
-      console.error('Failed to delete category:', error);
+      // Handle deletion error - this would typically show a toast notification
+      setFormErrors({ delete: 'Failed to delete category. Please try again.' });
     }
   };
 
-  // Get category hierarchy
-  const getCategoryHierarchy = () => {
-    const categoryMap = new Map();
-    const rootCategories = [];
-
-    // Create a map of categories
-    categories.forEach((category) => {
-      categoryMap.set(category.id, { ...category, children: [] });
-    });
-
-    // Build hierarchy
-    categories.forEach((category) => {
-      const categoryWithChildren = categoryMap.get(category.id);
-      if (category.parentId && categoryMap.has(category.parentId)) {
-        categoryMap.get(category.parentId).children.push(categoryWithChildren);
-      } else {
-        rootCategories.push(categoryWithChildren);
-      }
-    });
-
-    return rootCategories.sort(
-      (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
-    );
-  };
-
-  // Render category tree
-  const renderCategoryTree = (categories, level = 0) => {
-    return categories.map((category) => (
-      <div key={category.id}>
-        <Card
-          className={`p-4 ${level > 0 ? `ml-${level * 6}` : ''} hover:shadow-md transition-shadow duration-300`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 flex-1">
-              {/* Category Image or Icon */}
-              <div className="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0">
-                {category.image ? (
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{ backgroundColor: category.color || '#10B981' }}
-                  >
-                    {category.icon ? (
-                      <span>{category.icon}</span>
-                    ) : (
-                      <Tag className="w-5 h-5" />
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Category Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-medium text-text-dark dark:text-white truncate">
-                    {category.name}
-                  </h3>
-                  {!category.isActive && (
-                    <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                      Inactive
-                    </span>
-                  )}
-                  {category.children && category.children.length > 0 && (
-                    <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                      <TreePine className="w-3 h-3" />
-                      {category.children.length} subcategories
-                    </span>
-                  )}
-                </div>
-
-                {category.description && (
-                  <p className="text-sm text-text-muted truncate">
-                    {category.description}
-                  </p>
-                )}
-
-                <div className="flex items-center gap-4 mt-2 text-xs text-text-muted">
-                  <span className="flex items-center gap-1">
-                    <Package className="w-3 h-3" />
-                    {category.productCount || 0} products
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Hash className="w-3 h-3" />
-                    Order: {category.sortOrder || 0}
-                  </span>
-                  {category.createdAt && (
-                    <span>
-                      Created{' '}
-                      {new Date(category.createdAt).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => handleViewUsage(category)}
-                className="p-2 text-text-muted hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="View usage statistics"
-              >
-                <BarChart3 className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => handleFlagCategory(category)}
-                className={`p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
-                  category.isAvailable === false
-                    ? 'text-tomato-red hover:bg-tomato-red/20'
-                    : 'text-text-muted hover:text-amber-600 hover:bg-amber-50'
-                }`}
-                title={
-                  category.isAvailable === false
-                    ? 'Category is flagged'
-                    : 'Flag category'
-                }
-              >
-                <Flag className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => handleEdit(category)}
-                className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Edit category"
-              >
-                <Edit3 className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => handleSafeDelete(category)}
-                className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Delete category"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Render children */}
-        {category.children && category.children.length > 0 && (
-          <div className="mt-2">
-            {renderCategoryTree(category.children, level + 1)}
-          </div>
-        )}
-      </div>
-    ));
-  };
 
   if (isLoading) {
     return (
@@ -451,15 +377,11 @@ const CategoryManagement = () => {
         icon={AlertTriangle}
         title="Failed to load categories"
         description="There was an error loading category data. Please try again."
-        action={{
-          label: 'Retry',
-          onClick: refetch,
-        }}
+        actionLabel="Retry"
+        onAction={refetch}
       />
     );
   }
-
-  const categoryHierarchy = getCategoryHierarchy();
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
@@ -487,7 +409,7 @@ const CategoryManagement = () => {
       </div>
 
       {/* Statistics Dashboard */}
-      <CategoryStatistics stats={stats} isLoading={statsLoading} />
+      <CategoryStatistics stats={stats} isLoading={isLoading} />
 
       {/* Enhanced Filters */}
       <CategoryFilters
@@ -505,10 +427,8 @@ const CategoryManagement = () => {
           icon={Tag}
           title="No categories found"
           description="No categories match your search criteria."
-          action={{
-            label: 'Add Category',
-            onClick: () => setIsCreateModalOpen(true),
-          }}
+          actionLabel="Add Category"
+          onAction={() => setIsCreateModalOpen(true)}
         />
       ) : (
         <div className="space-y-4">
@@ -554,12 +474,19 @@ const CategoryManagement = () => {
                         </span>
                       )}
 
-                      {category.adminStatus &&
-                        category.adminStatus !== 'active' && (
-                          <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">
-                            {category.adminStatus}
-                          </span>
-                        )}
+                      {category.adminStatus && (
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          category.adminStatus === 'active'
+                            ? 'bg-mint-fresh/10 text-mint-fresh'
+                            : category.adminStatus === 'disabled'
+                            ? 'bg-gray-100 text-gray-600'
+                            : category.adminStatus === 'deprecated'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {category.adminStatus}
+                        </span>
+                      )}
                     </div>
 
                     {category.description && (
@@ -568,17 +495,47 @@ const CategoryManagement = () => {
                       </p>
                     )}
 
-                    <div className="flex items-center gap-4 mt-2 text-xs text-text-muted">
-                      <span>Level {category.level || 0}</span>
-                      {category.parentCategory && (
-                        <span>Parent: {category.parentCategory.name}</span>
-                      )}
-                      <span>Order: {category.sortOrder || 0}</span>
-                      {category.createdAt && (
-                        <span>
-                          Created{' '}
-                          {new Date(category.createdAt).toLocaleDateString()}
-                        </span>
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center gap-4 text-xs text-text-muted">
+                        <span>Level {category.level || 0}</span>
+                        {category.parentCategory && (
+                          <span>Parent: {category.parentCategory.name}</span>
+                        )}
+                        <span>Order: {category.sortOrder || 0}</span>
+                        {category.slug && (
+                          <span>Slug: {category.slug}</span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-xs text-text-muted">
+                        {category.createdAt && (
+                          <span>
+                            Created{' '}
+                            {new Date(category.createdAt).toLocaleDateString()}
+                            {category.createdBy && (
+                              <span className="ml-1">by {category.createdBy.name || category.createdBy.phone}</span>
+                            )}
+                          </span>
+                        )}
+                        {category.updatedAt && category.updatedAt !== category.createdAt && (
+                          <span>
+                            Updated{' '}
+                            {new Date(category.updatedAt).toLocaleDateString()}
+                            {category.updatedBy && (
+                              <span className="ml-1">by {category.updatedBy.name || category.updatedBy.phone}</span>
+                            )}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Flag information */}
+                      {category.isAvailable === false && category.flaggedBy && (
+                        <div className="text-xs text-tomato-red bg-tomato-red/10 px-2 py-1 rounded">
+                          Flagged by {category.flaggedBy.name || category.flaggedBy.phone}
+                          {category.flagReason && (
+                            <span className="ml-2">Reason: {category.flagReason}</span>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -884,6 +841,38 @@ const CategoryManagement = () => {
               </div>
             </div>
           </div>
+
+          {/* Form Errors Display */}
+          {(formErrors.submit || formErrors.auth) && (
+            <div className="p-4 bg-tomato-red/10 border border-tomato-red/20 rounded-2xl">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-tomato-red flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-medium text-tomato-red mb-1">
+                    Error Creating Category
+                  </h4>
+                  <p className="text-sm text-tomato-red/80">
+                    {formErrors.submit || formErrors.auth}
+                  </p>
+                  {formErrors.name && (
+                    <p className="text-sm text-tomato-red/80 mt-1">
+                      • Name: {formErrors.name}
+                    </p>
+                  )}
+                  {formErrors.image && (
+                    <p className="text-sm text-tomato-red/80 mt-1">
+                      • Image: {formErrors.image}
+                    </p>
+                  )}
+                  {formErrors.description && (
+                    <p className="text-sm text-tomato-red/80 mt-1">
+                      • Description: {formErrors.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="outline" onClick={resetForm}>

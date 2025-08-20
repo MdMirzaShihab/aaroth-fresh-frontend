@@ -37,10 +37,13 @@ import {
 import { LineChart, BarChart, DoughnutChart } from '../../components/charts';
 
 const RestaurantDashboard = () => {
-  const { user } = useSelector(selectAuth);
+  const { user, isAuthenticated, token } = useSelector(selectAuth);
   const [filters, setFilters] = useState({
     dateRange: { type: 'month' },
   });
+
+  // Prevent API calls if user is not authenticated or doesn't have required role
+  const isValidUser = isAuthenticated && user && token && (user.role === 'restaurantOwner' || user.role === 'restaurantManager');
 
   // Fetch comprehensive dashboard data with new APIs (with error handling)
   const {
@@ -52,10 +55,10 @@ const RestaurantDashboard = () => {
       ...filters,
     },
     {
-      // Add error handling to prevent crashes
-      skip: false,
-      pollingInterval: 0,
-      refetchOnMountOrArgChange: true,
+      // Skip if user is not properly authenticated
+      skip: !isValidUser,
+      pollingInterval: isValidUser ? 300000 : 0, // 5 minutes polling only if authenticated
+      refetchOnMountOrArgChange: isValidUser,
     }
   );
 
@@ -68,9 +71,9 @@ const RestaurantDashboard = () => {
       ...filters,
     },
     {
-      skip: false,
-      pollingInterval: 0,
-      refetchOnMountOrArgChange: true,
+      skip: !isValidUser,
+      pollingInterval: isValidUser ? 300000 : 0,
+      refetchOnMountOrArgChange: isValidUser,
     }
   );
 
@@ -79,9 +82,9 @@ const RestaurantDashboard = () => {
     isLoading: budgetLoading,
     error: budgetError,
   } = useGetRestaurantBudgetQuery(undefined, {
-    skip: false,
-    pollingInterval: 0,
-    refetchOnMountOrArgChange: true,
+    skip: !isValidUser,
+    pollingInterval: isValidUser ? 300000 : 0,
+    refetchOnMountOrArgChange: isValidUser,
   });
 
   const {
@@ -93,9 +96,9 @@ const RestaurantDashboard = () => {
       ...filters,
     },
     {
-      skip: false,
-      pollingInterval: 0,
-      refetchOnMountOrArgChange: true,
+      skip: !isValidUser,
+      pollingInterval: isValidUser ? 300000 : 0,
+      refetchOnMountOrArgChange: isValidUser,
     }
   );
 
@@ -110,9 +113,9 @@ const RestaurantDashboard = () => {
       order: 'desc',
     },
     {
-      skip: false,
-      pollingInterval: 0,
-      refetchOnMountOrArgChange: true,
+      skip: !isValidUser,
+      pollingInterval: isValidUser ? 60000 : 0,
+      refetchOnMountOrArgChange: isValidUser,
     }
   );
 
@@ -126,24 +129,30 @@ const RestaurantDashboard = () => {
       unreadOnly: true,
     },
     {
-      skip: false,
-      pollingInterval: 0,
-      refetchOnMountOrArgChange: true,
+      skip: !isValidUser,
+      pollingInterval: isValidUser ? 30000 : 0,
+      refetchOnMountOrArgChange: isValidUser,
     }
   );
 
-  // Log any API errors for debugging
+  // Log any API errors for debugging (only if user is valid to avoid auth error spam)
   React.useEffect(() => {
-    if (overviewError)
-      console.warn('Restaurant Overview API Error:', overviewError);
-    if (spendingError)
-      console.warn('Restaurant Spending API Error:', spendingError);
-    if (budgetError) console.warn('Restaurant Budget API Error:', budgetError);
-    if (vendorError) console.warn('Restaurant Vendor API Error:', vendorError);
-    if (ordersError) console.warn('Restaurant Orders API Error:', ordersError);
-    if (notificationsError)
-      console.warn('Restaurant Notifications API Error:', notificationsError);
+    if (isValidUser) {
+      if (overviewError && overviewError.status !== 401)
+        console.warn('Restaurant Overview API Error:', overviewError);
+      if (spendingError && spendingError.status !== 401)
+        console.warn('Restaurant Spending API Error:', spendingError);
+      if (budgetError && budgetError.status !== 401)
+        console.warn('Restaurant Budget API Error:', budgetError);
+      if (vendorError && vendorError.status !== 401)
+        console.warn('Restaurant Vendor API Error:', vendorError);
+      if (ordersError && ordersError.status !== 401)
+        console.warn('Restaurant Orders API Error:', ordersError);
+      if (notificationsError && notificationsError.status !== 401)
+        console.warn('Restaurant Notifications API Error:', notificationsError);
+    }
   }, [
+    isValidUser,
     overviewError,
     spendingError,
     budgetError,
@@ -151,6 +160,27 @@ const RestaurantDashboard = () => {
     ordersError,
     notificationsError,
   ]);
+
+  // Early return if user is not authenticated or has wrong role
+  if (!isValidUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-gray-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-text-dark mb-2">Access Restricted</h2>
+          <p className="text-text-muted">
+            {!isAuthenticated 
+              ? "Please log in to access the restaurant dashboard." 
+              : user?.role
+              ? `Access denied. Required role: Restaurant Owner or Manager. Current role: ${user.role}`
+              : "Please complete your account setup to access the dashboard."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Enhanced KPI data from new dashboard APIs
   const kpiData = [

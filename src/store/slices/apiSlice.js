@@ -757,14 +757,6 @@ export const apiSlice = createApi({
     }),
 
     // Content Moderation System
-    getFlaggedListings: builder.query({
-      query: (filters = {}) => ({
-        url: '/admin/listings/flagged',
-        params: filters,
-      }),
-      providesTags: ['FlaggedContent'],
-    }),
-
     flagListing: builder.mutation({
       query: ({ id, flagReason, moderationNotes }) => ({
         url: `/admin/listings/${id}/flag`,
@@ -974,23 +966,37 @@ export const apiSlice = createApi({
 
     // Admin Category Management
     getAdminCategories: builder.query({
-      query: (params = {}) => ({
-        url: '/admin/categories',
-        params: {
-          // Advanced filtering parameters
-          search: params.search,
-          isActive: params.isActive,
-          isAvailable: params.isAvailable,
-          adminStatus: params.adminStatus,
-          level: params.level,
-
-          // Pagination and sorting
+      query: (params = {}) => {
+        const queryParams = {
+          // Pagination and sorting (always include)
           page: params.page || 1,
           limit: params.limit || 20,
           sortBy: params.sortBy || 'name',
           sortOrder: params.sortOrder || 'asc',
-        },
-      }),
+        };
+
+        // Only add filter parameters if they have values
+        if (params.search && params.search.trim()) {
+          queryParams.search = params.search.trim();
+        }
+        if (params.isActive !== undefined) {
+          queryParams.isActive = params.isActive;
+        }
+        if (params.isAvailable !== undefined) {
+          queryParams.isAvailable = params.isAvailable;
+        }
+        if (params.adminStatus && params.adminStatus.trim()) {
+          queryParams.adminStatus = params.adminStatus.trim();
+        }
+        if (params.level !== undefined) {
+          queryParams.level = params.level;
+        }
+
+        return {
+          url: '/admin/categories',
+          params: queryParams,
+        };
+      },
       providesTags: (result) => [
         { type: 'Category', id: 'ADMIN_LIST' },
         ...(result?.data || []).map(({ _id }) => ({
@@ -1070,11 +1076,6 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Get category statistics
-    getCategoryStats: builder.query({
-      query: () => '/admin/categories/stats',
-      providesTags: ['CategoryStats'],
-    }),
 
     // Get category usage statistics
     getCategoryUsageStats: builder.query({
@@ -1957,22 +1958,48 @@ export const apiSlice = createApi({
 
     // Legacy verifyRestaurant removed - replaced by unified approval system
 
-    // Admin - Listings Management
+    // Admin - Listings Management (Updated to match backend routes)
     getAdminListings: builder.query({
       query: (params = {}) => ({
-        url: '/listings', // Use general listings endpoint for admin view
-        params,
+        url: '/admin/listings',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          status: params.status,
+          featured: params.featured,
+          flagged: params.flagged,
+          vendor: params.vendor,
+          product: params.product,
+          search: params.search,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+        },
       }),
       providesTags: (result) => [
         { type: 'Listing', id: 'ADMIN_LIST' },
-        ...(result?.data?.listings || result?.data || []).map(({ _id }) => ({
+        ...(result?.data || []).map(({ _id }) => ({
           type: 'Listing',
           id: _id,
         })),
       ],
     }),
 
-    // Get flagged listings (specific admin feature)
+    // Get featured listings only
+    getAdminFeaturedListings: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/listings/featured',
+        params,
+      }),
+      providesTags: (result) => [
+        { type: 'Listing', id: 'FEATURED_LIST' },
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'Listing',
+          id: _id,
+        })),
+      ],
+    }),
+
+    // Get flagged listings only
     getFlaggedListings: builder.query({
       query: (params = {}) => ({
         url: '/admin/listings/flagged',
@@ -1986,38 +2013,19 @@ export const apiSlice = createApi({
         })),
       ],
     }),
+
+    // Get single listing with full details
     getAdminListing: builder.query({
       query: (id) => `/admin/listings/${id}`,
       providesTags: (result, error, id) => [{ type: 'Listing', id }],
     }),
-    updateAdminListing: builder.mutation({
-      query: ({ id, ...listingData }) => ({
-        url: `/admin/listings/${id}`,
+
+    // Update listing status (active, inactive, out_of_stock, discontinued)
+    updateAdminListingStatus: builder.mutation({
+      query: ({ id, status, reason }) => ({
+        url: `/admin/listings/${id}/status`,
         method: 'PUT',
-        body: listingData,
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: 'Listing', id },
-        { type: 'Listing', id: 'ADMIN_LIST' },
-        'Listing',
-      ],
-    }),
-    deleteAdminListing: builder.mutation({
-      query: (id) => ({
-        url: `/admin/listings/${id}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: (result, error, id) => [
-        { type: 'Listing', id },
-        { type: 'Listing', id: 'ADMIN_LIST' },
-        'Listing',
-      ],
-    }),
-    approveAdminListing: builder.mutation({
-      query: ({ id, isApproved }) => ({
-        url: `/admin/listings/${id}/approve`,
-        method: 'PUT',
-        body: { isApproved },
+        body: { status, reason },
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: 'Listing', id },
@@ -2026,15 +2034,56 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Admin - Featured Listings Management
-    toggleFeaturedListing: builder.mutation({
+    // Toggle listing featured status
+    toggleListingFeatured: builder.mutation({
       query: (id) => ({
         url: `/admin/listings/${id}/featured`,
         method: 'PUT',
       }),
       invalidatesTags: (result, error, id) => [
         { type: 'Listing', id },
-        { type: 'Listing', id: 'LIST' },
+        { type: 'Listing', id: 'ADMIN_LIST' },
+        'Listing',
+      ],
+    }),
+
+    // Update listing flag status (flag/unflag with reason)
+    updateListingFlag: builder.mutation({
+      query: ({ id, action, flagReason, moderationNotes }) => ({
+        url: `/admin/listings/${id}/flag`,
+        method: 'PUT',
+        body: { action, flagReason, moderationNotes },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Listing', id },
+        { type: 'Listing', id: 'ADMIN_LIST' },
+        'Listing',
+      ],
+    }),
+
+    // Soft delete listing
+    softDeleteListing: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/listings/${id}`,
+        method: 'DELETE',
+        body: { reason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Listing', id },
+        { type: 'Listing', id: 'ADMIN_LIST' },
+        'Listing',
+      ],
+    }),
+
+    // Bulk operations on multiple listings
+    bulkUpdateAdminListings: builder.mutation({
+      query: ({ listingIds, action, data }) => ({
+        url: '/admin/listings/bulk',
+        method: 'POST',
+        body: { listingIds, action, data },
+      }),
+      invalidatesTags: [
+        { type: 'Listing', id: 'ADMIN_LIST' },
         'Listing',
       ],
     }),
@@ -2214,10 +2263,14 @@ export const {
 
   // Admin - Listings Management
   useGetAdminListingsQuery,
+  useGetAdminFeaturedListingsQuery,
+  useGetFlaggedListingsQuery,
   useGetAdminListingQuery,
-  useUpdateAdminListingMutation,
-  useDeleteAdminListingMutation,
-  useApproveAdminListingMutation,
+  useUpdateAdminListingStatusMutation,
+  useToggleListingFeaturedMutation,
+  useUpdateListingFlagMutation,
+  useSoftDeleteListingMutation,
+  useBulkUpdateAdminListingsMutation,
 
   // Admin - Unified Approval System (NEW)
   useGetAllApprovalsQuery,
@@ -2248,7 +2301,6 @@ export const {
   useResetSystemSettingsMutation,
 
   // Content Moderation System
-  useGetFlaggedListingsQuery,
   useFlagListingMutation,
 
   // Enhanced User Management
@@ -2267,15 +2319,11 @@ export const {
 
   // Enhanced Analytics
   useGetAdminAnalyticsOverviewQuery,
-  
-  // Category Statistics
-  useGetCategoryStatsQuery,
 
   // Safe Deletion Operations
   useSafeDeleteProductMutation,
 
-  // Admin - Featured Listings
-  useToggleFeaturedListingMutation,
+  // Legacy featured listing hook (replaced by useToggleListingFeaturedMutation)
 
   // System Health
   useGetSystemHealthQuery,

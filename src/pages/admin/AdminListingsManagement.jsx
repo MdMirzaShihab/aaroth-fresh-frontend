@@ -10,14 +10,17 @@ import {
   Clock,
   DollarSign,
   User,
+  Settings,
 } from 'lucide-react';
 import {
   useGetAdminListingsQuery,
   useGetAdminCategoriesQuery,
-  useToggleFeaturedListingMutation,
-  useUpdateAdminListingMutation,
-  useDeleteAdminListingMutation,
-  useApproveAdminListingMutation,
+  useGetAdminListingQuery,
+  useToggleListingFeaturedMutation,
+  useUpdateAdminListingStatusMutation,
+  useSoftDeleteListingMutation,
+  useUpdateListingFlagMutation,
+  useBulkUpdateAdminListingsMutation,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -25,7 +28,11 @@ import { Card } from '../../components/ui/Card';
 import Pagination from '../../components/ui/Pagination';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import EmptyState from '../../components/ui/EmptyState';
-import { Table } from '../../components/ui/Table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, DataTable } from '../../components/ui/Table';
+import ListingFlagModal from '../../components/admin/ListingFlagModal';
+import ListingStatusModal from '../../components/admin/ListingStatusModal';
+import BulkActionsModal from '../../components/admin/BulkActionsModal';
+import ListingDetailsModal from '../../components/admin/ListingDetailsModal';
 
 const AdminListingsManagement = () => {
   // Local state for filtering and pagination
@@ -33,9 +40,19 @@ const AdminListingsManagement = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedVendor] = useState('all');
+  const [selectedFeatured, setSelectedFeatured] = useState('all');
+  const [selectedFlagged, setSelectedFlagged] = useState('all');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedListings, setSelectedListings] = useState(new Set());
   const [confirmAction, setConfirmAction] = useState(null);
+  
+  // Modal states
+  const [flagModal, setFlagModal] = useState({ isOpen: false, listing: null });
+  const [statusModal, setStatusModal] = useState({ isOpen: false, listing: null });
+  const [bulkModal, setBulkModal] = useState({ isOpen: false });
+  const [viewModal, setViewModal] = useState({ isOpen: false, listingId: null });
 
   const itemsPerPage = 10;
 
@@ -48,8 +65,12 @@ const AdminListingsManagement = () => {
       category: selectedCategory !== 'all' ? selectedCategory : undefined,
       status: selectedStatus !== 'all' ? selectedStatus : undefined,
       vendor: selectedVendor !== 'all' ? selectedVendor : undefined,
+      featured: selectedFeatured !== 'all' ? (selectedFeatured === 'true') : undefined,
+      flagged: selectedFlagged !== 'all' ? (selectedFlagged === 'true') : undefined,
+      sortBy,
+      sortOrder,
     }),
-    [currentPage, searchTerm, selectedCategory, selectedStatus, selectedVendor]
+    [currentPage, searchTerm, selectedCategory, selectedStatus, selectedVendor, selectedFeatured, selectedFlagged, sortBy, sortOrder]
   );
 
   // RTK Query hooks
@@ -62,25 +83,28 @@ const AdminListingsManagement = () => {
 
   const { data: categoriesData } = useGetAdminCategoriesQuery();
 
-  const [toggleFeatured] = useToggleFeaturedListingMutation();
-  const [updateListing] = useUpdateAdminListingMutation();
-  const [deleteListing] = useDeleteAdminListingMutation();
-  const [approveListing] = useApproveAdminListingMutation();
+  const [toggleFeatured] = useToggleListingFeaturedMutation();
+  const [updateListingStatus] = useUpdateAdminListingStatusMutation();
+  const [deleteListing] = useSoftDeleteListingMutation();
+  const [updateListingFlag] = useUpdateListingFlagMutation();
+  const [bulkUpdateListings] = useBulkUpdateAdminListingsMutation();
 
-  const listings = listingsData?.data?.listings || listingsData?.data || [];
-  const totalListings =
-    listingsData?.total || listingsData?.data?.totalListings || 0;
-  const totalPages = listingsData?.pages || listingsData?.data?.totalPages || 1;
-  const categories =
-    categoriesData?.data?.categories || categoriesData?.data || [];
+  // Fix data structure parsing to match backend response format
+  const listings = listingsData?.data || [];
+  const totalListings = listingsData?.total || 0;
+  const totalPages = listingsData?.pages || 1;
+  const currentPageFromAPI = listingsData?.page || 1;
+  const stats = listingsData?.stats || null;
+  
+  const categories = categoriesData?.data || [];
 
-  // Status options
+  // Status options (matching backend enum values)
   const statusOptions = [
     { value: 'all', label: 'All Status' },
     { value: 'active', label: 'Active' },
     { value: 'inactive', label: 'Inactive' },
-    { value: 'pending', label: 'Pending Approval' },
-    { value: 'rejected', label: 'Rejected' },
+    { value: 'out_of_stock', label: 'Out of Stock' },
+    { value: 'discontinued', label: 'Discontinued' },
   ];
 
   // Handle featured toggle
@@ -93,23 +117,73 @@ const AdminListingsManagement = () => {
     }
   };
 
-  // Handle listing approval
-  const handleApproval = async (listingId, isApproved) => {
+  // Handle listing status update
+  const handleStatusUpdate = async (listingId, status, reason = '') => {
     try {
-      await approveListing({
+      await updateListingStatus({
         id: listingId,
-        isApproved,
+        status,
+        reason,
       }).unwrap();
       setConfirmAction(null);
     } catch (error) {
-      console.error('Failed to update listing approval:', error);
+      console.error('Failed to update listing status:', error);
     }
   };
 
-  // Handle listing deletion
-  const handleDelete = async (listingId) => {
+  // Handle listing flag
+  const handleFlag = async (listingId, flagReason, moderationNotes = '') => {
     try {
-      await deleteListing(listingId).unwrap();
+      await updateListingFlag({
+        id: listingId,
+        action: 'flag',
+        flagReason,
+        moderationNotes,
+      }).unwrap();
+    } catch (error) {
+      throw error; // Re-throw to be handled by modal
+    }
+  };
+
+  // Handle listing unflag
+  const handleUnflag = async (listingId, moderationNotes = '') => {
+    try {
+      await updateListingFlag({
+        id: listingId,
+        action: 'unflag',
+        moderationNotes,
+      }).unwrap();
+    } catch (error) {
+      throw error; // Re-throw to be handled by modal
+    }
+  };
+
+  // Handle bulk actions
+  const handleBulkAction = async ({ action, listingIds, data }) => {
+    try {
+      await bulkUpdateListings({
+        action,
+        listingIds,
+        ...data,
+      }).unwrap();
+      setSelectedListings(new Set()); // Clear selections after successful action
+    } catch (error) {
+      throw error; // Re-throw to be handled by modal
+    }
+  };
+
+  // Handle view listing details
+  const handleViewListing = (listingId) => {
+    setViewModal({ isOpen: true, listingId });
+  };
+
+  // Handle listing deletion
+  const handleDelete = async (listingId, reason = '') => {
+    try {
+      await deleteListing({
+        id: listingId,
+        reason,
+      }).unwrap();
       setConfirmAction(null);
       setSelectedListings((prev) => {
         const newSet = new Set(prev);
@@ -142,8 +216,16 @@ const AdminListingsManagement = () => {
     });
   };
 
-  // Get status badge styling
-  const getStatusBadge = (status, isFeatured) => {
+  // Get status badge styling (updated for backend status values)
+  const getStatusBadge = (status, isFeatured, isFlagged) => {
+    if (isFlagged) {
+      return {
+        className: 'bg-tomato-red/20 text-tomato-red',
+        icon: AlertTriangle,
+        text: 'Flagged',
+      };
+    }
+
     if (isFeatured) {
       return {
         className: 'bg-amber-100 text-amber-800',
@@ -165,17 +247,17 @@ const AdminListingsManagement = () => {
           icon: XCircle,
           text: 'Inactive',
         };
-      case 'pending':
+      case 'out_of_stock':
         return {
           className: 'bg-earthy-yellow/20 text-earthy-brown',
-          icon: Clock,
-          text: 'Pending',
+          icon: AlertTriangle,
+          text: 'Out of Stock',
         };
-      case 'rejected':
+      case 'discontinued':
         return {
           className: 'bg-tomato-red/20 text-tomato-red',
           icon: XCircle,
-          text: 'Rejected',
+          text: 'Discontinued',
         };
       default:
         return {
@@ -216,12 +298,12 @@ const AdminListingsManagement = () => {
       cell: (listing) => (
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-            {listing.images?.[0]?.url || listing.product?.images?.[0]?.url ? (
+            {listing.images?.[0]?.url || listing.productId?.images?.[0]?.url || listing.product?.images?.[0]?.url ? (
               <img
                 src={
-                  listing.images?.[0]?.url || listing.product?.images?.[0]?.url
+                  listing.images?.[0]?.url || listing.productId?.images?.[0]?.url || listing.product?.images?.[0]?.url
                 }
-                alt={listing.product?.name || listing.name}
+                alt={listing.productId?.name || listing.product?.name || listing.name || 'Product'}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -232,13 +314,13 @@ const AdminListingsManagement = () => {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-medium text-text-dark dark:text-white truncate">
-              {listing.product?.name || listing.name || 'Unknown Product'}
+              {listing.productId?.name || listing.product?.name || listing.name || 'Unknown Product'}
             </p>
             <p className="text-xs text-text-muted truncate">
-              {listing.product?.category?.name || 'No Category'}
+              {listing.productId?.category?.name || listing.product?.category?.name || 'No Category'}
             </p>
             <p className="text-xs text-bottle-green truncate">
-              {listing.product?.variety || ''}
+              {listing.qualityGrade || 'Standard'}
             </p>
           </div>
         </div>
@@ -254,15 +336,17 @@ const AdminListingsManagement = () => {
           <User className="w-4 h-4 text-text-muted" />
           <div>
             <p className="text-sm font-medium text-text-dark dark:text-white">
-              {listing.vendor?.businessName ||
+              {listing.vendorId?.businessName ||
+                listing.vendor?.businessName ||
+                listing.vendorId?.name ||
                 listing.vendor?.name ||
                 'Unknown Vendor'}
             </p>
             <p className="text-xs text-text-muted">
-              {listing.vendor?.phone || 'No contact'}
+              {listing.vendorId?.contactInfo?.phone || listing.vendor?.phone || 'No contact'}
             </p>
             <p className="text-xs text-text-muted">
-              {listing.vendor?.address?.city || ''}
+              {listing.vendorId?.address?.city || listing.vendor?.address?.city || ''}
             </p>
           </div>
         </div>
@@ -321,7 +405,8 @@ const AdminListingsManagement = () => {
       cell: (listing) => {
         const badge = getStatusBadge(
           listing.status,
-          listing.featured || listing.isFeatured
+          listing.featured || listing.isFeatured,
+          listing.isFlagged
         );
         return (
           <div className="flex items-center gap-1">
@@ -385,47 +470,30 @@ const AdminListingsManagement = () => {
             />
           </button>
 
-          {listing.status === 'pending' && (
-            <>
-              <button
-                onClick={() =>
-                  setConfirmAction({
-                    type: 'approve',
-                    listing,
-                    title: 'Approve Listing',
-                    message: `Are you sure you want to approve "${listing.product?.name || listing.name}"?`,
-                    confirmText: 'Approve',
-                    onConfirm: () => handleApproval(listing._id, true),
-                  })
-                }
-                className="p-2 text-bottle-green hover:bg-mint-fresh/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Approve listing"
-              >
-                <CheckCircle className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() =>
-                  setConfirmAction({
-                    type: 'reject',
-                    listing,
-                    title: 'Reject Listing',
-                    message: `Are you sure you want to reject "${listing.product?.name || listing.name}"?`,
-                    confirmText: 'Reject',
-                    onConfirm: () => handleApproval(listing._id, false),
-                  })
-                }
-                className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Reject listing"
-              >
-                <XCircle className="w-4 h-4" />
-              </button>
-            </>
-          )}
+          {/* Status Update Button */}
+          <button
+            onClick={() => setStatusModal({ isOpen: true, listing })}
+            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+            title="Update status"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+
+          {/* Flag/Unflag Button */}
+          <button
+            onClick={() => setFlagModal({ isOpen: true, listing })}
+            className={`p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
+              listing.isFlagged
+                ? 'text-tomato-red hover:bg-tomato-red/20'
+                : 'text-text-muted hover:text-amber-600 hover:bg-amber-50'
+            }`}
+            title={listing.isFlagged ? 'Remove flag' : 'Flag listing'}
+          >
+            <AlertTriangle className="w-4 h-4" />
+          </button>
 
           <button
-            onClick={() => {
-              /* Handle view/edit */
-            }}
+            onClick={() => handleViewListing(listing._id)}
             className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="View listing details"
           >
@@ -438,10 +506,10 @@ const AdminListingsManagement = () => {
                 type: 'delete',
                 listing,
                 title: 'Delete Listing',
-                message: `Are you sure you want to permanently delete "${listing.product?.name || listing.name}"? This action cannot be undone.`,
+                message: `Are you sure you want to permanently delete "${listing.productId?.name || listing.product?.name || 'this listing'}"? This action cannot be undone.`,
                 confirmText: 'Delete',
                 isDangerous: true,
-                onConfirm: () => handleDelete(listing._id),
+                onConfirm: () => handleDelete(listing._id, 'Admin deletion'),
               })
             }
             className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
@@ -489,16 +557,46 @@ const AdminListingsManagement = () => {
           </p>
         </div>
 
-        {/* Quick Stats */}
+        {/* Enhanced Stats and Bulk Actions */}
         <div className="flex flex-wrap gap-4">
-          <div className="bg-mint-fresh/10 rounded-xl px-4 py-2">
-            <p className="text-sm text-bottle-green font-medium">
-              {totalListings} Total Listings
-            </p>
-          </div>
+          {/* Bulk Actions Button */}
           {selectedListings.size > 0 && (
-            <div className="bg-bottle-green/10 rounded-xl px-4 py-2">
-              <p className="text-sm text-bottle-green font-medium">
+            <Button
+              onClick={() => setBulkModal({ isOpen: true })}
+              variant="outline"
+              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 flex items-center gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              Bulk Actions ({selectedListings.size})
+            </Button>
+          )}
+          {stats && (
+            <>
+              <div className="bg-mint-fresh/10 rounded-xl px-4 py-2">
+                <p className="text-sm text-bottle-green font-medium">
+                  {stats.totalListings || totalListings} Total
+                </p>
+              </div>
+              <div className="bg-bottle-green/10 rounded-xl px-4 py-2">
+                <p className="text-sm text-bottle-green font-medium">
+                  {stats.activeListings || 0} Active
+                </p>
+              </div>
+              <div className="bg-amber-100/80 rounded-xl px-4 py-2">
+                <p className="text-sm text-amber-800 font-medium">
+                  {stats.featuredListings || 0} Featured
+                </p>
+              </div>
+              <div className="bg-tomato-red/10 rounded-xl px-4 py-2">
+                <p className="text-sm text-tomato-red font-medium">
+                  {stats.flaggedListings || 0} Flagged
+                </p>
+              </div>
+            </>
+          )}
+          {selectedListings.size > 0 && (
+            <div className="bg-blue-100/80 rounded-xl px-4 py-2">
+              <p className="text-sm text-blue-800 font-medium">
                 {selectedListings.size} Selected
               </p>
             </div>
@@ -508,13 +606,13 @@ const AdminListingsManagement = () => {
 
       {/* Filters and Search */}
       <Card className="p-6">
-        <div className="flex flex-col lg:flex-row gap-4">
+        <div className="space-y-4">
           {/* Search */}
           <div className="flex-1 lg:max-w-md">
             <SearchBar
               value={searchTerm}
               onChange={setSearchTerm}
-              placeholder="Search listings by name, vendor..."
+              placeholder="Search listings by name, vendor, product..."
               className="w-full"
             />
           </div>
@@ -551,24 +649,141 @@ const AdminListingsManagement = () => {
                 </option>
               ))}
             </select>
+
+            <select
+              value={selectedFeatured}
+              onChange={(e) => {
+                setSelectedFeatured(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+            >
+              <option value="all">All Listings</option>
+              <option value="true">Featured Only</option>
+              <option value="false">Non-Featured</option>
+            </select>
+
+            <select
+              value={selectedFlagged}
+              onChange={(e) => {
+                setSelectedFlagged(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+            >
+              <option value="all">All Flags</option>
+              <option value="true">Flagged Only</option>
+              <option value="false">Not Flagged</option>
+            </select>
+
+            <select
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [newSortBy, newSortOrder] = e.target.value.split('-');
+                setSortBy(newSortBy);
+                setSortOrder(newSortOrder);
+                setCurrentPage(1);
+              }}
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+            >
+              <option value="createdAt-desc">Newest First</option>
+              <option value="createdAt-asc">Oldest First</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+              <option value="price-asc">Price Low-High</option>
+              <option value="price-desc">Price High-Low</option>
+              <option value="status-asc">Status A-Z</option>
+            </select>
           </div>
         </div>
+
+        {/* Active Filters Summary */}
+        {(selectedStatus !== 'all' || selectedCategory !== 'all' || selectedFeatured !== 'all' || selectedFlagged !== 'all' || searchTerm) && (
+          <div className="mt-4 p-3 bg-blue-50 rounded-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-blue-800">
+                <span className="font-medium">Active filters:</span>
+                {searchTerm && (
+                  <span className="bg-blue-100 px-2 py-1 rounded">Search: "{searchTerm}"</span>
+                )}
+                {selectedStatus !== 'all' && (
+                  <span className="bg-blue-100 px-2 py-1 rounded">
+                    Status: {statusOptions.find(s => s.value === selectedStatus)?.label}
+                  </span>
+                )}
+                {selectedCategory !== 'all' && (
+                  <span className="bg-blue-100 px-2 py-1 rounded">
+                    Category: {categories.find(c => c._id === selectedCategory)?.name}
+                  </span>
+                )}
+                {selectedFeatured !== 'all' && (
+                  <span className="bg-blue-100 px-2 py-1 rounded">
+                    {selectedFeatured === 'true' ? 'Featured Only' : 'Non-Featured'}
+                  </span>
+                )}
+                {selectedFlagged !== 'all' && (
+                  <span className="bg-blue-100 px-2 py-1 rounded">
+                    {selectedFlagged === 'true' ? 'Flagged Only' : 'Not Flagged'}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedStatus('all');
+                  setSelectedCategory('all');
+                  setSelectedFeatured('all');
+                  setSelectedFlagged('all');
+                  setSortBy('createdAt');
+                  setSortOrder('desc');
+                  setCurrentPage(1);
+                }}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Listings Table */}
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
-          <Table
-            data={listings}
-            columns={columns}
-            emptyState={
-              <EmptyState
-                icon={Package}
-                title="No listings found"
-                description="No listings match your current filters."
-              />
-            }
-          />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableHead key={column.id} style={{ width: column.width }}>
+                    {column.header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {listings.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center py-12">
+                    <EmptyState
+                      icon={Package}
+                      title="No listings found"
+                      description="No listings match your current filters."
+                    />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                listings.map((listing) => (
+                  <TableRow key={listing._id}>
+                    {columns.map((column) => (
+                      <TableCell key={column.id} style={{ width: column.width }}>
+                        {column.cell(listing)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
 
         {/* Pagination */}
@@ -584,6 +799,39 @@ const AdminListingsManagement = () => {
           </div>
         )}
       </Card>
+
+      {/* Modals */}
+      <ListingFlagModal
+        isOpen={flagModal.isOpen}
+        onClose={() => setFlagModal({ isOpen: false, listing: null })}
+        listing={flagModal.listing}
+        onFlag={handleFlag}
+        onUnflag={handleUnflag}
+        isLoading={updateListingFlag.isLoading}
+      />
+
+      <ListingStatusModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal({ isOpen: false, listing: null })}
+        listing={statusModal.listing}
+        onUpdateStatus={handleStatusUpdate}
+        isLoading={updateListingStatus.isLoading}
+      />
+
+      <BulkActionsModal
+        isOpen={bulkModal.isOpen}
+        onClose={() => setBulkModal({ isOpen: false })}
+        selectedListings={selectedListings}
+        listings={listings}
+        onBulkAction={handleBulkAction}
+        isLoading={bulkUpdateListings.isLoading}
+      />
+
+      <ListingDetailsModal
+        isOpen={viewModal.isOpen}
+        onClose={() => setViewModal({ isOpen: false, listingId: null })}
+        listingId={viewModal.listingId}
+      />
 
       {/* Confirmation Dialog */}
       {confirmAction && (
