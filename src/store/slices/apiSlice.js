@@ -638,6 +638,132 @@ export const apiSlice = createApi({
       invalidatesTags: ['Approvals', 'User', 'Restaurant'],
     }),
 
+    // ================================
+    // ENHANCED VERIFICATION MANAGEMENT
+    // ================================
+
+    // Direct vendor verification toggle (Enhanced)
+    toggleVendorVerification: builder.mutation({
+      query: ({ id, isVerified, reason }) => ({
+        url: `/admin/vendors/${id}/verification`,
+        method: 'PUT',
+        body: { isVerified, reason },
+      }),
+      invalidatesTags: ['Approvals', 'Vendor', 'User'],
+      onQueryStarted: async ({ id, isVerified }, { dispatch, queryFulfilled }) => {
+        // Optimistic update for approvals list
+        const patchResult = dispatch(
+          apiSlice.util.updateQueryData('getAllApprovals', undefined, (draft) => {
+            const approval = draft?.data?.find(a => a._id === id);
+            if (approval && approval.vendorId) {
+              approval.vendorId.isVerified = isVerified;
+              approval.vendorId.verificationDate = isVerified ? new Date().toISOString() : null;
+            }
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+
+    // Direct restaurant verification toggle (Enhanced)
+    toggleRestaurantVerification: builder.mutation({
+      query: ({ id, isVerified, reason }) => ({
+        url: `/admin/restaurants/${id}/verification`,
+        method: 'PUT',
+        body: { isVerified, reason },
+      }),
+      invalidatesTags: ['Approvals', 'Restaurant', 'User'],
+      onQueryStarted: async ({ id, isVerified }, { dispatch, queryFulfilled }) => {
+        // Optimistic update for approvals list
+        const patchResult = dispatch(
+          apiSlice.util.updateQueryData('getAllApprovals', undefined, (draft) => {
+            const approval = draft?.data?.find(a => a._id === id);
+            if (approval && approval.restaurantId) {
+              approval.restaurantId.isVerified = isVerified;
+              approval.restaurantId.verificationDate = isVerified ? new Date().toISOString() : null;
+            }
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+
+    // Reset vendor approval status to pending
+    resetVendorApproval: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/approvals/vendor/${id}/reset`,
+        method: 'PUT',
+        body: { reason },
+      }),
+      invalidatesTags: ['Approvals', 'Vendor', 'User'],
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
+        // Optimistic update
+        const patchResult = dispatch(
+          apiSlice.util.updateQueryData('getAllApprovals', undefined, (draft) => {
+            const approval = draft?.data?.find(a => a._id === id);
+            if (approval && approval.vendorId) {
+              approval.vendorId.isVerified = false;
+              approval.vendorId.verificationDate = null;
+            }
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+
+    // Reset restaurant approval status to pending
+    resetRestaurantApproval: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/approvals/restaurant/${id}/reset`,
+        method: 'PUT',
+        body: { reason },
+      }),
+      invalidatesTags: ['Approvals', 'Restaurant', 'User'],
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
+        // Optimistic update
+        const patchResult = dispatch(
+          apiSlice.util.updateQueryData('getAllApprovals', undefined, (draft) => {
+            const approval = draft?.data?.find(a => a._id === id);
+            if (approval && approval.restaurantId) {
+              approval.restaurantId.isVerified = false;
+              approval.restaurantId.verificationDate = null;
+            }
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+
+    // Bulk verification operations
+    bulkToggleVerification: builder.mutation({
+      query: ({ userIds, entityType, isVerified, reason }) => ({
+        url: `/admin/bulk/verification`,
+        method: 'POST',
+        body: { userIds, entityType, isVerified, reason },
+      }),
+      invalidatesTags: ['Approvals', 'Vendor', 'Restaurant', 'User'],
+    }),
+
     // Enhanced Admin Dashboard
     getAdminDashboardOverview: builder.query({
       query: (dateFilter = {}) => ({
@@ -2278,6 +2404,13 @@ export const {
   useRejectVendorMutation,
   useApproveRestaurantMutation,
   useRejectRestaurantMutation,
+
+  // Enhanced Verification Management
+  useToggleVendorVerificationMutation,
+  useToggleRestaurantVerificationMutation,
+  useResetVendorApprovalMutation,
+  useResetRestaurantApprovalMutation,
+  useBulkToggleVerificationMutation,
 
   // Enhanced Admin Dashboard
   useGetAdminDashboardOverviewQuery,

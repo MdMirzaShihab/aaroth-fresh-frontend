@@ -13,6 +13,12 @@ import {
   FileText,
   Calendar,
   User,
+  Shield,
+  ShieldCheck,
+  ShieldX,
+  RotateCcw,
+  Settings,
+  MoreHorizontal,
 } from 'lucide-react';
 import {
   useGetAllApprovalsQuery,
@@ -20,6 +26,11 @@ import {
   useRejectVendorMutation,
   useApproveRestaurantMutation,
   useRejectRestaurantMutation,
+  useToggleVendorVerificationMutation,
+  useToggleRestaurantVerificationMutation,
+  useResetVendorApprovalMutation,
+  useResetRestaurantApprovalMutation,
+  useBulkToggleVerificationMutation,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import SearchBar from '../../components/ui/SearchBar';
@@ -31,6 +42,9 @@ import { Table } from '../../components/ui/Table';
 import ApprovalCard from '../../components/admin/ApprovalCard';
 import ApprovalModal from '../../components/admin/ApprovalModal';
 import ApprovalFilters from '../../components/admin/ApprovalFilters';
+import VerificationToggleModal from '../../components/admin/VerificationToggleModal';
+import StatusResetModal from '../../components/admin/StatusResetModal';
+import BulkVerificationModal from '../../components/admin/BulkVerificationModal';
 
 const ApprovalManagement = () => {
   // Local state
@@ -41,6 +55,9 @@ const ApprovalManagement = () => {
   const [viewMode, setViewMode] = useState('card'); // card, table
   const [selectedApproval, setSelectedApproval] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [showBulkVerificationModal, setShowBulkVerificationModal] = useState(false);
   const [selectedApprovals, setSelectedApprovals] = useState(new Set());
 
   const itemsPerPage = 12;
@@ -73,6 +90,18 @@ const ApprovalManagement = () => {
     useApproveRestaurantMutation();
   const [rejectRestaurant, { isLoading: isRejectingRestaurant }] =
     useRejectRestaurantMutation();
+  
+  // Enhanced verification mutations
+  const [toggleVendorVerification, { isLoading: isTogglingVendorVerification }] =
+    useToggleVendorVerificationMutation();
+  const [toggleRestaurantVerification, { isLoading: isTogglingRestaurantVerification }] =
+    useToggleRestaurantVerificationMutation();
+  const [resetVendorApproval, { isLoading: isResettingVendorApproval }] =
+    useResetVendorApprovalMutation();
+  const [resetRestaurantApproval, { isLoading: isResettingRestaurantApproval }] =
+    useResetRestaurantApprovalMutation();
+  const [bulkToggleVerification, { isLoading: isBulkToggling }] =
+    useBulkToggleVerificationMutation();
 
   const approvals = approvalsData?.data || [];
   const totalApprovals = approvalsData?.total || 0;
@@ -129,34 +158,96 @@ const ApprovalManagement = () => {
     setShowModal(true);
   };
 
-  // Get status badge styling
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'pending':
-        return {
-          className: 'bg-earthy-yellow/20 text-earthy-brown',
-          icon: Clock,
-          text: 'Pending Review',
-        };
-      case 'approved':
-        return {
-          className: 'bg-mint-fresh/20 text-bottle-green',
-          icon: CheckCircle,
-          text: 'Approved',
-        };
-      case 'rejected':
-        return {
-          className: 'bg-tomato-red/20 text-tomato-red',
-          icon: XCircle,
-          text: 'Rejected',
-        };
-      default:
-        return {
-          className: 'bg-gray-100 text-gray-600',
-          icon: Clock,
-          text: 'Unknown',
-        };
+  // Handle verification toggle
+  const handleVerificationToggle = async (data) => {
+    try {
+      if (data.entityType === 'vendor') {
+        await toggleVendorVerification(data).unwrap();
+      } else if (data.entityType === 'restaurant') {
+        await toggleRestaurantVerification(data).unwrap();
+      }
+      setShowVerificationModal(false);
+      setSelectedApproval(null);
+    } catch (error) {
+      console.error('Failed to toggle verification:', error);
     }
+  };
+
+  // Handle status reset
+  const handleStatusReset = async (data) => {
+    try {
+      if (data.entityType === 'vendor') {
+        await resetVendorApproval(data).unwrap();
+      } else if (data.entityType === 'restaurant') {
+        await resetRestaurantApproval(data).unwrap();
+      }
+      setShowResetModal(false);
+      setSelectedApproval(null);
+    } catch (error) {
+      console.error('Failed to reset status:', error);
+    }
+  };
+
+  // Handle opening verification modal
+  const handleOpenVerificationModal = (approval) => {
+    setSelectedApproval(approval);
+    setShowVerificationModal(true);
+  };
+
+  // Handle opening reset modal
+  const handleOpenResetModal = (approval) => {
+    setSelectedApproval(approval);
+    setShowResetModal(true);
+  };
+
+  // Handle bulk verification
+  const handleBulkVerification = async (data) => {
+    try {
+      await bulkToggleVerification(data).unwrap();
+      setShowBulkVerificationModal(false);
+      setSelectedApprovals(new Set());
+    } catch (error) {
+      console.error('Failed to perform bulk verification:', error);
+    }
+  };
+
+  // Get selected approvals data
+  const selectedApprovalsData = approvals.filter(approval => 
+    selectedApprovals.has(approval._id)
+  );
+
+  // Get status badge styling with verification status
+  const getStatusBadge = (approval) => {
+    const businessEntity = approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
+    const isVerified = businessEntity?.isVerified || false;
+    
+    // If entity is verified, show verification status instead of approval status
+    if (isVerified) {
+      return {
+        className: 'bg-mint-fresh/20 text-bottle-green',
+        icon: ShieldCheck,
+        text: 'Verified',
+        isVerified: true,
+      };
+    }
+    
+    // Check if previously processed but not verified
+    if (businessEntity && businessEntity.verificationDate === null && (businessEntity.statusUpdatedAt || businessEntity.adminNotes)) {
+      return {
+        className: 'bg-gray-100 text-gray-600',
+        icon: ShieldX,
+        text: 'Unverified',
+        isVerified: false,
+      };
+    }
+    
+    // Default to pending status
+    return {
+      className: 'bg-earthy-yellow/20 text-earthy-brown',
+      icon: Clock,
+      text: 'Pending Review',
+      isVerified: null,
+    };
   };
 
   // Get type icon and color
@@ -234,7 +325,7 @@ const ApprovalManagement = () => {
       id: 'status',
       header: 'Status',
       cell: (approval) => {
-        const badge = getStatusBadge(approval.status);
+        const badge = getStatusBadge(approval);
         return (
           <div className="flex items-center gap-2">
             <badge.icon className="w-4 h-4" />
@@ -295,42 +386,75 @@ const ApprovalManagement = () => {
     {
       id: 'actions',
       header: 'Actions',
-      cell: (approval) => (
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => handleViewDetails(approval)}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-            title="View details"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
+      cell: (approval) => {
+        const badge = getStatusBadge(approval);
+        const businessEntity = approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
+        
+        return (
+          <div className="flex items-center gap-1">
+            {/* View Details */}
+            <button
+              onClick={() => handleViewDetails(approval)}
+              className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+              title="View details"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
 
-          {approval.status === 'pending' && (
-            <>
+            {/* Traditional Approval Actions for Pending */}
+            {badge.isVerified === null && (
+              <>
+                <button
+                  onClick={() => {
+                    setSelectedApproval(approval);
+                    setShowModal(true);
+                  }}
+                  className="p-2 text-bottle-green hover:bg-mint-fresh/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                  title="Approve application"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedApproval(approval);
+                    setShowModal(true);
+                  }}
+                  className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                  title="Reject application"
+                >
+                  <XCircle className="w-4 h-4" />
+                </button>
+              </>
+            )}
+
+            {/* Verification Toggle for Processed Applications */}
+            {(badge.isVerified === true || badge.isVerified === false) && (
               <button
-                onClick={() => {
-                  setSelectedApproval(approval);
-                  setShowModal(true);
-                }}
-                className="p-2 text-bottle-green hover:bg-mint-fresh/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Quick approve"
+                onClick={() => handleOpenVerificationModal(approval)}
+                className={`p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                  badge.isVerified
+                    ? 'text-amber-600 hover:bg-amber-100'
+                    : 'text-bottle-green hover:bg-mint-fresh/20'
+                }`}
+                title={badge.isVerified ? 'Revoke verification' : 'Grant verification'}
               >
-                <CheckCircle className="w-4 h-4" />
+                <Shield className="w-4 h-4" />
               </button>
+            )}
+
+            {/* Status Reset for Processed Applications */}
+            {businessEntity && (businessEntity.statusUpdatedAt || businessEntity.adminNotes) && (
               <button
-                onClick={() => {
-                  setSelectedApproval(approval);
-                  setShowModal(true);
-                }}
-                className="p-2 text-tomato-red hover:bg-tomato-red/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                title="Quick reject"
+                onClick={() => handleOpenResetModal(approval)}
+                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                title="Reset to pending"
               >
-                <XCircle className="w-4 h-4" />
+                <RotateCcw className="w-4 h-4" />
               </button>
-            </>
-          )}
-        </div>
-      ),
+            )}
+          </div>
+        );
+      },
       width: '140px',
     },
   ];
@@ -406,27 +530,75 @@ const ApprovalManagement = () => {
         />
       </Card>
 
-      {/* Bulk Actions */}
+      {/* Enhanced Bulk Actions */}
       {selectedApprovals.size > 0 && (
         <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-text-dark">
-              {selectedApprovals.size} applications selected
-            </span>
-            <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-text-dark">
+                {selectedApprovals.size} applications selected
+              </span>
+              
+              {/* Selection Summary */}
+              <div className="flex gap-2">
+                {selectedApprovalsData.filter(a => a.type === 'vendor').length > 0 && (
+                  <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-lg flex items-center gap-1">
+                    <Store className="w-3 h-3" />
+                    {selectedApprovalsData.filter(a => a.type === 'vendor').length}
+                  </span>
+                )}
+                {selectedApprovalsData.filter(a => a.type === 'restaurant').length > 0 && (
+                  <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-lg flex items-center gap-1">
+                    <Utensils className="w-3 h-3" />
+                    {selectedApprovalsData.filter(a => a.type === 'restaurant').length}
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-3">
+              {/* Legacy Bulk Actions */}
               <Button
                 variant="outline"
                 size="sm"
                 className="text-bottle-green border-bottle-green hover:bg-bottle-green hover:text-white"
+                onClick={() => {
+                  // Handle bulk approve for truly pending items
+                  // TODO: Implement bulk approval for legacy pending items
+                }}
               >
+                <CheckCircle className="w-4 h-4 mr-1" />
                 Bulk Approve
               </Button>
+              
+              {/* Enhanced Verification Actions */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-bottle-green border-bottle-green hover:bg-bottle-green hover:text-white"
+                onClick={() => setShowBulkVerificationModal(true)}
+              >
+                <Shield className="w-4 h-4 mr-1" />
+                Bulk Verify
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"
                 className="text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"
               >
+                <XCircle className="w-4 h-4 mr-1" />
                 Bulk Reject
+              </Button>
+
+              {/* Clear Selection */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedApprovals(new Set())}
+                className="text-gray-600 border-gray-300"
+              >
+                Clear Selection
               </Button>
             </div>
           </div>
@@ -526,6 +698,44 @@ const ApprovalManagement = () => {
             isApprovingRestaurant ||
             isRejectingRestaurant
           }
+        />
+      )}
+
+      {/* Verification Toggle Modal */}
+      {showVerificationModal && selectedApproval && (
+        <VerificationToggleModal
+          approval={selectedApproval}
+          onClose={() => {
+            setShowVerificationModal(false);
+            setSelectedApproval(null);
+          }}
+          onToggleVerification={handleVerificationToggle}
+          isLoading={isTogglingVendorVerification || isTogglingRestaurantVerification}
+        />
+      )}
+
+      {/* Status Reset Modal */}
+      {showResetModal && selectedApproval && (
+        <StatusResetModal
+          approval={selectedApproval}
+          onClose={() => {
+            setShowResetModal(false);
+            setSelectedApproval(null);
+          }}
+          onResetStatus={handleStatusReset}
+          isLoading={isResettingVendorApproval || isResettingRestaurantApproval}
+        />
+      )}
+
+      {/* Bulk Verification Modal */}
+      {showBulkVerificationModal && selectedApprovals.size > 0 && (
+        <BulkVerificationModal
+          selectedApprovals={selectedApprovalsData}
+          onClose={() => {
+            setShowBulkVerificationModal(false);
+          }}
+          onBulkVerification={handleBulkVerification}
+          isLoading={isBulkToggling}
         />
       )}
     </div>

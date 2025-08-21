@@ -16,6 +16,10 @@ import {
   Clock,
   AlertTriangle,
   Download,
+  Shield,
+  ShieldCheck,
+  ShieldX,
+  History,
 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import Button from '../ui/Button';
@@ -103,6 +107,13 @@ const ApprovalModal = ({
       )
     : 0;
 
+  // Enhanced verification status
+  const businessEntity = approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
+  const isVerified = businessEntity?.isVerified || false;
+  const verificationDate = businessEntity?.verificationDate;
+  const statusUpdatedAt = businessEntity?.statusUpdatedAt;
+  const adminNotes = businessEntity?.adminNotes;
+
   // Common rejection reasons
   const commonReasons = [
     'Incomplete documentation',
@@ -138,24 +149,50 @@ const ApprovalModal = ({
                 </h2>
                 <p className="text-text-muted mb-2">{typeDisplay.label}</p>
 
-                {/* Status and Urgency */}
-                <div className="flex items-center gap-3">
+                {/* Enhanced Status and Verification */}
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* Verification Status Badge */}
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      approval.status === 'pending'
-                        ? 'bg-earthy-yellow/20 text-earthy-brown'
-                        : approval.status === 'approved'
-                          ? 'bg-mint-fresh/20 text-bottle-green'
-                          : 'bg-tomato-red/20 text-tomato-red'
+                    className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${
+                      isVerified
+                        ? 'bg-mint-fresh/20 text-bottle-green'
+                        : statusUpdatedAt
+                          ? 'bg-gray-100 text-gray-600'
+                          : 'bg-earthy-yellow/20 text-earthy-brown'
                     }`}
                   >
-                    {approval.status === 'pending'
-                      ? 'Pending Review'
-                      : approval.status === 'approved'
-                        ? 'Approved'
-                        : 'Rejected'}
+                    {isVerified ? (
+                      <>
+                        <ShieldCheck className="w-4 h-4" />
+                        Verified Business
+                      </>
+                    ) : statusUpdatedAt ? (
+                      <>
+                        <ShieldX className="w-4 h-4" />
+                        Unverified
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-4 h-4" />
+                        Pending Review
+                      </>
+                    )}
                   </span>
 
+                  {/* Traditional Status for Legacy Compatibility */}
+                  {(approval.status === 'approved' || approval.status === 'rejected') && (
+                    <span
+                      className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                        approval.status === 'approved'
+                          ? 'bg-blue-50 text-blue-600'
+                          : 'bg-red-50 text-red-600'
+                      }`}
+                    >
+                      {approval.status === 'approved' ? 'Legacy Approved' : 'Legacy Rejected'}
+                    </span>
+                  )}
+
+                  {/* Waiting Time */}
                   {daysWaiting > 0 && (
                     <span
                       className={`text-sm flex items-center gap-1 ${
@@ -172,6 +209,14 @@ const ApprovalModal = ({
                     </span>
                   )}
                 </div>
+
+                {/* Verification Date */}
+                {verificationDate && (
+                  <div className="flex items-center gap-2 mt-2 text-sm text-text-muted">
+                    <Calendar className="w-4 h-4" />
+                    Verified on {new Date(verificationDate).toLocaleDateString()}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -341,48 +386,92 @@ const ApprovalModal = ({
               </Card>
             )}
 
-            {/* Previous Actions */}
-            {(approval.approvalNotes || approval.rejectionReason) && (
+            {/* Enhanced Verification History */}
+            {(adminNotes || statusUpdatedAt || verificationDate || approval.approvalNotes || approval.rejectionReason) && (
               <Card className="p-6">
-                <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
-                  Previous Decision
+                <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4 flex items-center gap-2">
+                  <History className="w-5 h-5" />
+                  Verification History
                 </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    {approval.status === 'approved' ? (
-                      <CheckCircle className="w-5 h-5 text-bottle-green" />
-                    ) : (
-                      <XCircle className="w-5 h-5 text-tomato-red" />
-                    )}
-                    <span className="font-medium text-text-dark dark:text-white">
-                      {approval.status === 'approved' ? 'Approved' : 'Rejected'}
-                    </span>
-                  </div>
+                
+                <div className="space-y-4">
+                  {/* Current Verification Status */}
+                  {(isVerified || statusUpdatedAt) && (
+                    <div className="border-l-4 border-l-bottle-green pl-4 py-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        {isVerified ? (
+                          <>
+                            <ShieldCheck className="w-5 h-5 text-bottle-green" />
+                            <span className="font-medium text-bottle-green">
+                              Business Verified
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <ShieldX className="w-5 h-5 text-gray-600" />
+                            <span className="font-medium text-gray-600">
+                              Verification Revoked/Unverified
+                            </span>
+                          </>
+                        )}
+                      </div>
 
-                  {approval.processedBy && (
-                    <p className="text-sm text-text-muted">
-                      By: {approval.processedBy}
-                    </p>
+                      {statusUpdatedAt && (
+                        <p className="text-sm text-text-muted mb-2">
+                          Updated: {new Date(statusUpdatedAt).toLocaleDateString()} at{' '}
+                          {new Date(statusUpdatedAt).toLocaleTimeString()}
+                        </p>
+                      )}
+
+                      {adminNotes && (
+                        <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          <p className="text-sm text-text-dark dark:text-white">
+                            "{adminNotes}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   )}
 
-                  {approval.processedAt && (
-                    <p className="text-sm text-text-muted">
-                      Date:{' '}
-                      {new Date(approval.processedAt).toLocaleDateString()}
-                    </p>
-                  )}
+                  {/* Legacy Approval History */}
+                  {(approval.approvalNotes || approval.rejectionReason) && (
+                    <div className="border-l-4 border-l-gray-300 pl-4 py-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        {approval.status === 'approved' ? (
+                          <CheckCircle className="w-5 h-5 text-blue-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-tomato-red" />
+                        )}
+                        <span className="font-medium text-text-dark dark:text-white">
+                          Legacy {approval.status === 'approved' ? 'Approval' : 'Rejection'}
+                        </span>
+                      </div>
 
-                  <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <p className="text-sm text-text-dark dark:text-white">
-                      "{approval.approvalNotes || approval.rejectionReason}"
-                    </p>
-                  </div>
+                      {approval.processedBy && (
+                        <p className="text-sm text-text-muted">
+                          By: {approval.processedBy}
+                        </p>
+                      )}
+
+                      {approval.processedAt && (
+                        <p className="text-sm text-text-muted mb-2">
+                          Date: {new Date(approval.processedAt).toLocaleDateString()}
+                        </p>
+                      )}
+
+                      <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <p className="text-sm text-text-dark dark:text-white">
+                          "{approval.approvalNotes || approval.rejectionReason}"
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Card>
             )}
 
-            {/* Action Section */}
-            {approval.status === 'pending' && (
+            {/* Action Section - Only for truly pending applications */}
+            {!statusUpdatedAt && !isVerified && !adminNotes && (
               <Card className="p-6">
                 <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
                   Review Actions
