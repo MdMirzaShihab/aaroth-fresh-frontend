@@ -28,7 +28,15 @@ import { Card } from '../../components/ui/Card';
 import Pagination from '../../components/ui/Pagination';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import EmptyState from '../../components/ui/EmptyState';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, DataTable } from '../../components/ui/Table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  DataTable,
+} from '../../components/ui/Table';
 import ListingFlagModal from '../../components/admin/ListingFlagModal';
 import ListingStatusModal from '../../components/admin/ListingStatusModal';
 import BulkActionsModal from '../../components/admin/BulkActionsModal';
@@ -47,12 +55,18 @@ const AdminListingsManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedListings, setSelectedListings] = useState(new Set());
   const [confirmAction, setConfirmAction] = useState(null);
-  
+
   // Modal states
   const [flagModal, setFlagModal] = useState({ isOpen: false, listing: null });
-  const [statusModal, setStatusModal] = useState({ isOpen: false, listing: null });
+  const [statusModal, setStatusModal] = useState({
+    isOpen: false,
+    listing: null,
+  });
   const [bulkModal, setBulkModal] = useState({ isOpen: false });
-  const [viewModal, setViewModal] = useState({ isOpen: false, listingId: null });
+  const [viewModal, setViewModal] = useState({
+    isOpen: false,
+    listingId: null,
+  });
 
   const itemsPerPage = 10;
 
@@ -65,12 +79,24 @@ const AdminListingsManagement = () => {
       category: selectedCategory !== 'all' ? selectedCategory : undefined,
       status: selectedStatus !== 'all' ? selectedStatus : undefined,
       vendor: selectedVendor !== 'all' ? selectedVendor : undefined,
-      featured: selectedFeatured !== 'all' ? (selectedFeatured === 'true') : undefined,
-      flagged: selectedFlagged !== 'all' ? (selectedFlagged === 'true') : undefined,
+      featured:
+        selectedFeatured !== 'all' ? selectedFeatured === 'true' : undefined,
+      flagged:
+        selectedFlagged !== 'all' ? selectedFlagged === 'true' : undefined,
       sortBy,
       sortOrder,
     }),
-    [currentPage, searchTerm, selectedCategory, selectedStatus, selectedVendor, selectedFeatured, selectedFlagged, sortBy, sortOrder]
+    [
+      currentPage,
+      searchTerm,
+      selectedCategory,
+      selectedStatus,
+      selectedVendor,
+      selectedFeatured,
+      selectedFlagged,
+      sortBy,
+      sortOrder,
+    ]
   );
 
   // RTK Query hooks
@@ -95,7 +121,7 @@ const AdminListingsManagement = () => {
   const totalPages = listingsData?.pages || 1;
   const currentPageFromAPI = listingsData?.page || 1;
   const stats = listingsData?.stats || null;
-  
+
   const categories = categoriesData?.data || [];
 
   // Status options (matching backend enum values)
@@ -298,12 +324,21 @@ const AdminListingsManagement = () => {
       cell: (listing) => (
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-            {listing.images?.[0]?.url || listing.productId?.images?.[0]?.url || listing.product?.images?.[0]?.url ? (
+            {listing.images?.[0]?.url ||
+            listing.productId?.images?.[0]?.url ||
+            listing.product?.images?.[0]?.url ? (
               <img
                 src={
-                  listing.images?.[0]?.url || listing.productId?.images?.[0]?.url || listing.product?.images?.[0]?.url
+                  listing.images?.[0]?.url ||
+                  listing.productId?.images?.[0]?.url ||
+                  listing.product?.images?.[0]?.url
                 }
-                alt={listing.productId?.name || listing.product?.name || listing.name || 'Product'}
+                alt={
+                  listing.productId?.name ||
+                  listing.product?.name ||
+                  listing.name ||
+                  'Product'
+                }
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -314,10 +349,15 @@ const AdminListingsManagement = () => {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-medium text-text-dark dark:text-white truncate">
-              {listing.productId?.name || listing.product?.name || listing.name || 'Unknown Product'}
+              {listing.productId?.name ||
+                listing.product?.name ||
+                listing.name ||
+                'Unknown Product'}
             </p>
             <p className="text-xs text-text-muted truncate">
-              {listing.productId?.category?.name || listing.product?.category?.name || 'No Category'}
+              {listing.productId?.category?.name ||
+                listing.product?.category?.name ||
+                'No Category'}
             </p>
             <p className="text-xs text-bottle-green truncate">
               {listing.qualityGrade || 'Standard'}
@@ -343,10 +383,14 @@ const AdminListingsManagement = () => {
                 'Unknown Vendor'}
             </p>
             <p className="text-xs text-text-muted">
-              {listing.vendorId?.contactInfo?.phone || listing.vendor?.phone || 'No contact'}
+              {listing.vendorId?.contactInfo?.phone ||
+                listing.vendor?.phone ||
+                'No contact'}
             </p>
             <p className="text-xs text-text-muted">
-              {listing.vendorId?.address?.city || listing.vendor?.address?.city || ''}
+              {listing.vendorId?.address?.city ||
+                listing.vendor?.address?.city ||
+                ''}
             </p>
           </div>
         </div>
@@ -698,32 +742,47 @@ const AdminListingsManagement = () => {
         </div>
 
         {/* Active Filters Summary */}
-        {(selectedStatus !== 'all' || selectedCategory !== 'all' || selectedFeatured !== 'all' || selectedFlagged !== 'all' || searchTerm) && (
+        {(selectedStatus !== 'all' ||
+          selectedCategory !== 'all' ||
+          selectedFeatured !== 'all' ||
+          selectedFlagged !== 'all' ||
+          searchTerm) && (
           <div className="mt-4 p-3 bg-blue-50 rounded-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-blue-800">
                 <span className="font-medium">Active filters:</span>
                 {searchTerm && (
-                  <span className="bg-blue-100 px-2 py-1 rounded">Search: "{searchTerm}"</span>
+                  <span className="bg-blue-100 px-2 py-1 rounded">
+                    Search: "{searchTerm}"
+                  </span>
                 )}
                 {selectedStatus !== 'all' && (
                   <span className="bg-blue-100 px-2 py-1 rounded">
-                    Status: {statusOptions.find(s => s.value === selectedStatus)?.label}
+                    Status:{' '}
+                    {
+                      statusOptions.find((s) => s.value === selectedStatus)
+                        ?.label
+                    }
                   </span>
                 )}
                 {selectedCategory !== 'all' && (
                   <span className="bg-blue-100 px-2 py-1 rounded">
-                    Category: {categories.find(c => c._id === selectedCategory)?.name}
+                    Category:{' '}
+                    {categories.find((c) => c._id === selectedCategory)?.name}
                   </span>
                 )}
                 {selectedFeatured !== 'all' && (
                   <span className="bg-blue-100 px-2 py-1 rounded">
-                    {selectedFeatured === 'true' ? 'Featured Only' : 'Non-Featured'}
+                    {selectedFeatured === 'true'
+                      ? 'Featured Only'
+                      : 'Non-Featured'}
                   </span>
                 )}
                 {selectedFlagged !== 'all' && (
                   <span className="bg-blue-100 px-2 py-1 rounded">
-                    {selectedFlagged === 'true' ? 'Flagged Only' : 'Not Flagged'}
+                    {selectedFlagged === 'true'
+                      ? 'Flagged Only'
+                      : 'Not Flagged'}
                   </span>
                 )}
               </div>
@@ -763,7 +822,10 @@ const AdminListingsManagement = () => {
             <TableBody>
               {listings.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center py-12">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="text-center py-12"
+                  >
                     <EmptyState
                       icon={Package}
                       title="No listings found"
@@ -775,7 +837,10 @@ const AdminListingsManagement = () => {
                 listings.map((listing) => (
                   <TableRow key={listing._id}>
                     {columns.map((column) => (
-                      <TableCell key={column.id} style={{ width: column.width }}>
+                      <TableCell
+                        key={column.id}
+                        style={{ width: column.width }}
+                      >
                         {column.cell(listing)}
                       </TableCell>
                     ))}

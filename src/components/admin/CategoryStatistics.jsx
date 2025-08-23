@@ -207,7 +207,9 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <Eye className="w-3 h-3 text-blue-600" />
-                    <span className="text-text-muted">Available Categories</span>
+                    <span className="text-text-muted">
+                      Available Categories
+                    </span>
                   </div>
                   <span className="text-text-dark font-medium">
                     {stats.availableCategories || 0}
@@ -249,7 +251,8 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
                 <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                   <span className="text-text-muted">Inactive categories</span>
                   <span className="text-text-dark font-medium">
-                    {(stats.totalCategories || 0) - (stats.activeCategories || 0)}
+                    {(stats.totalCategories || 0) -
+                      (stats.activeCategories || 0)}
                   </span>
                 </div>
               </div>

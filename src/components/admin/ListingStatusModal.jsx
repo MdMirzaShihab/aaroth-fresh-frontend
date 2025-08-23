@@ -5,44 +5,46 @@ import Button from '../ui/Button';
 import FormField from '../ui/FormField';
 
 const STATUS_OPTIONS = [
-  { 
-    value: 'active', 
-    label: 'Active', 
+  {
+    value: 'active',
+    label: 'Active',
     description: 'Listing is live and visible to customers',
     icon: CheckCircle,
-    color: 'text-bottle-green'
+    color: 'text-bottle-green',
   },
-  { 
-    value: 'inactive', 
-    label: 'Inactive', 
+  {
+    value: 'inactive',
+    label: 'Inactive',
     description: 'Listing is hidden from customers',
     icon: XCircle,
-    color: 'text-gray-600'
+    color: 'text-gray-600',
   },
-  { 
-    value: 'out_of_stock', 
-    label: 'Out of Stock', 
+  {
+    value: 'out_of_stock',
+    label: 'Out of Stock',
     description: 'Product is temporarily unavailable',
     icon: AlertTriangle,
-    color: 'text-earthy-brown'
+    color: 'text-earthy-brown',
   },
-  { 
-    value: 'discontinued', 
-    label: 'Discontinued', 
+  {
+    value: 'discontinued',
+    label: 'Discontinued',
     description: 'Product is no longer available',
     icon: XCircle,
-    color: 'text-tomato-red'
+    color: 'text-tomato-red',
   },
 ];
 
-const ListingStatusModal = ({ 
-  isOpen, 
-  onClose, 
-  listing, 
+const ListingStatusModal = ({
+  isOpen,
+  onClose,
+  listing,
   onUpdateStatus,
-  isLoading = false 
+  isLoading = false,
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState(listing?.status || 'active');
+  const [selectedStatus, setSelectedStatus] = useState(
+    listing?.status || 'active'
+  );
   const [reason, setReason] = useState('');
   const [errors, setErrors] = useState({});
 
@@ -59,7 +61,9 @@ const ListingStatusModal = ({
       await onUpdateStatus(listing._id, selectedStatus, reason.trim());
       handleClose();
     } catch (error) {
-      setErrors({ submit: 'Failed to update listing status. Please try again.' });
+      setErrors({
+        submit: 'Failed to update listing status. Please try again.',
+      });
     }
   };
 
@@ -72,8 +76,10 @@ const ListingStatusModal = ({
 
   if (!listing) return null;
 
-  const currentStatus = STATUS_OPTIONS.find(s => s.value === listing.status);
-  const selectedStatusOption = STATUS_OPTIONS.find(s => s.value === selectedStatus);
+  const currentStatus = STATUS_OPTIONS.find((s) => s.value === listing.status);
+  const selectedStatusOption = STATUS_OPTIONS.find(
+    (s) => s.value === selectedStatus
+  );
 
   return (
     <Modal
@@ -87,9 +93,13 @@ const ListingStatusModal = ({
         <div className="bg-gray-50 rounded-2xl p-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-              {listing.images?.[0]?.url || listing.productId?.images?.[0]?.url ? (
+              {listing.images?.[0]?.url ||
+              listing.productId?.images?.[0]?.url ? (
                 <img
-                  src={listing.images?.[0]?.url || listing.productId?.images?.[0]?.url}
+                  src={
+                    listing.images?.[0]?.url ||
+                    listing.productId?.images?.[0]?.url
+                  }
                   alt={listing.productId?.name || 'Product'}
                   className="w-full h-full object-cover"
                 />
@@ -101,14 +111,21 @@ const ListingStatusModal = ({
             </div>
             <div>
               <h4 className="font-medium text-text-dark">
-                {listing.productId?.name || listing.product?.name || 'Unknown Product'}
+                {listing.productId?.name ||
+                  listing.product?.name ||
+                  'Unknown Product'}
               </h4>
               <p className="text-sm text-text-muted">
-                by {listing.vendorId?.businessName || listing.vendor?.businessName || 'Unknown Vendor'}
+                by{' '}
+                {listing.vendorId?.businessName ||
+                  listing.vendor?.businessName ||
+                  'Unknown Vendor'}
               </p>
               {currentStatus && (
                 <div className="flex items-center gap-1 mt-1">
-                  <currentStatus.icon className={`w-3 h-3 ${currentStatus.color}`} />
+                  <currentStatus.icon
+                    className={`w-3 h-3 ${currentStatus.color}`}
+                  />
                   <span className={`text-xs ${currentStatus.color}`}>
                     Currently: {currentStatus.label}
                   </span>
@@ -122,11 +139,11 @@ const ListingStatusModal = ({
         <FormField label="Select New Status *" error={errors.status}>
           <div className="space-y-3">
             {STATUS_OPTIONS.map((status) => (
-              <label 
-                key={status.value} 
+              <label
+                key={status.value}
                 className={`flex items-start gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
-                  selectedStatus === status.value 
-                    ? 'border-bottle-green bg-bottle-green/5' 
+                  selectedStatus === status.value
+                    ? 'border-bottle-green bg-bottle-green/5'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -141,7 +158,9 @@ const ListingStatusModal = ({
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <status.icon className={`w-4 h-4 ${status.color}`} />
-                    <span className="font-medium text-text-dark">{status.label}</span>
+                    <span className="font-medium text-text-dark">
+                      {status.label}
+                    </span>
                     {status.value === listing.status && (
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                         Current
@@ -167,10 +186,14 @@ const ListingStatusModal = ({
                   Status Change Impact
                 </h4>
                 <p className="text-sm text-text-muted">
-                  {selectedStatus === 'active' && 'This listing will become visible to customers and available for orders.'}
-                  {selectedStatus === 'inactive' && 'This listing will be hidden from customers and unavailable for orders.'}
-                  {selectedStatus === 'out_of_stock' && 'This listing will show as out of stock. Customers can view but not order.'}
-                  {selectedStatus === 'discontinued' && 'This listing will be marked as discontinued and hidden from customers.'}
+                  {selectedStatus === 'active' &&
+                    'This listing will become visible to customers and available for orders.'}
+                  {selectedStatus === 'inactive' &&
+                    'This listing will be hidden from customers and unavailable for orders.'}
+                  {selectedStatus === 'out_of_stock' &&
+                    'This listing will show as out of stock. Customers can view but not order.'}
+                  {selectedStatus === 'discontinued' &&
+                    'This listing will be marked as discontinued and hidden from customers.'}
                 </p>
               </div>
             </div>
@@ -178,7 +201,7 @@ const ListingStatusModal = ({
         )}
 
         {/* Reason for Change */}
-        <FormField 
+        <FormField
           label="Reason for Status Change (Optional)"
           error={errors.reason}
         >
@@ -200,9 +223,7 @@ const ListingStatusModal = ({
           <div className="p-4 bg-tomato-red/10 border border-tomato-red/20 rounded-2xl">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-tomato-red flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-tomato-red">
-                {errors.submit}
-              </p>
+              <p className="text-sm text-tomato-red">{errors.submit}</p>
             </div>
           </div>
         )}

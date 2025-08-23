@@ -1,6 +1,7 @@
 import { useEffect, Suspense, lazy } from 'react';
 import { useSelector } from 'react-redux';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { useGetCurrentUserQuery } from './store/slices/apiSlice';
 import { selectAuth } from './store/slices/authSlice';
 import authService from './services/authService';
@@ -18,7 +19,6 @@ import ProtectedRoute, {
   VendorRoute,
   RestaurantRoute,
   RestaurantOwnerRoute,
-  PublicRoute,
   GuestRoute,
 } from './components/auth/ProtectedRoute';
 
@@ -42,7 +42,10 @@ const PendingApprovalPage = lazy(
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const ApprovalManagement = lazy(
-  () => import('./pages/admin/ApprovalManagement')
+  () => import('./pages/admin/ApprovalManagementNew')
+);
+const VerificationDashboard = lazy(
+  () => import('./pages/admin/VerificationDashboard')
 );
 const UserManagement = lazy(() => import('./pages/admin/UserManagement'));
 const VendorManagement = lazy(() => import('./pages/admin/VendorManagement'));
@@ -76,7 +79,9 @@ const AdminSystemSettings = lazy(
 );
 
 // Vendor Pages
-const VendorDashboard = lazy(() => import('./pages/vendor/VendorDashboard'));
+const VendorDashboard = lazy(
+  () => import('./pages/vendor/VendorDashboardEnhanced')
+);
 const ListingManagement = lazy(
   () => import('./pages/vendor/ListingManagement')
 );
@@ -88,7 +93,7 @@ const OrderDetail = lazy(() => import('./pages/vendor/OrderDetail'));
 
 // Restaurant Pages (to be created)
 const RestaurantDashboard = lazy(
-  () => import('./pages/restaurant/RestaurantDashboard')
+  () => import('./pages/restaurant/RestaurantDashboardEnhanced')
 );
 const ProductBrowsing = lazy(
   () => import('./pages/restaurant/ProductBrowsing')
@@ -144,7 +149,7 @@ const App = () => {
   // Handle authentication errors
   useEffect(() => {
     if (error && error.status === 401) {
-      console.log('Authentication failed, logging out...');
+      // Authentication failed, perform logout
       authService.performLogout();
     }
   }, [error]);
@@ -258,6 +263,14 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <ApprovalManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="verification-dashboard"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VerificationDashboard />
                 </Suspense>
               }
             />
@@ -634,7 +647,58 @@ const App = () => {
         </Routes>
       </Suspense>
 
-      {/* Debug panel removed */}
+      {/* Toast Notifications with Glassmorphism Styling */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            color: '#374151',
+            fontSize: '14px',
+            fontWeight: '500',
+            padding: '16px',
+            maxWidth: '400px',
+          },
+          success: {
+            style: {
+              background: 'rgba(187, 247, 208, 0.9)',
+              borderColor: 'rgba(34, 197, 94, 0.2)',
+              color: '#166534',
+            },
+            iconTheme: {
+              primary: '#22c55e',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            style: {
+              background: 'rgba(254, 226, 226, 0.9)',
+              borderColor: 'rgba(239, 68, 68, 0.2)',
+              color: '#991b1b',
+            },
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+          },
+          loading: {
+            style: {
+              background: 'rgba(219, 234, 254, 0.9)',
+              borderColor: 'rgba(59, 130, 246, 0.2)',
+              color: '#1e40af',
+            },
+          },
+        }}
+        containerStyle={{
+          top: 20,
+          right: 20,
+        }}
+      />
     </div>
   );
 };

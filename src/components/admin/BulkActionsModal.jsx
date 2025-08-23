@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
-  Settings, 
-  Flag, 
+import {
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Settings,
+  Flag,
   Trash2,
   Package,
-  Users
+  Users,
 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import Button from '../ui/Button';
@@ -18,40 +18,40 @@ const BULK_ACTIONS = [
     value: 'update_status',
     label: 'Update Status',
     icon: Settings,
-    description: 'Change status for selected listings'
+    description: 'Change status for selected listings',
   },
   {
     value: 'toggle_featured',
     label: 'Toggle Featured',
     icon: CheckCircle,
-    description: 'Add/remove featured status for selected listings'
+    description: 'Add/remove featured status for selected listings',
   },
   {
     value: 'flag_listings',
     label: 'Flag Listings',
     icon: Flag,
-    description: 'Flag selected listings with reason'
+    description: 'Flag selected listings with reason',
   },
   {
     value: 'unflag_listings',
     label: 'Unflag Listings',
     icon: CheckCircle,
-    description: 'Remove flags from selected listings'
+    description: 'Remove flags from selected listings',
   },
   {
     value: 'delete_listings',
     label: 'Delete Listings',
     icon: Trash2,
     description: 'Permanently delete selected listings',
-    isDangerous: true
-  }
+    isDangerous: true,
+  },
 ];
 
 const STATUS_OPTIONS = [
   { value: 'active', label: 'Active', icon: CheckCircle },
   { value: 'inactive', label: 'Inactive', icon: XCircle },
   { value: 'out_of_stock', label: 'Out of Stock', icon: AlertTriangle },
-  { value: 'discontinued', label: 'Discontinued', icon: XCircle }
+  { value: 'discontinued', label: 'Discontinued', icon: XCircle },
 ];
 
 const FLAG_REASONS = [
@@ -60,27 +60,27 @@ const FLAG_REASONS = [
   { value: 'quality_issues', label: 'Quality Issues' },
   { value: 'pricing_violation', label: 'Pricing Violation' },
   { value: 'spam', label: 'Spam' },
-  { value: 'other', label: 'Other' }
+  { value: 'other', label: 'Other' },
 ];
 
-const BulkActionsModal = ({ 
-  isOpen, 
-  onClose, 
+const BulkActionsModal = ({
+  isOpen,
+  onClose,
   selectedListings,
   listings,
   onBulkAction,
-  isLoading = false 
+  isLoading = false,
 }) => {
   const [selectedAction, setSelectedAction] = useState('');
   const [actionData, setActionData] = useState({
     status: 'active',
     flagReason: '',
     reason: '',
-    moderationNotes: ''
+    moderationNotes: '',
   });
   const [errors, setErrors] = useState({});
 
-  const selectedListingObjects = listings.filter(listing => 
+  const selectedListingObjects = listings.filter((listing) =>
     selectedListings.has(listing._id)
   );
 
@@ -90,7 +90,7 @@ const BulkActionsModal = ({
 
     // Validate based on selected action
     const newErrors = {};
-    
+
     if (!selectedAction) {
       newErrors.action = 'Please select an action to perform';
     }
@@ -108,7 +108,7 @@ const BulkActionsModal = ({
       await onBulkAction({
         action: selectedAction,
         listingIds: Array.from(selectedListings),
-        data: actionData
+        data: actionData,
       });
       handleClose();
     } catch (error) {
@@ -122,7 +122,7 @@ const BulkActionsModal = ({
       status: 'active',
       flagReason: '',
       reason: '',
-      moderationNotes: ''
+      moderationNotes: '',
     });
     setErrors({});
     onClose();
@@ -130,7 +130,9 @@ const BulkActionsModal = ({
 
   if (!isOpen || selectedListings.size === 0) return null;
 
-  const selectedActionObj = BULK_ACTIONS.find(a => a.value === selectedAction);
+  const selectedActionObj = BULK_ACTIONS.find(
+    (a) => a.value === selectedAction
+  );
 
   return (
     <Modal
@@ -150,11 +152,18 @@ const BulkActionsModal = ({
           </div>
           <div className="max-h-32 overflow-y-auto space-y-2">
             {selectedListingObjects.slice(0, 5).map((listing) => (
-              <div key={listing._id} className="flex items-center gap-2 text-sm">
+              <div
+                key={listing._id}
+                className="flex items-center gap-2 text-sm"
+              >
                 <div className="w-6 h-6 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
-                  {listing.images?.[0]?.url || listing.productId?.images?.[0]?.url ? (
+                  {listing.images?.[0]?.url ||
+                  listing.productId?.images?.[0]?.url ? (
                     <img
-                      src={listing.images?.[0]?.url || listing.productId?.images?.[0]?.url}
+                      src={
+                        listing.images?.[0]?.url ||
+                        listing.productId?.images?.[0]?.url
+                      }
                       alt="Product"
                       className="w-full h-full object-cover"
                     />
@@ -165,7 +174,9 @@ const BulkActionsModal = ({
                   )}
                 </div>
                 <span className="text-text-dark truncate">
-                  {listing.productId?.name || listing.product?.name || 'Unknown Product'}
+                  {listing.productId?.name ||
+                    listing.product?.name ||
+                    'Unknown Product'}
                 </span>
               </div>
             ))}
@@ -181,11 +192,11 @@ const BulkActionsModal = ({
         <FormField label="Select Action *" error={errors.action}>
           <div className="space-y-3">
             {BULK_ACTIONS.map((action) => (
-              <label 
-                key={action.value} 
+              <label
+                key={action.value}
                 className={`flex items-start gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
-                  selectedAction === action.value 
-                    ? 'border-bottle-green bg-bottle-green/5' 
+                  selectedAction === action.value
+                    ? 'border-bottle-green bg-bottle-green/5'
                     : 'border-gray-200 hover:border-gray-300'
                 } ${action.isDangerous ? 'hover:border-tomato-red/30' : ''}`}
               >
@@ -199,10 +210,16 @@ const BulkActionsModal = ({
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <action.icon className={`w-4 h-4 ${
-                      action.isDangerous ? 'text-tomato-red' : 'text-bottle-green'
-                    }`} />
-                    <span className="font-medium text-text-dark">{action.label}</span>
+                    <action.icon
+                      className={`w-4 h-4 ${
+                        action.isDangerous
+                          ? 'text-tomato-red'
+                          : 'text-bottle-green'
+                      }`}
+                    />
+                    <span className="font-medium text-text-dark">
+                      {action.label}
+                    </span>
                     {action.isDangerous && (
                       <span className="text-xs bg-tomato-red/10 text-tomato-red px-2 py-1 rounded-full">
                         Dangerous
@@ -229,7 +246,9 @@ const BulkActionsModal = ({
                     name="status"
                     value={status.value}
                     checked={actionData.status === status.value}
-                    onChange={(e) => setActionData({...actionData, status: e.target.value})}
+                    onChange={(e) =>
+                      setActionData({ ...actionData, status: e.target.value })
+                    }
                     className="w-4 h-4 text-bottle-green border-gray-300 focus:ring-bottle-green"
                   />
                   <status.icon className="w-4 h-4 text-text-muted" />
@@ -250,7 +269,12 @@ const BulkActionsModal = ({
                     name="flagReason"
                     value={reason.value}
                     checked={actionData.flagReason === reason.value}
-                    onChange={(e) => setActionData({...actionData, flagReason: e.target.value})}
+                    onChange={(e) =>
+                      setActionData({
+                        ...actionData,
+                        flagReason: e.target.value,
+                      })
+                    }
                     className="w-4 h-4 text-tomato-red border-gray-300 focus:ring-tomato-red"
                   />
                   <span className="text-text-dark">{reason.label}</span>
@@ -261,37 +285,44 @@ const BulkActionsModal = ({
         )}
 
         {/* Reason/Notes Field */}
-        {(selectedAction === 'update_status' || 
-          selectedAction === 'flag_listings' || 
-          selectedAction === 'unflag_listings' || 
+        {(selectedAction === 'update_status' ||
+          selectedAction === 'flag_listings' ||
+          selectedAction === 'unflag_listings' ||
           selectedAction === 'delete_listings') && (
-          <FormField 
+          <FormField
             label={
-              selectedAction === 'delete_listings' 
-                ? 'Reason for Deletion *' 
+              selectedAction === 'delete_listings'
+                ? 'Reason for Deletion *'
                 : selectedAction === 'flag_listings'
-                ? 'Additional Notes (Optional)'
-                : 'Reason (Optional)'
+                  ? 'Additional Notes (Optional)'
+                  : 'Reason (Optional)'
             }
             error={errors.reason}
           >
             <textarea
-              value={selectedAction === 'flag_listings' ? actionData.moderationNotes : actionData.reason}
+              value={
+                selectedAction === 'flag_listings'
+                  ? actionData.moderationNotes
+                  : actionData.reason
+              }
               onChange={(e) => {
                 if (selectedAction === 'flag_listings') {
-                  setActionData({...actionData, moderationNotes: e.target.value});
+                  setActionData({
+                    ...actionData,
+                    moderationNotes: e.target.value,
+                  });
                 } else {
-                  setActionData({...actionData, reason: e.target.value});
+                  setActionData({ ...actionData, reason: e.target.value });
                 }
               }}
               placeholder={
                 selectedAction === 'delete_listings'
                   ? 'Explain why these listings are being deleted...'
                   : selectedAction === 'flag_listings'
-                  ? 'Additional moderation notes...'
-                  : selectedAction === 'update_status'
-                  ? 'Why are you changing the status?'
-                  : 'Optional notes...'
+                    ? 'Additional moderation notes...'
+                    : selectedAction === 'update_status'
+                      ? 'Why are you changing the status?'
+                      : 'Optional notes...'
               }
               rows={3}
               className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
@@ -299,36 +330,48 @@ const BulkActionsModal = ({
               required={selectedAction === 'delete_listings'}
             />
             <div className="text-xs text-text-muted mt-1">
-              {(selectedAction === 'flag_listings' ? actionData.moderationNotes : actionData.reason).length}/500 characters
+              {
+                (selectedAction === 'flag_listings'
+                  ? actionData.moderationNotes
+                  : actionData.reason
+                ).length
+              }
+              /500 characters
             </div>
           </FormField>
         )}
 
         {/* Impact Warning */}
         {selectedActionObj && (
-          <div className={`p-4 rounded-2xl ${
-            selectedActionObj.isDangerous 
-              ? 'bg-tomato-red/10 border border-tomato-red/20' 
-              : 'bg-blue-50 border border-blue-200'
-          }`}>
+          <div
+            className={`p-4 rounded-2xl ${
+              selectedActionObj.isDangerous
+                ? 'bg-tomato-red/10 border border-tomato-red/20'
+                : 'bg-blue-50 border border-blue-200'
+            }`}
+          >
             <div className="flex items-start gap-3">
-              <AlertTriangle className={`w-5 h-5 mt-0.5 ${
-                selectedActionObj.isDangerous ? 'text-tomato-red' : 'text-blue-600'
-              }`} />
+              <AlertTriangle
+                className={`w-5 h-5 mt-0.5 ${
+                  selectedActionObj.isDangerous
+                    ? 'text-tomato-red'
+                    : 'text-blue-600'
+                }`}
+              />
               <div>
                 <h4 className="text-sm font-medium text-text-dark mb-1">
                   {selectedActionObj.isDangerous ? 'Warning' : 'Impact'}
                 </h4>
                 <p className="text-sm text-text-muted">
-                  {selectedAction === 'update_status' && 
+                  {selectedAction === 'update_status' &&
                     `This will change the status of ${selectedListings.size} listings to "${actionData.status}".`}
-                  {selectedAction === 'toggle_featured' && 
+                  {selectedAction === 'toggle_featured' &&
                     `This will toggle the featured status for ${selectedListings.size} listings.`}
-                  {selectedAction === 'flag_listings' && 
+                  {selectedAction === 'flag_listings' &&
                     `This will flag ${selectedListings.size} listings and may hide them from customers.`}
-                  {selectedAction === 'unflag_listings' && 
+                  {selectedAction === 'unflag_listings' &&
                     `This will remove flags from ${selectedListings.size} listings.`}
-                  {selectedAction === 'delete_listings' && 
+                  {selectedAction === 'delete_listings' &&
                     `This will permanently delete ${selectedListings.size} listings. This action cannot be undone.`}
                 </p>
               </div>
@@ -341,9 +384,7 @@ const BulkActionsModal = ({
           <div className="p-4 bg-tomato-red/10 border border-tomato-red/20 rounded-2xl">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-tomato-red flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-tomato-red">
-                {errors.submit}
-              </p>
+              <p className="text-sm text-tomato-red">{errors.submit}</p>
             </div>
           </div>
         )}
@@ -358,16 +399,16 @@ const BulkActionsModal = ({
             isLoading={isLoading}
             disabled={!selectedAction}
             className={`${
-              selectedActionObj?.isDangerous 
-                ? 'bg-tomato-red hover:bg-tomato-red/90' 
+              selectedActionObj?.isDangerous
+                ? 'bg-tomato-red hover:bg-tomato-red/90'
                 : 'bg-bottle-green hover:bg-bottle-green/90'
             } text-white`}
           >
             {isLoading
               ? 'Processing...'
               : selectedActionObj?.isDangerous
-              ? `Delete ${selectedListings.size} Listings`
-              : `Apply to ${selectedListings.size} Listings`}
+                ? `Delete ${selectedListings.size} Listings`
+                : `Apply to ${selectedListings.size} Listings`}
           </Button>
         </div>
       </form>

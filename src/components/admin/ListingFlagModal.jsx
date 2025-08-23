@@ -14,13 +14,13 @@ const FLAG_REASONS = [
   { value: 'other', label: 'Other' },
 ];
 
-const ListingFlagModal = ({ 
-  isOpen, 
-  onClose, 
-  listing, 
-  onFlag, 
+const ListingFlagModal = ({
+  isOpen,
+  onClose,
+  listing,
+  onFlag,
   onUnflag,
-  isLoading = false 
+  isLoading = false,
 }) => {
   const [flagReason, setFlagReason] = useState('');
   const [moderationNotes, setModerationNotes] = useState('');
@@ -32,7 +32,7 @@ const ListingFlagModal = ({
 
     // Validate based on action
     const newErrors = {};
-    
+
     if (!listing?.isFlagged && !flagReason) {
       newErrors.flagReason = 'Please select a reason for flagging this listing';
     }
@@ -66,24 +66,25 @@ const ListingFlagModal = ({
   if (!listing) return null;
 
   const isCurrentlyFlagged = listing.isFlagged;
-  const modalTitle = isCurrentlyFlagged ? 'Remove Flag from Listing' : 'Flag Listing';
+  const modalTitle = isCurrentlyFlagged
+    ? 'Remove Flag from Listing'
+    : 'Flag Listing';
   const modalIcon = isCurrentlyFlagged ? X : Flag;
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={modalTitle}
-      size="lg"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title={modalTitle} size="lg">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Listing Info */}
         <div className="bg-gray-50 rounded-2xl p-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-              {listing.images?.[0]?.url || listing.productId?.images?.[0]?.url ? (
+              {listing.images?.[0]?.url ||
+              listing.productId?.images?.[0]?.url ? (
                 <img
-                  src={listing.images?.[0]?.url || listing.productId?.images?.[0]?.url}
+                  src={
+                    listing.images?.[0]?.url ||
+                    listing.productId?.images?.[0]?.url
+                  }
                   alt={listing.productId?.name || 'Product'}
                   className="w-full h-full object-cover"
                 />
@@ -95,14 +96,21 @@ const ListingFlagModal = ({
             </div>
             <div>
               <h4 className="font-medium text-text-dark">
-                {listing.productId?.name || listing.product?.name || 'Unknown Product'}
+                {listing.productId?.name ||
+                  listing.product?.name ||
+                  'Unknown Product'}
               </h4>
               <p className="text-sm text-text-muted">
-                by {listing.vendorId?.businessName || listing.vendor?.businessName || 'Unknown Vendor'}
+                by{' '}
+                {listing.vendorId?.businessName ||
+                  listing.vendor?.businessName ||
+                  'Unknown Vendor'}
               </p>
               {isCurrentlyFlagged && listing.flagReason && (
                 <p className="text-xs text-tomato-red mt-1">
-                  Currently flagged for: {FLAG_REASONS.find(r => r.value === listing.flagReason)?.label || listing.flagReason}
+                  Currently flagged for:{' '}
+                  {FLAG_REASONS.find((r) => r.value === listing.flagReason)
+                    ?.label || listing.flagReason}
                 </p>
               )}
             </div>
@@ -111,10 +119,14 @@ const ListingFlagModal = ({
 
         {/* Current Status */}
         <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-2xl">
-          <modalIcon className={`w-5 h-5 mt-0.5 ${isCurrentlyFlagged ? 'text-tomato-red' : 'text-amber-600'}`} />
+          <modalIcon
+            className={`w-5 h-5 mt-0.5 ${isCurrentlyFlagged ? 'text-tomato-red' : 'text-amber-600'}`}
+          />
           <div>
             <h4 className="text-sm font-medium text-text-dark mb-1">
-              {isCurrentlyFlagged ? 'Listing is Currently Flagged' : 'Flag This Listing'}
+              {isCurrentlyFlagged
+                ? 'Listing is Currently Flagged'
+                : 'Flag This Listing'}
             </h4>
             <p className="text-sm text-text-muted">
               {isCurrentlyFlagged
@@ -146,17 +158,21 @@ const ListingFlagModal = ({
         )}
 
         {/* Moderation Notes */}
-        <FormField 
-          label={isCurrentlyFlagged ? "Reason for Removing Flag" : "Additional Notes (Optional)"}
+        <FormField
+          label={
+            isCurrentlyFlagged
+              ? 'Reason for Removing Flag'
+              : 'Additional Notes (Optional)'
+          }
           error={errors.moderationNotes}
         >
           <textarea
             value={moderationNotes}
             onChange={(e) => setModerationNotes(e.target.value)}
             placeholder={
-              isCurrentlyFlagged 
-                ? "Why are you removing this flag? (e.g., Issue resolved, Content updated)" 
-                : "Any additional details about the flag..."
+              isCurrentlyFlagged
+                ? 'Why are you removing this flag? (e.g., Issue resolved, Content updated)'
+                : 'Any additional details about the flag...'
             }
             rows={3}
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
@@ -172,9 +188,7 @@ const ListingFlagModal = ({
           <div className="p-4 bg-tomato-red/10 border border-tomato-red/20 rounded-2xl">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-tomato-red flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-tomato-red">
-                {errors.submit}
-              </p>
+              <p className="text-sm text-tomato-red">{errors.submit}</p>
             </div>
           </div>
         )}
@@ -188,16 +202,16 @@ const ListingFlagModal = ({
             type="submit"
             isLoading={isLoading}
             className={`${
-              isCurrentlyFlagged 
-                ? 'bg-bottle-green hover:bg-bottle-green/90' 
+              isCurrentlyFlagged
+                ? 'bg-bottle-green hover:bg-bottle-green/90'
                 : 'bg-tomato-red hover:bg-tomato-red/90'
             } text-white`}
           >
             {isLoading
               ? 'Processing...'
               : isCurrentlyFlagged
-              ? 'Remove Flag'
-              : 'Flag Listing'}
+                ? 'Remove Flag'
+                : 'Flag Listing'}
           </Button>
         </div>
       </form>

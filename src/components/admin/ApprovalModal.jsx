@@ -108,7 +108,8 @@ const ApprovalModal = ({
     : 0;
 
   // Enhanced verification status
-  const businessEntity = approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
+  const businessEntity =
+    approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
   const isVerified = businessEntity?.isVerified || false;
   const verificationDate = businessEntity?.verificationDate;
   const statusUpdatedAt = businessEntity?.statusUpdatedAt;
@@ -180,7 +181,8 @@ const ApprovalModal = ({
                   </span>
 
                   {/* Traditional Status for Legacy Compatibility */}
-                  {(approval.status === 'approved' || approval.status === 'rejected') && (
+                  {(approval.status === 'approved' ||
+                    approval.status === 'rejected') && (
                     <span
                       className={`px-2 py-1 rounded-lg text-xs font-medium ${
                         approval.status === 'approved'
@@ -188,7 +190,9 @@ const ApprovalModal = ({
                           : 'bg-red-50 text-red-600'
                       }`}
                     >
-                      {approval.status === 'approved' ? 'Legacy Approved' : 'Legacy Rejected'}
+                      {approval.status === 'approved'
+                        ? 'Legacy Approved'
+                        : 'Legacy Rejected'}
                     </span>
                   )}
 
@@ -214,7 +218,8 @@ const ApprovalModal = ({
                 {verificationDate && (
                   <div className="flex items-center gap-2 mt-2 text-sm text-text-muted">
                     <Calendar className="w-4 h-4" />
-                    Verified on {new Date(verificationDate).toLocaleDateString()}
+                    Verified on{' '}
+                    {new Date(verificationDate).toLocaleDateString()}
                   </div>
                 )}
               </div>
@@ -387,13 +392,17 @@ const ApprovalModal = ({
             )}
 
             {/* Enhanced Verification History */}
-            {(adminNotes || statusUpdatedAt || verificationDate || approval.approvalNotes || approval.rejectionReason) && (
+            {(adminNotes ||
+              statusUpdatedAt ||
+              verificationDate ||
+              approval.approvalNotes ||
+              approval.rejectionReason) && (
               <Card className="p-6">
                 <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4 flex items-center gap-2">
                   <History className="w-5 h-5" />
                   Verification History
                 </h3>
-                
+
                 <div className="space-y-4">
                   {/* Current Verification Status */}
                   {(isVerified || statusUpdatedAt) && (
@@ -418,7 +427,8 @@ const ApprovalModal = ({
 
                       {statusUpdatedAt && (
                         <p className="text-sm text-text-muted mb-2">
-                          Updated: {new Date(statusUpdatedAt).toLocaleDateString()} at{' '}
+                          Updated:{' '}
+                          {new Date(statusUpdatedAt).toLocaleDateString()} at{' '}
                           {new Date(statusUpdatedAt).toLocaleTimeString()}
                         </p>
                       )}
@@ -443,7 +453,10 @@ const ApprovalModal = ({
                           <XCircle className="w-5 h-5 text-tomato-red" />
                         )}
                         <span className="font-medium text-text-dark dark:text-white">
-                          Legacy {approval.status === 'approved' ? 'Approval' : 'Rejection'}
+                          Legacy{' '}
+                          {approval.status === 'approved'
+                            ? 'Approval'
+                            : 'Rejection'}
                         </span>
                       </div>
 
@@ -455,7 +468,8 @@ const ApprovalModal = ({
 
                       {approval.processedAt && (
                         <p className="text-sm text-text-muted mb-2">
-                          Date: {new Date(approval.processedAt).toLocaleDateString()}
+                          Date:{' '}
+                          {new Date(approval.processedAt).toLocaleDateString()}
                         </p>
                       )}
 

@@ -46,7 +46,7 @@ import SafeDeleteModal from '../../components/admin/SafeDeleteModal';
 const CategoryManagement = () => {
   // Get current user for createdBy field
   const { user } = useSelector((state) => state.auth);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmAction, setConfirmAction] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -214,23 +214,26 @@ const CategoryManagement = () => {
     try {
       // Create FormData for multipart upload
       const formDataToSend = new FormData();
-      
+
       // Add required fields - ensure name is properly set
       const nameValue = formData.name.trim();
       if (!nameValue) {
         throw new Error('Name value is empty after trimming');
       }
       formDataToSend.append('name', nameValue);
-      
+
       // Add description (optional)
       if (formData.description && formData.description.trim()) {
         formDataToSend.append('description', formData.description.trim());
       }
-      
+
       // Add boolean and number fields (FormData converts everything to strings)
       formDataToSend.append('isActive', formData.isActive ? 'true' : 'false');
-      formDataToSend.append('sortOrder', String(parseInt(formData.sortOrder) || 0));
-      
+      formDataToSend.append(
+        'sortOrder',
+        String(parseInt(formData.sortOrder) || 0)
+      );
+
       // Add parent category if selected
       if (formData.parentCategory && formData.parentCategory.trim()) {
         formDataToSend.append('parentCategory', formData.parentCategory.trim());
@@ -241,7 +244,10 @@ const CategoryManagement = () => {
         formDataToSend.append('metaTitle', formData.metaTitle.trim());
       }
       if (formData.metaDescription && formData.metaDescription.trim()) {
-        formDataToSend.append('metaDescription', formData.metaDescription.trim());
+        formDataToSend.append(
+          'metaDescription',
+          formData.metaDescription.trim()
+        );
       }
       if (formData.metaKeywords && formData.metaKeywords.length > 0) {
         // Send as comma-separated string instead of JSON
@@ -270,23 +276,30 @@ const CategoryManagement = () => {
       // Parse backend validation errors
       let errorMessage = 'Failed to save category. Please try again.';
       const formFieldErrors = {};
-      
+
       if (error?.data?.error) {
         errorMessage = error.data.error;
-        
+
         // Parse specific field errors from backend message
         const errorText = error.data.error.toLowerCase();
-        if (errorText.includes('name is required') || errorText.includes('category name')) {
-          formFieldErrors.name = 'Category name is required and must be 2-50 characters';
+        if (
+          errorText.includes('name is required') ||
+          errorText.includes('category name')
+        ) {
+          formFieldErrors.name =
+            'Category name is required and must be 2-50 characters';
         }
         if (errorText.includes('image')) {
-          formFieldErrors.image = 'Category image is required - upload an image file';
+          formFieldErrors.image =
+            'Category image is required - upload an image file';
         }
         if (errorText.includes('description')) {
-          formFieldErrors.description = 'Description cannot exceed 200 characters';
+          formFieldErrors.description =
+            'Description cannot exceed 200 characters';
         }
         if (errorText.includes('unique') && errorText.includes('name')) {
-          formFieldErrors.name = 'Category name already exists - choose a different name';
+          formFieldErrors.name =
+            'Category name already exists - choose a different name';
         }
       } else if (error?.status === 400) {
         errorMessage = 'Validation failed - please check your input';
@@ -295,10 +308,10 @@ const CategoryManagement = () => {
       } else if (error?.status === 500) {
         errorMessage = 'Server error - please try again later';
       }
-      
-      setFormErrors({ 
+
+      setFormErrors({
         submit: errorMessage,
-        ...formFieldErrors 
+        ...formFieldErrors,
       });
     }
   };
@@ -361,7 +374,6 @@ const CategoryManagement = () => {
       setFormErrors({ delete: 'Failed to delete category. Please try again.' });
     }
   };
-
 
   if (isLoading) {
     return (
@@ -475,15 +487,17 @@ const CategoryManagement = () => {
                       )}
 
                       {category.adminStatus && (
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          category.adminStatus === 'active'
-                            ? 'bg-mint-fresh/10 text-mint-fresh'
-                            : category.adminStatus === 'disabled'
-                            ? 'bg-gray-100 text-gray-600'
-                            : category.adminStatus === 'deprecated'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            category.adminStatus === 'active'
+                              ? 'bg-mint-fresh/10 text-mint-fresh'
+                              : category.adminStatus === 'disabled'
+                                ? 'bg-gray-100 text-gray-600'
+                                : category.adminStatus === 'deprecated'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
                           {category.adminStatus}
                         </span>
                       )}
@@ -502,38 +516,50 @@ const CategoryManagement = () => {
                           <span>Parent: {category.parentCategory.name}</span>
                         )}
                         <span>Order: {category.sortOrder || 0}</span>
-                        {category.slug && (
-                          <span>Slug: {category.slug}</span>
-                        )}
+                        {category.slug && <span>Slug: {category.slug}</span>}
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-xs text-text-muted">
                         {category.createdAt && (
                           <span>
                             Created{' '}
                             {new Date(category.createdAt).toLocaleDateString()}
                             {category.createdBy && (
-                              <span className="ml-1">by {category.createdBy.name || category.createdBy.phone}</span>
+                              <span className="ml-1">
+                                by{' '}
+                                {category.createdBy.name ||
+                                  category.createdBy.phone}
+                              </span>
                             )}
                           </span>
                         )}
-                        {category.updatedAt && category.updatedAt !== category.createdAt && (
-                          <span>
-                            Updated{' '}
-                            {new Date(category.updatedAt).toLocaleDateString()}
-                            {category.updatedBy && (
-                              <span className="ml-1">by {category.updatedBy.name || category.updatedBy.phone}</span>
-                            )}
-                          </span>
-                        )}
+                        {category.updatedAt &&
+                          category.updatedAt !== category.createdAt && (
+                            <span>
+                              Updated{' '}
+                              {new Date(
+                                category.updatedAt
+                              ).toLocaleDateString()}
+                              {category.updatedBy && (
+                                <span className="ml-1">
+                                  by{' '}
+                                  {category.updatedBy.name ||
+                                    category.updatedBy.phone}
+                                </span>
+                              )}
+                            </span>
+                          )}
                       </div>
-                      
+
                       {/* Flag information */}
                       {category.isAvailable === false && category.flaggedBy && (
                         <div className="text-xs text-tomato-red bg-tomato-red/10 px-2 py-1 rounded">
-                          Flagged by {category.flaggedBy.name || category.flaggedBy.phone}
+                          Flagged by{' '}
+                          {category.flaggedBy.name || category.flaggedBy.phone}
                           {category.flagReason && (
-                            <span className="ml-2">Reason: {category.flagReason}</span>
+                            <span className="ml-2">
+                              Reason: {category.flagReason}
+                            </span>
                           )}
                         </div>
                       )}

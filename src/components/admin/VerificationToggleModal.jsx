@@ -29,10 +29,11 @@ const VerificationToggleModal = ({
   useEffect(() => {
     if (approval) {
       // Determine current verification status
-      const currentlyVerified = approval.type === 'vendor' 
-        ? approval.vendorId?.isVerified 
-        : approval.restaurantId?.isVerified;
-      
+      const currentlyVerified =
+        approval.type === 'vendor'
+          ? approval.vendorId?.isVerified
+          : approval.restaurantId?.isVerified;
+
       setIsVerifying(!currentlyVerified);
       setReason('');
     }
@@ -40,11 +41,13 @@ const VerificationToggleModal = ({
 
   if (!approval) return null;
 
-  const businessEntity = approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
+  const businessEntity =
+    approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
   const isCurrentlyVerified = businessEntity?.isVerified || false;
-  const businessName = approval.type === 'vendor' 
-    ? businessEntity?.businessName || approval.businessName
-    : businessEntity?.name || approval.name;
+  const businessName =
+    approval.type === 'vendor'
+      ? businessEntity?.businessName || approval.businessName
+      : businessEntity?.name || approval.name;
 
   const getTypeDisplay = (type) => {
     switch (type) {
@@ -114,7 +117,9 @@ const VerificationToggleModal = ({
     ],
   };
 
-  const currentTemplates = isVerifying ? verificationTemplates.verify : verificationTemplates.revoke;
+  const currentTemplates = isVerifying
+    ? verificationTemplates.verify
+    : verificationTemplates.revoke;
 
   return (
     <Modal
@@ -136,16 +141,20 @@ const VerificationToggleModal = ({
             <h2 className="text-2xl font-semibold text-text-dark dark:text-white mb-2">
               {businessName || 'Unknown Business'}
             </h2>
-            <p className="text-text-muted mb-3">{typeDisplay.label} Verification</p>
+            <p className="text-text-muted mb-3">
+              {typeDisplay.label} Verification
+            </p>
 
             {/* Current Status */}
             <div className="flex items-center gap-3">
               <span className="text-sm text-text-muted">Current Status:</span>
-              <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                isCurrentlyVerified 
-                  ? 'bg-mint-fresh/20 text-bottle-green'
-                  : 'bg-gray-100 text-gray-600'
-              }`}>
+              <div
+                className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                  isCurrentlyVerified
+                    ? 'bg-mint-fresh/20 text-bottle-green'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
                 {isCurrentlyVerified ? (
                   <>
                     <ShieldCheck className="w-4 h-4" />
@@ -164,7 +173,8 @@ const VerificationToggleModal = ({
             {businessEntity?.verificationDate && (
               <div className="flex items-center gap-2 mt-2 text-sm text-text-muted">
                 <Calendar className="w-4 h-4" />
-                Verified on {new Date(businessEntity.verificationDate).toLocaleDateString()}
+                Verified on{' '}
+                {new Date(businessEntity.verificationDate).toLocaleDateString()}
               </div>
             )}
           </div>
@@ -175,7 +185,7 @@ const VerificationToggleModal = ({
           <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
             Verification Action
           </h3>
-          
+
           <div className="grid grid-cols-2 gap-4 mb-6">
             {/* Verify Option */}
             <button
@@ -187,14 +197,20 @@ const VerificationToggleModal = ({
               }`}
             >
               <div className="flex flex-col items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  isVerifying ? 'bg-bottle-green text-white' : 'bg-gray-100 text-gray-600'
-                }`}>
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    isVerifying
+                      ? 'bg-bottle-green text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium">Grant Verification</p>
-                  <p className="text-sm opacity-75">Allow business operations</p>
+                  <p className="text-sm opacity-75">
+                    Allow business operations
+                  </p>
                 </div>
               </div>
             </button>
@@ -209,14 +225,20 @@ const VerificationToggleModal = ({
               }`}
             >
               <div className="flex flex-col items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  !isVerifying ? 'bg-tomato-red text-white' : 'bg-gray-100 text-gray-600'
-                }`}>
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    !isVerifying
+                      ? 'bg-tomato-red text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
                   <ShieldX className="w-6 h-6" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium">Revoke Verification</p>
-                  <p className="text-sm opacity-75">Suspend business operations</p>
+                  <p className="text-sm opacity-75">
+                    Suspend business operations
+                  </p>
                 </div>
               </div>
             </button>
@@ -229,9 +251,12 @@ const VerificationToggleModal = ({
               <div className="text-amber-800">
                 <p className="font-medium mb-1">Impact Warning</p>
                 <p className="text-sm">
-                  Revoking verification will immediately suspend this {approval.type}'s ability to 
-                  {approval.type === 'vendor' ? ' create listings and process orders' : ' place orders and access vendor services'}.
-                  This action affects business operations immediately.
+                  Revoking verification will immediately suspend this{' '}
+                  {approval.type}'s ability to
+                  {approval.type === 'vendor'
+                    ? ' create listings and process orders'
+                    : ' place orders and access vendor services'}
+                  . This action affects business operations immediately.
                 </p>
               </div>
             </div>
@@ -275,8 +300,8 @@ const VerificationToggleModal = ({
               placeholder={`Please provide a detailed reason for ${isVerifying ? 'granting' : 'revoking'} verification...`}
               rows={4}
               className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 ${
-                isVerifying 
-                  ? 'focus:ring-bottle-green/20' 
+                isVerifying
+                  ? 'focus:ring-bottle-green/20'
                   : 'focus:ring-tomato-red/20'
               }`}
             />
@@ -298,16 +323,16 @@ const VerificationToggleModal = ({
               'Processing...'
             ) : (
               <>
-                {isVerifying ? <ShieldCheck className="w-4 h-4 mr-2" /> : <ShieldX className="w-4 h-4 mr-2" />}
+                {isVerifying ? (
+                  <ShieldCheck className="w-4 h-4 mr-2" />
+                ) : (
+                  <ShieldX className="w-4 h-4 mr-2" />
+                )}
                 {isVerifying ? 'Grant Verification' : 'Revoke Verification'}
               </>
             )}
           </Button>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
         </div>

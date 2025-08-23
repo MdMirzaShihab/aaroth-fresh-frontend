@@ -15,15 +15,18 @@ import {
   Calendar,
   Activity,
   DollarSign,
+  Store,
 } from 'lucide-react';
 import {
   useGetAdminDashboardOverviewQuery,
-  useGetAllApprovalsQuery,
+  useGetPendingVendorsQuery,
+  useGetPendingRestaurantsQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import EmptyState from '../../components/ui/EmptyState';
 import SystemHealthWidget from '../../components/admin/SystemHealthWidget';
+import Button from '../../components/ui/Button';
 
 const AdminDashboard = () => {
   const [viewMode, setViewMode] = useState('overview');
@@ -36,18 +39,24 @@ const AdminDashboard = () => {
     refetch: refetchDashboard,
   } = useGetAdminDashboardOverviewQuery();
 
-  // Get pending approvals for real-time metrics
+  // Get pending business verification data for real-time metrics
   const {
-    data: approvalsData,
-    isLoading: isApprovalsLoading,
-    error: approvalsError,
-  } = useGetAllApprovalsQuery({
-    status: 'pending',
-    limit: 10,
-  });
+    data: pendingVendors,
+    isLoading: isPendingVendorsLoading,
+    error: vendorsError,
+  } = useGetPendingVendorsQuery({ limit: 10 });
 
-  const isLoading = isDashboardLoading || isApprovalsLoading;
-  const error = dashboardError || approvalsError;
+  const {
+    data: pendingRestaurants,
+    isLoading: isPendingRestaurantsLoading,
+    error: restaurantsError,
+  } = useGetPendingRestaurantsQuery({ limit: 10 });
+
+  const isLoading =
+    isDashboardLoading ||
+    isPendingVendorsLoading ||
+    isPendingRestaurantsLoading;
+  const error = dashboardError || vendorsError || restaurantsError;
 
   if (isLoading) {
     return (
@@ -72,21 +81,25 @@ const AdminDashboard = () => {
   }
 
   const metrics = dashboardData?.data || {};
-  const pendingApprovals = approvalsData?.data?.approvals || [];
-  const approvalMetrics = approvalsData?.data?.summary || {};
+  const pendingVendorsData = pendingVendors?.data || [];
+  const pendingRestaurantsData = pendingRestaurants?.data || [];
 
-  // Calculate urgency metrics for approvals
-  const urgentApprovals = pendingApprovals.filter((approval) => {
-    const daysWaiting = approval.createdAt
+  // Calculate business verification metrics
+  const totalPendingVerifications =
+    pendingVendorsData.length + pendingRestaurantsData.length;
+
+  // Calculate urgency metrics for business verification
+  const urgentVerifications = [
+    ...pendingVendorsData,
+    ...pendingRestaurantsData,
+  ].filter((entity) => {
+    const daysWaiting = entity.createdAt
       ? Math.floor(
-          (new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24)
+          (new Date() - new Date(entity.createdAt)) / (1000 * 60 * 60 * 24)
         )
       : 0;
     return daysWaiting > 7;
   }).length;
-
-  const totalPendingApprovals =
-    (approvalMetrics.vendor || 0) + (approvalMetrics.restaurant || 0);
 
   const metricCards = [
     {
@@ -110,24 +123,17 @@ const AdminDashboard = () => {
       description: 'All vendors on platform',
     },
     {
-      id: 'pending-vendor-approvals',
-      title: 'Pending Vendor Approvals',
-      value:
-        approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0,
+      id: 'pending-vendor-verifications',
+      title: 'Pending Vendor Verifications',
+      value: pendingVendorsData.length,
       change: '0',
-      changeType:
-        (approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0) >
-        5
-          ? 'negative'
-          : 'positive',
+      changeType: pendingVendorsData.length > 5 ? 'negative' : 'positive',
       icon: UserCheck,
       color: 'bg-gradient-to-br from-earthy-yellow to-amber-500',
-      description: 'Vendors awaiting approval',
-      urgent:
-        (approvalMetrics.vendor || metrics.pendingVerifications?.vendors || 0) >
-        5,
+      description: 'Vendor businesses awaiting verification',
+      urgent: pendingVendorsData.length > 5,
       clickable: true,
-      onClick: () => navigate('/admin/approvals?type=vendor&status=pending'),
+      onClick: () => navigate('/admin/approvals?type=vendors&status=pending'),
     },
     {
       id: 'total-restaurants',
@@ -140,29 +146,18 @@ const AdminDashboard = () => {
       description: 'Restaurant partners',
     },
     {
-      id: 'pending-restaurant-approvals',
-      title: 'Pending Restaurant Approvals',
-      value:
-        approvalMetrics.restaurant ||
-        metrics.pendingVerifications?.restaurants ||
-        0,
+      id: 'pending-restaurant-verifications',
+      title: 'Pending Restaurant Verifications',
+      value: pendingRestaurantsData.length,
       change: '0',
-      changeType:
-        (approvalMetrics.restaurant ||
-          metrics.pendingVerifications?.restaurants ||
-          0) > 3
-          ? 'negative'
-          : 'positive',
+      changeType: pendingRestaurantsData.length > 3 ? 'negative' : 'positive',
       icon: UserCheck,
       color: 'bg-gradient-to-br from-orange-500 to-orange-600',
-      description: 'Restaurants awaiting approval',
-      urgent:
-        (approvalMetrics.restaurant ||
-          metrics.pendingVerifications?.restaurants ||
-          0) > 3,
+      description: 'Restaurant businesses awaiting verification',
+      urgent: pendingRestaurantsData.length > 3,
       clickable: true,
       onClick: () =>
-        navigate('/admin/approvals?type=restaurant&status=pending'),
+        navigate('/admin/approvals?type=restaurants&status=pending'),
     },
     {
       id: 'total-orders',
@@ -194,18 +189,18 @@ const AdminDashboard = () => {
       color: 'bg-gradient-to-br from-cyan-500 to-cyan-600',
       description: 'Active product listings',
     },
-    // Urgent Approvals Card (only show if there are urgent approvals)
-    ...(urgentApprovals > 0
+    // Urgent Verifications Card (only show if there are urgent verifications)
+    ...(urgentVerifications > 0
       ? [
           {
-            id: 'urgent-approvals',
-            title: 'Urgent Approvals',
-            value: urgentApprovals,
+            id: 'urgent-verifications',
+            title: 'Urgent Verifications',
+            value: urgentVerifications,
             change: '7+ days waiting',
             changeType: 'negative',
             icon: AlertTriangle,
             color: 'bg-gradient-to-br from-tomato-red to-red-600',
-            description: 'Applications waiting > 7 days',
+            description: 'Business verifications waiting > 7 days',
             urgent: true,
             clickable: true,
             onClick: () => navigate('/admin/approvals?status=pending'),
@@ -232,20 +227,20 @@ const AdminDashboard = () => {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3">
-          {totalPendingApprovals > 0 && (
+          {totalPendingVerifications > 0 && (
             <button
-              onClick={() => navigate('/admin/users/approvals')}
+              onClick={() => navigate('/admin/approvals')}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
-                urgentApprovals > 0
+                urgentVerifications > 0
                   ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200'
                   : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200'
               }`}
             >
               <UserCheck className="w-4 h-4" />
-              Review Approvals ({totalPendingApprovals})
-              {urgentApprovals > 0 && (
+              Review Business Verifications ({totalPendingVerifications})
+              {urgentVerifications > 0 && (
                 <span className="ml-1 px-2 py-0.5 bg-tomato-red text-white text-xs rounded-full">
-                  {urgentApprovals} urgent
+                  {urgentVerifications} urgent
                 </span>
               )}
             </button>
@@ -329,17 +324,17 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Approval Pipeline Section */}
-      {pendingApprovals.length > 0 && (
+      {/* Business Verification Pipeline Section */}
+      {totalPendingVerifications > 0 && (
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 bg-earthy-yellow rounded-full animate-pulse" />
               <h3 className="text-lg font-semibold text-text-dark dark:text-white">
-                Approval Pipeline
+                Business Verification Pipeline
               </h3>
               <span className="px-2 py-1 bg-earthy-yellow/20 text-earthy-brown text-sm rounded-full font-medium">
-                {pendingApprovals.length} pending
+                {totalPendingVerifications} pending
               </span>
             </div>
             <Button
@@ -352,56 +347,60 @@ const AdminDashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {pendingApprovals.slice(0, 5).map((approval, index) => {
-              const daysWaiting = approval.createdAt
-                ? Math.floor(
-                    (new Date() - new Date(approval.createdAt)) /
-                      (1000 * 60 * 60 * 24)
-                  )
-                : 0;
-              const isUrgent = daysWaiting > 7;
+            {[...pendingVendorsData, ...pendingRestaurantsData]
+              .slice(0, 5)
+              .map((entity, index) => {
+                const daysWaiting = entity.createdAt
+                  ? Math.floor(
+                      (new Date() - new Date(entity.createdAt)) /
+                        (1000 * 60 * 60 * 24)
+                    )
+                  : 0;
+                const isUrgent = daysWaiting > 7;
+                const entityType =
+                  index < pendingVendorsData.length ? 'vendor' : 'restaurant';
 
-              return (
-                <div
-                  key={approval._id || index}
-                  className={`p-4 rounded-xl border transition-all duration-200 hover:shadow-md cursor-pointer ${
-                    isUrgent
-                      ? 'border-tomato-red/30 bg-tomato-red/5 hover:bg-tomato-red/10'
-                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                  onClick={() => navigate('/admin/approvals')}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    {approval.type === 'vendor' ? (
-                      <Store className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <Utensils className="w-4 h-4 text-blue-600" />
-                    )}
-                    <span className="text-sm font-medium text-text-dark dark:text-white capitalize">
-                      {approval.type}
-                    </span>
-                    {isUrgent && (
-                      <AlertTriangle className="w-4 h-4 text-tomato-red" />
-                    )}
+                return (
+                  <div
+                    key={entity._id || index}
+                    className={`p-4 rounded-xl border transition-all duration-200 hover:shadow-md cursor-pointer ${
+                      isUrgent
+                        ? 'border-tomato-red/30 bg-tomato-red/5 hover:bg-tomato-red/10'
+                        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                    onClick={() => navigate('/admin/approvals')}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {entityType === 'vendor' ? (
+                        <Store className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <ShoppingCart className="w-4 h-4 text-blue-600" />
+                      )}
+                      <span className="text-sm font-medium text-text-dark dark:text-white capitalize">
+                        {entityType}
+                      </span>
+                      {isUrgent && (
+                        <AlertTriangle className="w-4 h-4 text-tomato-red" />
+                      )}
+                    </div>
+
+                    <h4 className="font-semibold text-text-dark dark:text-white mb-1 truncate">
+                      {entity.businessName || entity.name || 'Unknown Business'}
+                    </h4>
+
+                    <div className="flex items-center gap-1 text-xs text-text-muted">
+                      <Clock className="w-3 h-3" />
+                      <span
+                        className={
+                          isUrgent ? 'text-tomato-red font-medium' : ''
+                        }
+                      >
+                        {daysWaiting === 0 ? 'Today' : `${daysWaiting} days`}
+                      </span>
+                    </div>
                   </div>
-
-                  <h4 className="font-semibold text-text-dark dark:text-white mb-1 truncate">
-                    {approval.businessName ||
-                      approval.name ||
-                      'Unknown Business'}
-                  </h4>
-
-                  <div className="flex items-center gap-1 text-xs text-text-muted">
-                    <Clock className="w-3 h-3" />
-                    <span
-                      className={isUrgent ? 'text-tomato-red font-medium' : ''}
-                    >
-                      {daysWaiting === 0 ? 'Today' : `${daysWaiting} days`}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </Card>
       )}

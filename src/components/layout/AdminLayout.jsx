@@ -17,7 +17,10 @@ import {
 } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
-import { useGetAllApprovalsQuery } from '../../store/slices/apiSlice';
+import {
+  useGetPendingVendorsQuery,
+  useGetPendingRestaurantsQuery,
+} from '../../store/slices/apiSlice';
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -26,12 +29,13 @@ const AdminLayout = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  // Get pending approvals count for badge
-  const { data: allApprovals } = useGetAllApprovalsQuery();
-  const pendingApprovals =
-    allApprovals?.data?.filter((approval) => approval.status === 'pending') ||
-    [];
-  const pendingApprovalsCount = pendingApprovals.length;
+  // Get pending business verifications count for badge
+  const { data: pendingVendors } = useGetPendingVendorsQuery();
+  const { data: pendingRestaurants } = useGetPendingRestaurantsQuery();
+  const pendingVendorsCount = pendingVendors?.data?.length || 0;
+  const pendingRestaurantsCount = pendingRestaurants?.data?.length || 0;
+  const pendingVerificationsCount =
+    pendingVendorsCount + pendingRestaurantsCount;
 
   const adminNavItems = useMemo(
     () => [
@@ -43,10 +47,16 @@ const AdminLayout = () => {
       },
       {
         path: '/admin/approvals',
-        label: 'Approval Management',
+        label: 'Business Verification',
         icon: CheckCircle,
-        badge: pendingApprovalsCount > 0 ? pendingApprovalsCount : null,
-        description: 'Review and approve vendor/restaurant applications',
+        badge: pendingVerificationsCount > 0 ? pendingVerificationsCount : null,
+        description: 'Review and verify vendor/restaurant businesses',
+      },
+      {
+        path: '/admin/verification-dashboard',
+        label: 'Verification Dashboard',
+        icon: BarChart3,
+        description: 'Business verification metrics and analytics',
       },
       {
         path: '/admin/restaurant-management',
@@ -94,7 +104,7 @@ const AdminLayout = () => {
         description: 'Platform configuration management',
       },
     ],
-    [pendingApprovalsCount]
+    [pendingVerificationsCount]
   );
 
   const handleLogout = () => {

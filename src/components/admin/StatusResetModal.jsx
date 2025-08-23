@@ -18,12 +18,7 @@ import Button from '../ui/Button';
 import { Card } from '../ui/Card';
 import FormField from '../ui/FormField';
 
-const StatusResetModal = ({
-  approval,
-  onClose,
-  onResetStatus,
-  isLoading,
-}) => {
+const StatusResetModal = ({ approval, onClose, onResetStatus, isLoading }) => {
   const [reason, setReason] = useState('');
 
   useEffect(() => {
@@ -34,10 +29,12 @@ const StatusResetModal = ({
 
   if (!approval) return null;
 
-  const businessEntity = approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
-  const businessName = approval.type === 'vendor' 
-    ? businessEntity?.businessName || approval.businessName
-    : businessEntity?.name || approval.name;
+  const businessEntity =
+    approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
+  const businessName =
+    approval.type === 'vendor'
+      ? businessEntity?.businessName || approval.businessName
+      : businessEntity?.name || approval.name;
 
   // Calculate current status
   const isCurrentlyVerified = businessEntity?.isVerified || false;
@@ -90,7 +87,7 @@ const StatusResetModal = ({
   const resetTemplates = [
     'Additional documentation required for review',
     'Business information needs verification',
-    'Policy compliance requires re-evaluation', 
+    'Policy compliance requires re-evaluation',
     'Updated business license submitted',
     'New management structure requires review',
     'Address change requires verification',
@@ -117,7 +114,7 @@ const StatusResetModal = ({
       return {
         immediate: [
           'Current orders will continue processing',
-          'Restaurant dashboard access remains available', 
+          'Restaurant dashboard access remains available',
           'Existing vendor relationships maintained',
         ],
         pending: [
@@ -151,17 +148,21 @@ const StatusResetModal = ({
             <h2 className="text-2xl font-semibold text-text-dark dark:text-white mb-2">
               {businessName || 'Unknown Business'}
             </h2>
-            <p className="text-text-muted mb-3">{typeDisplay.label} Status Reset</p>
+            <p className="text-text-muted mb-3">
+              {typeDisplay.label} Status Reset
+            </p>
 
             {/* Current Status */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-text-muted">Current:</span>
-                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                  isCurrentlyVerified
-                    ? 'bg-mint-fresh/20 text-bottle-green'
-                    : 'bg-gray-100 text-gray-600'
-                }`}>
+                <div
+                  className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                    isCurrentlyVerified
+                      ? 'bg-mint-fresh/20 text-bottle-green'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
                   {isCurrentlyVerified ? (
                     <>
                       <CheckCircle className="w-4 h-4" />
@@ -189,9 +190,12 @@ const StatusResetModal = ({
             {businessEntity?.statusUpdatedAt && (
               <div className="flex items-center gap-2 mt-2 text-sm text-text-muted">
                 <Calendar className="w-4 h-4" />
-                Last updated {new Date(businessEntity.statusUpdatedAt).toLocaleDateString()}
+                Last updated{' '}
+                {new Date(businessEntity.statusUpdatedAt).toLocaleDateString()}
                 {businessEntity.adminNotes && (
-                  <span className="ml-2">• {businessEntity.adminNotes.substring(0, 50)}...</span>
+                  <span className="ml-2">
+                    • {businessEntity.adminNotes.substring(0, 50)}...
+                  </span>
                 )}
               </div>
             )}
@@ -207,8 +211,9 @@ const StatusResetModal = ({
                 Status Reset Impact
               </h3>
               <p className="text-amber-700 mb-4">
-                Resetting this {approval.type}'s status will move them back to pending approval state. 
-                This action affects their operational capabilities.
+                Resetting this {approval.type}'s status will move them back to
+                pending approval state. This action affects their operational
+                capabilities.
               </p>
             </div>
           </div>
@@ -222,7 +227,10 @@ const StatusResetModal = ({
               </h4>
               <ul className="space-y-2">
                 {impact.immediate.map((effect, index) => (
-                  <li key={index} className="text-sm text-text-muted flex items-start gap-2">
+                  <li
+                    key={index}
+                    className="text-sm text-text-muted flex items-start gap-2"
+                  >
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
                     {effect}
                   </li>
@@ -238,7 +246,10 @@ const StatusResetModal = ({
               </h4>
               <ul className="space-y-2">
                 {impact.pending.map((requirement, index) => (
-                  <li key={index} className="text-sm text-text-muted flex items-start gap-2">
+                  <li
+                    key={index}
+                    className="text-sm text-text-muted flex items-start gap-2"
+                  >
                     <div className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0 mt-2"></div>
                     {requirement}
                   </li>
@@ -291,10 +302,15 @@ const StatusResetModal = ({
             <div className="flex items-start gap-2">
               <FileText className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium text-blue-900 mb-1">What happens next:</p>
+                <p className="font-medium text-blue-900 mb-1">
+                  What happens next:
+                </p>
                 <ul className="text-blue-800 space-y-1">
                   <li>• Business status changes to "Pending Review"</li>
-                  <li>• {approval.type === 'vendor' ? 'Vendor' : 'Restaurant'} receives notification of status change</li>
+                  <li>
+                    • {approval.type === 'vendor' ? 'Vendor' : 'Restaurant'}{' '}
+                    receives notification of status change
+                  </li>
                   <li>• Admin team can review and approve/reject again</li>
                   <li>• Full audit trail maintained for compliance</li>
                 </ul>
@@ -319,11 +335,7 @@ const StatusResetModal = ({
               </>
             )}
           </Button>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
         </div>

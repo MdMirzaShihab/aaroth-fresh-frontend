@@ -42,7 +42,7 @@ const BulkVerificationModal = ({
 
     // Group by entity type if needed
     const userIds = Array.from(selectedApprovals);
-    
+
     await onBulkVerification({
       userIds,
       entityType: entityType === 'all' ? undefined : entityType,
@@ -88,7 +88,9 @@ const BulkVerificationModal = ({
     ],
   };
 
-  const currentTemplates = isVerifying ? bulkTemplates.verify : bulkTemplates.revoke;
+  const currentTemplates = isVerifying
+    ? bulkTemplates.verify
+    : bulkTemplates.revoke;
 
   return (
     <Modal
@@ -109,7 +111,8 @@ const BulkVerificationModal = ({
               Bulk Verification Update
             </h2>
             <p className="text-text-muted mb-3">
-              Update verification status for {totalSelected} selected applications
+              Update verification status for {totalSelected} selected
+              applications
             </p>
 
             {/* Selection Summary */}
@@ -135,7 +138,7 @@ const BulkVerificationModal = ({
           <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
             Verification Action
           </h3>
-          
+
           <div className="grid grid-cols-2 gap-4 mb-6">
             {/* Bulk Verify Option */}
             <button
@@ -147,14 +150,20 @@ const BulkVerificationModal = ({
               }`}
             >
               <div className="flex flex-col items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  isVerifying ? 'bg-bottle-green text-white' : 'bg-gray-100 text-gray-600'
-                }`}>
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    isVerifying
+                      ? 'bg-bottle-green text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium">Bulk Grant Verification</p>
-                  <p className="text-sm opacity-75">Enable operations for all selected</p>
+                  <p className="text-sm opacity-75">
+                    Enable operations for all selected
+                  </p>
                 </div>
               </div>
             </button>
@@ -169,14 +178,20 @@ const BulkVerificationModal = ({
               }`}
             >
               <div className="flex flex-col items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  !isVerifying ? 'bg-tomato-red text-white' : 'bg-gray-100 text-gray-600'
-                }`}>
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    !isVerifying
+                      ? 'bg-tomato-red text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
                   <ShieldX className="w-6 h-6" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium">Bulk Revoke Verification</p>
-                  <p className="text-sm opacity-75">Suspend operations for all selected</p>
+                  <p className="text-sm opacity-75">
+                    Suspend operations for all selected
+                  </p>
                 </div>
               </div>
             </button>
@@ -229,13 +244,14 @@ const BulkVerificationModal = ({
             <div className="text-amber-800">
               <p className="font-medium mb-1">Bulk Operation Warning</p>
               <p className="text-sm">
-                This will {isVerifying ? 'enable' : 'suspend'} business operations for{' '}
-                {entityType === 'all' 
-                  ? `all ${totalSelected} selected applications` 
+                This will {isVerifying ? 'enable' : 'suspend'} business
+                operations for{' '}
+                {entityType === 'all'
+                  ? `all ${totalSelected} selected applications`
                   : entityType === 'vendor'
                     ? `${vendorCount} vendor applications`
-                    : `${restaurantCount} restaurant applications`
-                }. This action affects multiple businesses simultaneously.
+                    : `${restaurantCount} restaurant applications`}
+                . This action affects multiple businesses simultaneously.
               </p>
             </div>
           </div>
@@ -278,8 +294,8 @@ const BulkVerificationModal = ({
               placeholder={`Please provide a detailed reason for bulk ${isVerifying ? 'verification' : 'revocation'}. This will be applied to all selected applications...`}
               rows={4}
               className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 ${
-                isVerifying 
-                  ? 'focus:ring-bottle-green/20' 
+                isVerifying
+                  ? 'focus:ring-bottle-green/20'
                   : 'focus:ring-tomato-red/20'
               }`}
             />
@@ -290,7 +306,9 @@ const BulkVerificationModal = ({
             <div className="flex items-start gap-2">
               <Clock className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium text-blue-900 mb-1">Bulk Processing Summary:</p>
+                <p className="font-medium text-blue-900 mb-1">
+                  Bulk Processing Summary:
+                </p>
                 <ul className="text-blue-800 space-y-1">
                   <li>• {totalSelected} applications will be processed</li>
                   <li>• Each business will receive individual notifications</li>
@@ -318,16 +336,20 @@ const BulkVerificationModal = ({
             ) : (
               <>
                 <Zap className="w-4 h-4 mr-2" />
-                {isVerifying ? 'Bulk Grant Verification' : 'Bulk Revoke Verification'} 
-                ({entityType === 'all' ? totalSelected : entityType === 'vendor' ? vendorCount : restaurantCount})
+                {isVerifying
+                  ? 'Bulk Grant Verification'
+                  : 'Bulk Revoke Verification'}
+                (
+                {entityType === 'all'
+                  ? totalSelected
+                  : entityType === 'vendor'
+                    ? vendorCount
+                    : restaurantCount}
+                )
               </>
             )}
           </Button>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
         </div>

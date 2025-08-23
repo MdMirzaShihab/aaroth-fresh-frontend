@@ -14,7 +14,8 @@ import {
 } from 'lucide-react';
 import {
   useGetAdminAnalyticsOverviewQuery,
-  useGetAllApprovalsQuery,
+  useGetPendingVendorsQuery,
+  useGetPendingRestaurantsQuery,
   useGetAdminDashboardOverviewQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -43,32 +44,35 @@ const AnalyticsDashboard = () => {
     error: dashboardError,
   } = useGetAdminDashboardOverviewQuery();
 
-  // Approval analytics
-  const { data: approvalData, isLoading: isApprovalLoading } =
-    useGetAllApprovalsQuery({
-      status: 'all',
-      limit: 1000, // Get all for analytics
-    });
+  // Business verification analytics
+  const { data: pendingVendors, isLoading: isVendorsLoading } =
+    useGetPendingVendorsQuery();
+  const { data: pendingRestaurants, isLoading: isRestaurantsLoading } =
+    useGetPendingRestaurantsQuery();
 
   const isLoading =
-    isAnalyticsLoading || isDashboardLoading || isApprovalLoading;
+    isAnalyticsLoading ||
+    isDashboardLoading ||
+    isVendorsLoading ||
+    isRestaurantsLoading;
   const error = analyticsError || dashboardError;
 
   // Transform API data into chart-ready format
   const analytics = analyticsData?.data || {};
   const dashboard = dashboardData?.data || {};
-  const approvals = approvalData?.data || [];
+  const vendorsData = pendingVendors?.data || [];
+  const restaurantsData = pendingRestaurants?.data || [];
 
-  // Calculate approval statistics
-  const approvalStats = approvals.reduce(
-    (acc, approval) => {
+  // Calculate business verification statistics
+  const verificationStats = [...vendorsData, ...restaurantsData].reduce(
+    (acc, entity) => {
       acc.total++;
-      acc[approval.status] = (acc[approval.status] || 0) + 1;
+      acc.pending++; // These are all pending entities
 
-      // Calculate average wait time (placeholder logic)
-      if (approval.createdAt) {
+      // Calculate average wait time
+      if (entity.createdAt) {
         const waitTime = Math.floor(
-          (new Date() - new Date(approval.createdAt)) / (1000 * 60 * 60 * 24)
+          (new Date() - new Date(entity.createdAt)) / (1000 * 60 * 60 * 24)
         );
         acc.avgWaitTime += waitTime;
         if (waitTime > 7) acc.urgent++; // Consider urgent if waiting more than 7 days
@@ -79,25 +83,30 @@ const AnalyticsDashboard = () => {
     {
       total: 0,
       pending: 0,
-      approved: 0,
-      rejected: 0,
+      verified:
+        dashboard.totalVendors +
+        dashboard.totalRestaurants -
+        (vendorsData.length + restaurantsData.length),
       avgWaitTime: 0,
       urgent: 0,
+      vendors: vendorsData.length,
+      restaurants: restaurantsData.length,
     }
   );
 
   // Calculate average wait time
-  approvalStats.avgWaitTime =
-    approvalStats.total > 0
-      ? Math.round(approvalStats.avgWaitTime / approvalStats.total)
+  verificationStats.avgWaitTime =
+    verificationStats.total > 0
+      ? Math.round(verificationStats.avgWaitTime / verificationStats.total)
       : 0;
 
-  // Transform approval data for charts
-  const transformApprovalData = () =>
+  // Transform verification data for charts
+  const transformVerificationData = () =>
     [
-      { label: 'Pending', value: approvalStats.pending || 0 },
-      { label: 'Approved', value: approvalStats.approved || 0 },
-      { label: 'Rejected', value: approvalStats.rejected || 0 },
+      { label: 'Pending', value: verificationStats.pending || 0 },
+      { label: 'Verified', value: verificationStats.verified || 0 },
+      { label: 'Vendors', value: verificationStats.vendors || 0 },
+      { label: 'Restaurants', value: verificationStats.restaurants || 0 },
     ].filter((item) => item.value > 0);
 
   // Transform revenue data with fallbacks
@@ -193,14 +202,14 @@ const AnalyticsDashboard = () => {
       bgColor: 'bg-purple-50',
     },
     {
-      id: 'approval-rate',
-      title: 'Approval Rate',
-      value: `${approvalStats.total > 0 ? Math.round((approvalStats.approved / approvalStats.total) * 100) : 85}%`,
+      id: 'verification-rate',
+      title: 'Business Verification Rate',
+      value: `${verificationStats.verified + verificationStats.pending > 0 ? Math.round((verificationStats.verified / (verificationStats.verified + verificationStats.pending)) * 100) : 85}%`,
       change:
-        approvalStats.urgent > 0
-          ? `${approvalStats.urgent} urgent`
+        verificationStats.urgent > 0
+          ? `${verificationStats.urgent} urgent`
           : 'On track',
-      changeType: approvalStats.urgent > 0 ? 'negative' : 'positive',
+      changeType: verificationStats.urgent > 0 ? 'negative' : 'positive',
       icon: TrendingUp,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
@@ -378,22 +387,22 @@ const AnalyticsDashboard = () => {
           </div>
 
           <div className="space-y-4">
-            {/* Approval Status Distribution */}
+            {/* Business Verification Status Distribution */}
             <div className="flex justify-center mb-6">
-              <SimplePieChart data={transformApprovalData()} size={200} />
+              <SimplePieChart data={transformVerificationData()} size={200} />
             </div>
 
-            {/* Approval Metrics */}
+            {/* Business Verification Metrics */}
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
                 <p className="text-2xl font-bold text-text-dark dark:text-white">
-                  {approvalStats.avgWaitTime}
+                  {verificationStats.avgWaitTime}
                 </p>
                 <p className="text-sm text-text-muted">Avg Wait Time (days)</p>
               </div>
               <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
                 <p className="text-2xl font-bold text-text-dark dark:text-white">
-                  {approvalStats.urgent}
+                  {verificationStats.urgent}
                 </p>
                 <p className="text-sm text-text-muted">Urgent (7+ days)</p>
               </div>
