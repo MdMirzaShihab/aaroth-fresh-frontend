@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   Store,
   Users,
@@ -7,6 +7,7 @@ import {
   RefreshCw,
   Eye,
   MoreHorizontal,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   useGetPendingVendorsQuery,
@@ -36,16 +37,30 @@ const ApprovalManagementNew = () => {
   // Local state
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('pending');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
 
-  // Query parameters
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      // Reset to first page when search changes
+      if (searchTerm !== debouncedSearchTerm) {
+        setCurrentPage(1);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, debouncedSearchTerm]);
+
+  // Query parameters with debounced search
   const queryParams = useMemo(
     () => ({
       page: currentPage,
       limit: itemsPerPage,
-      search: searchTerm || undefined,
+      search: debouncedSearchTerm || undefined,
       isVerified:
         filterStatus === 'verified'
           ? true
@@ -53,40 +68,44 @@ const ApprovalManagementNew = () => {
             ? false
             : undefined,
     }),
-    [currentPage, itemsPerPage, searchTerm, filterStatus]
+    [currentPage, itemsPerPage, debouncedSearchTerm, filterStatus]
   );
 
-  // API Hooks - Get data based on active tab
+  // API Hooks - Get data based on active tab (Fixed skipping logic)
   const {
     data: pendingVendors,
     isLoading: vendorsLoading,
     refetch: refetchVendors,
+    error: vendorsError,
   } = useGetPendingVendorsQuery(queryParams, {
-    skip: activeTab === 'restaurants',
+    skip: activeTab === 'restaurants' && filterStatus !== 'all',
   });
 
   const {
     data: pendingRestaurants,
     isLoading: restaurantsLoading,
     refetch: refetchRestaurants,
+    error: restaurantsError,
   } = useGetPendingRestaurantsQuery(queryParams, {
-    skip: activeTab === 'vendors',
+    skip: activeTab === 'vendors' && filterStatus !== 'all',
   });
 
   const {
     data: allVendors,
     isLoading: allVendorsLoading,
     refetch: refetchAllVendors,
+    error: allVendorsError,
   } = useGetAllVendorsAdminQuery(queryParams, {
-    skip: activeTab !== 'vendors' || filterStatus === 'pending',
+    skip: (activeTab === 'restaurants' && filterStatus !== 'all') || filterStatus === 'pending',
   });
 
   const {
     data: allRestaurants,
     isLoading: allRestaurantsLoading,
     refetch: refetchAllRestaurants,
+    error: allRestaurantsError,
   } = useGetAllRestaurantsAdminQuery(queryParams, {
-    skip: activeTab !== 'restaurants' || filterStatus === 'pending',
+    skip: (activeTab === 'vendors' && filterStatus !== 'all') || filterStatus === 'pending',
   });
 
   // Mutation hooks
@@ -145,6 +164,12 @@ const ApprovalManagementNew = () => {
     allVendorsLoading ||
     allRestaurantsLoading;
 
+  // Error handling
+  const hasErrors = vendorsError || restaurantsError || allVendorsError || allRestaurantsError;
+  const errorMessage = hasErrors 
+    ? 'Failed to load verification data. Please check your connection and try again.'
+    : null;
+
   // Statistics
   const stats = useMemo(() => {
     const vendors =
@@ -172,58 +197,145 @@ const ApprovalManagementNew = () => {
     filterStatus,
   ]);
 
-  // Event handlers
+  // Enhanced event handlers with retry mechanism
   const handleVendorVerification = async ({ id, isVerified, reason }) => {
-    try {
-      const result = await toggleVendorVerification({
-        id,
-        isVerified,
-        reason,
-      }).unwrap();
-      showVerificationSuccessToast(
-        'vendor',
-        isVerified ? 'verified' : 'revoked'
-      );
-      refetchVendors();
-      refetchAllVendors();
-    } catch (error) {
-      showVerificationErrorToast(
-        'vendor',
-        isVerified ? 'verify' : 'revoke',
-        error
-      );
-    }
+    const maxRetries = 2;
+    let attempt = 0;
+    
+    const attemptVerification = async () => {
+      try {
+        const result = await toggleVendorVerification({
+          id,
+          isVerified,
+          reason,
+        }).unwrap();
+        
+        showVerificationSuccessToast(
+          'vendor',
+          isVerified ? 'verified' : 'revoked'
+        );
+        
+        // Refetch data after successful verification
+        refetchVendors();
+        refetchAllVendors();
+        
+        return result;
+      } catch (error) {
+        attempt++;
+        
+        // Check if it's a transaction error that might resolve with retry
+        const isTransactionError = error?.data?.message?.includes('transaction') || 
+                                  error?.data?.message?.includes('abortTransaction') ||
+                                  error?.status === 500;
+        
+        if (isTransactionError && attempt < maxRetries) {
+          // Wait a bit and retry for transaction errors
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return attemptVerification();
+        }
+        
+        // Show error message with more context
+        const errorMsg = error?.data?.message || `Failed to ${isVerified ? 'verify' : 'revoke'} vendor`;
+        showVerificationErrorToast('vendor', isVerified ? 'verify' : 'revoke', {
+          ...error,
+          data: { 
+            ...error?.data, 
+            message: attempt > 1 ? `${errorMsg} (after ${attempt} attempts)` : errorMsg 
+          }
+        });
+        throw error;
+      }
+    };
+    
+    return attemptVerification();
   };
 
   const handleRestaurantVerification = async ({ id, isVerified, reason }) => {
-    try {
-      const result = await toggleRestaurantVerification({
-        id,
-        isVerified,
-        reason,
-      }).unwrap();
-      showVerificationSuccessToast(
-        'restaurant',
-        isVerified ? 'verified' : 'revoked'
-      );
-      refetchRestaurants();
-      refetchAllRestaurants();
-    } catch (error) {
-      showVerificationErrorToast(
-        'restaurant',
-        isVerified ? 'verify' : 'revoke',
-        error
-      );
-    }
+    const maxRetries = 2;
+    let attempt = 0;
+    
+    const attemptVerification = async () => {
+      try {
+        const result = await toggleRestaurantVerification({
+          id,
+          isVerified,
+          reason,
+        }).unwrap();
+        
+        showVerificationSuccessToast(
+          'restaurant',
+          isVerified ? 'verified' : 'revoked'
+        );
+        
+        // Refetch data after successful verification
+        refetchRestaurants();
+        refetchAllRestaurants();
+        
+        return result;
+      } catch (error) {
+        attempt++;
+        
+        // Check if it's a transaction error that might resolve with retry
+        const isTransactionError = error?.data?.message?.includes('transaction') || 
+                                  error?.data?.message?.includes('abortTransaction') ||
+                                  error?.status === 500;
+        
+        if (isTransactionError && attempt < maxRetries) {
+          // Wait a bit and retry for transaction errors
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return attemptVerification();
+        }
+        
+        // Show error message with more context
+        const errorMsg = error?.data?.message || `Failed to ${isVerified ? 'verify' : 'revoke'} restaurant`;
+        showVerificationErrorToast('restaurant', isVerified ? 'verify' : 'revoke', {
+          ...error,
+          data: { 
+            ...error?.data, 
+            message: attempt > 1 ? `${errorMsg} (after ${attempt} attempts)` : errorMsg 
+          }
+        });
+        throw error;
+      }
+    };
+    
+    return attemptVerification();
   };
 
-  const handleRefreshAll = () => {
+  const handleRefreshAll = useCallback(() => {
     refetchVendors();
     refetchRestaurants();
     refetchAllVendors();
     refetchAllRestaurants();
     showSuccessToast('Data refreshed');
-  };
+  }, [refetchVendors, refetchRestaurants, refetchAllVendors, refetchAllRestaurants]);
+
+  // Handler for tab changes with proper state reset
+  const handleTabChange = useCallback((newTab) => {
+    setActiveTab(newTab);
+    setCurrentPage(1);
+  }, []);
+
+  // Handler for filter changes with proper state reset
+  const handleFilterChange = useCallback((newFilter) => {
+    setFilterStatus(newFilter);
+    setCurrentPage(1);
+  }, []);
+
+  // Handler for search changes
+  const handleSearchChange = useCallback((event) => {
+    setSearchTerm(event.target.value);
+    // Current page reset is handled by the debounce effect
+  }, []);
+
+  // Clear all filters
+  const handleClearFilters = useCallback(() => {
+    setSearchTerm('');
+    setDebouncedSearchTerm('');
+    setFilterStatus('pending');
+    setActiveTab('all');
+    setCurrentPage(1);
+  }, []);
 
   // Pagination
   const totalPages = Math.ceil(displayData.length / itemsPerPage);
@@ -303,10 +415,7 @@ const ApprovalManagementNew = () => {
             ].map(({ key, label, icon: Icon }) => (
               <Button
                 key={key}
-                onClick={() => {
-                  setActiveTab(key);
-                  setCurrentPage(1);
-                }}
+                onClick={() => handleTabChange(key)}
                 variant={activeTab === key ? 'primary' : 'outline'}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                   activeTab === key
@@ -328,17 +437,14 @@ const ApprovalManagementNew = () => {
                 type="text"
                 placeholder="Search by business name, owner name, email..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearchChange}
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60"
               />
             </div>
 
             <select
               value={filterStatus}
-              onChange={(e) => {
-                setFilterStatus(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => handleFilterChange(e.target.value)}
               className="px-4 py-3 rounded-xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg appearance-none cursor-pointer transition-all duration-300"
             >
               <option value="pending">Pending Only</option>
@@ -352,7 +458,35 @@ const ApprovalManagementNew = () => {
         {/* Content */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <LoadingSpinner size="large" />
+            <LoadingSpinner size="large" text="Loading verification data..." />
+          </div>
+        ) : hasErrors ? (
+          <div className="bg-tomato-red/5 backdrop-blur-sm border border-tomato-red/20 rounded-2xl p-8 text-center">
+            <div className="w-16 h-16 bg-tomato-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="w-8 h-8 text-tomato-red" />
+            </div>
+            <h3 className="text-lg font-semibold text-tomato-red/90 mb-2">
+              Failed to Load Data
+            </h3>
+            <p className="text-tomato-red/80 mb-6">
+              {errorMessage}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                onClick={handleRefreshAll}
+                className="bg-tomato-red/90 hover:bg-tomato-red text-white px-6 py-3 rounded-xl font-medium transition-all duration-200"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Try Again
+              </Button>
+              <Button
+                onClick={() => window.location.reload()}
+                variant="outline"
+                className="border-tomato-red/30 text-tomato-red/80 hover:bg-tomato-red/5 px-6 py-3 rounded-xl font-medium transition-all duration-200"
+              >
+                Reload Page
+              </Button>
+            </div>
           </div>
         ) : paginatedData.length === 0 ? (
           <EmptyState
@@ -361,12 +495,7 @@ const ApprovalManagementNew = () => {
             description="There are no applications matching your current filters."
             action={{
               label: 'Clear Filters',
-              onClick: () => {
-                setSearchTerm('');
-                setFilterStatus('pending');
-                setActiveTab('all');
-                setCurrentPage(1);
-              },
+              onClick: handleClearFilters,
             }}
           />
         ) : (
