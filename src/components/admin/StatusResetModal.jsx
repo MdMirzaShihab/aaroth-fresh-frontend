@@ -131,7 +131,7 @@ const StatusResetModal = ({ approval, onClose, onResetStatus, isLoading }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen
       onClose={onClose}
       title="Reset Approval Status"
       maxWidth="3xl"

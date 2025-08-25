@@ -130,12 +130,7 @@ const ApprovalModal = ({
   ];
 
   return (
-    <Modal
-      isOpen={true}
-      onClose={onClose}
-      title="Application Review"
-      maxWidth="4xl"
-    >
+    <Modal isOpen onClose={onClose} title="Application Review" maxWidth="4xl">
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex items-start gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
@@ -161,10 +156,10 @@ const ApprovalModal = ({
                       isApproved
                         ? 'bg-mint-fresh/20 text-bottle-green'
                         : isRejected
-                        ? 'bg-tomato-red/20 text-tomato-red'
-                        : statusUpdatedAt
-                          ? 'bg-gray-100 text-gray-600'
-                          : 'bg-earthy-yellow/20 text-earthy-brown'
+                          ? 'bg-tomato-red/20 text-tomato-red'
+                          : statusUpdatedAt
+                            ? 'bg-gray-100 text-gray-600'
+                            : 'bg-earthy-yellow/20 text-earthy-brown'
                     }`}
                   >
                     {isApproved ? (

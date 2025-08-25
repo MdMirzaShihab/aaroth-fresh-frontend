@@ -1,5 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logout } from './authSlice';
+import {
+  refreshTokenStart,
+  refreshTokenSuccess,
+  refreshTokenFailure,
+  logout,
+} from './authSlice';
 
 // Base URL for the API
 const API_BASE_URL =
@@ -12,19 +17,39 @@ const baseQuery = fetchBaseQuery({
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
-    // Don't set content-type here - let it be set per request
-    // FormData requests need different content-type
+    headers.set('content-type', 'application/json');
     return headers;
   },
 });
 
-// Base query with auth handling
-const baseQueryWithAuth = async (args, api, extraOptions) => {
+// Enhanced base query with automatic token refresh
+const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
-    // Token expired or invalid, logout user
-    api.dispatch(logout());
+    const refreshToken = api.getState().auth.refreshToken;
+
+    if (refreshToken && !api.getState().auth.isRefreshing) {
+      api.dispatch(refreshTokenStart());
+
+      const refreshResult = await baseQuery(
+        {
+          url: '/auth/refresh',
+          method: 'POST',
+          headers: { Authorization: `Bearer ${refreshToken}` },
+        },
+        api,
+        extraOptions
+      );
+
+      if (refreshResult.data?.success) {
+        api.dispatch(refreshTokenSuccess(refreshResult.data));
+        result = await baseQuery(args, api, extraOptions);
+      } else {
+        api.dispatch(refreshTokenFailure());
+        api.dispatch(logout());
+      }
+    }
   }
 
   return result;
@@ -32,7 +57,7 @@ const baseQueryWithAuth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: baseQueryWithAuth,
+  baseQuery: baseQueryWithReauth,
   tagTypes: [
     'User',
     'Product',
@@ -43,6 +68,18 @@ export const apiSlice = createApi({
     'Restaurant',
     'Admin',
     'SystemHealth',
+    'Approvals',
+    'Notification',
+    'Analytics',
+    'SalesAnalytics',
+    'UserAnalytics',
+    'ProductAnalytics',
+    'Settings',
+    'FlaggedContent',
+    'AdminDashboard',
+    'Verification',
+    'Status',
+    'CategoryUsage',
   ],
   endpoints: (builder) => ({
     // Authentication endpoints
@@ -75,6 +112,51 @@ export const apiSlice = createApi({
     getCurrentUser: builder.query({
       query: () => '/auth/me',
       providesTags: ['User'],
+    }),
+
+    // Admin approval endpoints - New unified approval system
+    getAllApprovals: builder.query({
+      query: (filters = {}) => ({
+        url: '/admin/approvals',
+        params: filters,
+      }),
+      providesTags: ['Approvals'],
+    }),
+
+    approveVendor: builder.mutation({
+      query: ({ id, approvalNotes }) => ({
+        url: `/admin/approvals/vendor/${id}/approve`,
+        method: 'PUT',
+        body: { approvalNotes },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Vendor'],
+    }),
+
+    rejectVendor: builder.mutation({
+      query: ({ id, rejectionReason }) => ({
+        url: `/admin/approvals/vendor/${id}/reject`,
+        method: 'PUT',
+        body: { rejectionReason },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Vendor'],
+    }),
+
+    approveRestaurant: builder.mutation({
+      query: ({ id, approvalNotes }) => ({
+        url: `/admin/approvals/restaurant/${id}/approve`,
+        method: 'PUT',
+        body: { approvalNotes },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
+    }),
+
+    rejectRestaurant: builder.mutation({
+      query: ({ id, rejectionReason }) => ({
+        url: `/admin/approvals/restaurant/${id}/reject`,
+        method: 'PUT',
+        body: { rejectionReason },
+      }),
+      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
     }),
 
     // Profile management endpoints
@@ -649,7 +731,14 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: { status, reason },
       }),
-      invalidatesTags: ['Approvals', 'Vendor', 'User', 'PendingVendors', 'ApprovedVendors', 'RejectedVendors'],
+      invalidatesTags: [
+        'Approvals',
+        'Vendor',
+        'User',
+        'PendingVendors',
+        'ApprovedVendors',
+        'RejectedVendors',
+      ],
       onQueryStarted: async (
         { id, status, reason },
         { dispatch, queryFulfilled }
@@ -663,10 +752,10 @@ export const apiSlice = createApi({
               const approval = draft?.data?.find((a) => a._id === id);
               if (approval && approval.vendorId) {
                 approval.vendorId.verificationStatus = status;
-                approval.vendorId.adminNotes = status === 'rejected' ? reason : null;
-                approval.vendorId.verificationDate = status === 'approved'
-                  ? new Date().toISOString()
-                  : null;
+                approval.vendorId.adminNotes =
+                  status === 'rejected' ? reason : null;
+                approval.vendorId.verificationDate =
+                  status === 'approved' ? new Date().toISOString() : null;
               }
             }
           )
@@ -687,7 +776,14 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: { status, reason },
       }),
-      invalidatesTags: ['Approvals', 'Restaurant', 'User', 'PendingRestaurants', 'ApprovedRestaurants', 'RejectedRestaurants'],
+      invalidatesTags: [
+        'Approvals',
+        'Restaurant',
+        'User',
+        'PendingRestaurants',
+        'ApprovedRestaurants',
+        'RejectedRestaurants',
+      ],
       onQueryStarted: async (
         { id, status, reason },
         { dispatch, queryFulfilled }
@@ -701,10 +797,10 @@ export const apiSlice = createApi({
               const approval = draft?.data?.find((a) => a._id === id);
               if (approval && approval.restaurantId) {
                 approval.restaurantId.verificationStatus = status;
-                approval.restaurantId.adminNotes = status === 'rejected' ? reason : null;
-                approval.restaurantId.verificationDate = status === 'approved'
-                  ? new Date().toISOString()
-                  : null;
+                approval.restaurantId.adminNotes =
+                  status === 'rejected' ? reason : null;
+                approval.restaurantId.verificationDate =
+                  status === 'approved' ? new Date().toISOString() : null;
               }
             }
           )
@@ -718,54 +814,35 @@ export const apiSlice = createApi({
       },
     }),
 
-    // Status-specific vendor endpoints
-    getPendingVendors: builder.query({
+    // New Unified Admin Endpoints (replacing legacy separate endpoints)
+    getAdminVendorsUnified: builder.query({
       query: (params = {}) => ({
-        url: '/admin/vendors/pending',
-        params,
+        url: '/admin/vendors',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          status: params.status, // pending, approved, rejected
+          search: params.search,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+        },
       }),
-      providesTags: ['PendingVendors'],
+      providesTags: ['Vendor', 'Approvals'],
     }),
 
-    getApprovedVendors: builder.query({
+    getAdminRestaurantsUnified: builder.query({
       query: (params = {}) => ({
-        url: '/admin/vendors/approved', 
-        params,
+        url: '/admin/restaurants',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          status: params.status, // pending, approved, rejected
+          search: params.search,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+        },
       }),
-      providesTags: ['ApprovedVendors'],
-    }),
-
-    getRejectedVendors: builder.query({
-      query: (params = {}) => ({
-        url: '/admin/vendors/rejected',
-        params,
-      }),
-      providesTags: ['RejectedVendors'],
-    }),
-
-    // Status-specific restaurant endpoints
-    getPendingRestaurants: builder.query({
-      query: (params = {}) => ({
-        url: '/admin/restaurants/pending',
-        params,
-      }),
-      providesTags: ['PendingRestaurants'],
-    }),
-
-    getApprovedRestaurants: builder.query({
-      query: (params = {}) => ({
-        url: '/admin/restaurants/approved',
-        params,
-      }),
-      providesTags: ['ApprovedRestaurants'],
-    }),
-
-    getRejectedRestaurants: builder.query({
-      query: (params = {}) => ({
-        url: '/admin/restaurants/rejected',
-        params,
-      }),
-      providesTags: ['RejectedRestaurants'],
+      providesTags: ['Restaurant', 'Approvals'],
     }),
 
     // Bulk verification operations (updated for three-state)
@@ -775,17 +852,24 @@ export const apiSlice = createApi({
         method: 'POST',
         body: { userIds, entityType, status, reason },
       }),
-      invalidatesTags: ['Approvals', 'Vendor', 'Restaurant', 'User', 'PendingVendors', 'ApprovedVendors', 'RejectedVendors', 'PendingRestaurants', 'ApprovedRestaurants', 'RejectedRestaurants'],
+      invalidatesTags: [
+        'Approvals',
+        'Vendor',
+        'Restaurant',
+        'User',
+        'PendingVendors',
+        'ApprovedVendors',
+        'RejectedVendors',
+        'PendingRestaurants',
+        'ApprovedRestaurants',
+        'RejectedRestaurants',
+      ],
     }),
 
     // Enhanced Admin Dashboard
     getAdminDashboardOverview: builder.query({
-      query: (dateFilter = {}) => ({
-        url: '/admin/dashboard',
-        params: dateFilter,
-      }),
-      providesTags: ['AdminDashboard'],
-      keepUnusedDataFor: 300, // Cache for 5 minutes
+      query: () => '/admin/dashboard/overview',
+      providesTags: ['User', 'Approvals'],
     }),
 
     // Advanced Analytics System
@@ -2068,11 +2152,6 @@ export const apiSlice = createApi({
       ],
     }),
 
-    getPendingVendors: builder.query({
-      query: () => '/admin/vendors/pending',
-      providesTags: ['Vendor'],
-    }),
-
     // Legacy verifyVendor removed - replaced by unified approval system
 
     // Admin - Restaurant Management
@@ -2088,11 +2167,6 @@ export const apiSlice = createApi({
           id: _id,
         })),
       ],
-    }),
-
-    getPendingRestaurants: builder.query({
-      query: () => '/admin/restaurants/pending',
-      providesTags: ['Restaurant'],
     }),
 
     // Legacy verifyRestaurant removed - replaced by unified approval system
@@ -2241,18 +2315,6 @@ export const apiSlice = createApi({
       transformResponse: (response) => response.data,
     }),
 
-    // Get pending vendors for admin approval
-    getPendingVendors: builder.query({
-      query: (params = {}) => ({
-        url: '/admin/vendors/pending',
-        params,
-      }),
-      providesTags: (result) => [
-        { type: 'Vendor', id: 'PENDING_LIST' },
-        ...(result?.data || []).map(({ _id }) => ({ type: 'Vendor', id: _id })),
-      ],
-    }),
-
     // Get all vendors for admin management
     getAllVendorsAdmin: builder.query({
       query: (params = {}) => ({
@@ -2264,8 +2326,6 @@ export const apiSlice = createApi({
         ...(result?.data || []).map(({ _id }) => ({ type: 'Vendor', id: _id })),
       ],
     }),
-
-
 
     // Get all restaurants for admin management
     getAllRestaurantsAdmin: builder.query({
@@ -2281,7 +2341,6 @@ export const apiSlice = createApi({
         })),
       ],
     }),
-
 
     // Get verification dashboard overview
     getVerificationStats: builder.query({
@@ -2299,6 +2358,13 @@ export const {
   useRegisterMutation,
   useLogoutMutation,
   useGetCurrentUserQuery,
+
+  // Admin Approval System
+  useGetAllApprovalsQuery,
+  useApproveVendorMutation,
+  useRejectVendorMutation,
+  useApproveRestaurantMutation,
+  useRejectRestaurantMutation,
 
   // Profile Management
   useUpdateUserProfileMutation,
@@ -2469,13 +2535,11 @@ export const {
   // Three-State Verification Management (NEW)
   useUpdateVendorVerificationStatusMutation,
   useUpdateRestaurantVerificationStatusMutation,
-  useGetPendingVendorsQuery,
-  useGetApprovedVendorsQuery,
-  useGetRejectedVendorsQuery,
-  useGetPendingRestaurantsQuery,
-  useGetApprovedRestaurantsQuery,
-  useGetRejectedRestaurantsQuery,
   useBulkUpdateVerificationStatusMutation,
+
+  // New Unified Admin Endpoints
+  useGetAdminVendorsUnifiedQuery,
+  useGetAdminRestaurantsUnifiedQuery,
 
   // Enhanced Admin Dashboard
   useGetAdminDashboardOverviewQuery,

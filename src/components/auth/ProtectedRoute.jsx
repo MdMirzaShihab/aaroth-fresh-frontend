@@ -71,9 +71,15 @@ const ProtectedRoute = ({
     }
   }
 
-  // Check vendor approval status
-  if (requireApproval && user && user.role === 'vendor' && !user.isApproved) {
-    return <Navigate to="/vendor/pending-approval" replace />;
+  // Check vendor approval status (three-state verification system)
+  if (requireApproval && user && user.role === 'vendor') {
+    const verificationStatus = user.verificationStatus || 'pending';
+    if (verificationStatus === 'pending') {
+      return <Navigate to="/vendor/pending-approval" replace />;
+    }
+    if (verificationStatus === 'rejected') {
+      return <Navigate to="/vendor/rejected" replace />;
+    }
   }
 
   // Check for suspended or inactive accounts

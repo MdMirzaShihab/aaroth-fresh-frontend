@@ -4,24 +4,76 @@ import { apiSlice } from './apiSlice';
 const initialState = {
   user: null,
   token: localStorage.getItem('token'),
+  refreshToken: localStorage.getItem('refreshToken'),
   isAuthenticated: !!localStorage.getItem('token'),
   loading: false,
   error: null,
+  tokenExpiry: localStorage.getItem('tokenExpiry')
+    ? parseInt(localStorage.getItem('tokenExpiry'))
+    : null,
+  isRefreshing: false,
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    loginStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    loginSuccess: (state, action) => {
+      const { user, token, refreshToken, expiresIn } = action.payload;
+      state.loading = false;
+      state.user = user;
+      state.token = token;
+      state.refreshToken = refreshToken;
+      state.isAuthenticated = true;
+      state.tokenExpiry = Date.now() + expiresIn * 1000;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('tokenExpiry', state.tokenExpiry.toString());
+    },
+    loginFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.isAuthenticated = false;
+    },
+    refreshTokenStart: (state) => {
+      state.isRefreshing = true;
+    },
+    refreshTokenSuccess: (state, action) => {
+      const { token, expiresIn } = action.payload;
+      state.token = token;
+      state.tokenExpiry = Date.now() + expiresIn * 1000;
+      state.isRefreshing = false;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('tokenExpiry', state.tokenExpiry.toString());
+    },
+    refreshTokenFailure: (state) => {
+      state.user = null;
+      state.token = null;
+      state.refreshToken = null;
+      state.isAuthenticated = false;
+      state.isRefreshing = false;
+      state.tokenExpiry = null;
+
+      localStorage.clear();
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.refreshToken = null;
       state.isAuthenticated = false;
+      state.tokenExpiry = null;
       state.error = null;
       state.loading = false;
+      state.isRefreshing = false;
 
       // Clear localStorage
-      localStorage.removeItem('token');
+      localStorage.clear();
     },
     updateUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };
@@ -127,7 +179,18 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, updateUser, clearError, setLoading } = authSlice.actions;
+export const {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  refreshTokenStart,
+  refreshTokenSuccess,
+  refreshTokenFailure,
+  logout,
+  updateUser,
+  clearError,
+  setLoading,
+} = authSlice.actions;
 
 // Selectors
 export const selectAuth = (state) => state.auth;
@@ -135,5 +198,14 @@ export const selectUser = (state) => state.auth.user;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectAuthLoading = (state) => state.auth.loading;
 export const selectAuthError = (state) => state.auth.error;
+export const selectShouldRefresh = (state) => {
+  const { isAuthenticated, isRefreshing, tokenExpiry } = state.auth;
+  return (
+    isAuthenticated &&
+    !isRefreshing &&
+    tokenExpiry &&
+    Date.now() >= tokenExpiry - 120000
+  ); // Refresh 2 minutes before expiry
+};
 
 export default authSlice.reducer;

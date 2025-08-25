@@ -94,7 +94,7 @@ const BulkVerificationModal = ({
 
   return (
     <Modal
-      isOpen={true}
+      isOpen
       onClose={onClose}
       title="Bulk Verification Management"
       maxWidth="3xl"

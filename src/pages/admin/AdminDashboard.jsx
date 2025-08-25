@@ -19,8 +19,8 @@ import {
 } from 'lucide-react';
 import {
   useGetAdminDashboardOverviewQuery,
-  useGetPendingVendorsQuery,
-  useGetPendingRestaurantsQuery,
+  useGetAdminVendorsUnifiedQuery,
+  useGetAdminRestaurantsUnifiedQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
@@ -44,13 +44,13 @@ const AdminDashboard = () => {
     data: pendingVendors,
     isLoading: isPendingVendorsLoading,
     error: vendorsError,
-  } = useGetPendingVendorsQuery({ limit: 10 });
+  } = useGetAdminVendorsUnifiedQuery({ status: 'pending', limit: 10 });
 
   const {
     data: pendingRestaurants,
     isLoading: isPendingRestaurantsLoading,
     error: restaurantsError,
-  } = useGetPendingRestaurantsQuery({ limit: 10 });
+  } = useGetAdminRestaurantsUnifiedQuery({ status: 'pending', limit: 10 });
 
   const isLoading =
     isDashboardLoading ||
@@ -84,6 +84,10 @@ const AdminDashboard = () => {
   const pendingVendorsData = pendingVendors?.data || [];
   const pendingRestaurantsData = pendingRestaurants?.data || [];
 
+  // Get statistics from new unified API response
+  const vendorStats = pendingVendors?.stats || {};
+  const restaurantStats = pendingRestaurants?.stats || {};
+
   // Calculate business verification metrics
   const totalPendingVerifications =
     pendingVendorsData.length + pendingRestaurantsData.length;
@@ -115,7 +119,7 @@ const AdminDashboard = () => {
     {
       id: 'total-vendors',
       title: 'Total Vendors',
-      value: metrics.totalVendors || 0,
+      value: metrics.totalVendors || vendorStats.totalVendors || 0,
       change: '+0%',
       changeType: 'positive',
       icon: Package,
@@ -138,7 +142,7 @@ const AdminDashboard = () => {
     {
       id: 'total-restaurants',
       title: 'Total Restaurants',
-      value: metrics.totalRestaurants || 0,
+      value: metrics.totalRestaurants || restaurantStats.totalRestaurants || 0,
       change: '+0%',
       changeType: 'positive',
       icon: ShoppingCart,

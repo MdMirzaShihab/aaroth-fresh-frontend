@@ -41,10 +41,19 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
         title: '🎉 Welcome to Aaroth Fresh!',
         subtitle: 'Your vendor account is now verified and ready',
         capabilities: [
-          { key: 'canCreateListings', label: 'Create and manage product listings' },
+          {
+            key: 'canCreateListings',
+            label: 'Create and manage product listings',
+          },
           { key: 'canProcessOrders', label: 'Accept and process orders' },
-          { key: 'canAccessDashboard', label: 'Access vendor dashboard and analytics' },
-          { key: 'canManageInventory', label: 'Track inventory and stock levels' },
+          {
+            key: 'canAccessDashboard',
+            label: 'Access vendor dashboard and analytics',
+          },
+          {
+            key: 'canManageInventory',
+            label: 'Track inventory and stock levels',
+          },
         ],
         nextSteps: [
           'Create your first product listing',
@@ -60,10 +69,19 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
         title: '🎉 Welcome to Aaroth Fresh!',
         subtitle: 'Your restaurant account is now verified and ready',
         capabilities: [
-          { key: 'canPlaceOrders', label: 'Place orders with verified vendors' },
+          {
+            key: 'canPlaceOrders',
+            label: 'Place orders with verified vendors',
+          },
           { key: 'canAccessDashboard', label: 'Access restaurant dashboard' },
-          { key: 'canManageRestaurant', label: 'Manage restaurant profile and settings' },
-          { key: 'canTrackSpending', label: 'Track spending and order history' },
+          {
+            key: 'canManageRestaurant',
+            label: 'Manage restaurant profile and settings',
+          },
+          {
+            key: 'canTrackSpending',
+            label: 'Track spending and order history',
+          },
         ],
         nextSteps: [
           'Browse fresh produce from local vendors',
@@ -75,12 +93,15 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
         ctaLink: '/restaurant/dashboard',
       };
     }
-    
+
     return {
       title: '🎉 Account Verified!',
       subtitle: 'Your business account is now approved',
       capabilities: [],
-      nextSteps: ['Complete your profile setup', 'Explore the platform features'],
+      nextSteps: [
+        'Complete your profile setup',
+        'Explore the platform features',
+      ],
       ctaText: 'Get Started',
       ctaLink: '/dashboard',
     };
@@ -100,7 +121,10 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
           <div className="absolute top-4 right-4 animate-pulse">
             <Star className="w-6 h-6 text-emerald-500 opacity-60" />
           </div>
-          <div className="absolute bottom-4 left-1/3 animate-bounce" style={{ animationDelay: '0.5s' }}>
+          <div
+            className="absolute bottom-4 left-1/3 animate-bounce"
+            style={{ animationDelay: '0.5s' }}
+          >
             <Sparkles className="w-4 h-4 text-green-400 opacity-40" />
           </div>
 
@@ -118,13 +142,21 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
           <div className="text-text-muted mb-4">
             <p className="text-lg">
               {businessName && (
-                <span className="font-semibold text-text-dark">{businessName}</span>
+                <span className="font-semibold text-text-dark">
+                  {businessName}
+                </span>
               )}
               {businessName && ' - '}
-              <span className="capitalize text-green-700">{businessType}</span> Account
+              <span className="capitalize text-green-700">
+                {businessType}
+              </span>{' '}
+              Account
             </p>
             <p className="text-sm mt-2">
-              Verified on {verificationDate ? new Date(verificationDate).toLocaleDateString() : 'today'}
+              Verified on{' '}
+              {verificationDate
+                ? new Date(verificationDate).toLocaleDateString()
+                : 'today'}
             </p>
           </div>
 
@@ -141,7 +173,7 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
             <Target className="w-6 h-6 text-green-600" />
             What You Can Do Now
           </h3>
-          
+
           <div className="space-y-4">
             {welcomeInfo.capabilities.map((capability, index) => (
               <div
@@ -151,7 +183,9 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
                 <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <ShieldCheck className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-medium text-text-dark">{capability.label}</span>
+                <span className="font-medium text-text-dark">
+                  {capability.label}
+                </span>
               </div>
             ))}
           </div>
@@ -163,7 +197,7 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
             <ArrowRight className="w-6 h-6 text-blue-600" />
             Next Steps
           </h3>
-          
+
           <div className="space-y-4">
             {welcomeInfo.nextSteps.map((step, index) => (
               <div key={index} className="flex items-start gap-3">
@@ -209,11 +243,15 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
           {isVendor ? (
             <>
               <div>
-                <p className="font-medium text-text-dark mb-1">Quality Listings:</p>
+                <p className="font-medium text-text-dark mb-1">
+                  Quality Listings:
+                </p>
                 <p>Upload high-quality photos and detailed descriptions</p>
               </div>
               <div>
-                <p className="font-medium text-text-dark mb-1">Fast Response:</p>
+                <p className="font-medium text-text-dark mb-1">
+                  Fast Response:
+                </p>
                 <p>Respond quickly to orders for better ratings</p>
               </div>
               <div>
@@ -221,7 +259,9 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
                 <p>Keep inventory updated to avoid disappointed customers</p>
               </div>
               <div>
-                <p className="font-medium text-text-dark mb-1">Great Service:</p>
+                <p className="font-medium text-text-dark mb-1">
+                  Great Service:
+                </p>
                 <p>Provide excellent customer service for repeat business</p>
               </div>
             </>
@@ -232,15 +272,21 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
                 <p>Order fresh ingredients in advance for best availability</p>
               </div>
               <div>
-                <p className="font-medium text-text-dark mb-1">Build Relationships:</p>
+                <p className="font-medium text-text-dark mb-1">
+                  Build Relationships:
+                </p>
                 <p>Work with reliable vendors for consistent supply</p>
               </div>
               <div>
-                <p className="font-medium text-text-dark mb-1">Track Spending:</p>
+                <p className="font-medium text-text-dark mb-1">
+                  Track Spending:
+                </p>
                 <p>Use our analytics to optimize your purchasing</p>
               </div>
               <div>
-                <p className="font-medium text-text-dark mb-1">Leave Reviews:</p>
+                <p className="font-medium text-text-dark mb-1">
+                  Leave Reviews:
+                </p>
                 <p>Help other restaurants by reviewing vendors</p>
               </div>
             </>

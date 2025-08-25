@@ -125,9 +125,9 @@ const ProductBrowsing = () => {
         _id: listing._id,
         vendorId: listing.vendorId,
         productId: listing.productId,
-        price: price,
+        price,
         quantity: quantityAvailable,
-        unit: unit,
+        unit,
         availability: availabilityStatus,
 
         // Product properties (from nested object)
@@ -135,7 +135,7 @@ const ProductBrowsing = () => {
         description: product.description,
         images: imageUrls,
         category: product.category,
-        rating: rating,
+        rating,
 
         // Vendor properties (from nested object)
         vendorName: vendor.businessName || vendor.name || listing.vendorName,
@@ -144,7 +144,7 @@ const ProductBrowsing = () => {
 
         // Additional useful properties
         qualityGrade: listing.qualityGrade,
-        isInSeason: isInSeason,
+        isInSeason,
         minimumOrderValue:
           listing.minimumOrderValue || vendor.minimumOrderValue,
         deliveryOptions: listing.deliveryOptions,

@@ -15,7 +15,8 @@ export const useBusinessVerification = () => {
     refetch,
   } = useGetUserBusinessStatusQuery();
 
-  const verificationStatus = status?.businessVerification?.verificationStatus || 'pending';
+  const verificationStatus =
+    status?.businessVerification?.verificationStatus || 'pending';
   const isApproved = verificationStatus === 'approved';
   const isRejected = verificationStatus === 'rejected';
   const isPending = verificationStatus === 'pending';
@@ -24,13 +25,13 @@ export const useBusinessVerification = () => {
     // Core verification status (three-state system)
     verificationStatus,
     isApproved,
-    isRejected, 
+    isRejected,
     isPending,
     adminNotes: status?.businessVerification?.adminNotes,
     businessType: status?.businessVerification?.businessType,
     businessName: status?.businessVerification?.businessName,
     verificationDate: status?.businessVerification?.verificationDate,
-    
+
     // Legacy support (deprecated - will be removed)
     isVerified: isApproved,
 
@@ -101,7 +102,9 @@ export const useBusinessVerification = () => {
           text: 'Verification Rejected',
           color: 'red',
           icon: 'x-circle',
-          description: status.businessVerification?.adminNotes || 'Your verification has been rejected.',
+          description:
+            status.businessVerification?.adminNotes ||
+            'Your verification has been rejected.',
           adminNotes: status.businessVerification?.adminNotes,
         };
       }
@@ -153,7 +156,7 @@ export const useBusinessVerification = () => {
 
     // New helper methods for three-state system
     canResubmit: () => verificationStatus === 'rejected',
-    
+
     getRejectionGuidance: () => {
       if (verificationStatus !== 'rejected') return null;
       return {
@@ -165,10 +168,14 @@ export const useBusinessVerification = () => {
 
     getStatusColor: () => {
       switch (verificationStatus) {
-        case 'approved': return 'green';
-        case 'rejected': return 'red';
-        case 'pending': return 'amber';
-        default: return 'gray';
+        case 'approved':
+          return 'green';
+        case 'rejected':
+          return 'red';
+        case 'pending':
+          return 'amber';
+        default:
+          return 'gray';
       }
     },
   };

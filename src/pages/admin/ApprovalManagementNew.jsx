@@ -69,10 +69,10 @@ const ApprovalManagementNew = () => {
         filterStatus === 'approved'
           ? 'approved'
           : filterStatus === 'rejected'
-          ? 'rejected'
-          : filterStatus === 'pending'
-          ? 'pending'
-          : undefined,
+            ? 'rejected'
+            : filterStatus === 'pending'
+              ? 'pending'
+              : undefined,
     }),
     [currentPage, itemsPerPage, debouncedSearchTerm, filterStatus]
   );
@@ -102,7 +102,9 @@ const ApprovalManagementNew = () => {
     refetch: refetchAllVendors,
     error: allVendorsError,
   } = useGetAllVendorsAdminQuery(queryParams, {
-    skip: (activeTab === 'restaurants' && filterStatus !== 'all') || filterStatus === 'pending',
+    skip:
+      (activeTab === 'restaurants' && filterStatus !== 'all') ||
+      filterStatus === 'pending',
   });
 
   const {
@@ -111,7 +113,9 @@ const ApprovalManagementNew = () => {
     refetch: refetchAllRestaurants,
     error: allRestaurantsError,
   } = useGetAllRestaurantsAdminQuery(queryParams, {
-    skip: (activeTab === 'vendors' && filterStatus !== 'all') || filterStatus === 'pending',
+    skip:
+      (activeTab === 'vendors' && filterStatus !== 'all') ||
+      filterStatus === 'pending',
   });
 
   // Mutation hooks
@@ -155,8 +159,10 @@ const ApprovalManagementNew = () => {
 
       const matchesFilter =
         filterStatus === 'all' ||
-        (filterStatus === 'approved' && entity.verificationStatus === 'approved') ||
-        (filterStatus === 'rejected' && entity.verificationStatus === 'rejected') ||
+        (filterStatus === 'approved' &&
+          entity.verificationStatus === 'approved') ||
+        (filterStatus === 'rejected' &&
+          entity.verificationStatus === 'rejected') ||
         (filterStatus === 'pending' && entity.verificationStatus === 'pending');
 
       return matchesSearch && matchesFilter;
@@ -171,8 +177,9 @@ const ApprovalManagementNew = () => {
     allRestaurantsLoading;
 
   // Error handling
-  const hasErrors = vendorsError || restaurantsError || allVendorsError || allRestaurantsError;
-  const errorMessage = hasErrors 
+  const hasErrors =
+    vendorsError || restaurantsError || allVendorsError || allRestaurantsError;
+  const errorMessage = hasErrors
     ? 'Failed to load verification data. Please check your connection and try again.'
     : null;
 
@@ -207,7 +214,7 @@ const ApprovalManagementNew = () => {
   const handleVendorVerification = async ({ id, isVerified, reason }) => {
     const maxRetries = 2;
     let attempt = 0;
-    
+
     const attemptVerification = async () => {
       try {
         const result = await toggleVendorVerification({
@@ -215,51 +222,57 @@ const ApprovalManagementNew = () => {
           isVerified,
           reason,
         }).unwrap();
-        
+
         showVerificationSuccessToast(
           'vendor',
           isVerified ? 'verified' : 'revoked'
         );
-        
+
         // Refetch data after successful verification
         refetchVendors();
         refetchAllVendors();
-        
+
         return result;
       } catch (error) {
         attempt++;
-        
+
         // Check if it's a transaction error that might resolve with retry
-        const isTransactionError = error?.data?.message?.includes('transaction') || 
-                                  error?.data?.message?.includes('abortTransaction') ||
-                                  error?.status === 500;
-        
+        const isTransactionError =
+          error?.data?.message?.includes('transaction') ||
+          error?.data?.message?.includes('abortTransaction') ||
+          error?.status === 500;
+
         if (isTransactionError && attempt < maxRetries) {
           // Wait a bit and retry for transaction errors
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           return attemptVerification();
         }
-        
+
         // Show error message with more context
-        const errorMsg = error?.data?.message || `Failed to ${isVerified ? 'verify' : 'revoke'} vendor`;
+        const errorMsg =
+          error?.data?.message ||
+          `Failed to ${isVerified ? 'verify' : 'revoke'} vendor`;
         showVerificationErrorToast('vendor', isVerified ? 'verify' : 'revoke', {
           ...error,
-          data: { 
-            ...error?.data, 
-            message: attempt > 1 ? `${errorMsg} (after ${attempt} attempts)` : errorMsg 
-          }
+          data: {
+            ...error?.data,
+            message:
+              attempt > 1
+                ? `${errorMsg} (after ${attempt} attempts)`
+                : errorMsg,
+          },
         });
         throw error;
       }
     };
-    
+
     return attemptVerification();
   };
 
   const handleRestaurantVerification = async ({ id, isVerified, reason }) => {
     const maxRetries = 2;
     let attempt = 0;
-    
+
     const attemptVerification = async () => {
       try {
         const result = await toggleRestaurantVerification({
@@ -267,44 +280,54 @@ const ApprovalManagementNew = () => {
           isVerified,
           reason,
         }).unwrap();
-        
+
         showVerificationSuccessToast(
           'restaurant',
           isVerified ? 'verified' : 'revoked'
         );
-        
+
         // Refetch data after successful verification
         refetchRestaurants();
         refetchAllRestaurants();
-        
+
         return result;
       } catch (error) {
         attempt++;
-        
+
         // Check if it's a transaction error that might resolve with retry
-        const isTransactionError = error?.data?.message?.includes('transaction') || 
-                                  error?.data?.message?.includes('abortTransaction') ||
-                                  error?.status === 500;
-        
+        const isTransactionError =
+          error?.data?.message?.includes('transaction') ||
+          error?.data?.message?.includes('abortTransaction') ||
+          error?.status === 500;
+
         if (isTransactionError && attempt < maxRetries) {
           // Wait a bit and retry for transaction errors
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           return attemptVerification();
         }
-        
+
         // Show error message with more context
-        const errorMsg = error?.data?.message || `Failed to ${isVerified ? 'verify' : 'revoke'} restaurant`;
-        showVerificationErrorToast('restaurant', isVerified ? 'verify' : 'revoke', {
-          ...error,
-          data: { 
-            ...error?.data, 
-            message: attempt > 1 ? `${errorMsg} (after ${attempt} attempts)` : errorMsg 
+        const errorMsg =
+          error?.data?.message ||
+          `Failed to ${isVerified ? 'verify' : 'revoke'} restaurant`;
+        showVerificationErrorToast(
+          'restaurant',
+          isVerified ? 'verify' : 'revoke',
+          {
+            ...error,
+            data: {
+              ...error?.data,
+              message:
+                attempt > 1
+                  ? `${errorMsg} (after ${attempt} attempts)`
+                  : errorMsg,
+            },
           }
-        });
+        );
         throw error;
       }
     };
-    
+
     return attemptVerification();
   };
 
@@ -314,7 +337,12 @@ const ApprovalManagementNew = () => {
     refetchAllVendors();
     refetchAllRestaurants();
     showSuccessToast('Data refreshed');
-  }, [refetchVendors, refetchRestaurants, refetchAllVendors, refetchAllRestaurants]);
+  }, [
+    refetchVendors,
+    refetchRestaurants,
+    refetchAllVendors,
+    refetchAllRestaurants,
+  ]);
 
   // Handler for tab changes with proper state reset
   const handleTabChange = useCallback((newTab) => {
@@ -474,9 +502,7 @@ const ApprovalManagementNew = () => {
             <h3 className="text-lg font-semibold text-tomato-red/90 mb-2">
               Failed to Load Data
             </h3>
-            <p className="text-tomato-red/80 mb-6">
-              {errorMessage}
-            </p>
+            <p className="text-tomato-red/80 mb-6">{errorMessage}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 onClick={handleRefreshAll}

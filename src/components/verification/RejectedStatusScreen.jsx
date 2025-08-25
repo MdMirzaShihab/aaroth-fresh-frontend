@@ -1,5 +1,12 @@
 import React from 'react';
-import { XCircle, RefreshCw, AlertTriangle, FileText, Phone, Mail } from 'lucide-react';
+import {
+  XCircle,
+  RefreshCw,
+  AlertTriangle,
+  FileText,
+  Phone,
+  Mail,
+} from 'lucide-react';
 import { useBusinessVerification } from '../../hooks/useBusinessVerification';
 import Button from '../ui/Button';
 
@@ -56,7 +63,8 @@ const RejectedStatusScreen = () => {
               <span className="font-medium text-text-dark">{businessName}</span>
             )}
             {businessName && ' - '}
-            <span className="capitalize">{businessType}</span> verification has been rejected
+            <span className="capitalize">{businessType}</span> verification has
+            been rejected
           </p>
           <p className="text-sm mt-2">
             Account: <span className="font-medium">{user?.name}</span>
@@ -108,7 +116,9 @@ const RejectedStatusScreen = () => {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-3">
-            <h4 className="font-medium text-text-dark">Documentation Issues:</h4>
+            <h4 className="font-medium text-text-dark">
+              Documentation Issues:
+            </h4>
             <ul className="space-y-2 text-sm text-text-muted">
               <li>• Ensure all documents are clear and readable</li>
               <li>• Upload documents in supported formats (PDF, JPG, PNG)</li>
@@ -116,7 +126,9 @@ const RejectedStatusScreen = () => {
             </ul>
           </div>
           <div className="space-y-3">
-            <h4 className="font-medium text-text-dark">Information Accuracy:</h4>
+            <h4 className="font-medium text-text-dark">
+              Information Accuracy:
+            </h4>
             <ul className="space-y-2 text-sm text-text-muted">
               <li>• Double-check business name spelling</li>
               <li>• Ensure address matches official documents</li>

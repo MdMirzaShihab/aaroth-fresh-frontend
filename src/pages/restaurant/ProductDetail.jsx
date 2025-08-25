@@ -71,12 +71,12 @@ const ProductDetail = () => {
       addToCart({
         id: listing._id,
         name: product.name,
-        price: price,
+        price,
         image: imageUrls[0],
         vendorId: listing.vendorId,
         vendorName: vendor.businessName || vendor.name,
-        unit: unit,
-        quantity: quantity,
+        unit,
+        quantity,
         productId: listing.productId,
         availability: quantityAvailable > 0 ? 'in-stock' : 'out-of-stock',
       })

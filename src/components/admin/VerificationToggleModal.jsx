@@ -86,10 +86,15 @@ const VerificationToggleModal = ({
       return;
     }
 
-    if ((selectedAction === 'rejected' || selectedAction === 'pending') && !reason.trim()) {
-      alert(selectedAction === 'rejected' 
-        ? 'Please provide a detailed reason for rejection' 
-        : 'Please provide a reason for setting to pending');
+    if (
+      (selectedAction === 'rejected' || selectedAction === 'pending') &&
+      !reason.trim()
+    ) {
+      alert(
+        selectedAction === 'rejected'
+          ? 'Please provide a detailed reason for rejection'
+          : 'Please provide a reason for setting to pending'
+      );
       return;
     }
 
@@ -138,33 +143,33 @@ const VerificationToggleModal = ({
   const getStatusDisplay = (status) => {
     switch (status) {
       case 'approved':
-        return { 
-          color: 'text-green-600', 
-          bgColor: 'bg-green-50', 
+        return {
+          color: 'text-green-600',
+          bgColor: 'bg-green-50',
           icon: ShieldCheck,
-          label: 'Approved'
+          label: 'Approved',
         };
       case 'rejected':
-        return { 
-          color: 'text-red-600', 
-          bgColor: 'bg-red-50', 
+        return {
+          color: 'text-red-600',
+          bgColor: 'bg-red-50',
           icon: ShieldX,
-          label: 'Rejected'
+          label: 'Rejected',
         };
       case 'pending':
       default:
-        return { 
-          color: 'text-amber-600', 
-          bgColor: 'bg-amber-50', 
+        return {
+          color: 'text-amber-600',
+          bgColor: 'bg-amber-50',
           icon: Shield,
-          label: 'Pending'
+          label: 'Pending',
         };
     }
   };
 
   return (
     <Modal
-      isOpen={true}
+      isOpen
       onClose={onClose}
       title="Verification Management"
       maxWidth="2xl"
@@ -194,8 +199,8 @@ const VerificationToggleModal = ({
                   currentStatus === 'approved'
                     ? 'bg-mint-fresh/20 text-bottle-green'
                     : currentStatus === 'rejected'
-                    ? 'bg-tomato-red/20 text-tomato-red'
-                    : 'bg-amber-100 text-amber-700'
+                      ? 'bg-tomato-red/20 text-tomato-red'
+                      : 'bg-amber-100 text-amber-700'
                 }`}
               >
                 {currentStatus === 'approved' ? (
@@ -243,8 +248,8 @@ const VerificationToggleModal = ({
                 selectedAction === 'approved'
                   ? 'border-bottle-green bg-mint-fresh/10 text-bottle-green'
                   : currentStatus === 'approved'
-                  ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-200 hover:border-gray-300 text-text-muted'
+                    ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                    : 'border-gray-200 hover:border-gray-300 text-text-muted'
               }`}
             >
               <div className="flex flex-col items-center gap-3">
@@ -253,17 +258,15 @@ const VerificationToggleModal = ({
                     selectedAction === 'approved'
                       ? 'bg-bottle-green text-white'
                       : currentStatus === 'approved'
-                      ? 'bg-gray-200 text-gray-400'
-                      : 'bg-gray-100 text-gray-600'
+                        ? 'bg-gray-200 text-gray-400'
+                        : 'bg-gray-100 text-gray-600'
                   }`}
                 >
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium">Approve</p>
-                  <p className="text-sm opacity-75">
-                    Grant full access
-                  </p>
+                  <p className="text-sm opacity-75">Grant full access</p>
                 </div>
               </div>
             </button>
@@ -276,8 +279,8 @@ const VerificationToggleModal = ({
                 selectedAction === 'rejected'
                   ? 'border-tomato-red bg-tomato-red/10 text-tomato-red'
                   : currentStatus === 'rejected'
-                  ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-200 hover:border-gray-300 text-text-muted'
+                    ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                    : 'border-gray-200 hover:border-gray-300 text-text-muted'
               }`}
             >
               <div className="flex flex-col items-center gap-3">
@@ -286,17 +289,15 @@ const VerificationToggleModal = ({
                     selectedAction === 'rejected'
                       ? 'bg-tomato-red text-white'
                       : currentStatus === 'rejected'
-                      ? 'bg-gray-200 text-gray-400'
-                      : 'bg-gray-100 text-gray-600'
+                        ? 'bg-gray-200 text-gray-400'
+                        : 'bg-gray-100 text-gray-600'
                   }`}
                 >
                   <ShieldX className="w-6 h-6" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium">Reject</p>
-                  <p className="text-sm opacity-75">
-                    Deny verification
-                  </p>
+                  <p className="text-sm opacity-75">Deny verification</p>
                 </div>
               </div>
             </button>
@@ -309,8 +310,8 @@ const VerificationToggleModal = ({
                 selectedAction === 'pending'
                   ? 'border-amber-600 bg-amber-50 text-amber-700'
                   : currentStatus === 'pending'
-                  ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-200 hover:border-gray-300 text-text-muted'
+                    ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                    : 'border-gray-200 hover:border-gray-300 text-text-muted'
               }`}
             >
               <div className="flex flex-col items-center gap-3">
@@ -319,17 +320,15 @@ const VerificationToggleModal = ({
                     selectedAction === 'pending'
                       ? 'bg-amber-600 text-white'
                       : currentStatus === 'pending'
-                      ? 'bg-gray-200 text-gray-400'
-                      : 'bg-gray-100 text-gray-600'
+                        ? 'bg-gray-200 text-gray-400'
+                        : 'bg-gray-100 text-gray-600'
                   }`}
                 >
                   <Shield className="w-6 h-6" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium">Set Pending</p>
-                  <p className="text-sm opacity-75">
-                    Require review
-                  </p>
+                  <p className="text-sm opacity-75">Require review</p>
                 </div>
               </div>
             </button>
@@ -342,11 +341,12 @@ const VerificationToggleModal = ({
               <div className="text-red-800">
                 <p className="font-medium mb-1">Rejection Impact</p>
                 <p className="text-sm">
-                  Rejecting will immediately suspend this {approval.type}'s platform access.
+                  Rejecting will immediately suspend this {approval.type}'s
+                  platform access.
                   {approval.type === 'vendor'
                     ? ' They cannot create listings or process orders.'
-                    : ' They cannot place orders or access services.'}
-                  {' '}Provide detailed feedback for resubmission.
+                    : ' They cannot place orders or access services.'}{' '}
+                  Provide detailed feedback for resubmission.
                 </p>
               </div>
             </div>
@@ -357,11 +357,12 @@ const VerificationToggleModal = ({
         {selectedAction && (
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
-              {selectedAction === 'approved' 
-                ? 'Approval' 
-                : selectedAction === 'rejected' 
-                ? 'Rejection' 
-                : 'Pending'} Reason
+              {selectedAction === 'approved'
+                ? 'Approval'
+                : selectedAction === 'rejected'
+                  ? 'Rejection'
+                  : 'Pending'}{' '}
+              Reason
               {selectedAction === 'rejected' && (
                 <span className="text-red-600 ml-1">*</span>
               )}
@@ -383,8 +384,8 @@ const VerificationToggleModal = ({
                           ? selectedAction === 'approved'
                             ? 'bg-bottle-green text-white'
                             : selectedAction === 'rejected'
-                            ? 'bg-tomato-red text-white'
-                            : 'bg-amber-600 text-white'
+                              ? 'bg-tomato-red text-white'
+                              : 'bg-amber-600 text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -395,8 +396,8 @@ const VerificationToggleModal = ({
               </div>
             )}
 
-            <FormField 
-              label="Detailed Reason" 
+            <FormField
+              label="Detailed Reason"
               required={selectedAction === 'rejected'}
             >
               <textarea
@@ -406,16 +407,16 @@ const VerificationToggleModal = ({
                   selectedAction === 'approved'
                     ? 'Optional notes for approval...'
                     : selectedAction === 'rejected'
-                    ? 'Provide detailed feedback on what needs to be fixed for resubmission...'
-                    : 'Reason for setting to pending status...'
+                      ? 'Provide detailed feedback on what needs to be fixed for resubmission...'
+                      : 'Reason for setting to pending status...'
                 }
                 rows={selectedAction === 'rejected' ? 5 : 4}
                 className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 ${
                   selectedAction === 'approved'
                     ? 'focus:ring-bottle-green/20'
                     : selectedAction === 'rejected'
-                    ? 'focus:ring-tomato-red/20'
-                    : 'focus:ring-amber-600/20'
+                      ? 'focus:ring-tomato-red/20'
+                      : 'focus:ring-amber-600/20'
                 }`}
               />
             </FormField>
@@ -429,13 +430,17 @@ const VerificationToggleModal = ({
               selectedAction === 'approved'
                 ? 'bg-bottle-green hover:bg-bottle-green/90'
                 : selectedAction === 'rejected'
-                ? 'bg-tomato-red hover:bg-tomato-red/90'
-                : selectedAction === 'pending'
-                ? 'bg-amber-600 hover:bg-amber-700'
-                : 'bg-gray-300 hover:bg-gray-400'
+                  ? 'bg-tomato-red hover:bg-tomato-red/90'
+                  : selectedAction === 'pending'
+                    ? 'bg-amber-600 hover:bg-amber-700'
+                    : 'bg-gray-300 hover:bg-gray-400'
             } text-white`}
             onClick={handleSubmit}
-            disabled={isLoading || !selectedAction || (selectedAction === 'rejected' && !reason.trim())}
+            disabled={
+              isLoading ||
+              !selectedAction ||
+              (selectedAction === 'rejected' && !reason.trim())
+            }
           >
             {isLoading ? (
               'Processing...'
@@ -451,10 +456,10 @@ const VerificationToggleModal = ({
                 {selectedAction === 'approved'
                   ? 'Approve Business'
                   : selectedAction === 'rejected'
-                  ? 'Reject Business'
-                  : selectedAction === 'pending'
-                  ? 'Set to Pending'
-                  : 'Select Action'}
+                    ? 'Reject Business'
+                    : selectedAction === 'pending'
+                      ? 'Set to Pending'
+                      : 'Select Action'}
               </>
             )}
           </Button>

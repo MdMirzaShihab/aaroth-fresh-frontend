@@ -10,11 +10,11 @@ import {
   BarChart3,
   Activity,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useGetVerificationStatsQuery } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * VerificationDashboard - Overview of business verification metrics and stats

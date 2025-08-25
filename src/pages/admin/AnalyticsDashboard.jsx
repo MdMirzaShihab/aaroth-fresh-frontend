@@ -14,8 +14,8 @@ import {
 } from 'lucide-react';
 import {
   useGetAdminAnalyticsOverviewQuery,
-  useGetPendingVendorsQuery,
-  useGetPendingRestaurantsQuery,
+  useGetAdminVendorsUnifiedQuery,
+  useGetAdminRestaurantsUnifiedQuery,
   useGetAdminDashboardOverviewQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -46,9 +46,9 @@ const AnalyticsDashboard = () => {
 
   // Business verification analytics
   const { data: pendingVendors, isLoading: isVendorsLoading } =
-    useGetPendingVendorsQuery();
+    useGetAdminVendorsUnifiedQuery({ status: 'pending' });
   const { data: pendingRestaurants, isLoading: isRestaurantsLoading } =
-    useGetPendingRestaurantsQuery();
+    useGetAdminRestaurantsUnifiedQuery({ status: 'pending' });
 
   const isLoading =
     isAnalyticsLoading ||

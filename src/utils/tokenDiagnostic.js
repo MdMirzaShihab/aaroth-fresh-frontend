@@ -5,10 +5,10 @@
  * Run these functions in browser console or add temporary logging
  */
 
+import axios from 'axios';
 import { store } from '../store/index.js';
 import { selectAuth } from '../store/slices/authSlice';
 import api from '../services/api';
-import axios from 'axios';
 
 // JWT Token Decoder (without verification)
 const decodeJWT = (token) => {
@@ -160,7 +160,7 @@ export const checkAPIHeaders = () => {
   return {
     hasToken: !!(token || localStorageToken),
     reduxToken: token,
-    localStorageToken: localStorageToken,
+    localStorageToken,
     tokenPreview:
       token || localStorageToken
         ? (token || localStorageToken).substring(0, 50) + '...'

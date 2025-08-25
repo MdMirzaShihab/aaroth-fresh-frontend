@@ -1,5 +1,11 @@
 import React from 'react';
-import { ShieldCheck, Shield, Clock, AlertTriangle, XCircle } from 'lucide-react';
+import {
+  ShieldCheck,
+  Shield,
+  Clock,
+  AlertTriangle,
+  XCircle,
+} from 'lucide-react';
 
 /**
  * VerificationStatusBadge - Shows verification status with three-state system

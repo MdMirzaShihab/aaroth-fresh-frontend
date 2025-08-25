@@ -41,9 +41,7 @@ const PendingApprovalPage = lazy(
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const ApprovalManagement = lazy(
-  () => import('./pages/admin/ApprovalManagementNew')
-);
+const ApprovalManagement = lazy(() => import('./pages/admin/ApprovalsPage'));
 const VerificationDashboard = lazy(
   () => import('./pages/admin/VerificationDashboard')
 );
@@ -140,6 +138,11 @@ const PageLoader = () => (
 
 const App = () => {
   const { isAuthenticated, token, user } = useSelector(selectAuth);
+
+  // Initialize authentication on app start
+  useEffect(() => {
+    authService.initializeAuth();
+  }, []);
 
   // Validate current user on app start if token exists
   const { isLoading, error } = useGetCurrentUserQuery(undefined, {

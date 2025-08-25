@@ -115,12 +115,35 @@ class AuthService {
   }
 
   /**
-   * Check if vendor is approved
+   * Check if vendor is approved (three-state verification system)
    */
   isVendorApproved() {
     const user = this.getCurrentUser();
     if (!user || !this.isVendor()) return false;
-    return user.isApproved === true;
+    return user.verificationStatus === 'approved';
+  }
+
+  /**
+   * Check verification status (pending, approved, rejected)
+   */
+  getVerificationStatus() {
+    const user = this.getCurrentUser();
+    if (!user) return null;
+    return user.verificationStatus || 'pending';
+  }
+
+  /**
+   * Check if user is pending verification
+   */
+  isPendingVerification() {
+    return this.getVerificationStatus() === 'pending';
+  }
+
+  /**
+   * Check if user is rejected
+   */
+  isRejected() {
+    return this.getVerificationStatus() === 'rejected';
   }
 
   /**
@@ -143,9 +166,16 @@ class AuthService {
       case 'admin':
         return '/admin/dashboard';
       case 'vendor':
-        return user.isApproved
-          ? '/vendor/dashboard'
-          : '/vendor/pending-approval';
+        const verificationStatus = this.getVerificationStatus();
+        switch (verificationStatus) {
+          case 'approved':
+            return '/vendor/dashboard';
+          case 'rejected':
+            return '/vendor/rejected';
+          case 'pending':
+          default:
+            return '/vendor/pending-approval';
+        }
       case 'restaurantOwner':
       case 'restaurantManager':
         return '/restaurant/dashboard';

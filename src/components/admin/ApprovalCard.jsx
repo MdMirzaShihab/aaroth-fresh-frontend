@@ -14,7 +14,14 @@ import {
 } from 'lucide-react';
 import Button from '../ui/Button';
 
-const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
+const ApprovalCard = ({
+  approval,
+  onApprove,
+  onReject,
+  onViewDetails,
+  onSelect,
+  selected,
+}) => {
   // Get status badge styling
   const getStatusBadge = (status) => {
     switch (status) {
@@ -90,7 +97,9 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
     return { level: 'normal', days: daysWaiting };
   };
 
-  const statusBadge = getStatusBadge(approval.status);
+  const statusBadge = getStatusBadge(
+    approval.verificationStatus || approval.status || 'pending'
+  );
   const typeDisplay = getTypeDisplay(approval.type);
   const urgency = getUrgencyLevel(approval.createdAt);
 
@@ -239,44 +248,63 @@ const ApprovalCard = ({ approval, onViewDetails, onSelect, selected }) => {
           Review
         </Button>
 
-        {approval.status === 'pending' && (
-          <>
-            <Button
-              size="sm"
-              className="flex-1 bg-bottle-green hover:bg-bottle-green/90 text-white"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewDetails(approval);
-              }}
-            >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Approve
-            </Button>
-          </>
-        )}
+        {(approval.verificationStatus === 'pending' ||
+          approval.status === 'pending') &&
+          onApprove &&
+          onReject && (
+            <>
+              <Button
+                size="sm"
+                className="flex-1 bg-bottle-green hover:bg-bottle-green/90 text-white"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onApprove({ notes: 'Documents verified and approved' });
+                }}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Approve
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-1 text-tomato-red border-tomato-red hover:bg-tomato-red/10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReject({ reason: 'Documentation incomplete or invalid' });
+                }}
+              >
+                <XCircle className="w-4 h-4 mr-2" />
+                Reject
+              </Button>
+            </>
+          )}
       </div>
 
       {/* Approval/Rejection Info */}
-      {approval.status !== 'pending' && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-2 text-xs text-text-muted">
-            <User className="w-3 h-3" />
-            <span>
-              {approval.status === 'approved' ? 'Approved' : 'Rejected'} by{' '}
-              {approval.processedBy || 'Admin'}
-              {approval.processedAt && (
-                <> on {new Date(approval.processedAt).toLocaleDateString()}</>
-              )}
-            </span>
-          </div>
+      {approval.verificationStatus !== 'pending' &&
+        approval.status !== 'pending' && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+              <User className="w-3 h-3" />
+              <span>
+                {approval.verificationStatus === 'approved' ||
+                approval.status === 'approved'
+                  ? 'Approved'
+                  : 'Rejected'}{' '}
+                by {approval.processedBy || 'Admin'}
+                {approval.processedAt && (
+                  <> on {new Date(approval.processedAt).toLocaleDateString()}</>
+                )}
+              </span>
+            </div>
 
-          {(approval.approvalNotes || approval.rejectionReason) && (
-            <p className="text-xs text-text-muted mt-1 line-clamp-2">
-              "{approval.approvalNotes || approval.rejectionReason}"
-            </p>
-          )}
-        </div>
-      )}
+            {(approval.approvalNotes || approval.rejectionReason) && (
+              <p className="text-xs text-text-muted mt-1 line-clamp-2">
+                "{approval.approvalNotes || approval.rejectionReason}"
+              </p>
+            )}
+          </div>
+        )}
 
       {/* Hover Effect Indicator */}
       <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-bottle-green/20 transition-all duration-200 pointer-events-none" />

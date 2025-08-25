@@ -18,8 +18,8 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
 import {
-  useGetPendingVendorsQuery,
-  useGetPendingRestaurantsQuery,
+  useGetAdminVendorsUnifiedQuery,
+  useGetAdminRestaurantsUnifiedQuery,
 } from '../../store/slices/apiSlice';
 
 const AdminLayout = () => {
@@ -30,10 +30,19 @@ const AdminLayout = () => {
   const { user } = useSelector((state) => state.auth);
 
   // Get pending business verifications count for badge
-  const { data: pendingVendors } = useGetPendingVendorsQuery();
-  const { data: pendingRestaurants } = useGetPendingRestaurantsQuery();
-  const pendingVendorsCount = pendingVendors?.data?.length || 0;
-  const pendingRestaurantsCount = pendingRestaurants?.data?.length || 0;
+  const { data: pendingVendors } = useGetAdminVendorsUnifiedQuery({
+    status: 'pending',
+    limit: 1,
+  });
+  const { data: pendingRestaurants } = useGetAdminRestaurantsUnifiedQuery({
+    status: 'pending',
+    limit: 1,
+  });
+
+  // Use statistics from the new API response for more accurate counts
+  const pendingVendorsCount = pendingVendors?.stats?.pendingVendors || 0;
+  const pendingRestaurantsCount =
+    pendingRestaurants?.stats?.pendingRestaurants || 0;
   const pendingVerificationsCount =
     pendingVendorsCount + pendingRestaurantsCount;
 
