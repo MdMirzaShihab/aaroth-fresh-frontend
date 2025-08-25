@@ -46,7 +46,7 @@ const BulkVerificationModal = ({
     await onBulkVerification({
       userIds,
       entityType: entityType === 'all' ? undefined : entityType,
-      isVerified: isVerifying,
+      status: isVerifying ? 'approved' : 'rejected',
       reason: reason.trim(),
     });
 

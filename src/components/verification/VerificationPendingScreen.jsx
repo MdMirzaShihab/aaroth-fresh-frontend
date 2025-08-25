@@ -9,7 +9,9 @@ import Button from '../ui/Button';
  */
 const VerificationPendingScreen = () => {
   const {
-    isVerified,
+    verificationStatus,
+    isApproved,
+    isPending,
     businessName,
     businessType,
     nextSteps,
@@ -30,8 +32,8 @@ const VerificationPendingScreen = () => {
     );
   }
 
-  if (isVerified) {
-    return null; // User is verified, don't show this screen
+  if (isApproved || verificationStatus !== 'pending') {
+    return null; // User is approved or not pending, don't show this screen
   }
 
   const progress = getVerificationProgress();

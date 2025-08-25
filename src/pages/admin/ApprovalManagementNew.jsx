@@ -11,11 +11,15 @@ import {
 } from 'lucide-react';
 import {
   useGetPendingVendorsQuery,
+  useGetApprovedVendorsQuery,
+  useGetRejectedVendorsQuery,
   useGetPendingRestaurantsQuery,
+  useGetApprovedRestaurantsQuery,
+  useGetRejectedRestaurantsQuery,
   useGetAllVendorsAdminQuery,
   useGetAllRestaurantsAdminQuery,
-  useToggleVendorVerificationNewMutation,
-  useToggleRestaurantVerificationNewMutation,
+  useUpdateVendorVerificationStatusMutation,
+  useUpdateRestaurantVerificationStatusMutation,
 } from '../../store/slices/apiSlice';
 import EntityCard from '../../components/admin/EntityCard';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -61,12 +65,14 @@ const ApprovalManagementNew = () => {
       page: currentPage,
       limit: itemsPerPage,
       search: debouncedSearchTerm || undefined,
-      isVerified:
-        filterStatus === 'verified'
-          ? true
-          : filterStatus === 'unverified'
-            ? false
-            : undefined,
+      status:
+        filterStatus === 'approved'
+          ? 'approved'
+          : filterStatus === 'rejected'
+          ? 'rejected'
+          : filterStatus === 'pending'
+          ? 'pending'
+          : undefined,
     }),
     [currentPage, itemsPerPage, debouncedSearchTerm, filterStatus]
   );
@@ -149,9 +155,9 @@ const ApprovalManagementNew = () => {
 
       const matchesFilter =
         filterStatus === 'all' ||
-        (filterStatus === 'verified' && entity.isVerified) ||
-        (filterStatus === 'unverified' && !entity.isVerified) ||
-        (filterStatus === 'pending' && !entity.isVerified);
+        (filterStatus === 'approved' && entity.verificationStatus === 'approved') ||
+        (filterStatus === 'rejected' && entity.verificationStatus === 'rejected') ||
+        (filterStatus === 'pending' && entity.verificationStatus === 'pending');
 
       return matchesSearch && matchesFilter;
     });

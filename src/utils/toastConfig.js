@@ -136,9 +136,9 @@ export const showVerificationErrorToast = (entityType, action, error) => {
   });
 };
 
-// Business status change notifications
-export const showBusinessStatusUpdateToast = (businessName, isVerified) => {
-  if (isVerified) {
+// Business status change notifications (updated for three-state system)
+export const showBusinessStatusUpdateToast = (businessName, status) => {
+  if (status === 'approved') {
     return showSuccessToast(
       `🎉 Congratulations! ${businessName} is now verified and can access all platform features.`,
       {

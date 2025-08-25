@@ -107,10 +107,13 @@ const ApprovalModal = ({
       )
     : 0;
 
-  // Enhanced verification status
+  // Enhanced verification status (updated for three-state system)
   const businessEntity =
     approval.type === 'vendor' ? approval.vendorId : approval.restaurantId;
-  const isVerified = businessEntity?.isVerified || false;
+  const verificationStatus = businessEntity?.verificationStatus || 'pending';
+  const isApproved = verificationStatus === 'approved';
+  const isRejected = verificationStatus === 'rejected';
+  const isPending = verificationStatus === 'pending';
   const verificationDate = businessEntity?.verificationDate;
   const statusUpdatedAt = businessEntity?.statusUpdatedAt;
   const adminNotes = businessEntity?.adminNotes;
@@ -155,17 +158,19 @@ const ApprovalModal = ({
                   {/* Verification Status Badge */}
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${
-                      isVerified
+                      isApproved
                         ? 'bg-mint-fresh/20 text-bottle-green'
+                        : isRejected
+                        ? 'bg-tomato-red/20 text-tomato-red'
                         : statusUpdatedAt
                           ? 'bg-gray-100 text-gray-600'
                           : 'bg-earthy-yellow/20 text-earthy-brown'
                     }`}
                   >
-                    {isVerified ? (
+                    {isApproved ? (
                       <>
                         <ShieldCheck className="w-4 h-4" />
-                        Verified Business
+                        Approved Business
                       </>
                     ) : statusUpdatedAt ? (
                       <>
@@ -405,10 +410,10 @@ const ApprovalModal = ({
 
                 <div className="space-y-4">
                   {/* Current Verification Status */}
-                  {(isVerified || statusUpdatedAt) && (
+                  {(isApproved || isRejected || statusUpdatedAt) && (
                     <div className="border-l-4 border-l-bottle-green pl-4 py-2">
                       <div className="flex items-center gap-2 mb-2">
-                        {isVerified ? (
+                        {isApproved ? (
                           <>
                             <ShieldCheck className="w-5 h-5 text-bottle-green" />
                             <span className="font-medium text-bottle-green">
@@ -485,7 +490,7 @@ const ApprovalModal = ({
             )}
 
             {/* Action Section - Only for truly pending applications */}
-            {!statusUpdatedAt && !isVerified && !adminNotes && (
+            {!statusUpdatedAt && !isApproved && !isRejected && !adminNotes && (
               <Card className="p-6">
                 <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
                   Review Actions

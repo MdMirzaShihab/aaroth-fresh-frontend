@@ -15,12 +15,24 @@ export const useBusinessVerification = () => {
     refetch,
   } = useGetUserBusinessStatusQuery();
 
+  const verificationStatus = status?.businessVerification?.verificationStatus || 'pending';
+  const isApproved = verificationStatus === 'approved';
+  const isRejected = verificationStatus === 'rejected';
+  const isPending = verificationStatus === 'pending';
+
   return {
-    // Core verification status
-    isVerified: status?.businessVerification?.isVerified || false,
+    // Core verification status (three-state system)
+    verificationStatus,
+    isApproved,
+    isRejected, 
+    isPending,
+    adminNotes: status?.businessVerification?.adminNotes,
     businessType: status?.businessVerification?.businessType,
     businessName: status?.businessVerification?.businessName,
     verificationDate: status?.businessVerification?.verificationDate,
+    
+    // Legacy support (deprecated - will be removed)
+    isVerified: isApproved,
 
     // User information
     user: status?.user,
@@ -54,10 +66,10 @@ export const useBusinessVerification = () => {
     canAccessDashboard: status?.capabilities?.canAccessDashboard || false,
     canUpdateProfile: status?.capabilities?.canUpdateProfile || true,
 
-    // UI state helpers
-    showVerificationPending:
-      !status?.businessVerification?.isVerified &&
-      status?.restrictions?.hasRestrictions,
+    // UI state helpers (updated for three-state)
+    showVerificationPending: isPending && status?.restrictions?.hasRestrictions,
+    showVerificationRejected: isRejected,
+    showVerificationApproved: isApproved,
     isVendor: status?.user?.role === 'vendor',
     isRestaurantOwner: status?.user?.role === 'restaurantOwner',
     isRestaurantManager: status?.user?.role === 'restaurantManager',
@@ -71,25 +83,35 @@ export const useBusinessVerification = () => {
       return null;
     },
 
-    // Status display helpers
+    // Status display helpers (updated for three-state)
     getStatusDisplay: () => {
       if (!status) return { text: 'Loading...', color: 'gray' };
 
-      if (status.businessVerification?.isVerified) {
+      if (verificationStatus === 'approved') {
         return {
-          text: 'Verified Business',
+          text: 'Approved Business',
           color: 'green',
           icon: 'shield-check',
-          description: `Your ${status.businessVerification.businessType} is verified and active.`,
+          description: `Your ${status.businessVerification.businessType} is verified and approved.`,
         };
       }
 
-      if (status.restrictions?.hasRestrictions) {
+      if (verificationStatus === 'rejected') {
+        return {
+          text: 'Verification Rejected',
+          color: 'red',
+          icon: 'x-circle',
+          description: status.businessVerification?.adminNotes || 'Your verification has been rejected.',
+          adminNotes: status.businessVerification?.adminNotes,
+        };
+      }
+
+      if (verificationStatus === 'pending') {
         return {
           text: 'Verification Pending',
           color: 'amber',
           icon: 'clock',
-          description: status.restrictions.reason,
+          description: 'Your business verification is under review.',
         };
       }
 
@@ -106,23 +128,48 @@ export const useBusinessVerification = () => {
       return status?.capabilities?.[capability] || false;
     },
 
-    // Business verification helpers
+    // Business verification helpers (updated for three-state)
     needsVerification: () => {
       const userRole = status?.user?.role;
       return (
         (userRole === 'vendor' ||
           userRole === 'restaurantOwner' ||
           userRole === 'restaurantManager') &&
-        !status?.businessVerification?.isVerified
+        verificationStatus !== 'approved'
       );
     },
 
-    // Get verification progress
+    // Get verification progress (updated for three-state)
     getVerificationProgress: () => {
-      if (status?.businessVerification?.isVerified) return 100;
-      if (status?.businessInfo?.vendor || status?.businessInfo?.restaurant)
-        return 50;
+      if (verificationStatus === 'approved') return 100;
+      if (verificationStatus === 'rejected') return 25; // Needs resubmission
+      if (verificationStatus === 'pending') {
+        if (status?.businessInfo?.vendor || status?.businessInfo?.restaurant)
+          return 75; // Under review
+        return 50; // Basic info submitted
+      }
       return 0;
+    },
+
+    // New helper methods for three-state system
+    canResubmit: () => verificationStatus === 'rejected',
+    
+    getRejectionGuidance: () => {
+      if (verificationStatus !== 'rejected') return null;
+      return {
+        adminFeedback: status?.businessVerification?.adminNotes,
+        nextSteps: status?.nextSteps || [],
+        canResubmit: true,
+      };
+    },
+
+    getStatusColor: () => {
+      switch (verificationStatus) {
+        case 'approved': return 'green';
+        case 'rejected': return 'red';
+        case 'pending': return 'amber';
+        default: return 'gray';
+      }
     },
   };
 };

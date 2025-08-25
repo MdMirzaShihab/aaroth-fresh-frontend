@@ -36,9 +36,10 @@ const StatusResetModal = ({ approval, onClose, onResetStatus, isLoading }) => {
       ? businessEntity?.businessName || approval.businessName
       : businessEntity?.name || approval.name;
 
-  // Calculate current status
-  const isCurrentlyVerified = businessEntity?.isVerified || false;
-  const currentStatus = isCurrentlyVerified ? 'verified' : 'unverified';
+  // Calculate current status (updated for three-state system)
+  const verificationStatus = businessEntity?.verificationStatus || 'pending';
+  const isCurrentlyVerified = verificationStatus === 'approved';
+  const currentStatus = verificationStatus;
 
   const getTypeDisplay = (type) => {
     switch (type) {

@@ -47,15 +47,24 @@ const VendorDashboardEnhanced = () => {
     dateRange: { type: 'month' },
   });
 
-  // Business verification hook
+  // Business verification hook (updated for three-state system)
   const {
-    isVerified,
+    verificationStatus,
+    isApproved,
+    isRejected,
+    isPending,
     businessName,
     businessType,
     canCreateListings,
     canAccessDashboard,
     showVerificationPending,
+    showVerificationRejected,
+    showVerificationApproved,
     getStatusDisplay,
+    adminNotes,
+    getRejectionGuidance,
+    // Legacy support
+    isVerified: isApproved,
   } = useBusinessVerification();
 
   // Get status display information

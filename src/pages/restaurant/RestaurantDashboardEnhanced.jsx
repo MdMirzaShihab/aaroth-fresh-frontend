@@ -50,15 +50,24 @@ const RestaurantDashboardEnhanced = () => {
     dateRange: { type: 'month' },
   });
 
-  // Business verification hook
+  // Business verification hook (updated for three-state system)
   const {
-    isVerified,
+    verificationStatus,
+    isApproved,
+    isRejected,
+    isPending,
     businessName,
     businessType,
     canPlaceOrders,
     canAccessDashboard,
     showVerificationPending,
+    showVerificationRejected,
+    showVerificationApproved,
     getStatusDisplay,
+    adminNotes,
+    getRejectionGuidance,
+    // Legacy support
+    isVerified: isApproved,
   } = useBusinessVerification();
 
   // Prevent API calls if user is not authenticated or doesn't have required role

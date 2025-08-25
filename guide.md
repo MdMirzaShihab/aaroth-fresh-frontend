@@ -218,19 +218,7 @@ Use Redux Toolkit + RTK Query. Follow the orders API from api-integration-guide.
 
 **Prompt to use with Claude Code:**
 ```
-Build the product browsing and shopping experience for restaurants:
-
-1. Create ProductBrowse page using RTK Query for listings, Redux for filters and pagination
-2. Implement category navigation and product search with debouncing using Redux state
-3. Build ProductDetail page with RTK Query for data fetching and Redux cart integration
-4. Create shopping cart functionality using Redux cartSlice with persistent state
-5. Implement bulk ordering capabilities using Redux actions and optimistic updates
-6. Add product comparison and favorites using Redux state management
-7. Build responsive design optimized for mobile browsing with touch gestures
-8. TESTING: Test product browsing, search functionality, cart operations, bulk ordering, responsive design
-9. MOBILE-FIRST: Test on mobile devices, validate touch interactions, ensure smooth scrolling and performance
-
-Use Redux Toolkit + RTK Query. Use the listings API endpoints and focus on intuitive shopping experience. Use TodoWrite for task tracking.
+git
 ```
 
 **Expected Outcome:** Complete product browsing and shopping cart system.

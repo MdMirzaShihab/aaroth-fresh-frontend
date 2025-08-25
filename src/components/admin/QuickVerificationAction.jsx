@@ -14,7 +14,7 @@ import { Modal } from '../ui/Modal';
  *
  * @param {string} entityId - ID of the entity
  * @param {string} entityType - Type of entity ('vendor' or 'restaurant')
- * @param {boolean} isVerified - Current verification status
+ * @param {string} verificationStatus - Current verification status ('pending', 'approved', 'rejected')
  * @param {Function} onToggleVerification - Callback for verification toggle
  * @param {boolean} isLoading - Loading state
  * @param {boolean} disabled - Whether actions are disabled
@@ -23,7 +23,7 @@ import { Modal } from '../ui/Modal';
 const QuickVerificationAction = ({
   entityId,
   entityType,
-  isVerified,
+  verificationStatus = 'pending',
   onToggleVerification,
   isLoading = false,
   disabled = false,
@@ -38,7 +38,7 @@ const QuickVerificationAction = ({
       // Direct verification without reason required
       onToggleVerification({
         id: entityId,
-        isVerified: true,
+        status: 'approved',
         reason: `${entityType} business verified by admin`,
       });
     } else if (action === 'revoke') {
@@ -53,7 +53,7 @@ const QuickVerificationAction = ({
 
     onToggleVerification({
       id: entityId,
-      isVerified: false,
+      status: 'rejected',
       reason: reason.trim(),
     });
 
@@ -86,7 +86,7 @@ const QuickVerificationAction = ({
   return (
     <>
       <div className="flex items-center gap-2">
-        {!isVerified ? (
+        {verificationStatus !== 'approved' ? (
           <Button
             onClick={() => handleAction('verify')}
             disabled={disabled}

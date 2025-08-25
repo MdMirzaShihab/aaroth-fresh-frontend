@@ -638,20 +638,20 @@ export const apiSlice = createApi({
       invalidatesTags: ['Approvals', 'User', 'Restaurant'],
     }),
 
-    // ================================
-    // ENHANCED VERIFICATION MANAGEMENT
-    // ================================
+    // ====================================================
+    // THREE-STATE VERIFICATION MANAGEMENT SYSTEM
+    // ====================================================
 
-    // Direct vendor verification toggle (Enhanced)
-    toggleVendorVerification: builder.mutation({
-      query: ({ id, isVerified, reason }) => ({
+    // Update vendor verification status (pending, approved, rejected)
+    updateVendorVerificationStatus: builder.mutation({
+      query: ({ id, status, reason }) => ({
         url: `/admin/vendors/${id}/verification`,
         method: 'PUT',
-        body: { isVerified, reason },
+        body: { status, reason },
       }),
-      invalidatesTags: ['Approvals', 'Vendor', 'User'],
+      invalidatesTags: ['Approvals', 'Vendor', 'User', 'PendingVendors', 'ApprovedVendors', 'RejectedVendors'],
       onQueryStarted: async (
-        { id, isVerified },
+        { id, status, reason },
         { dispatch, queryFulfilled }
       ) => {
         // Optimistic update for approvals list
@@ -662,8 +662,9 @@ export const apiSlice = createApi({
             (draft) => {
               const approval = draft?.data?.find((a) => a._id === id);
               if (approval && approval.vendorId) {
-                approval.vendorId.isVerified = isVerified;
-                approval.vendorId.verificationDate = isVerified
+                approval.vendorId.verificationStatus = status;
+                approval.vendorId.adminNotes = status === 'rejected' ? reason : null;
+                approval.vendorId.verificationDate = status === 'approved'
                   ? new Date().toISOString()
                   : null;
               }
@@ -679,16 +680,16 @@ export const apiSlice = createApi({
       },
     }),
 
-    // Direct restaurant verification toggle (Enhanced)
-    toggleRestaurantVerification: builder.mutation({
-      query: ({ id, isVerified, reason }) => ({
+    // Update restaurant verification status (pending, approved, rejected)
+    updateRestaurantVerificationStatus: builder.mutation({
+      query: ({ id, status, reason }) => ({
         url: `/admin/restaurants/${id}/verification`,
         method: 'PUT',
-        body: { isVerified, reason },
+        body: { status, reason },
       }),
-      invalidatesTags: ['Approvals', 'Restaurant', 'User'],
+      invalidatesTags: ['Approvals', 'Restaurant', 'User', 'PendingRestaurants', 'ApprovedRestaurants', 'RejectedRestaurants'],
       onQueryStarted: async (
-        { id, isVerified },
+        { id, status, reason },
         { dispatch, queryFulfilled }
       ) => {
         // Optimistic update for approvals list
@@ -699,8 +700,9 @@ export const apiSlice = createApi({
             (draft) => {
               const approval = draft?.data?.find((a) => a._id === id);
               if (approval && approval.restaurantId) {
-                approval.restaurantId.isVerified = isVerified;
-                approval.restaurantId.verificationDate = isVerified
+                approval.restaurantId.verificationStatus = status;
+                approval.restaurantId.adminNotes = status === 'rejected' ? reason : null;
+                approval.restaurantId.verificationDate = status === 'approved'
                   ? new Date().toISOString()
                   : null;
               }
@@ -716,78 +718,64 @@ export const apiSlice = createApi({
       },
     }),
 
-    // Reset vendor approval status to pending
-    resetVendorApproval: builder.mutation({
-      query: ({ id, reason }) => ({
-        url: `/admin/approvals/vendor/${id}/reset`,
-        method: 'PUT',
-        body: { reason },
+    // Status-specific vendor endpoints
+    getPendingVendors: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors/pending',
+        params,
       }),
-      invalidatesTags: ['Approvals', 'Vendor', 'User'],
-      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
-        // Optimistic update
-        const patchResult = dispatch(
-          apiSlice.util.updateQueryData(
-            'getAllApprovals',
-            undefined,
-            (draft) => {
-              const approval = draft?.data?.find((a) => a._id === id);
-              if (approval && approval.vendorId) {
-                approval.vendorId.isVerified = false;
-                approval.vendorId.verificationDate = null;
-              }
-            }
-          )
-        );
-
-        try {
-          await queryFulfilled;
-        } catch {
-          patchResult.undo();
-        }
-      },
+      providesTags: ['PendingVendors'],
     }),
 
-    // Reset restaurant approval status to pending
-    resetRestaurantApproval: builder.mutation({
-      query: ({ id, reason }) => ({
-        url: `/admin/approvals/restaurant/${id}/reset`,
-        method: 'PUT',
-        body: { reason },
+    getApprovedVendors: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors/approved', 
+        params,
       }),
-      invalidatesTags: ['Approvals', 'Restaurant', 'User'],
-      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
-        // Optimistic update
-        const patchResult = dispatch(
-          apiSlice.util.updateQueryData(
-            'getAllApprovals',
-            undefined,
-            (draft) => {
-              const approval = draft?.data?.find((a) => a._id === id);
-              if (approval && approval.restaurantId) {
-                approval.restaurantId.isVerified = false;
-                approval.restaurantId.verificationDate = null;
-              }
-            }
-          )
-        );
-
-        try {
-          await queryFulfilled;
-        } catch {
-          patchResult.undo();
-        }
-      },
+      providesTags: ['ApprovedVendors'],
     }),
 
-    // Bulk verification operations
-    bulkToggleVerification: builder.mutation({
-      query: ({ userIds, entityType, isVerified, reason }) => ({
+    getRejectedVendors: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors/rejected',
+        params,
+      }),
+      providesTags: ['RejectedVendors'],
+    }),
+
+    // Status-specific restaurant endpoints
+    getPendingRestaurants: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/restaurants/pending',
+        params,
+      }),
+      providesTags: ['PendingRestaurants'],
+    }),
+
+    getApprovedRestaurants: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/restaurants/approved',
+        params,
+      }),
+      providesTags: ['ApprovedRestaurants'],
+    }),
+
+    getRejectedRestaurants: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/restaurants/rejected',
+        params,
+      }),
+      providesTags: ['RejectedRestaurants'],
+    }),
+
+    // Bulk verification operations (updated for three-state)
+    bulkUpdateVerificationStatus: builder.mutation({
+      query: ({ userIds, entityType, status, reason }) => ({
         url: `/admin/bulk/verification`,
         method: 'POST',
-        body: { userIds, entityType, isVerified, reason },
+        body: { userIds, entityType, status, reason },
       }),
-      invalidatesTags: ['Approvals', 'Vendor', 'Restaurant', 'User'],
+      invalidatesTags: ['Approvals', 'Vendor', 'Restaurant', 'User', 'PendingVendors', 'ApprovedVendors', 'RejectedVendors', 'PendingRestaurants', 'ApprovedRestaurants', 'RejectedRestaurants'],
     }),
 
     // Enhanced Admin Dashboard
@@ -2277,35 +2265,7 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Toggle vendor verification (NEW - atomic transaction)
-    toggleVendorVerificationNew: builder.mutation({
-      query: ({ id, isVerified, reason }) => ({
-        url: `/admin/vendors/${id}/verification`,
-        method: 'PUT',
-        body: { isVerified, reason },
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: 'Vendor', id },
-        { type: 'Vendor', id: 'PENDING_LIST' },
-        { type: 'Vendor', id: 'ADMIN_ALL_LIST' },
-        'Status',
-      ],
-    }),
 
-    // Get pending restaurants for admin approval
-    getPendingRestaurants: builder.query({
-      query: (params = {}) => ({
-        url: '/admin/restaurants/pending',
-        params,
-      }),
-      providesTags: (result) => [
-        { type: 'Restaurant', id: 'PENDING_LIST' },
-        ...(result?.data || []).map(({ _id }) => ({
-          type: 'Restaurant',
-          id: _id,
-        })),
-      ],
-    }),
 
     // Get all restaurants for admin management
     getAllRestaurantsAdmin: builder.query({
@@ -2322,20 +2282,6 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Toggle restaurant verification (NEW - atomic transaction)
-    toggleRestaurantVerificationNew: builder.mutation({
-      query: ({ id, isVerified, reason }) => ({
-        url: `/admin/restaurants/${id}/verification`,
-        method: 'PUT',
-        body: { isVerified, reason },
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: 'Restaurant', id },
-        { type: 'Restaurant', id: 'PENDING_LIST' },
-        { type: 'Restaurant', id: 'ADMIN_ALL_LIST' },
-        'Status',
-      ],
-    }),
 
     // Get verification dashboard overview
     getVerificationStats: builder.query({
@@ -2520,15 +2466,16 @@ export const {
   useSoftDeleteListingMutation,
   useBulkUpdateAdminListingsMutation,
 
-  // Legacy endpoints - deprecated in favor of business verification system
-  // Note: These will be removed in a future update
-
-  // Enhanced Verification Management
-  useToggleVendorVerificationMutation,
-  useToggleRestaurantVerificationMutation,
-  useResetVendorApprovalMutation,
-  useResetRestaurantApprovalMutation,
-  useBulkToggleVerificationMutation,
+  // Three-State Verification Management (NEW)
+  useUpdateVendorVerificationStatusMutation,
+  useUpdateRestaurantVerificationStatusMutation,
+  useGetPendingVendorsQuery,
+  useGetApprovedVendorsQuery,
+  useGetRejectedVendorsQuery,
+  useGetPendingRestaurantsQuery,
+  useGetApprovedRestaurantsQuery,
+  useGetRejectedRestaurantsQuery,
+  useBulkUpdateVerificationStatusMutation,
 
   // Enhanced Admin Dashboard
   useGetAdminDashboardOverviewQuery,
@@ -2579,13 +2526,9 @@ export const {
   // System Health
   useGetSystemHealthQuery,
 
-  // Business Verification System (NEW)
+  // Business Verification System (Updated)
   useGetUserBusinessStatusQuery,
-  useGetPendingVendorsQuery,
   useGetAllVendorsAdminQuery,
-  useToggleVendorVerificationNewMutation,
-  useGetPendingRestaurantsQuery,
   useGetAllRestaurantsAdminQuery,
-  useToggleRestaurantVerificationNewMutation,
   useGetVerificationStatsQuery,
 } = apiSlice;

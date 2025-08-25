@@ -89,7 +89,8 @@ const EntityCard = ({
         </div>
 
         <VerificationStatusBadge
-          isVerified={entity.isVerified}
+          verificationStatus={entity.verificationStatus || 'pending'}
+          adminNotes={entity.adminNotes}
           verificationDate={entity.verificationDate}
           size="small"
         />
@@ -176,7 +177,7 @@ const EntityCard = ({
           <QuickVerificationAction
             entityId={entity._id}
             entityType={type}
-            isVerified={entity.isVerified}
+            verificationStatus={entity.verificationStatus || 'pending'}
             onToggleVerification={onToggleVerification}
             isLoading={isVerificationLoading}
             size="sm"
