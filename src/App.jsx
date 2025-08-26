@@ -66,6 +66,7 @@ const CreateRestaurantOwner = lazy(
 const CreateRestaurantManager = lazy(
   () => import('./pages/admin/CreateRestaurantManager')
 );
+const CreateVendor = lazy(() => import('./pages/admin/CreateVendor'));
 const AdminProductManagement = lazy(
   () => import('./pages/admin/AdminProductManagement')
 );
@@ -426,6 +427,14 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <CreateRestaurantManager />
+                </Suspense>
+              }
+            />
+            <Route
+              path="create-vendor"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CreateVendor />
                 </Suspense>
               }
             />

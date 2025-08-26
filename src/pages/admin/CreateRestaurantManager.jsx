@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import {
   User,
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import {
   useCreateAdminRestaurantManagerMutation,
-  useGetRestaurantsListQuery,
+  useGetAdminRestaurantsUnifiedQuery,
 } from '../../store/slices/apiSlice';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -24,15 +24,25 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const CreateRestaurantManager = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [createManager, { isLoading, error }] =
     useCreateAdminRestaurantManagerMutation();
 
-  // Fetch restaurants list for selection dropdown
+  // Fetch restaurants list for selection dropdown (only approved restaurants)
   const { data: restaurantsData, isLoading: restaurantsLoading } =
-    useGetRestaurantsListQuery({ limit: 100 });
+    useGetAdminRestaurantsUnifiedQuery({ 
+      status: 'approved', 
+      limit: 100,
+      sortBy: 'name',
+      sortOrder: 'asc'
+    });
 
   const restaurants = restaurantsData?.data || [];
+
+  // Get pre-selected restaurant from navigation state
+  const preSelectedRestaurantId = location.state?.restaurantId;
+  const preSelectedRestaurantName = location.state?.restaurantName;
 
   const {
     register,
@@ -41,6 +51,7 @@ const CreateRestaurantManager = () => {
     reset,
     watch,
     setError,
+    setValue,
   } = useForm({
     mode: 'onChange',
     defaultValues: {
@@ -48,9 +59,19 @@ const CreateRestaurantManager = () => {
       email: '',
       phone: '',
       password: '',
-      restaurantId: '',
+      restaurantId: preSelectedRestaurantId || '',
     },
   });
+
+  // Set restaurant selection when restaurants load and pre-selection exists
+  useEffect(() => {
+    if (preSelectedRestaurantId && restaurants.length > 0) {
+      const restaurantExists = restaurants.find(r => (r.id || r._id) === preSelectedRestaurantId);
+      if (restaurantExists) {
+        setValue('restaurantId', preSelectedRestaurantId);
+      }
+    }
+  }, [preSelectedRestaurantId, restaurants, setValue]);
 
   // Watch password for strength indication
   const password = watch('password');
@@ -58,7 +79,7 @@ const CreateRestaurantManager = () => {
 
   // Find selected restaurant details
   const selectedRestaurant = restaurants.find(
-    (r) => r.id === selectedRestaurantId
+    (r) => (r.id || r._id) === selectedRestaurantId
   );
 
   // Password strength validation
@@ -136,8 +157,8 @@ const CreateRestaurantManager = () => {
       // Success - show success state and reset form
       reset();
 
-      // Navigate back to user management with success message
-      navigate('/admin/users', {
+      // Navigate back to restaurant management with success message
+      navigate('/admin/restaurant-management', {
         state: {
           success: `Restaurant manager "${data.name}" created successfully for ${selectedRestaurant?.name}!`,
           newUserId: result.data?.id,
@@ -160,7 +181,7 @@ const CreateRestaurantManager = () => {
   };
 
   const handleCancel = () => {
-    navigate('/admin/users');
+    navigate('/admin/restaurant-management');
   };
 
   return (
@@ -181,6 +202,11 @@ const CreateRestaurantManager = () => {
             </h1>
             <p className="text-text-muted">
               Add a new restaurant manager account for an existing restaurant
+              {preSelectedRestaurantName && (
+                <span className="block text-bottle-green mt-1 font-medium">
+                  Pre-selected: {preSelectedRestaurantName}
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -416,9 +442,11 @@ const CreateRestaurantManager = () => {
                   >
                     <option value="">Select a restaurant...</option>
                     {restaurants.map((restaurant) => (
-                      <option key={restaurant.id} value={restaurant.id}>
+                      <option key={restaurant.id || restaurant._id} value={restaurant.id || restaurant._id}>
                         {restaurant.name} -{' '}
-                        {restaurant.address?.city || 'Location not specified'}
+                        {typeof restaurant.address === 'string' 
+                          ? restaurant.address.split(',').pop()?.trim() || 'Location not specified'
+                          : restaurant.address?.city || 'Location not specified'}
                       </option>
                     ))}
                   </select>
@@ -445,18 +473,14 @@ const CreateRestaurantManager = () => {
                     </h3>
                     {selectedRestaurant.address && (
                       <p className="text-sm text-text-muted">
-                        {selectedRestaurant.address.street &&
-                          `${selectedRestaurant.address.street}, `}
-                        {selectedRestaurant.address.area &&
-                          `${selectedRestaurant.address.area}, `}
-                        {selectedRestaurant.address.city}
-                        {selectedRestaurant.address.postalCode &&
-                          ` ${selectedRestaurant.address.postalCode}`}
+                        {typeof selectedRestaurant.address === 'string' 
+                          ? selectedRestaurant.address 
+                          : `${selectedRestaurant.address.street || ''}, ${selectedRestaurant.address.area || ''}, ${selectedRestaurant.address.city || ''}`}
                       </p>
                     )}
-                    {selectedRestaurant.ownerName && (
+                    {(selectedRestaurant.ownerName || selectedRestaurant.createdBy?.name) && (
                       <p className="text-sm text-text-muted">
-                        Owner: {selectedRestaurant.ownerName}
+                        Owner: {selectedRestaurant.ownerName || selectedRestaurant.createdBy?.name}
                       </p>
                     )}
                   </div>

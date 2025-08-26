@@ -1046,24 +1046,26 @@ export const apiSlice = createApi({
       providesTags: ['Vendor'],
     }),
 
-    getAllRestaurants: builder.query({
-      query: (filters = {}) => {
-        const params = {};
-        if (filters.search && filters.search.trim()) {
-          params.search = filters.search.trim();
-        }
-        if (filters.status && filters.status !== 'all') {
-          params.status = filters.status;
-        }
-        if (filters.limit) {
-          params.limit = filters.limit;
-        }
-        return {
-          url: '/admin/restaurants',
-          params: Object.keys(params).length > 0 ? params : undefined,
-        };
-      },
-      providesTags: ['Restaurant'],
+    // New Unified Restaurant Management Endpoints
+    getAdminRestaurantsUnified: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/restaurants',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          status: params.status, // pending, approved, rejected
+          search: params.search,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+        },
+      }),
+      providesTags: ['Restaurant', 'Approvals'],
+    }),
+
+    // Get single restaurant with full details
+    getRestaurantDetails: builder.query({
+      query: (id) => `/admin/restaurants/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Restaurant', id }],
     }),
 
     updateVendorStatus: builder.mutation({
@@ -1075,13 +1077,32 @@ export const apiSlice = createApi({
       invalidatesTags: ['Vendor'],
     }),
 
-    updateRestaurantStatus: builder.mutation({
-      query: ({ id, status }) => ({
+    // Update restaurant details
+    updateRestaurant: builder.mutation({
+      query: ({ id, ...data }) => ({
         url: `/admin/restaurants/${id}`,
         method: 'PUT',
-        body: { status },
+        body: data,
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: (result, error, { id }) => [
+        'Restaurant',
+        'Approvals',
+        { type: 'Restaurant', id },
+      ],
+    }),
+
+    // Safe deactivate restaurant with dependency check
+    deactivateRestaurant: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/restaurants/${id}/deactivate`,
+        method: 'PUT',
+        body: { reason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        'Restaurant',
+        'Approvals',
+        { type: 'Restaurant', id },
+      ],
     }),
 
     deleteVendor: builder.mutation({
@@ -1092,12 +1113,111 @@ export const apiSlice = createApi({
       invalidatesTags: ['Vendor'],
     }),
 
-    deleteRestaurant: builder.mutation({
-      query: (id) => ({
-        url: `/admin/restaurants/${id}`,
+    // Safe delete restaurant with dependency check
+    safeDeleteRestaurant: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/restaurants/${id}/safe-delete`,
         method: 'DELETE',
+        body: { reason },
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: ['Restaurant', 'Approvals'],
+    }),
+
+    // ================================
+    // UNIFIED VENDOR MANAGEMENT ENDPOINTS
+    // ================================
+
+    // Get all vendors with unified filtering, pagination, and search
+    getAdminVendorsUnified: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          status: params.status, // pending, approved, rejected
+          search: params.search,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+        },
+      }),
+      providesTags: (result) => [
+        'Vendor',
+        'Approvals',
+        { type: 'Vendor', id: 'UNIFIED_LIST' },
+        ...(result?.data || []).map(({ _id }) => ({ type: 'Vendor', id: _id })),
+      ],
+    }),
+
+    // Get individual vendor details with statistics
+    getVendorDetails: builder.query({
+      query: (id) => ({
+        url: `/admin/vendors/${id}`,
+      }),
+      providesTags: (result, error, id) => [{ type: 'Vendor', id }],
+    }),
+
+    // Update vendor details
+    updateVendor: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/admin/vendors/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        'Vendor',
+        { type: 'Vendor', id },
+        { type: 'Vendor', id: 'UNIFIED_LIST' },
+      ],
+    }),
+
+    // Deactivate vendor with dependency check
+    deactivateVendor: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/vendors/${id}/deactivate`,
+        method: 'PUT',
+        body: { reason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        'Vendor',
+        'Approvals',
+        { type: 'Vendor', id },
+        { type: 'Vendor', id: 'UNIFIED_LIST' },
+      ],
+    }),
+
+    // Safe delete vendor with dependency check
+    safeDeleteVendor: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/admin/vendors/${id}/safe-delete`,
+        method: 'DELETE',
+        body: { reason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        'Vendor',
+        'Approvals',
+        { type: 'Vendor', id },
+        { type: 'Vendor', id: 'UNIFIED_LIST' },
+      ],
+    }),
+
+    // Create restaurant owner and restaurant
+    createRestaurantOwner: builder.mutation({
+      query: (data) => ({
+        url: '/admin/restaurant-owners',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    // Create restaurant manager
+    createRestaurantManager: builder.mutation({
+      query: (data) => ({
+        url: '/admin/restaurant-managers',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
     }),
 
     // Enhanced Analytics Endpoint
@@ -2045,6 +2165,16 @@ export const apiSlice = createApi({
       invalidatesTags: ['User', 'Restaurant'],
     }),
 
+    // Vendor creation - creates vendor entity and associated user with role='vendor'
+    createAdminVendor: builder.mutation({
+      query: (vendorData) => ({
+        url: '/admin/vendors',
+        method: 'POST',
+        body: vendorData,
+      }),
+      invalidatesTags: ['User', 'Vendor'],
+    }),
+
     getRestaurantsList: builder.query({
       query: (params = {}) => ({
         url: '/admin/restaurants',
@@ -2511,6 +2641,7 @@ export const {
   // Admin - Restaurant Management
   useCreateAdminRestaurantOwnerMutation,
   useCreateAdminRestaurantManagerMutation,
+  useCreateAdminVendorMutation,
   useGetRestaurantsListQuery,
 
   // Admin - Vendor Management
@@ -2541,6 +2672,19 @@ export const {
   useGetAdminVendorsUnifiedQuery,
   useGetAdminRestaurantsUnifiedQuery,
 
+  // New Restaurant Management Endpoints
+  useGetRestaurantDetailsQuery,
+  useUpdateRestaurantMutation,
+  useDeactivateRestaurantMutation,
+  useSafeDeleteRestaurantMutation,
+  useCreateRestaurantOwnerMutation,
+
+  // New Unified Vendor Management Endpoints
+  useGetVendorDetailsQuery,
+  useUpdateVendorMutation,
+  useDeactivateVendorMutation,
+  useSafeDeleteVendorMutation,
+
   // Enhanced Admin Dashboard
   useGetAdminDashboardOverviewQuery,
 
@@ -2567,17 +2711,13 @@ export const {
 
   // Enhanced User Management
   useGetVendorsQuery,
-  useDeactivateVendorMutation,
   useGetRestaurantsQuery,
   useToggleRestaurantStatusMutation,
 
   // Additional User Management
   useGetAllVendorsQuery,
-  useGetAllRestaurantsQuery,
   useUpdateVendorStatusMutation,
-  useUpdateRestaurantStatusMutation,
   useDeleteVendorMutation,
-  useDeleteRestaurantMutation,
 
   // Enhanced Analytics
   useGetAdminAnalyticsOverviewQuery,
