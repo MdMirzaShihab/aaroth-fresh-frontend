@@ -64,7 +64,7 @@ const VendorDashboardEnhanced = () => {
     adminNotes,
     getRejectionGuidance,
     // Legacy support
-    isVerified: isApproved,
+    isVerified,
   } = useBusinessVerification();
 
   // Get status display information

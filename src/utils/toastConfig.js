@@ -114,21 +114,40 @@ export const showLoadingToast = (message, options = {}) => {
   });
 };
 
-// Verification specific toasts
-export const showVerificationSuccessToast = (entityType, action) => {
-  const actionText =
-    action === 'verified' ? 'verified' : 'verification revoked';
+// Verification specific toasts (updated for three-state system)
+export const showVerificationSuccessToast = (entityType, status) => {
+  let actionText;
+  let icon;
+  
+  switch (status) {
+    case 'approved':
+      actionText = 'verified';
+      icon = '✅';
+      break;
+    case 'rejected':
+      actionText = 'rejected';
+      icon = '❌';
+      break;
+    case 'pending':
+      actionText = 'set to pending';
+      icon = '⏳';
+      break;
+    default:
+      actionText = 'updated';
+      icon = '🔄';
+  }
+  
   const message = `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} ${actionText} successfully`;
 
   return showSuccessToast(message, {
-    icon: action === 'verified' ? '✅' : '🔄',
+    icon,
     duration: 5000,
   });
 };
 
-export const showVerificationErrorToast = (entityType, action, error) => {
-  const actionText = action === 'verify' ? 'verify' : 'revoke verification for';
-  const defaultMessage = `Failed to ${actionText} ${entityType}`;
+export const showVerificationErrorToast = (entityType, status, error) => {
+  const statusText = status === 'approved' ? 'approve' : status === 'rejected' ? 'reject' : 'update';
+  const defaultMessage = `Failed to ${statusText} ${entityType}`;
   const message = error?.message || error?.data?.message || defaultMessage;
 
   return showErrorToast(message, {

@@ -40,6 +40,7 @@ const RegisterForm = () => {
       confirmPassword: '',
       role: 'restaurantOwner',
       businessName: '',
+      tradeLicenseNo: '', // Required for both vendors and restaurants
       // Structured address fields
       address: {
         street: '',
@@ -117,13 +118,20 @@ const RegisterForm = () => {
 
       // Add business details for vendors and restaurant owners
       if (data.role === 'vendor' || data.role === 'restaurantOwner') {
-        registerData.businessName = data.businessName.trim();
         registerData.address = {
           street: data.address.street.trim(),
           city: data.address.city.trim(),
           area: data.address.area.trim(),
           postalCode: data.address.postalCode.trim(),
         };
+        registerData.tradeLicenseNo = data.tradeLicenseNo.trim();
+        
+        // Map field names based on role
+        if (data.role === 'vendor') {
+          registerData.businessName = data.businessName.trim();
+        } else if (data.role === 'restaurantOwner') {
+          registerData.restaurantName = data.businessName.trim(); // Map businessName to restaurantName for restaurants
+        }
       }
 
       const result = await register(registerData).unwrap();
@@ -556,6 +564,59 @@ const RegisterForm = () => {
                       {errors.address.postalCode.message}
                     </p>
                   )}
+                </div>
+                
+                {/* Trade License Number */}
+                <div className="space-y-3">
+                  <label
+                    htmlFor="tradeLicenseNo"
+                    className="block text-sm font-medium text-text-dark/80 tracking-wide"
+                  >
+                    Trade License Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-text-muted/60">
+                      <Building2 className="w-5 h-5" />
+                    </div>
+                    <input
+                      id="tradeLicenseNo"
+                      type="text"
+                      placeholder="Enter trade license number"
+                      className={`w-full pl-14 pr-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none ${
+                        errors.tradeLicenseNo
+                          ? 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
+                          : ''
+                      }`}
+                      {...registerField('tradeLicenseNo', {
+                        required: 'Trade license number is required',
+                        validate: (value) => {
+                          if (!value.trim()) {
+                            return 'Trade license number is required';
+                          }
+                          if (value.trim().length < 3) {
+                            return 'Trade license number must be at least 3 characters';
+                          }
+                          if (value.length > 30) {
+                            return 'Trade license number must be less than 30 characters';
+                          }
+                          // Basic format validation - alphanumeric with hyphens/slashes allowed
+                          if (!/^[A-Za-z0-9\/\-_]+$/.test(value.trim())) {
+                            return 'Trade license number can only contain letters, numbers, hyphens, slashes, and underscores';
+                          }
+                          return true;
+                        },
+                      })}
+                    />
+                  </div>
+                  {errors.tradeLicenseNo && (
+                    <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
+                      <span className="w-4 h-4 text-tomato-red/60">⚠</span>
+                      {errors.tradeLicenseNo.message}
+                    </p>
+                  )}
+                  <p className="text-text-muted/70 text-xs mt-1">
+                    Required for business verification and compliance
+                  </p>
                 </div>
               </div>
             </>

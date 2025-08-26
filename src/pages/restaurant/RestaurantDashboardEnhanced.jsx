@@ -67,7 +67,7 @@ const RestaurantDashboardEnhanced = () => {
     adminNotes,
     getRejectionGuidance,
     // Legacy support
-    isVerified: isApproved,
+    isVerified,
   } = useBusinessVerification();
 
   // Prevent API calls if user is not authenticated or doesn't have required role

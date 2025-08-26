@@ -10,14 +10,8 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import {
-  useGetPendingVendorsQuery,
-  useGetApprovedVendorsQuery,
-  useGetRejectedVendorsQuery,
-  useGetPendingRestaurantsQuery,
-  useGetApprovedRestaurantsQuery,
-  useGetRejectedRestaurantsQuery,
-  useGetAllVendorsAdminQuery,
-  useGetAllRestaurantsAdminQuery,
+  useGetAdminVendorsUnifiedQuery,
+  useGetAdminRestaurantsUnifiedQuery,
   useUpdateVendorVerificationStatusMutation,
   useUpdateRestaurantVerificationStatusMutation,
 } from '../../store/slices/apiSlice';
@@ -77,52 +71,30 @@ const ApprovalManagementNew = () => {
     [currentPage, itemsPerPage, debouncedSearchTerm, filterStatus]
   );
 
-  // API Hooks - Get data based on active tab (Fixed skipping logic)
+  // API Hooks - Get data based on active tab using unified endpoints
   const {
-    data: pendingVendors,
+    data: vendorsData,
     isLoading: vendorsLoading,
     refetch: refetchVendors,
     error: vendorsError,
-  } = useGetPendingVendorsQuery(queryParams, {
-    skip: activeTab === 'restaurants' && filterStatus !== 'all',
+  } = useGetAdminVendorsUnifiedQuery(queryParams, {
+    skip: activeTab === 'restaurants',
   });
 
   const {
-    data: pendingRestaurants,
+    data: restaurantsData,
     isLoading: restaurantsLoading,
     refetch: refetchRestaurants,
     error: restaurantsError,
-  } = useGetPendingRestaurantsQuery(queryParams, {
-    skip: activeTab === 'vendors' && filterStatus !== 'all',
-  });
-
-  const {
-    data: allVendors,
-    isLoading: allVendorsLoading,
-    refetch: refetchAllVendors,
-    error: allVendorsError,
-  } = useGetAllVendorsAdminQuery(queryParams, {
-    skip:
-      (activeTab === 'restaurants' && filterStatus !== 'all') ||
-      filterStatus === 'pending',
-  });
-
-  const {
-    data: allRestaurants,
-    isLoading: allRestaurantsLoading,
-    refetch: refetchAllRestaurants,
-    error: allRestaurantsError,
-  } = useGetAllRestaurantsAdminQuery(queryParams, {
-    skip:
-      (activeTab === 'vendors' && filterStatus !== 'all') ||
-      filterStatus === 'pending',
+  } = useGetAdminRestaurantsUnifiedQuery(queryParams, {
+    skip: activeTab === 'vendors',
   });
 
   // Mutation hooks
-  const [toggleVendorVerification, { isLoading: vendorToggleLoading }] =
-    useToggleVendorVerificationNewMutation();
-  const [toggleRestaurantVerification, { isLoading: restaurantToggleLoading }] =
-    useToggleRestaurantVerificationNewMutation();
+  const [updateVendorVerification, { isLoading: vendorToggleLoading }] =
+    useUpdateVendorVerificationStatusMutation();
+  const [updateRestaurantVerification, { isLoading: restaurantToggleLoading }] =
+    useUpdateRestaurantVerificationStatusMutation();
 
   // Data processing
   const getDisplayData = () => {
@@ -130,19 +102,11 @@ const ApprovalManagementNew = () => {
     let restaurants = [];
 
     if (activeTab === 'all' || activeTab === 'vendors') {
-      if (filterStatus === 'pending') {
-        vendors = pendingVendors?.data || [];
-      } else {
-        vendors = allVendors?.data || [];
-      }
+      vendors = vendorsData?.data || [];
     }
 
     if (activeTab === 'all' || activeTab === 'restaurants') {
-      if (filterStatus === 'pending') {
-        restaurants = pendingRestaurants?.data || [];
-      } else {
-        restaurants = allRestaurants?.data || [];
-      }
+      restaurants = restaurantsData?.data || [];
     }
 
     const allEntities = [
@@ -155,7 +119,9 @@ const ApprovalManagementNew = () => {
         entity.businessName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entity.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entity.ownerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entity.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        entity.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entity.createdBy?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entity.createdBy?.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesFilter =
         filterStatus === 'all' ||
@@ -170,67 +136,47 @@ const ApprovalManagementNew = () => {
   };
 
   const displayData = getDisplayData();
-  const isLoading =
-    vendorsLoading ||
-    restaurantsLoading ||
-    allVendorsLoading ||
-    allRestaurantsLoading;
+  const isLoading = vendorsLoading || restaurantsLoading;
 
   // Error handling
-  const hasErrors =
-    vendorsError || restaurantsError || allVendorsError || allRestaurantsError;
+  const hasErrors = vendorsError || restaurantsError;
   const errorMessage = hasErrors
     ? 'Failed to load verification data. Please check your connection and try again.'
     : null;
 
   // Statistics
   const stats = useMemo(() => {
-    const vendors =
-      (filterStatus === 'pending' ? pendingVendors?.data : allVendors?.data) ||
-      [];
-    const restaurants =
-      (filterStatus === 'pending'
-        ? pendingRestaurants?.data
-        : allRestaurants?.data) || [];
-
+    const vendors = vendorsData?.data || [];
+    const restaurants = restaurantsData?.data || [];
     const allItems = [...vendors, ...restaurants];
 
     return {
       total: allItems.length,
-      pending: allItems.filter((item) => !item.isVerified).length,
-      verified: allItems.filter((item) => item.isVerified).length,
+      pending: allItems.filter((item) => item.verificationStatus === 'pending').length,
+      verified: allItems.filter((item) => item.verificationStatus === 'approved').length,
+      rejected: allItems.filter((item) => item.verificationStatus === 'rejected').length,
       vendors: vendors.length,
       restaurants: restaurants.length,
     };
-  }, [
-    pendingVendors,
-    pendingRestaurants,
-    allVendors,
-    allRestaurants,
-    filterStatus,
-  ]);
+  }, [vendorsData, restaurantsData]);
 
   // Enhanced event handlers with retry mechanism
-  const handleVendorVerification = async ({ id, isVerified, reason }) => {
+  const handleVendorVerification = async ({ id, status, reason }) => {
     const maxRetries = 2;
     let attempt = 0;
 
     const attemptVerification = async () => {
       try {
-        const result = await toggleVendorVerification({
+        const result = await updateVendorVerification({
           id,
-          isVerified,
+          status,
           reason,
         }).unwrap();
 
-        showVerificationSuccessToast(
-          'vendor',
-          isVerified ? 'verified' : 'revoked'
-        );
+        showVerificationSuccessToast('vendor', status);
 
         // Refetch data after successful verification
         refetchVendors();
-        refetchAllVendors();
 
         return result;
       } catch (error) {
@@ -250,9 +196,8 @@ const ApprovalManagementNew = () => {
 
         // Show error message with more context
         const errorMsg =
-          error?.data?.message ||
-          `Failed to ${isVerified ? 'verify' : 'revoke'} vendor`;
-        showVerificationErrorToast('vendor', isVerified ? 'verify' : 'revoke', {
+          error?.data?.message || `Failed to ${status} vendor`;
+        showVerificationErrorToast('vendor', status, {
           ...error,
           data: {
             ...error?.data,
@@ -269,26 +214,22 @@ const ApprovalManagementNew = () => {
     return attemptVerification();
   };
 
-  const handleRestaurantVerification = async ({ id, isVerified, reason }) => {
+  const handleRestaurantVerification = async ({ id, status, reason }) => {
     const maxRetries = 2;
     let attempt = 0;
 
     const attemptVerification = async () => {
       try {
-        const result = await toggleRestaurantVerification({
+        const result = await updateRestaurantVerification({
           id,
-          isVerified,
+          status,
           reason,
         }).unwrap();
 
-        showVerificationSuccessToast(
-          'restaurant',
-          isVerified ? 'verified' : 'revoked'
-        );
+        showVerificationSuccessToast('restaurant', status);
 
         // Refetch data after successful verification
         refetchRestaurants();
-        refetchAllRestaurants();
 
         return result;
       } catch (error) {
@@ -308,22 +249,17 @@ const ApprovalManagementNew = () => {
 
         // Show error message with more context
         const errorMsg =
-          error?.data?.message ||
-          `Failed to ${isVerified ? 'verify' : 'revoke'} restaurant`;
-        showVerificationErrorToast(
-          'restaurant',
-          isVerified ? 'verify' : 'revoke',
-          {
-            ...error,
-            data: {
-              ...error?.data,
-              message:
-                attempt > 1
-                  ? `${errorMsg} (after ${attempt} attempts)`
-                  : errorMsg,
-            },
-          }
-        );
+          error?.data?.message || `Failed to ${status} restaurant`;
+        showVerificationErrorToast('restaurant', status, {
+          ...error,
+          data: {
+            ...error?.data,
+            message:
+              attempt > 1
+                ? `${errorMsg} (after ${attempt} attempts)`
+                : errorMsg,
+          },
+        });
         throw error;
       }
     };
@@ -334,15 +270,8 @@ const ApprovalManagementNew = () => {
   const handleRefreshAll = useCallback(() => {
     refetchVendors();
     refetchRestaurants();
-    refetchAllVendors();
-    refetchAllRestaurants();
     showSuccessToast('Data refreshed');
-  }, [
-    refetchVendors,
-    refetchRestaurants,
-    refetchAllVendors,
-    refetchAllRestaurants,
-  ]);
+  }, [refetchVendors, refetchRestaurants]);
 
   // Handler for tab changes with proper state reset
   const handleTabChange = useCallback((newTab) => {
@@ -421,7 +350,7 @@ const ApprovalManagementNew = () => {
               <div className="text-2xl font-semibold text-bottle-green mb-1">
                 {stats.verified}
               </div>
-              <div className="text-sm text-text-muted">Verified</div>
+              <div className="text-sm text-text-muted">Approved</div>
             </div>
             <div className="bg-gradient-glass backdrop-blur-md rounded-2xl p-4 border border-white/20">
               <div className="text-2xl font-semibold text-text-dark mb-1">
@@ -482,8 +411,8 @@ const ApprovalManagementNew = () => {
               className="px-4 py-3 rounded-xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg appearance-none cursor-pointer transition-all duration-300"
             >
               <option value="pending">Pending Only</option>
-              <option value="verified">Verified Only</option>
-              <option value="unverified">Unverified Only</option>
+              <option value="approved">Approved Only</option>
+              <option value="rejected">Rejected Only</option>
               <option value="all">All Status</option>
             </select>
           </div>
