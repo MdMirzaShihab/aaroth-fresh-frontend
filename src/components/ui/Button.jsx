@@ -1,41 +1,54 @@
 import React, { forwardRef } from 'react';
 import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
+import { useTheme } from '../../hooks/useTheme';
 
-// Button variants using class-variance-authority for type safety and consistency
-const buttonVariants = cva(
+// Dynamic button variants with dark mode support
+const getButtonVariants = (isDarkMode) => cva(
   // Base classes - mobile-first with 44px minimum touch targets
   'inline-flex items-center justify-center rounded-2xl font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-h-[44px] active:scale-95',
   {
     variants: {
       variant: {
-        // Primary - Gradient with glow effect
-        primary:
-          'bg-gradient-secondary text-white shadow-sm hover:shadow-lg hover:shadow-glow-green/20 hover:-translate-y-0.5 focus-visible:ring-bottle-green',
+        // Primary - Gradient with olive glow effect (enhanced dark mode)
+        primary: isDarkMode
+          ? 'bg-gradient-secondary text-white shadow-dark-depth-1 hover:shadow-dark-depth-2 hover:shadow-dark-glow-olive hover:-translate-y-0.5 focus-visible:ring-dark-sage-accent'
+          : 'bg-gradient-secondary text-white shadow-sm hover:shadow-lg hover:shadow-glow-olive hover:-translate-y-0.5 focus-visible:ring-muted-olive',
 
-        // Secondary - Solid earth tone
-        secondary:
-          'bg-earthy-brown text-white hover:bg-earthy-brown/90 focus-visible:ring-earthy-brown',
+        // Secondary - Solid earth tone (enhanced for dark mode)
+        secondary: isDarkMode
+          ? 'bg-dark-cedar-warm text-white hover:bg-dark-cedar-warm/90 shadow-dark-depth-1 hover:shadow-dark-depth-2 focus-visible:ring-dark-cedar-warm'
+          : 'bg-earthy-brown text-white hover:bg-earthy-brown/90 focus-visible:ring-earthy-brown',
 
-        // Outline - Sophisticated border
-        outline:
-          'border-2 border-bottle-green text-bottle-green bg-transparent hover:bg-bottle-green hover:text-white focus-visible:ring-bottle-green',
+        // Outline - Sophisticated olive border (dark mode optimized)
+        outline: isDarkMode
+          ? 'border-2 border-dark-sage-accent text-dark-sage-accent bg-transparent hover:bg-dark-sage-accent hover:text-dark-olive-bg focus-visible:ring-dark-sage-accent'
+          : 'border-2 border-muted-olive text-muted-olive bg-transparent hover:bg-muted-olive hover:text-white focus-visible:ring-muted-olive',
 
-        // Ghost - Minimal presence
-        ghost:
-          'text-bottle-green hover:bg-bottle-green/10 focus-visible:ring-bottle-green/50',
+        // Ghost - Minimal olive presence (dark mode enhanced)
+        ghost: isDarkMode
+          ? 'text-dark-sage-accent hover:bg-dark-sage-accent/10 focus-visible:ring-dark-sage-accent/50'
+          : 'text-muted-olive hover:bg-muted-olive/10 focus-visible:ring-muted-olive/50',
 
-        // Destructive - For dangerous actions
-        destructive:
-          'bg-tomato-red text-white hover:bg-tomato-red/90 focus-visible:ring-tomato-red',
+        // Destructive - For dangerous actions (consistent across themes)
+        destructive: isDarkMode
+          ? 'bg-tomato-red text-white hover:bg-tomato-red/90 shadow-dark-depth-1 hover:shadow-dark-depth-2 focus-visible:ring-tomato-red'
+          : 'bg-tomato-red text-white hover:bg-tomato-red/90 focus-visible:ring-tomato-red',
 
-        // Success - For positive actions
-        success:
-          'bg-mint-fresh text-bottle-green hover:bg-mint-fresh/90 focus-visible:ring-mint-fresh',
+        // Success - For positive actions (olive-harmonized dark mode)
+        success: isDarkMode
+          ? 'bg-dark-olive-surface border border-dark-sage-accent text-dark-sage-accent hover:bg-dark-sage-accent/10 focus-visible:ring-dark-sage-accent/30'
+          : 'bg-success-light text-success-dark hover:bg-success-light/90 focus-visible:ring-muted-olive/30',
 
-        // Glass - Glassmorphism effect
-        glass:
-          'bg-glass backdrop-blur-sm border border-white/20 text-text-dark hover:bg-white/10 hover:border-white/30 focus-visible:ring-white/50',
+        // Glass - Enhanced glassmorphism effect (dark mode optimized)
+        glass: isDarkMode
+          ? 'glass-2-dark text-dark-text-primary hover:glass-3-dark hover:shadow-dark-glow-olive/30 focus-visible:ring-dark-sage-accent/20'
+          : 'glass-2 text-text-dark hover:glass-3 hover:shadow-glow-olive/20 focus-visible:ring-muted-olive/20',
+
+        // Glass Olive - New olive-themed glass variant (dark mode enhanced)
+        'glass-olive': isDarkMode
+          ? 'glass-card-dark-olive text-dark-sage-accent hover:glass-3-dark hover:shadow-dark-glow-sage focus-visible:ring-dark-sage-accent/20'
+          : 'glass-card-olive text-muted-olive hover:glass-3 hover:shadow-glow-sage focus-visible:ring-sage-green/20',
       },
       size: {
         sm: 'h-10 px-4 text-sm min-h-[44px]', // Still meets touch target
@@ -86,7 +99,7 @@ const LoadingSpinner = ({ className }) => (
   </svg>
 );
 
-// Button component with forwardRef for proper ref handling
+// Button component with forwardRef for proper ref handling and dark mode support
 const Button = forwardRef(
   (
     {
@@ -104,7 +117,11 @@ const Button = forwardRef(
     },
     ref
   ) => {
+    const { isDarkMode } = useTheme();
     const isDisabled = disabled || loading;
+    
+    // Get theme-aware button variants
+    const buttonVariants = getButtonVariants(isDarkMode);
 
     return (
       <button

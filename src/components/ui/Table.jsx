@@ -60,7 +60,7 @@ const TableRow = forwardRef(
       ref={ref}
       className={cn(
         'transition-colors duration-200',
-        clickable && 'cursor-pointer hover:bg-earthy-beige/20',
+        clickable && 'cursor-pointer hover:bg-muted-olive/10',
         className
       )}
       onClick={onClick}
@@ -105,7 +105,7 @@ const TableHead = forwardRef(
         className={cn(
           'px-4 py-3 font-medium text-text-dark bg-earthy-beige/10',
           alignClass,
-          sortable && 'cursor-pointer hover:bg-earthy-beige/20 select-none',
+          sortable && 'cursor-pointer hover:bg-muted-olive/10 select-none',
           className
         )}
         onClick={handleSort}
@@ -118,13 +118,13 @@ const TableHead = forwardRef(
               <ChevronUp
                 className={cn(
                   'w-3 h-3 -mb-1',
-                  sorted === 'asc' ? 'text-bottle-green' : 'text-text-muted/50'
+                  sorted === 'asc' ? 'text-muted-olive' : 'text-text-muted/50'
                 )}
               />
               <ChevronDown
                 className={cn(
                   'w-3 h-3',
-                  sorted === 'desc' ? 'text-bottle-green' : 'text-text-muted/50'
+                  sorted === 'desc' ? 'text-muted-olive' : 'text-text-muted/50'
                 )}
               />
             </div>

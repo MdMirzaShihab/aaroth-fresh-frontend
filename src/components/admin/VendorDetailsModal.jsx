@@ -98,7 +98,7 @@ const VendorDetailsModal = ({
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="6xl">
       <div className="bg-white rounded-3xl max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-bottle-green/5 to-mint-fresh/5">
+        <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-muted-olive/5 to-sage-green/5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
@@ -151,7 +151,7 @@ const VendorDetailsModal = ({
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-bottle-green text-white shadow-sm'
+                      ? 'bg-muted-olive text-white shadow-sm'
                       : 'text-text-muted hover:text-text-dark hover:bg-gray-50'
                   }`}
                 >
@@ -282,7 +282,7 @@ const VendorDetailsModal = ({
                     {vendor.specialties.map((specialty, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-bottle-green/10 text-bottle-green rounded-full text-sm font-medium"
+                        className="px-3 py-1 bg-muted-olive/10 text-muted-olive rounded-full text-sm font-medium"
                       >
                         {specialty}
                       </span>

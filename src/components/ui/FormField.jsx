@@ -127,7 +127,7 @@ export const SuccessMessage = ({
   return (
     <div
       className={cn(
-        'text-mint-fresh text-sm mt-2 flex items-center gap-2 animate-fade-in',
+        'text-success-dark text-sm mt-2 flex items-center gap-2 animate-fade-in',
         className
       )}
       role="status"
@@ -135,7 +135,7 @@ export const SuccessMessage = ({
       {...props}
     >
       {icon && (
-        <CheckCircle className="w-4 h-4 text-mint-fresh/80 flex-shrink-0" />
+        <CheckCircle className="w-4 h-4 text-success-dark/80 flex-shrink-0" />
       )}
       <span className="flex-1">{message}</span>
     </div>
@@ -154,7 +154,7 @@ export const WarningMessage = ({
   return (
     <div
       className={cn(
-        'text-earthy-yellow text-sm mt-2 flex items-center gap-2 animate-fade-in',
+        'text-warning-dark text-sm mt-2 flex items-center gap-2 animate-fade-in',
         className
       )}
       role="alert"
@@ -162,7 +162,7 @@ export const WarningMessage = ({
       {...props}
     >
       {icon && (
-        <AlertTriangle className="w-4 h-4 text-earthy-yellow/80 flex-shrink-0" />
+        <AlertTriangle className="w-4 h-4 text-warning-dark/80 flex-shrink-0" />
       )}
       <span className="flex-1">{message}</span>
     </div>
@@ -320,7 +320,7 @@ export const FieldArray = ({
       <button
         type="button"
         onClick={onAdd}
-        className="w-full p-3 border-2 border-dashed border-gray-300 rounded-2xl text-text-muted hover:border-bottle-green hover:text-bottle-green transition-all duration-200 min-h-[44px]"
+        className="w-full p-3 border-2 border-dashed border-gray-300 rounded-2xl text-text-muted hover:border-muted-olive hover:text-muted-olive transition-all duration-200 min-h-[44px]"
       >
         + {addLabel}
       </button>

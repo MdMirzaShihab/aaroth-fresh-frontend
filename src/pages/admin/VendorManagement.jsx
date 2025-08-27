@@ -224,14 +224,14 @@ const VendorManagement = () => {
               placeholder="Search vendors by name, email, or business..."
               value={filters.search}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10"
+              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10"
             />
           </div>
           
           <select
             value={filters.status}
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value, page: 1 }))}
-            className="px-4 py-3 rounded-2xl border border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10 min-w-[150px]"
+            className="px-4 py-3 rounded-2xl border border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10 min-w-[150px]"
           >
             <option value="">All Status</option>
             <option value="pending">Pending</option>
@@ -324,7 +324,7 @@ const VendorManagement = () => {
                       {vendor.specialties.slice(0, 2).map((specialty, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-bottle-green/10 text-bottle-green text-xs rounded-full"
+                          className="px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs rounded-full"
                         >
                           {specialty}
                         </span>

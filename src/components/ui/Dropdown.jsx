@@ -45,13 +45,13 @@ const dropdownVariants = cva('relative inline-block', {
 
 // Dropdown trigger variants
 const triggerVariants = cva(
-  'inline-flex items-center justify-between gap-2 rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-text-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green disabled:pointer-events-none disabled:opacity-50 min-h-[44px]',
+  'inline-flex items-center justify-between gap-2 rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-text-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive disabled:pointer-events-none disabled:opacity-50 min-h-[44px]',
   {
     variants: {
       variant: {
-        default: 'hover:bg-earthy-beige/20 hover:border-bottle-green/30',
-        ghost: 'border-transparent bg-transparent hover:bg-earthy-beige/20',
-        outline: 'border-2 border-bottle-green/30 hover:border-bottle-green',
+        default: 'hover:bg-earthy-beige/20 hover:border-muted-olive/30',
+        ghost: 'border-transparent bg-transparent hover:bg-muted-olive/10',
+        outline: 'border-2 border-muted-olive/30 hover:border-muted-olive',
         filled:
           'bg-earthy-beige/30 border-transparent hover:bg-earthy-beige/40',
       },
@@ -76,9 +76,9 @@ const triggerVariants = cva(
   }
 );
 
-// Dropdown menu variants
+// Dropdown menu variants with enhanced glassmorphism
 const menuVariants = cva(
-  'absolute z-50 mt-2 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 animate-scale-in max-h-80 overflow-y-auto scrollbar-hide',
+  'absolute z-50 mt-2 glass-4 rounded-3xl shadow-depth-4 border animate-scale-in max-h-80 overflow-y-auto scrollbar-hide',
   {
     variants: {
       position: {
@@ -105,9 +105,9 @@ const menuVariants = cva(
   }
 );
 
-// Dropdown item variants
+// Dropdown item variants with olive theme
 const itemVariants = cva(
-  'flex items-center gap-3 px-4 py-3 text-sm text-text-dark transition-all duration-200 cursor-pointer hover:bg-bottle-green/5 focus:bg-bottle-green/5 focus:outline-none disabled:pointer-events-none disabled:opacity-50 min-h-[44px]',
+  'flex items-center gap-3 px-4 py-3 text-sm text-text-dark transition-all duration-200 cursor-pointer hover:bg-muted-olive/5 focus:bg-muted-olive/5 focus:outline-none disabled:pointer-events-none disabled:opacity-50 min-h-[44px]',
   {
     variants: {
       variant: {
@@ -115,10 +115,10 @@ const itemVariants = cva(
         destructive:
           'text-tomato-red hover:bg-tomato-red/5 focus:bg-tomato-red/5',
         success:
-          'text-bottle-green hover:bg-bottle-green/10 focus:bg-bottle-green/10',
+          'text-success-dark hover:bg-success-light/50 focus:bg-success-light/50',
       },
       selected: {
-        true: 'bg-bottle-green/10 text-bottle-green font-medium',
+        true: 'bg-muted-olive/10 text-muted-olive font-medium',
         false: '',
       },
     },
@@ -362,7 +362,7 @@ const DropdownItem = forwardRef(
         <span className="flex-1 truncate">{children}</span>
 
         {selected && (
-          <Check className="w-4 h-4 text-bottle-green flex-shrink-0" />
+          <Check className="w-4 h-4 text-muted-olive flex-shrink-0" />
         )}
 
         {shortcut && (
@@ -543,8 +543,8 @@ export const ProfileDropdown = ({
 }) => (
   <Dropdown className={className} {...props}>
     <DropdownTrigger variant="ghost" className="flex items-center gap-2 px-2">
-      <div className="w-8 h-8 rounded-full bg-bottle-green/10 flex items-center justify-center">
-        <User className="w-4 h-4 text-bottle-green" />
+      <div className="w-8 h-8 rounded-full bg-muted-olive/10 flex items-center justify-center">
+        <User className="w-4 h-4 text-muted-olive" />
       </div>
       <div className="text-left hidden sm:block">
         <div className="text-sm font-medium truncate">{user?.name}</div>
@@ -599,7 +599,7 @@ export const FilterDropdown = ({
         <Filter className="w-4 h-4 mr-2" />
         Filters
         {activeCount > 0 && (
-          <span className="ml-2 bg-bottle-green text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] h-5 flex items-center justify-center">
+          <span className="ml-2 bg-muted-olive text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] h-5 flex items-center justify-center">
             {activeCount}
           </span>
         )}

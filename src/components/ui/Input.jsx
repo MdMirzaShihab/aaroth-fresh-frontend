@@ -2,31 +2,48 @@ import React, { forwardRef, useState } from 'react';
 import { cva } from 'class-variance-authority';
 import { Eye, EyeOff, Search, X } from 'lucide-react';
 import { cn } from '../../utils';
+import { useTheme } from '../../hooks/useTheme';
 
-// Input variants for consistent styling
-const inputVariants = cva(
+// Dynamic input variants with dark mode support
+const getInputVariants = (isDarkMode) => cva(
   // Base classes - mobile-first with 44px minimum height
-  'w-full rounded-2xl border-0 bg-earthy-beige/30 px-4 py-3 text-base text-text-dark placeholder:text-text-muted/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50',
+  cn(
+    'w-full rounded-2xl border-0 px-4 py-3 text-base transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50',
+    isDarkMode 
+      ? 'bg-dark-olive-surface/50 text-dark-text-primary placeholder:text-dark-text-muted/70' 
+      : 'bg-earthy-beige/30 text-text-dark placeholder:text-text-muted/60'
+  ),
   {
     variants: {
       variant: {
-        default: 'focus:bg-white focus:shadow-lg focus:ring-bottle-green/40',
+        default: isDarkMode
+          ? 'focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
+          : 'focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
 
-        // Outlined variant
-        outlined:
-          'bg-transparent border-2 border-gray-200 focus:border-bottle-green focus:bg-white focus:ring-bottle-green/20',
+        // Outlined variant with olive theme (dark mode optimized)
+        outlined: isDarkMode
+          ? 'bg-transparent border-2 border-dark-olive-border focus:border-dark-sage-accent focus:bg-dark-olive-surface/30 focus:ring-dark-sage-accent/30'
+          : 'bg-transparent border-2 border-gray-200 focus:border-muted-olive focus:bg-white focus:ring-muted-olive/20',
 
-        // Glass effect variant
-        glass:
-          'bg-glass backdrop-blur-sm border border-white/20 focus:bg-white/10 focus:border-white/30 focus:ring-white/50',
+        // Glass effect variant with olive theme (dark mode enhanced)
+        glass: isDarkMode
+          ? 'glass-2-dark border border-dark-olive-border/30 focus:glass-3-dark focus:border-dark-sage-accent/40 focus:ring-dark-sage-accent/20'
+          : 'glass-2 border border-white/20 focus:glass-3 focus:border-muted-olive/30 focus:ring-muted-olive/20',
 
-        // Search variant
-        search:
-          'pl-10 focus:bg-white focus:shadow-lg focus:ring-bottle-green/40',
+        // Glass Olive variant - olive-themed glass (dark mode enhanced)
+        'glass-olive': isDarkMode
+          ? 'glass-card-dark-olive border border-dark-sage-accent/20 focus:glass-3-dark focus:shadow-dark-glow-sage focus:ring-dark-sage-accent/20'
+          : 'glass-card-olive border border-muted-olive/20 focus:glass-3 focus:shadow-glow-sage focus:ring-sage-green/20',
 
-        // Floating label variant
-        floating:
-          'pt-6 pb-2 focus:bg-white focus:shadow-lg focus:ring-bottle-green/40',
+        // Search variant with olive theme (dark mode)
+        search: isDarkMode
+          ? 'pl-10 focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
+          : 'pl-10 focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
+
+        // Floating label variant with olive theme (dark mode)
+        floating: isDarkMode
+          ? 'pt-6 pb-2 focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
+          : 'pt-6 pb-2 focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
       },
       size: {
         sm: 'h-10 px-3 text-sm min-h-[44px]', // Still meets touch target
@@ -38,9 +55,9 @@ const inputVariants = cva(
         error:
           'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-tomato-red/10',
         success:
-          'border-2 border-mint-fresh/50 bg-mint-fresh/5 focus:border-mint-fresh focus:ring-mint-fresh/20',
+          'border-2 border-success-dark/30 bg-success-light focus:border-muted-olive focus:ring-muted-olive/20',
         warning:
-          'border-2 border-earthy-yellow/50 bg-earthy-yellow/5 focus:border-earthy-yellow focus:ring-earthy-yellow/20',
+          'border-2 border-warning-dark/30 bg-warning-light focus:border-amber-warm focus:ring-amber-warm/20',
       },
     },
     defaultVariants: {
@@ -51,7 +68,7 @@ const inputVariants = cva(
   }
 );
 
-// Base Input component
+// Base Input component with dark mode support
 const Input = forwardRef(
   (
     {
@@ -72,8 +89,12 @@ const Input = forwardRef(
     },
     ref
   ) => {
+    const { isDarkMode } = useTheme();
     const [showPassword, setShowPassword] = useState(false);
     const [value, setValue] = useState(props.value || props.defaultValue || '');
+
+    // Get theme-aware input variants
+    const inputVariants = getInputVariants(isDarkMode);
 
     // Determine validation state
     const validationState = error
@@ -114,14 +135,20 @@ const Input = forwardRef(
       <div className="relative">
         {/* Left Icon */}
         {leftIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+          <div className={cn(
+            "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none",
+            isDarkMode ? "text-dark-text-muted" : "text-text-muted"
+          )}>
             {leftIcon}
           </div>
         )}
 
         {/* Search Icon for search variant */}
         {variant === 'search' && !leftIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+          <div className={cn(
+            "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none",
+            isDarkMode ? "text-dark-text-muted" : "text-text-muted"
+          )}>
             <Search className="w-5 h-5" />
           </div>
         )}
@@ -149,7 +176,12 @@ const Input = forwardRef(
             <button
               type="button"
               onClick={handleClear}
-              className="text-text-muted hover:text-text-dark transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center"
+              className={cn(
+                "transition-colors duration-200 p-1 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center",
+                isDarkMode 
+                  ? "text-dark-text-muted hover:text-dark-text-primary hover:bg-dark-olive-border/30" 
+                  : "text-text-muted hover:text-text-dark hover:bg-gray-100"
+              )}
               aria-label="Clear input"
             >
               <X className="w-4 h-4" />
@@ -161,7 +193,12 @@ const Input = forwardRef(
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="text-text-muted hover:text-text-dark transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center"
+              className={cn(
+                "transition-colors duration-200 p-1 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center",
+                isDarkMode 
+                  ? "text-dark-text-muted hover:text-dark-text-primary hover:bg-dark-olive-border/30" 
+                  : "text-text-muted hover:text-text-dark hover:bg-gray-100"
+              )}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? (
@@ -174,7 +211,10 @@ const Input = forwardRef(
 
           {/* Right Icon */}
           {rightIcon && !isPassword && !showClearButton && (
-            <div className="text-text-muted pointer-events-none">
+            <div className={cn(
+              "pointer-events-none",
+              isDarkMode ? "text-dark-text-muted" : "text-text-muted"
+            )}>
               {rightIcon}
             </div>
           )}
@@ -227,7 +267,7 @@ const FloatingInput = forwardRef(({ label, className, id, ...props }, ref) => {
           className={cn(
             'absolute left-4 text-text-muted transition-all duration-300 pointer-events-none',
             shouldFloat
-              ? 'top-2 text-xs text-bottle-green scale-90 origin-left'
+              ? 'top-2 text-xs text-muted-olive scale-90 origin-left'
               : 'top-1/2 -translate-y-1/2 text-base'
           )}
         >
@@ -253,7 +293,7 @@ const Textarea = forwardRef(
     return (
       <textarea
         className={cn(
-          'w-full rounded-2xl border-0 bg-earthy-beige/30 px-4 py-3 text-base text-text-dark placeholder:text-text-muted/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[88px] focus:bg-white focus:shadow-lg focus:ring-bottle-green/40 disabled:cursor-not-allowed disabled:opacity-50',
+          'w-full rounded-2xl border-0 bg-earthy-beige/30 px-4 py-3 text-base text-text-dark placeholder:text-text-muted/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[88px] focus:bg-white focus:shadow-lg focus:ring-muted-olive/40 disabled:cursor-not-allowed disabled:opacity-50',
           resizeClass,
           className
         )}

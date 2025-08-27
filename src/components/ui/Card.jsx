@@ -1,41 +1,54 @@
 import React, { forwardRef } from 'react';
 import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
+import { useTheme } from '../../hooks/useTheme';
 
-// Card variants for different styles and interactions
-const cardVariants = cva(
+// Dynamic card variants with dark mode support
+const getCardVariants = (isDarkMode) => cva(
   // Base card classes with organic curves and glassmorphism
   'rounded-3xl border transition-all duration-500 group',
   {
     variants: {
       variant: {
-        // Default - Subtle elevation
-        default:
-          'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-shadow-soft border-white/50 hover:-translate-y-1',
+        // Default - Subtle elevation (dark mode enhanced)
+        default: isDarkMode
+          ? 'bg-dark-olive-surface/80 backdrop-blur-sm shadow-dark-depth-1 hover:shadow-dark-depth-3 border-dark-olive-border/50 hover:-translate-y-1'
+          : 'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-shadow-soft border-white/50 hover:-translate-y-1',
 
-        // Elevated - More prominent shadow
-        elevated:
-          'bg-white shadow-lg hover:shadow-2xl hover:shadow-shadow-soft border-gray-100 hover:-translate-y-2',
+        // Elevated - More prominent shadow (dark mode optimized)
+        elevated: isDarkMode
+          ? 'bg-dark-olive-surface shadow-dark-depth-2 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/20 border-dark-olive-border hover:-translate-y-2'
+          : 'bg-white shadow-lg hover:shadow-2xl hover:shadow-shadow-soft border-gray-100 hover:-translate-y-2',
 
-        // Glass - Full glassmorphism effect
-        glass:
-          'bg-glass backdrop-blur-md border-white/20 hover:bg-white/10 hover:border-white/30 hover:shadow-lg',
+        // Glass - Full glassmorphism effect (dark mode enhanced)
+        glass: isDarkMode
+          ? 'glass-3-dark border-dark-olive-border/30 hover:glass-4-dark hover:border-dark-sage-accent/40 hover:shadow-dark-glow-olive/15'
+          : 'glass-3 border-white/20 hover:glass-4 hover:border-muted-olive/30 hover:shadow-glow-olive/10',
 
-        // Outlined - Subtle border focus
-        outlined:
-          'bg-white border-2 border-gray-200 hover:border-bottle-green hover:shadow-lg',
+        // Glass Olive - Olive-themed glassmorphism (dark mode enhanced)
+        'glass-olive': isDarkMode
+          ? 'glass-card-dark-olive border-dark-sage-accent/20 hover:glass-3-dark hover:shadow-dark-glow-sage'
+          : 'glass-card-olive border-muted-olive/20 hover:glass-3 hover:shadow-glow-sage',
 
-        // Gradient - Earth-tone gradient
-        gradient:
-          'bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 border-white/50 shadow-sm hover:shadow-xl',
+        // Outlined - Subtle border focus with olive theme (dark mode)
+        outlined: isDarkMode
+          ? 'bg-dark-olive-bg border-2 border-dark-olive-border hover:border-dark-sage-accent hover:shadow-dark-depth-2'
+          : 'bg-white border-2 border-gray-200 hover:border-muted-olive hover:shadow-lg',
 
-        // Interactive - For clickable cards
-        interactive:
-          'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-glow-green/10 border-white/50 hover:-translate-y-2 cursor-pointer hover:bg-white/90',
+        // Gradient - Earth-tone gradient (dark mode adaptation)
+        gradient: isDarkMode
+          ? 'bg-gradient-to-br from-dark-olive-surface via-dark-olive-bg to-dark-sage-accent/10 border-dark-olive-border/50 shadow-dark-depth-1 hover:shadow-dark-depth-3'
+          : 'bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 border-white/50 shadow-sm hover:shadow-xl',
 
-        // Featured - For highlighted content
-        featured:
-          'bg-gradient-secondary text-white shadow-lg hover:shadow-2xl border-0 hover:-translate-y-1',
+        // Interactive - For clickable cards with olive theme (dark mode)
+        interactive: isDarkMode
+          ? 'bg-dark-olive-surface/80 backdrop-blur-sm shadow-dark-depth-1 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/15 border-dark-olive-border/50 hover:-translate-y-2 cursor-pointer hover:bg-dark-olive-surface/90'
+          : 'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-glow-olive/10 border-white/50 hover:-translate-y-2 cursor-pointer hover:bg-white/90',
+
+        // Featured - For highlighted content (dark mode enhanced)
+        featured: isDarkMode
+          ? 'bg-gradient-secondary text-white shadow-dark-depth-2 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/25 border-0 hover:-translate-y-1'
+          : 'bg-gradient-secondary text-white shadow-lg hover:shadow-2xl border-0 hover:-translate-y-1',
       },
       padding: {
         none: 'p-0',
@@ -59,12 +72,17 @@ const cardVariants = cva(
   }
 );
 
-// Main Card component
+// Main Card component with dark mode support
 const Card = forwardRef(
   (
     { className, variant, padding, rounded, children, onClick, ...props },
     ref
   ) => {
+    const { isDarkMode } = useTheme();
+    
+    // Get theme-aware card variants
+    const cardVariants = getCardVariants(isDarkMode);
+    
     return (
       <div
         ref={ref}
@@ -105,34 +123,47 @@ const CardHeader = forwardRef(({ className, children, ...props }, ref) => (
 
 CardHeader.displayName = 'CardHeader';
 
-// Card Title component
+// Card Title component with dark mode support
 const CardTitle = forwardRef(
-  ({ className, children, as: Component = 'h3', ...props }, ref) => (
-    <Component
+  ({ className, children, as: Component = 'h3', ...props }, ref) => {
+    const { isDarkMode } = useTheme();
+    
+    return (
+      <Component
+        ref={ref}
+        className={cn(
+          'text-xl font-semibold leading-tight tracking-tight',
+          isDarkMode ? 'text-dark-text-primary' : 'text-text-dark',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </Component>
+    );
+  }
+);
+
+CardTitle.displayName = 'CardTitle';
+
+// Card Description component with dark mode support
+const CardDescription = forwardRef(({ className, children, ...props }, ref) => {
+  const { isDarkMode } = useTheme();
+  
+  return (
+    <p
       ref={ref}
       className={cn(
-        'text-xl font-semibold leading-tight tracking-tight text-text-dark',
+        'text-sm leading-relaxed',
+        isDarkMode ? 'text-dark-text-muted' : 'text-text-muted',
         className
       )}
       {...props}
     >
       {children}
-    </Component>
-  )
-);
-
-CardTitle.displayName = 'CardTitle';
-
-// Card Description component
-const CardDescription = forwardRef(({ className, children, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn('text-sm text-text-muted leading-relaxed', className)}
-    {...props}
-  >
-    {children}
-  </p>
-));
+    </p>
+  );
+});
 
 CardDescription.displayName = 'CardDescription';
 
@@ -261,7 +292,7 @@ const ProductCard = forwardRef(
           {/* Price Section */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-bottle-green">
+              <span className="text-xl font-bold text-muted-olive">
                 {price}
               </span>
               {originalPrice && (
@@ -317,7 +348,7 @@ const StatCard = forwardRef(
                 <p
                   className={cn(
                     'text-sm font-medium mt-1 flex items-center gap-1',
-                    isPositive && 'text-mint-fresh',
+                    isPositive && 'text-sage-green',
                     isNegative && 'text-tomato-red',
                     !isPositive && !isNegative && 'text-text-muted'
                   )}
@@ -343,7 +374,7 @@ const StatCard = forwardRef(
                 <div
                   className={cn(
                     'h-full rounded-full transition-all duration-1000',
-                    isPositive && 'bg-mint-fresh',
+                    isPositive && 'bg-sage-green',
                     isNegative && 'bg-tomato-red',
                     !isPositive && !isNegative && 'bg-earthy-yellow'
                   )}

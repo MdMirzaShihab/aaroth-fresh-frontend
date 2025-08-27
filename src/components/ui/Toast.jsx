@@ -23,12 +23,12 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        success: 'bg-mint-fresh/10 border-mint-fresh/20 text-bottle-green',
+        success: 'bg-success-light border-success-dark/20 text-success-dark',
         error: 'bg-tomato-red/5 border-tomato-red/20 text-tomato-red/90',
-        warning: 'bg-amber-50/80 border-amber-200/50 text-amber-800',
-        info: 'bg-blue-50/80 border-blue-200/50 text-blue-800',
+        warning: 'bg-warning-light border-warning-dark/20 text-warning-dark',
+        info: 'bg-info-light border-info-dark/20 text-info-dark',
         default: 'bg-white/90 border-gray-200/50 text-text-dark',
-        loading: 'bg-earthy-beige/20 border-earthy-brown/20 text-text-dark',
+        loading: 'bg-pending-light border-pending-dark/20 text-pending-dark',
       },
       size: {
         sm: 'p-3 text-xs',
@@ -134,7 +134,7 @@ const Toast = forwardRef(
           return (
             <CheckCircle
               {...iconProps}
-              className={cn(iconProps.className, 'text-bottle-green')}
+              className={cn(iconProps.className, 'text-success-dark')}
             />
           );
         case 'error':
@@ -148,14 +148,14 @@ const Toast = forwardRef(
           return (
             <AlertTriangle
               {...iconProps}
-              className={cn(iconProps.className, 'text-amber-600')}
+              className={cn(iconProps.className, 'text-warning-dark')}
             />
           );
         case 'info':
           return (
             <Info
               {...iconProps}
-              className={cn(iconProps.className, 'text-blue-600')}
+              className={cn(iconProps.className, 'text-info-dark')}
             />
           );
         case 'loading':
@@ -164,7 +164,7 @@ const Toast = forwardRef(
               {...iconProps}
               className={cn(
                 iconProps.className,
-                'text-text-muted animate-spin'
+                'text-pending-dark animate-spin'
               )}
             />
           );
@@ -200,11 +200,11 @@ const Toast = forwardRef(
             <div
               className={cn(
                 'h-full transition-all duration-75 ease-linear',
-                variant === 'success' && 'bg-bottle-green',
+                variant === 'success' && 'bg-success-dark',
                 variant === 'error' && 'bg-tomato-red',
-                variant === 'warning' && 'bg-amber-500',
-                variant === 'info' && 'bg-blue-500',
-                variant === 'loading' && 'bg-earthy-brown',
+                variant === 'warning' && 'bg-warning-dark',
+                variant === 'info' && 'bg-info-dark',
+                variant === 'loading' && 'bg-pending-dark',
                 variant === 'default' && 'bg-text-muted'
               )}
               style={{ width: `${progress}%` }}
@@ -225,12 +225,12 @@ const Toast = forwardRef(
                 className={cn(
                   'mt-2 text-xs font-medium underline underline-offset-2 hover:no-underline transition-all duration-200',
                   variant === 'success' &&
-                    'text-bottle-green hover:text-bottle-green/80',
+                    'text-success-dark hover:text-success-dark/80',
                   variant === 'error' &&
                     'text-tomato-red hover:text-tomato-red/80',
                   variant === 'warning' &&
-                    'text-amber-700 hover:text-amber-600',
-                  variant === 'info' && 'text-blue-700 hover:text-blue-600',
+                    'text-warning-dark hover:text-warning-dark/80',
+                  variant === 'info' && 'text-info-dark hover:text-info-dark/80',
                   variant === 'default' &&
                     'text-text-dark hover:text-text-dark/80'
                 )}

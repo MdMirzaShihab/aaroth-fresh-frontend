@@ -3,11 +3,15 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
+import { useTheme } from '../../hooks/useTheme';
 
-// Modal variants for different sizes and styles
-const modalVariants = cva(
-  // Base modal classes with glassmorphism and mobile optimization
-  'bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 animate-scale-in max-h-[90vh] overflow-y-auto',
+// Dynamic modal variants with dark mode support
+const getModalVariants = (isDarkMode) => cva(
+  // Base modal classes with enhanced glassmorphism and mobile optimization
+  cn(
+    'rounded-3xl border animate-scale-in max-h-[90vh] overflow-y-auto',
+    isDarkMode ? 'glass-5-dark shadow-dark-depth-3' : 'glass-5 shadow-depth-5'
+  ),
   {
     variants: {
       size: {
@@ -33,14 +37,15 @@ const modalVariants = cva(
   }
 );
 
-// Backdrop variants
-const backdropVariants = cva('fixed inset-0 z-50 transition-all duration-300', {
+// Enhanced backdrop variants with olive accents and dark mode support
+const getBackdropVariants = (isDarkMode) => cva('fixed inset-0 z-50 transition-all duration-300', {
   variants: {
     blur: {
-      none: 'bg-black/50',
-      light: 'bg-black/30 backdrop-blur-sm',
-      medium: 'bg-black/40 backdrop-blur-md',
-      heavy: 'bg-black/50 backdrop-blur-lg',
+      none: isDarkMode ? 'bg-black/70' : 'bg-black/50',
+      light: isDarkMode ? 'bg-black/40 backdrop-blur-sm' : 'bg-black/30 backdrop-blur-sm',
+      medium: isDarkMode ? 'bg-black/60 backdrop-blur-md' : 'bg-black/40 backdrop-blur-md',
+      heavy: isDarkMode ? 'bg-black/70 backdrop-blur-lg' : 'bg-black/50 backdrop-blur-lg',
+      olive: isDarkMode ? 'bg-dark-olive-bg/20 backdrop-blur-md' : 'bg-muted-olive/10 backdrop-blur-md',
     },
   },
   defaultVariants: {
@@ -66,8 +71,13 @@ const Modal = ({
   footerClassName,
   preventScroll = true,
 }) => {
+  const { isDarkMode } = useTheme();
   const modalRef = useRef(null);
   const previousActiveElement = useRef(null);
+  
+  // Get theme-aware variants
+  const modalVariants = getModalVariants(isDarkMode);
+  const backdropVariants = getBackdropVariants(isDarkMode);
 
   // Handle escape key
   useEffect(() => {
@@ -173,7 +183,7 @@ const Modal = ({
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="ml-4 p-2 rounded-2xl text-text-muted hover:text-text-dark hover:bg-gray-100 transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center flex-shrink-0"
+                  className="ml-4 p-2 rounded-2xl text-text-muted hover:text-text-dark hover:bg-muted-olive/10 transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center flex-shrink-0"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
@@ -277,7 +287,7 @@ const Drawer = ({
     >
       <div
         className={cn(
-          'bg-white/95 backdrop-blur-xl shadow-2xl border border-white/50 overflow-y-auto',
+          'glass-5 shadow-depth-5 border overflow-y-auto',
           drawerClasses[position],
           animationClasses[position]
         )}
@@ -295,7 +305,7 @@ const Drawer = ({
             <h2 className="text-xl font-semibold text-text-dark">{title}</h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-2xl text-text-muted hover:text-text-dark hover:bg-gray-100 transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-2xl text-text-muted hover:text-text-dark hover:bg-muted-olive/10 transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Close drawer"
             >
               <X className="w-5 h-5" />

@@ -48,11 +48,13 @@ const iconVariants = cva(
     variants: {
       variant: {
         default: 'w-24 h-24 bg-earthy-beige/30 text-text-muted/40',
-        primary: 'w-24 h-24 bg-bottle-green/10 text-bottle-green/60',
+        primary: 'w-24 h-24 bg-muted-olive/10 text-muted-olive/60',
         secondary: 'w-24 h-24 bg-earthy-brown/10 text-earthy-brown/60',
-        warning: 'w-24 h-24 bg-earthy-yellow/10 text-earthy-yellow/80',
+        warning: 'w-24 h-24 bg-warning-light text-warning-dark',
         error: 'w-24 h-24 bg-tomato-red/10 text-tomato-red/60',
-        success: 'w-24 h-24 bg-mint-fresh/10 text-mint-fresh/80',
+        success: 'w-24 h-24 bg-success-light text-success-dark',
+        sage: 'w-24 h-24 bg-sage-green/10 text-sage-green/80',
+        cedar: 'w-24 h-24 bg-dusty-cedar/10 text-dusty-cedar/80',
       },
       size: {
         sm: 'w-16 h-16 mb-4',
@@ -64,7 +66,7 @@ const iconVariants = cva(
         none: '',
         float: 'animate-float',
         pulse: 'animate-pulse',
-        glow: 'hover:animate-glow',
+        glow: 'hover:animate-glow-olive',
       },
     },
     defaultVariants: {

@@ -22,7 +22,7 @@
 
 /* Better Focus States for Dark Mode */
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-bottle-green/40 dark:focus:ring-mint-fresh/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+  @apply focus:outline-none focus:ring-2 focus:ring-muted-olive/40 dark:focus:ring-sage-green/40 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
 
 /* Animation Utilities - Motion with Purpose */
@@ -39,7 +39,7 @@
 
 /* Focus Ring - Modern and Subtle */
 .focus-ring-modern {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bottle-green/40 focus-visible:ring-offset-4 focus-visible:rounded-2xl;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-muted-olive/40 focus-visible:ring-offset-4 focus-visible:rounded-2xl;
 }
 
 /* Touch Targets - Mobile-First 44px minimum */
@@ -71,7 +71,7 @@
 
 /* Improved Card Hover Effects */
 .card-hover {
-  @apply hover:shadow-xl hover:shadow-glow-green/10 dark:hover:shadow-mint-fresh/10 hover:-translate-y-1 transition-all duration-300;
+  @apply hover:shadow-xl hover:shadow-glow-olive/10 dark:hover:shadow-sage-green/10 hover:-translate-y-1 transition-all duration-300;
 }
 
 /* Reduced Motion Support - Accessibility */

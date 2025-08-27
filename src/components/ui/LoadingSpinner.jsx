@@ -15,14 +15,16 @@ const spinnerVariants = cva('animate-spin', {
       '2xl': 'w-16 h-16',
     },
     color: {
-      default: 'text-bottle-green',
+      default: 'text-muted-olive',
       white: 'text-white',
       muted: 'text-text-muted',
-      primary: 'text-bottle-green',
+      primary: 'text-muted-olive',
       secondary: 'text-earthy-brown',
-      success: 'text-mint-fresh',
+      success: 'text-success-dark',
       error: 'text-tomato-red',
-      warning: 'text-earthy-yellow',
+      warning: 'text-warning-dark',
+      sage: 'text-sage-green',
+      cedar: 'text-dusty-cedar',
     },
   },
   defaultVariants: {
@@ -132,15 +134,15 @@ export const DotsSpinner = ({
       {...props}
     >
       <div
-        className={cn(dotSize, 'rounded-full animate-pulse', colorClass)}
+        className={cn(dotSize, 'rounded-full animate-breathe', colorClass)}
         style={{ animationDelay: '0ms' }}
       />
       <div
-        className={cn(dotSize, 'rounded-full animate-pulse', colorClass)}
+        className={cn(dotSize, 'rounded-full animate-breathe', colorClass)}
         style={{ animationDelay: '150ms' }}
       />
       <div
-        className={cn(dotSize, 'rounded-full animate-pulse', colorClass)}
+        className={cn(dotSize, 'rounded-full animate-breathe', colorClass)}
         style={{ animationDelay: '300ms' }}
       />
     </div>
@@ -155,7 +157,7 @@ export const PulseSpinner = ({
   ...props
 }) => {
   const sizeClass = spinnerVariants({ size }).replace(
-    'animate-spin text-bottle-green',
+    'animate-spin text-muted-olive',
     ''
   );
   const colorClass = spinnerVariants({ color }).replace('animate-spin', '');
@@ -384,7 +386,7 @@ export const ProgressBar = ({
 
       <div className="w-full bg-earthy-beige/30 rounded-full h-2 overflow-hidden">
         <div
-          className="h-full bg-gradient-secondary rounded-full origin-left transition-transform duration-500 ease-out"
+          className="h-full bg-gradient-olive-sage rounded-full origin-left transition-transform duration-500 ease-out"
           style={{ transform: `scaleX(${clampedProgress / 100})` }}
         />
       </div>
@@ -406,7 +408,7 @@ export const FloatingLoader = ({
   return (
     <div
       className={cn(
-        'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/50 animate-scale-in z-50',
+        'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 glass-5 rounded-3xl shadow-depth-5 p-8 border animate-scale-in z-50',
         className
       )}
       {...props}
