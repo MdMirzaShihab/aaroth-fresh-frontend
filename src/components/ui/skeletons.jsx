@@ -361,6 +361,197 @@ export const ContentSkeleton = ({ sections = 3, className, ...props }) => (
   </div>
 );
 
+// Workflow Skeleton (Admin Approval/Verification Processes)
+export const WorkflowSkeleton = ({ 
+  workflows = 3, 
+  showDocuments = true,
+  className, 
+  ...props 
+}) => (
+  <div className={cn('space-y-6', className)} {...props}>
+    {Array.from({ length: workflows }).map((_, index) => (
+      <div
+        key={index}
+        className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 animate-pulse"
+      >
+        {/* Workflow Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <SkeletonLine height="h-5" width="w-48" />
+            <div className="flex gap-3 mt-3">
+              <SkeletonLine height="h-6" width="w-20" className="rounded-full" />
+              <SkeletonLine height="h-6" width="w-16" className="rounded-full" />
+            </div>
+          </div>
+          <SkeletonLine height="h-10" width="w-10" className="rounded-xl" />
+        </div>
+        
+        {/* Document Status Grid */}
+        {showDocuments && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            {Array.from({ length: 4 }).map((_, docIndex) => (
+              <div key={docIndex} className="text-center">
+                <SkeletonCircle size="w-12 h-12" className="mx-auto mb-2" />
+                <SkeletonLine height="h-3" width="w-16" className="mx-auto" />
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Workflow Actions */}
+        <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-100">
+          <SkeletonLine height="h-11" width="w-28" className="rounded-2xl" />
+          <SkeletonLine height="h-11" width="w-24" className="rounded-2xl" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+// Admin Table Skeleton (Enhanced table for admin data)
+export const AdminTableSkeleton = ({ 
+  rows = 5, 
+  columns = 5,
+  showActions = true,
+  showFilters = true,
+  className,
+  ...props 
+}) => (
+  <div className={cn('bg-white rounded-3xl shadow-sm border border-gray-200', className)} {...props}>
+    {/* Table Header with Actions */}
+    <div className="p-6 border-b border-gray-100">
+      <div className="flex items-center justify-between mb-4">
+        <SkeletonLine height="h-6" width="w-48" />
+        {showActions && (
+          <div className="flex gap-3">
+            <SkeletonLine height="h-10" width="w-24" className="rounded-2xl" />
+            <SkeletonLine height="h-10" width="w-28" className="rounded-2xl" />
+          </div>
+        )}
+      </div>
+      
+      {/* Search and Filters */}
+      {showFilters && (
+        <div className="flex gap-3">
+          <SkeletonLine height="h-10" width="flex-1" className="rounded-2xl" />
+          <SkeletonLine height="h-10" width="w-20" className="rounded-2xl" />
+          <SkeletonLine height="h-10" width="w-24" className="rounded-2xl" />
+        </div>
+      )}
+    </div>
+    
+    <div className="overflow-hidden animate-pulse">
+      {/* Table Header Row */}
+      <div className="grid gap-4 px-6 py-4 border-b border-gray-100" 
+           style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        {Array.from({ length: columns }).map((_, index) => (
+          <SkeletonLine key={index} height="h-4" width="w-20" />
+        ))}
+      </div>
+      
+      {/* Table Data Rows */}
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <div 
+          key={rowIndex} 
+          className="grid gap-4 px-6 py-4 border-b border-gray-50 hover:bg-gray-50/50"
+          style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+        >
+          {/* First column with avatar */}
+          <div className="flex items-center gap-3">
+            <SkeletonCircle size="w-10 h-10" />
+            <div className="flex-1">
+              <SkeletonLine height="h-4" width="w-24" />
+              <SkeletonLine height="h-3" width="w-32" className="mt-1" />
+            </div>
+          </div>
+          
+          {/* Other columns */}
+          {Array.from({ length: columns - 1 }).map((_, colIndex) => (
+            <div key={colIndex} className="flex items-center">
+              {colIndex === columns - 2 ? (
+                // Status badge column
+                <SkeletonLine height="h-6" width="w-20" className="rounded-full" />
+              ) : (
+                // Regular data column
+                <SkeletonLine height="h-4" width="w-16" />
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+    
+    {/* Pagination */}
+    <div className="p-4 border-t border-gray-100">
+      <div className="flex items-center justify-between">
+        <SkeletonLine height="h-4" width="w-32" />
+        <div className="flex items-center gap-2">
+          <SkeletonLine height="h-10" width="w-20" className="rounded-xl" />
+          <SkeletonLine height="h-10" width="w-10" className="rounded-xl" />
+          <SkeletonLine height="h-10" width="w-10" className="rounded-xl" />
+          <SkeletonLine height="h-10" width="w-10" className="rounded-xl" />
+          <SkeletonLine height="h-10" width="w-20" className="rounded-xl" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Analytics Dashboard Skeleton (Enhanced for admin analytics)
+export const AnalyticsDashboardSkeleton = ({
+  kpis = 4,
+  charts = 2,
+  tables = 1,
+  className,
+  ...props
+}) => (
+  <div className={cn('space-y-8', className)} {...props}>
+    {/* KPI Cards Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {Array.from({ length: kpis }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 animate-pulse"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <SkeletonLine height="h-4" width="w-20" />
+              <SkeletonLine height="h-8" width="w-24" className="mt-2" />
+              <SkeletonLine height="h-3" width="w-16" className="mt-2" />
+            </div>
+            <SkeletonCircle size="w-12 h-12" />
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Charts Grid */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {Array.from({ length: charts }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 animate-pulse"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <SkeletonLine height="h-6" width="w-32" />
+            <SkeletonLine height="h-8" width="w-20" className="rounded-xl" />
+          </div>
+          <SkeletonLine height="h-64" width="w-full" className="rounded-2xl" />
+        </div>
+      ))}
+    </div>
+
+    {/* Data Tables */}
+    {tables > 0 && (
+      <div className="space-y-6">
+        {Array.from({ length: tables }).map((_, i) => (
+          <AdminTableSkeleton key={i} rows={5} showFilters={false} />
+        ))}
+      </div>
+    )}
+  </div>
+);
+
 // Full Page Skeleton
 export const PageSkeleton = ({ hasSidebar = true, className, ...props }) => (
   <div className={cn('flex min-h-screen bg-gray-50', className)} {...props}>
@@ -399,4 +590,8 @@ export default {
   PageHeaderSkeleton,
   ContentSkeleton,
   PageSkeleton,
+  // Admin-specific skeletons
+  WorkflowSkeleton,
+  AdminTableSkeleton,
+  AnalyticsDashboardSkeleton,
 };

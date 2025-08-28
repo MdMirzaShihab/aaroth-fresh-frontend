@@ -188,6 +188,17 @@ const AdminLayout = () => {
           })}
         </nav>
 
+        {/* Development Interface Switcher */}
+        <div className="px-3 mb-2">
+          <Link
+            to="/admin-v2/dashboard"
+            className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200 border border-blue-200 hover:border-blue-300"
+          >
+            <span className="mr-2">🚀</span>
+            Try New Admin V2
+          </Link>
+        </div>
+
         {/* Admin Profile & Logout */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
           <div className="flex items-center mb-3 p-2 rounded-lg bg-gray-50">

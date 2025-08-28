@@ -12,6 +12,7 @@ import AarothLogo from './assets/AarothLogo.png';
 // Layout Components
 import AppLayout from './components/layout/AppLayout';
 import AdminLayout from './components/layout/AdminLayout';
+import AdminV2Layout from './components/admin-v2/layout/AdminLayout/AdminLayout';
 
 // Route Protection Components
 import ProtectedRoute, {
@@ -75,6 +76,11 @@ const AdminListingsManagement = lazy(
 );
 const AdminSystemSettings = lazy(
   () => import('./pages/admin/AdminSystemSettings')
+);
+
+// Admin V2 Pages
+const AdminV2DashboardPage = lazy(
+  () => import('./pages/admin-v2/dashboard/DashboardPage')
 );
 
 // Vendor Pages
@@ -181,7 +187,7 @@ const App = () => {
   const getRoleBasedRedirect = (userRole) => {
     switch (userRole) {
       case 'admin':
-        return '/admin/dashboard';
+        return '/admin-v2/dashboard'; // Updated to use new admin-v2 interface
       case 'vendor':
         return '/vendor/dashboard';
       case 'restaurantOwner':
@@ -446,6 +452,27 @@ const App = () => {
                 </Suspense>
               }
             />
+          </Route>
+
+          {/* Admin V2 Routes - New Enhanced Interface (Development) */}
+          <Route
+            path="/admin-v2/*"
+            element={
+              <AdminRoute>
+                <AdminV2Layout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminV2DashboardPage />
+                </Suspense>
+              }
+            />
+            {/* More admin-v2 routes will be added as pages are implemented */}
           </Route>
 
           {/* Vendor Routes - Protected with AppLayout */}

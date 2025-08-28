@@ -82,15 +82,6 @@ src/
 │   │   └── components/
 │   └── index.js
 ├── components/admin-v2/
-│   ├── ui/
-│   │   ├── Button/
-│   │   ├── Card/
-│   │   ├── Modal/
-│   │   ├── Form/
-│   │   ├── DataTable/
-│   │   ├── StatusBadge/
-│   │   ├── LoadingStates/
-│   │   └── index.js
 │   ├── layout/
 │   │   ├── AdminLayout/
 │   │   ├── Sidebar/

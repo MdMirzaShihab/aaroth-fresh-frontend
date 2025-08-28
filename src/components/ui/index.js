@@ -4,10 +4,21 @@
  */
 
 // Base Components
-export { default as Button } from './Button';
-export { Input } from './Input';
-export { default as Modal } from './Modal';
-export { Card, ProductCard, StatCard } from './Card';
+import Button from './Button';
+import { Input } from './Input';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Drawer } from './Modal';
+import { Card, ProductCard, StatCard } from './Card';
+import StatusBadge, { VerificationBadge, UserStatusBadge, OrderStatusBadge, RiskBadge, UrgencyBadge, PerformanceBadge } from './StatusBadge';
+import ProgressBar, { WorkflowProgress, LinearProgress, PercentageProgress, VerticalWorkflow } from './ProgressBar';
+
+export { 
+  Button, 
+  Input, 
+  Modal, ModalHeader, ModalBody, ModalFooter, Drawer, 
+  Card, ProductCard, StatCard,
+  StatusBadge, VerificationBadge, UserStatusBadge, OrderStatusBadge, RiskBadge, UrgencyBadge, PerformanceBadge,
+  ProgressBar, WorkflowProgress, LinearProgress, PercentageProgress, VerticalWorkflow
+};
 
 // Loading Components
 export {
@@ -21,9 +32,34 @@ export {
   SkeletonLoader,
   CardSkeleton,
   SkeletonTable,
-  ProgressBar,
   FloatingLoader,
 } from './LoadingSpinner';
+
+// Enhanced Skeleton Components
+export {
+  ButtonSkeleton,
+  InputSkeleton,
+  ModalSkeleton,
+  FormSkeleton,
+  SearchBarSkeleton,
+  PaginationSkeleton,
+  TabsSkeleton,
+  DropdownSkeleton,
+  AlertBannerSkeleton,
+  ToastSkeleton,
+  ProfileSkeleton,
+  NavigationSkeleton,
+  DashboardSkeleton,
+  ListItemSkeleton,
+  SidebarSkeleton,
+  PageHeaderSkeleton,
+  ContentSkeleton,
+  PageSkeleton,
+  // Admin-enhanced skeletons
+  WorkflowSkeleton,
+  AdminTableSkeleton,
+  AnalyticsDashboardSkeleton,
+} from './skeletons';
 
 // Form Components
 export {
@@ -93,6 +129,15 @@ export {
   promiseToast,
 } from './Toast';
 
+// Error Boundary Components
+export {
+  default as ErrorBoundary,
+  AdminErrorBoundary,
+  VendorErrorBoundary,
+  RestaurantErrorBoundary,
+  useErrorHandler,
+} from '../common/ErrorBoundary';
+
 export {
   default as ConfirmDialog,
   DeleteConfirmDialog,
@@ -148,127 +193,8 @@ export {
 // Utility exports
 export { cn } from '../../utils';
 
-// Component collections for easy import
-export const BaseComponents = {
-  Button,
-  Input,
-  Modal,
-  Card,
-  ProductCard,
-  StatCard,
-};
-
-export const LoadingComponents = {
-  LoadingSpinner,
-  DotsSpinner,
-  PulseSpinner,
-  LoadingOverlay,
-  InlineLoading,
-  SkeletonLine,
-  SkeletonCircle,
-  SkeletonLoader,
-  CardSkeleton,
-  SkeletonTable,
-  ProgressBar,
-  FloatingLoader,
-};
-
-export const FormComponents = {
-  FormField,
-  ErrorMessage,
-  SuccessMessage,
-  WarningMessage,
-  FormGroup,
-  FormActions,
-  HelpText,
-  FormSection,
-  FieldArray,
-  FileUpload,
-  CompactFileUpload,
-};
-
-export const DataComponents = {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableRow,
-  TableHead,
-  TableCell,
-  DataTable,
-  MobileTable,
-  TableSkeleton,
-  Pagination,
-  SimplePagination,
-  MobilePagination,
-  CompactPagination,
-  LoadMore,
-  InfiniteScrollTrigger,
-  EmptyState,
-  NoSearchResults,
-  EmptyCart,
-  NoProducts,
-  NoFavorites,
-  ErrorState,
-  SearchBar,
-  CompactSearchBar,
-};
-
-export const FeedbackComponents = {
-  Toast,
-  ToastContainer,
-  SuccessToast,
-  ErrorToast,
-  WarningToast,
-  InfoToast,
-  LoadingToast,
-  ConfirmDialog,
-  DeleteConfirmDialog,
-  SaveConfirmDialog,
-  UnsavedChangesDialog,
-  LogoutConfirmDialog,
-  ResetConfirmDialog,
-  PublishConfirmDialog,
-  AlertBanner,
-  MaintenanceBanner,
-  UpdateBanner,
-  ErrorBanner,
-  OfflineBanner,
-  CookieBanner,
-  FeatureBanner,
-};
-
-export const NavigationComponents = {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  ScrollableTabs,
-  NavigationTabs,
-  SettingsTabs,
-  CardTabs,
-  AnimatedTabsContent,
-  Dropdown,
-  DropdownTrigger,
-  DropdownContent,
-  DropdownItem,
-  DropdownSeparator,
-  DropdownLabel,
-  SelectDropdown,
-  ActionMenuDropdown,
-  ProfileDropdown,
-  FilterDropdown,
-};
-
-// Utility hooks collection
-export const Hooks = {
-  useConfirmDialog,
-  useDeleteConfirm,
-  useAlertBanner,
-  useTabs,
-  useDropdown,
-  useSelectDropdown,
-};
+// Component collections removed to prevent import issues
+// All components are available as individual named exports
 
 // Design system utilities
 export const DesignSystem = {
