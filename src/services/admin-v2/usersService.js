@@ -323,6 +323,17 @@ export const generateUserExport = (users, format = 'csv') => {
   return csvContent;
 };
 
+// Export RTK Query hooks from admin API slice for user management
+export {
+  useGetAdminUsersV2Query as useGetUsersQuery,
+  useGetAdminUserDetailsQuery as useGetUserDetailsQuery,
+  useUpdateAdminUserV2Mutation as useUpdateUserMutation,
+  useDeleteAdminUserV2Mutation as useDeleteUserMutation,
+  useCreateRestaurantOwnerV2Mutation as useCreateRestaurantOwnerMutation,
+  useCreateRestaurantManagerV2Mutation as useCreateRestaurantManagerMutation,
+  useGetUserAnalyticsQuery
+} from '../../store/slices/admin-v2/adminApiSlice';
+
 const usersService = {
   transformUsersData,
   transformUserCreationData,

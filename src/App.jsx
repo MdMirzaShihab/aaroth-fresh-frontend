@@ -82,6 +82,9 @@ const AdminSystemSettings = lazy(
 const AdminV2DashboardPage = lazy(
   () => import('./pages/admin-v2/dashboard/DashboardPage')
 );
+const AdminV2UsersPage = lazy(
+  () => import('./pages/admin-v2/users/UsersManagementPage')
+);
 
 // Vendor Pages
 const VendorDashboard = lazy(
@@ -469,6 +472,14 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <AdminV2DashboardPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminV2UsersPage />
                 </Suspense>
               }
             />
