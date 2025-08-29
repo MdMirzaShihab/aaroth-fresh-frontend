@@ -58,6 +58,20 @@ const CategoryManagement = lazy(
 );
 const ProductAnalytics = lazy(() => import('./pages/admin/ProductAnalytics'));
 const ProductApproval = lazy(() => import('./pages/admin/ProductApproval'));
+
+// Enhanced Restaurant & Catalog Management (Prompt 6)
+const RestaurantsManagementPage = lazy(
+  () => import('./pages/admin/RestaurantsManagementPage')
+);
+const ProductsManagementPage = lazy(
+  () => import('./pages/admin/ProductsManagementPage')
+);
+const ListingsManagementPage = lazy(
+  () => import('./pages/admin/ListingsManagementPage')
+);
+const CategoryManagementEnhanced = lazy(
+  () => import('./pages/admin/CategoryManagementEnhanced')
+);
 const AnalyticsDashboard = lazy(
   () => import('./pages/admin/AnalyticsDashboard')
 );
@@ -84,6 +98,22 @@ const AdminV2DashboardPage = lazy(
 );
 const AdminV2UsersPage = lazy(
   () => import('./pages/admin-v2/users/UsersManagementPage')
+);
+const AdminV2VendorsPage = lazy(
+  () => import('./pages/admin-v2/vendors/VendorsManagementPage')
+);
+
+// Admin V2 Analytics & Performance Pages (Prompt 7)
+const BusinessAnalytics = lazy(
+  () => import('./pages/admin-v2/analytics/BusinessAnalytics')
+);
+const PerformanceMonitoring = lazy(
+  () => import('./pages/admin-v2/performance/PerformanceMonitoring')
+);
+
+// Admin V2 Settings Pages (Prompt 8)
+const SystemSettings = lazy(
+  () => import('./pages/admin-v2/settings/SystemSettings')
 );
 
 // Vendor Pages
@@ -483,6 +513,109 @@ const App = () => {
                 </Suspense>
               }
             />
+            <Route
+              path="vendors"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminV2VendorsPage />
+                </Suspense>
+              }
+            />
+            
+            {/* Enhanced Restaurant & Catalog Management (Prompt 6) */}
+            <Route
+              path="restaurants"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <RestaurantsManagementPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ProductsManagementPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="listings"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <ListingsManagementPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="categories"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CategoryManagementEnhanced />
+                </Suspense>
+              }
+            />
+            
+            {/* Analytics & Performance Monitoring (Prompt 7) */}
+            <Route
+              path="analytics"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <BusinessAnalytics />
+                </Suspense>
+              }
+            />
+            <Route
+              path="analytics/business"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <BusinessAnalytics />
+                </Suspense>
+              }
+            />
+            <Route
+              path="performance"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <PerformanceMonitoring />
+                </Suspense>
+              }
+            />
+            
+            {/* System Settings Management (Prompt 8) */}
+            <Route
+              path="settings"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <SystemSettings />
+                </Suspense>
+              }
+            />
+            <Route
+              path="settings/general"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <SystemSettings />
+                </Suspense>
+              }
+            />
+            <Route
+              path="settings/business"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <SystemSettings />
+                </Suspense>
+              }
+            />
+            <Route
+              path="settings/security"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <SystemSettings />
+                </Suspense>
+              }
+            />
+            
             {/* More admin-v2 routes will be added as pages are implemented */}
           </Route>
 

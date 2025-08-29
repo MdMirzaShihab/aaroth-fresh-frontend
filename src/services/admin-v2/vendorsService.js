@@ -1,9 +1,328 @@
 /**
  * Vendors Service - Admin V2
- * Business logic for vendor management and verification workflows
+ * Comprehensive vendor management API integration with verification workflows and performance monitoring
  */
 
 import { format } from 'date-fns';
+import { apiSlice } from '../../store/slices/apiSlice';
+
+// RTK Query API Slice for Vendor Management
+export const vendorsApiSlice = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    // Vendor Directory - Main listing with advanced filtering
+    getVendors: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors',
+        method: 'GET',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          search: params.search || '',
+          status: params.status || '',
+          verificationStatus: params.verificationStatus || '',
+          location: params.location || '',
+          businessType: params.businessType || '',
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+          urgencyLevel: params.urgencyLevel || '',
+          riskLevel: params.riskLevel || '',
+          ...params
+        }
+      }),
+      providesTags: (result, error, params) => [
+        'Vendor',
+        { type: 'VendorList', id: JSON.stringify(params) }
+      ],
+      transformResponse: (response) => {
+        const vendors = response.data?.vendors || response.data || [];
+        return {
+          vendors: transformVendorsData({ data: vendors }),
+          total: response.data?.total || vendors.length,
+          totalPages: response.data?.totalPages || Math.ceil(vendors.length / (params?.limit || 20)),
+          currentPage: response.data?.currentPage || 1,
+          stats: response.data?.stats || {},
+          filters: response.data?.availableFilters || {}
+        };
+      }
+    }),
+
+    // Vendor Details - Complete vendor profile
+    getVendorDetails: builder.query({
+      query: (vendorId) => ({
+        url: `/admin/vendors/${vendorId}`,
+        method: 'GET'
+      }),
+      providesTags: (result, error, vendorId) => [
+        { type: 'Vendor', id: vendorId }
+      ],
+      transformResponse: (response) => {
+        const vendor = response.data?.vendor || response.data;
+        return transformVendorsData({ data: [vendor] })[0];
+      }
+    }),
+
+    // Vendor Analytics - Performance metrics
+    getVendorAnalytics: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors/analytics',
+        method: 'GET',
+        params: {
+          period: params.period || 'monthly',
+          startDate: params.startDate,
+          endDate: params.endDate,
+          vendorId: params.vendorId
+        }
+      }),
+      providesTags: ['Analytics', 'Vendor'],
+      transformResponse: (response) => response.data
+    }),
+
+    // Verification Queue - Pending verification requests
+    getVerificationQueue: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors/verification-queue',
+        method: 'GET',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          priority: params.priority || '',
+          daysWaiting: params.daysWaiting || '',
+          sortBy: params.sortBy || 'submittedAt',
+          sortOrder: params.sortOrder || 'asc'
+        }
+      }),
+      providesTags: ['Verification', 'Vendor'],
+      transformResponse: (response) => {
+        const vendors = response.data?.vendors || [];
+        return {
+          vendors: vendors.map(transformVerificationData),
+          total: response.data?.total || 0,
+          urgentCount: response.data?.urgentCount || 0,
+          averageWaitTime: response.data?.averageWaitTime || 0
+        };
+      }
+    }),
+
+    // Vendor Performance - Individual vendor metrics
+    getVendorPerformance: builder.query({
+      query: ({ vendorId, period = 'monthly' }) => ({
+        url: `/admin/vendors/${vendorId}/performance`,
+        method: 'GET',
+        params: { period }
+      }),
+      providesTags: (result, error, { vendorId }) => [
+        { type: 'Vendor', id: vendorId },
+        'Analytics'
+      ]
+    }),
+
+    // Update Vendor - General vendor information
+    updateVendor: builder.mutation({
+      query: ({ vendorId, updates }) => ({
+        url: `/admin/vendors/${vendorId}`,
+        method: 'PUT',
+        body: updates
+      }),
+      invalidatesTags: (result, error, { vendorId }) => [
+        { type: 'Vendor', id: vendorId },
+        'Vendor',
+        'VendorList'
+      ]
+    }),
+
+    // Verification Management - Approve/Reject verification
+    updateVendorVerification: builder.mutation({
+      query: ({ vendorId, status, reason, documents = [] }) => ({
+        url: `/admin/vendors/${vendorId}/verification`,
+        method: 'PUT',
+        body: {
+          verificationStatus: status,
+          verificationReason: reason,
+          reviewedDocuments: documents,
+          reviewedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: (result, error, { vendorId }) => [
+        { type: 'Vendor', id: vendorId },
+        'Vendor',
+        'Verification',
+        'AdminDashboard'
+      ]
+    }),
+
+    // Status Management - Activate/Deactivate vendor
+    updateVendorStatus: builder.mutation({
+      query: ({ vendorId, status, reason }) => ({
+        url: `/admin/vendors/${vendorId}/status`,
+        method: 'PUT',
+        body: {
+          status,
+          statusReason: reason,
+          updatedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: (result, error, { vendorId }) => [
+        { type: 'Vendor', id: vendorId },
+        'Vendor',
+        'AdminDashboard'
+      ]
+    }),
+
+    // Deactivate Vendor - Controlled deactivation
+    deactivateVendor: builder.mutation({
+      query: ({ vendorId, reason, notifyVendor = true }) => ({
+        url: `/admin/vendors/${vendorId}/deactivate`,
+        method: 'PUT',
+        body: {
+          deactivationReason: reason,
+          notifyVendor,
+          deactivatedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: (result, error, { vendorId }) => [
+        { type: 'Vendor', id: vendorId },
+        'Vendor',
+        'AdminDashboard'
+      ]
+    }),
+
+    // Safe Delete Analysis - Check deletion impact
+    getVendorDeletionImpact: builder.query({
+      query: (vendorId) => ({
+        url: `/admin/vendors/${vendorId}/deletion-impact`,
+        method: 'GET'
+      }),
+      transformResponse: (response) => response.data
+    }),
+
+    // Safe Delete Vendor - Delete with impact analysis
+    safeDeleteVendor: builder.mutation({
+      query: ({ vendorId, reason, transferOrders = false, transferToVendorId = null }) => ({
+        url: `/admin/vendors/${vendorId}/safe-delete`,
+        method: 'DELETE',
+        body: {
+          deletionReason: reason,
+          transferOrders,
+          transferToVendorId,
+          deletedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: (result, error, { vendorId }) => [
+        { type: 'Vendor', id: vendorId },
+        'Vendor',
+        'AdminDashboard'
+      ]
+    }),
+
+    // Bulk Operations - Multi-vendor management
+    bulkVendorOperations: builder.mutation({
+      query: ({ vendorIds, operation, operationData = {} }) => ({
+        url: '/admin/vendors/bulk',
+        method: 'POST',
+        body: {
+          vendorIds,
+          operation,
+          operationData,
+          performedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: ['Vendor', 'Verification', 'AdminDashboard']
+    }),
+
+    // Export Vendors - Data export functionality
+    exportVendors: builder.mutation({
+      query: (params = {}) => ({
+        url: '/admin/vendors/export',
+        method: 'POST',
+        body: {
+          format: params.format || 'csv',
+          filters: params.filters || {},
+          fields: params.fields || [],
+          includePerformanceData: params.includePerformanceData || false
+        }
+      })
+    }),
+
+    // Vendor Categories/Types - Available business categories
+    getVendorCategories: builder.query({
+      query: () => ({
+        url: '/admin/vendors/categories',
+        method: 'GET'
+      }),
+      providesTags: ['Category'],
+      transformResponse: (response) => response.data?.categories || response.data
+    }),
+
+    // Vendor Locations - Available geographic locations
+    getVendorLocations: builder.query({
+      query: () => ({
+        url: '/admin/vendors/locations',
+        method: 'GET'
+      }),
+      providesTags: ['Location'],
+      transformResponse: (response) => response.data?.locations || response.data
+    }),
+
+    // Send Vendor Message - Communication
+    sendVendorMessage: builder.mutation({
+      query: ({ vendorId, message, type = 'notification' }) => ({
+        url: `/admin/vendors/${vendorId}/message`,
+        method: 'POST',
+        body: {
+          message,
+          messageType: type,
+          sentAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: (result, error, { vendorId }) => [
+        { type: 'Vendor', id: vendorId }
+      ]
+    }),
+
+    // Broadcast Message - Message multiple vendors
+    broadcastVendorMessage: builder.mutation({
+      query: ({ vendorIds, message, type = 'announcement' }) => ({
+        url: '/admin/vendors/broadcast',
+        method: 'POST',
+        body: {
+          vendorIds,
+          message,
+          messageType: type,
+          sentAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: ['Vendor']
+    })
+  })
+});
+
+// Export hooks for components
+export const {
+  // Queries
+  useGetVendorsQuery,
+  useGetVendorDetailsQuery,
+  useGetVendorAnalyticsQuery,
+  useGetVerificationQueueQuery,
+  useGetVendorPerformanceQuery,
+  useGetVendorDeletionImpactQuery,
+  useGetVendorCategoriesQuery,
+  useGetVendorLocationsQuery,
+  
+  // Mutations
+  useUpdateVendorMutation,
+  useUpdateVendorVerificationMutation,
+  useUpdateVendorStatusMutation,
+  useDeactivateVendorMutation,
+  useSafeDeleteVendorMutation,
+  useBulkVendorOperationsMutation,
+  useExportVendorsMutation,
+  useSendVendorMessageMutation,
+  useBroadcastVendorMessageMutation,
+  
+  // Lazy queries for on-demand loading
+  useLazyGetVendorDetailsQuery,
+  useLazyGetVendorDeletionImpactQuery
+} = vendorsApiSlice;
 
 /**
  * Transform vendor data for admin management

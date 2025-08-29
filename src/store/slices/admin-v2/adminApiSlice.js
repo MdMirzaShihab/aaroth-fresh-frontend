@@ -672,6 +672,123 @@ export const adminApiV2Slice = createApi({
       invalidatesTags: ['SystemSettings'],
     }),
 
+    // ================================================
+    // ENHANCED SETTINGS MANAGEMENT ENDPOINTS (Prompt 8)
+    // ================================================
+
+    // Get settings by category
+    getCategorySettings: builder.query({
+      query: (category) => ({
+        url: `settings/category/${category}`,
+      }),
+      providesTags: (result, error, category) => [
+        { type: 'SystemSettings', id: category },
+        'SystemSettings'
+      ],
+    }),
+
+    // Get individual setting by key
+    getSettingByKey: builder.query({
+      query: (key) => ({
+        url: `settings/key/${key}`,
+      }),
+      providesTags: (result, error, key) => [
+        { type: 'SystemSettings', id: key }
+      ],
+    }),
+
+    // Get settings history for audit trail
+    getSettingHistory: builder.query({
+      query: ({ key, category, timeRange = '30d', type, search, page = 1, limit = 50 }) => ({
+        url: key ? `settings/key/${key}/history` : 'settings/history',
+        params: {
+          category,
+          timeRange,
+          type,
+          search,
+          page,
+          limit,
+        },
+      }),
+      providesTags: (result, error, { key, category }) => [
+        { type: 'SettingsHistory', id: key || category || 'all' }
+      ],
+    }),
+
+    // Bulk update multiple settings
+    bulkUpdateSettings: builder.mutation({
+      query: ({ settings, changeReason }) => ({
+        url: 'settings/bulk',
+        method: 'PUT',
+        body: { settings, changeReason },
+      }),
+      invalidatesTags: ['SystemSettings', 'SettingsHistory'],
+    }),
+
+    // Reset settings to default values
+    resetSystemSetting: builder.mutation({
+      query: ({ keys, category, reason }) => ({
+        url: 'settings/reset',
+        method: 'POST',
+        body: { keys, category, reason },
+      }),
+      invalidatesTags: ['SystemSettings', 'SettingsHistory'],
+    }),
+
+    // Validate setting value
+    validateSetting: builder.mutation({
+      query: ({ key, value }) => ({
+        url: `settings/key/${key}/validate`,
+        method: 'POST',
+        body: { value },
+      }),
+    }),
+
+    // Get settings schema/configuration
+    getSettingsSchema: builder.query({
+      query: (category) => ({
+        url: 'settings/schema',
+        params: { category },
+      }),
+      providesTags: ['SettingsSchema'],
+    }),
+
+    // Import settings from file
+    importSettings: builder.mutation({
+      query: ({ settings, importMode = 'merge', changeReason }) => ({
+        url: 'settings/import',
+        method: 'POST',
+        body: { settings, importMode, changeReason },
+      }),
+      invalidatesTags: ['SystemSettings', 'SettingsHistory'],
+    }),
+
+    // Export settings
+    exportSettings: builder.query({
+      query: ({ category, format = 'json', includeDefaults = false }) => ({
+        url: 'settings/export',
+        params: { category, format, includeDefaults },
+      }),
+    }),
+
+    // Get settings templates
+    getSettingsTemplates: builder.query({
+      query: () => ({
+        url: 'settings/templates',
+      }),
+      providesTags: ['SettingsTemplates'],
+    }),
+
+    // Apply settings template
+    applySettingsTemplate: builder.mutation({
+      query: ({ templateId, overrides = {}, changeReason }) => ({
+        url: `settings/templates/${templateId}/apply`,
+        method: 'POST',
+        body: { overrides, changeReason },
+      }),
+      invalidatesTags: ['SystemSettings', 'SettingsHistory'],
+    }),
+
     // Performance monitoring and SLA tracking
     getPerformanceMetrics: builder.query({
       query: (params = {}) => ({
@@ -681,6 +798,150 @@ export const adminApiV2Slice = createApi({
       providesTags: ['PerformanceMetrics'],
       // Auto-refresh performance metrics every 2 minutes
       pollingInterval: 120000,
+    }),
+
+    // ================================================
+    // 8. ENHANCED ANALYTICS ENDPOINTS (Prompt 7)
+    // ================================================
+
+    // Get comprehensive product analytics with inventory insights
+    getProductAnalytics: builder.query({
+      query: (params = {}) => ({
+        url: 'analytics/products/comprehensive',
+        params: {
+          timeRange: params.timeRange || '30d',
+          category: params.category,
+          vendor: params.vendor,
+          includeInventory: params.includeInventory !== false,
+          includeTrends: params.includeTrends !== false,
+          ...params,
+        },
+      }),
+      providesTags: ['ProductAnalytics', 'AdminAnalytics'],
+      keepUnusedDataFor: 600, // 10 minutes
+    }),
+
+    // ================================================
+    // 9. PERFORMANCE MONITORING ENDPOINTS (Prompt 7)
+    // ================================================
+
+    // Get performance overview with system health metrics
+    getPerformanceOverview: builder.query({
+      query: (params = {}) => ({
+        url: 'performance/overview',
+        params: {
+          timeRange: params.timeRange || '24h',
+          includeAlerts: params.includeAlerts !== false,
+          includeSystemHealth: params.includeSystemHealth !== false,
+          ...params,
+        },
+      }),
+      providesTags: ['PerformanceMetrics'],
+      // Refresh every minute for real-time monitoring
+      pollingInterval: 60000,
+    }),
+
+    // Get admin team performance metrics and efficiency tracking
+    getAdminPerformance: builder.query({
+      query: (params = {}) => ({
+        url: 'performance/admin-team',
+        params: {
+          timeRange: params.timeRange || '24h',
+          department: params.department,
+          includeIndividual: params.includeIndividual !== false,
+          includeWorkload: params.includeWorkload !== false,
+          ...params,
+        },
+      }),
+      providesTags: ['PerformanceMetrics', 'AdminUsers'],
+      keepUnusedDataFor: 300, // 5 minutes
+    }),
+
+    // Get SLA metrics and compliance tracking
+    getSLAMetrics: builder.query({
+      query: (params = {}) => ({
+        url: 'performance/sla',
+        params: {
+          timeRange: params.timeRange || '24h',
+          includeViolations: params.includeViolations !== false,
+          severity: params.severity, // critical, high, medium, low
+          status: params.status, // active, resolved
+          ...params,
+        },
+      }),
+      providesTags: ['PerformanceMetrics'],
+      // Refresh SLA data every 2 minutes
+      pollingInterval: 120000,
+    }),
+
+    // Create or update SLA violation
+    updateSLAViolation: builder.mutation({
+      query: ({ violationId, status, resolution, assignee }) => ({
+        url: `performance/sla/violations/${violationId}`,
+        method: 'PUT',
+        body: { status, resolution, assignee },
+      }),
+      invalidatesTags: ['PerformanceMetrics'],
+    }),
+
+    // ================================================
+    // 10. REPORT GENERATION ENDPOINTS (Prompt 7)
+    // ================================================
+
+    // Generate analytics report with custom parameters
+    generateAnalyticsReport: builder.mutation({
+      query: (reportConfig) => ({
+        url: 'reports/analytics/generate',
+        method: 'POST',
+        body: {
+          template: reportConfig.template || 'comprehensive',
+          format: reportConfig.format || 'pdf', // pdf, csv, both
+          timeRange: reportConfig.timeRange || '30d',
+          sections: reportConfig.sections || ['overview', 'sales', 'users', 'products'],
+          includeCharts: reportConfig.includeCharts !== false,
+          includeRawData: reportConfig.includeRawData !== false,
+          recipientEmail: reportConfig.recipientEmail,
+          customFilters: reportConfig.customFilters,
+          ...reportConfig,
+        },
+      }),
+      // Don't cache report generation
+      invalidatesTags: [],
+    }),
+
+    // Schedule recurring analytics reports
+    scheduleAnalyticsReport: builder.mutation({
+      query: (scheduleConfig) => ({
+        url: 'reports/analytics/schedule',
+        method: 'POST',
+        body: {
+          schedule: scheduleConfig.schedule, // daily, weekly, monthly
+          template: scheduleConfig.template || 'comprehensive',
+          format: scheduleConfig.format || 'pdf',
+          sections: scheduleConfig.sections,
+          recipients: scheduleConfig.recipients || [],
+          timeZone: scheduleConfig.timeZone || 'UTC',
+          isActive: scheduleConfig.isActive !== false,
+          ...scheduleConfig,
+        },
+      }),
+      invalidatesTags: ['SystemSettings'],
+    }),
+
+    // Get report generation history and status
+    getReportHistory: builder.query({
+      query: (params = {}) => ({
+        url: 'reports/history',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          type: params.type, // analytics, performance
+          status: params.status, // pending, completed, failed
+          ...params,
+        },
+      }),
+      providesTags: ['SystemSettings'],
+      keepUnusedDataFor: 300,
     }),
   }),
 });
@@ -741,6 +1002,33 @@ export const {
   useGetSystemSettingsQuery,
   useUpdateSystemSettingMutation,
   useGetPerformanceMetricsQuery,
+
+  // Enhanced Settings Management (Prompt 8)
+  useGetCategorySettingsQuery,
+  useGetSettingByKeyQuery,
+  useGetSettingHistoryQuery,
+  useBulkUpdateSettingsMutation,
+  useResetSystemSettingMutation,
+  useValidateSettingMutation,
+  useGetSettingsSchemaQuery,
+  useImportSettingsMutation,
+  useExportSettingsQuery,
+  useGetSettingsTemplatesQuery,
+  useApplySettingsTemplateMutation,
+
+  // Enhanced Analytics (Prompt 7)
+  useGetProductAnalyticsQuery,
+  
+  // Performance Monitoring (Prompt 7)
+  useGetPerformanceOverviewQuery,
+  useGetAdminPerformanceQuery,
+  useGetSLAMetricsQuery,
+  useUpdateSLAViolationMutation,
+  
+  // Report Generation (Prompt 7)
+  useGenerateAnalyticsReportMutation,
+  useScheduleAnalyticsReportMutation,
+  useGetReportHistoryQuery,
 } = adminApiV2Slice;
 
 export default adminApiV2Slice;

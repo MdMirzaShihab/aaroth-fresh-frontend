@@ -3,7 +3,7 @@
  * Features: Multi-column sorting, user avatars, risk scoring, business associations, mobile optimization
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   ChevronUp,
@@ -28,6 +28,10 @@ import {
   Star
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
+import useAccessibility from '../../../../hooks/useAccessibility';
+import useMobileOptimization from '../../../../hooks/useMobileOptimization';
+import usePerformanceOptimization, { useVirtualScrolling, useDataOptimization, useTablePerformance } from '../../../../hooks/usePerformanceOptimization';
+import { virtualScrolling, memoization } from '../../../../utils/performance';
 import { Card } from '../../../../components/ui';
 import { Button } from '../../../../components/ui';
 import { StatusBadge } from '../../../../components/ui';
@@ -181,7 +185,7 @@ const UserActions = ({ user, onAction }) => {
   );
 };
 
-const UserDirectoryTable = ({
+const UserDirectoryTable = memo(({
   users = [],
   loading = false,
   error = null,
@@ -199,7 +203,28 @@ const UserDirectoryTable = ({
   onUserAction
 }) => {
   const { isDarkMode } = useTheme();
-  const [viewMode, setViewMode] = useState('table'); // 'table' or 'cards'
+  const { isMobile } = useMobileOptimization();
+  const { containerRef, getFocusClasses, getAriaProps, announce } = useAccessibility();
+  const [viewMode, setViewMode] = useState(isMobile ? 'cards' : 'table'); // 'table' or 'cards'
+
+  // Performance optimization hooks
+  const {
+    memoizedCallback,
+    createCancellablePromise,
+    addCleanup,
+  } = usePerformanceOptimization({
+    memory: { trackMemory: true, componentName: 'UserDirectoryTable' },
+    render: { trackPerformance: true, componentName: 'UserDirectoryTable' },
+  });
+
+  // Table performance optimization
+  const tablePerformance = useTablePerformance({
+    data: users,
+    columns: columns, // Use columns defined below
+    enableVirtualScrolling: users.length > 50, // Enable for large datasets
+    rowHeight: isMobile ? 120 : 80,
+    containerHeight: 600,
+  });
 
   // Column configuration
   const columns = [
@@ -399,22 +424,27 @@ const UserDirectoryTable = ({
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-dark-bg-alt divide-y divide-gray-200 dark:divide-dark-border">
-              {users.map((user) => (
+              {tablePerformance.tableData.map((user, index) => (
                 <motion.tr
                   key={user.id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="hover:bg-gray-50 dark:hover:bg-dark-surface transition-colors"
+                  {...getAriaProps({
+                    role: 'row',
+                    label: `User ${user.name}, ${user.role}, row ${index + 1}`,
+                  })}
                 >
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
                       checked={selectedUsers.includes(user.id)}
                       onChange={(e) => handleUserSelect(user.id, e.target.checked)}
-                      className="rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
+                      className={`rounded border-gray-300 text-bottle-green focus:ring-bottle-green ${getFocusClasses()}`}
+                      {...getAriaProps({ label: `Select user ${user.name}` })}
                     />
                   </td>
-                  {columns.map((column) => (
+                  {tablePerformance.columns.map((column) => (
                     <td key={column.key} className="px-6 py-4">
                       {column.render ? column.render(user[column.key], user) : user[column.key]}
                     </td>
@@ -428,11 +458,16 @@ const UserDirectoryTable = ({
 
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
-        {users.map((user) => (
+        {tablePerformance.tableData.map((user, index) => (
           <motion.div
             key={user.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            {...getAriaProps({
+              role: 'article',
+              label: `User ${user.name}, ${user.role}`,
+              describedby: `user-${user.id}-details`,
+            })}
           >
             <Card className="p-4">
               <div className="flex items-start justify-between mb-3">
@@ -441,7 +476,8 @@ const UserDirectoryTable = ({
                     type="checkbox"
                     checked={selectedUsers.includes(user.id)}
                     onChange={(e) => handleUserSelect(user.id, e.target.checked)}
-                    className="rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
+                    className={`rounded border-gray-300 text-bottle-green focus:ring-bottle-green ${getFocusClasses()} touch-target`}
+                    {...getAriaProps({ label: `Select user ${user.name}` })}
                   />
                   <UserAvatar user={user} size="md" />
                   <div className="flex-1 min-w-0">
@@ -509,8 +545,28 @@ const UserDirectoryTable = ({
           <LoadingSpinner size="md" />
         </div>
       )}
+
+      {/* Performance Info (Development only) */}
+      {import.meta.env.DEV && tablePerformance.isVirtualized && (
+        <div className="text-xs text-gray-400 p-2 bg-gray-100 rounded">
+          Performance: {tablePerformance.visibleItemCount}/{tablePerformance.itemCount} rows rendered 
+          | Virtual scrolling: {tablePerformance.isVirtualized ? 'enabled' : 'disabled'}
+        </div>
+      )}
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom memoization comparison for optimal performance
+  return (
+    prevProps.users.length === nextProps.users.length &&
+    prevProps.loading === nextProps.loading &&
+    prevProps.error === nextProps.error &&
+    prevProps.currentPage === nextProps.currentPage &&
+    prevProps.pageSize === nextProps.pageSize &&
+    prevProps.totalPages === nextProps.totalPages &&
+    memoization.shallowEqual(prevProps.selectedUsers, nextProps.selectedUsers) &&
+    memoization.shallowEqual(prevProps.sortConfig, nextProps.sortConfig)
+  );
+});
 
 export default UserDirectoryTable;

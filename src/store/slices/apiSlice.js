@@ -1426,6 +1426,252 @@ export const apiSlice = createApi({
       providesTags: (result, error, id) => [{ type: 'CategoryUsage', id }],
     }),
 
+    // ===== RESTAURANT MANAGEMENT SYSTEM (PROMPT 6) =====
+    // Restaurant statistics and analytics
+    getAdminRestaurantsStats: builder.query({
+      query: () => '/admin/restaurants/stats',
+      providesTags: ['Restaurant'],
+    }),
+
+    // Restaurant status management
+    updateRestaurantStatus: builder.mutation({
+      query: ({ id, status, reason }) => ({
+        url: `/admin/restaurants/${id}/status`,
+        method: 'PUT',
+        body: { status, reason },
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    // Flag restaurant for review
+    flagRestaurant: builder.mutation({
+      query: ({ id, reason, details, severity }) => ({
+        url: `/admin/restaurants/${id}/flag`,
+        method: 'PUT',
+        body: { reason, details, severity },
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    // Restaurant verification workflow
+    approveRestaurantVerification: builder.mutation({
+      query: ({ id, notes }) => ({
+        url: `/admin/restaurants/${id}/verification/approve`,
+        method: 'PUT',
+        body: { notes },
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    rejectRestaurantVerification: builder.mutation({
+      query: ({ id, reason, notes }) => ({
+        url: `/admin/restaurants/${id}/verification/reject`,
+        method: 'PUT',
+        body: { reason, notes },
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    requestAdditionalDocuments: builder.mutation({
+      query: ({ id, requiredDocuments, message }) => ({
+        url: `/admin/restaurants/${id}/verification/request-docs`,
+        method: 'PUT',
+        body: { requiredDocuments, message },
+      }),
+      invalidatesTags: ['Restaurant'],
+    }),
+
+    // Manager relationship management
+    getRestaurantManagers: builder.query({
+      query: (restaurantId) => `/admin/restaurants/${restaurantId}/managers`,
+      providesTags: (result, error, restaurantId) => [
+        { type: 'Restaurant', id: restaurantId },
+        'User',
+      ],
+    }),
+
+    createRestaurantManager: builder.mutation({
+      query: ({ restaurantId, ...managerData }) => ({
+        url: `/admin/restaurants/${restaurantId}/managers`,
+        method: 'POST',
+        body: managerData,
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    updateManagerPermissions: builder.mutation({
+      query: ({ managerId, permissions }) => ({
+        url: `/admin/managers/${managerId}/permissions`,
+        method: 'PUT',
+        body: { permissions },
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    deactivateManager: builder.mutation({
+      query: ({ managerId, reason }) => ({
+        url: `/admin/managers/${managerId}/deactivate`,
+        method: 'PUT',
+        body: { reason },
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    transferOwnership: builder.mutation({
+      query: ({ restaurantId, newOwnerId, transferReason }) => ({
+        url: `/admin/restaurants/${restaurantId}/transfer-ownership`,
+        method: 'PUT',
+        body: { newOwnerId, transferReason },
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    // ===== CATALOG MANAGEMENT SYSTEM (PROMPT 6) =====
+    // Products management
+    getAdminProducts: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/products',
+        params,
+      }),
+      providesTags: ['Product'],
+    }),
+
+    getAdminProductStats: builder.query({
+      query: () => '/admin/products/stats',
+      providesTags: ['Product'],
+    }),
+
+    createProduct: builder.mutation({
+      query: (productData) => ({
+        url: '/admin/products',
+        method: 'POST',
+        body: productData,
+      }),
+      invalidatesTags: ['Product', 'Category'],
+    }),
+
+    updateProduct: builder.mutation({
+      query: ({ id, ...productData }) => ({
+        url: `/admin/products/${id}`,
+        method: 'PUT',
+        body: productData,
+      }),
+      invalidatesTags: ['Product'],
+    }),
+
+    deleteProduct: builder.mutation({
+      query: (id) => ({
+        url: `/admin/products/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Product'],
+    }),
+
+    bulkUpdateProducts: builder.mutation({
+      query: ({ productIds, action, ...actionData }) => ({
+        url: '/admin/products/bulk',
+        method: 'PUT',
+        body: { productIds, action, ...actionData },
+      }),
+      invalidatesTags: ['Product'],
+    }),
+
+    flagProduct: builder.mutation({
+      query: ({ id, reason, severity }) => ({
+        url: `/admin/products/${id}/flag`,
+        method: 'PUT',
+        body: { reason, severity },
+      }),
+      invalidatesTags: ['Product'],
+    }),
+
+    // Enhanced category management
+    reorderCategories: builder.mutation({
+      query: ({ categoryId, newSortOrder }) => ({
+        url: `/admin/categories/${categoryId}/reorder`,
+        method: 'PUT',
+        body: { newSortOrder },
+      }),
+      invalidatesTags: ['Category'],
+    }),
+
+    updateCategoryHierarchy: builder.mutation({
+      query: ({ categoryId, newParentId, newSortOrder }) => ({
+        url: `/admin/categories/${categoryId}/hierarchy`,
+        method: 'PUT',
+        body: { newParentId, newSortOrder },
+      }),
+      invalidatesTags: ['Category'],
+    }),
+
+    // ===== LISTINGS MANAGEMENT SYSTEM (PROMPT 6) =====
+    // Listings with moderation
+    getAdminListings: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/listings',
+        params,
+      }),
+      providesTags: ['Listing'],
+    }),
+
+    getAdminListingsStats: builder.query({
+      query: () => '/admin/listings/stats',
+      providesTags: ['Listing'],
+    }),
+
+    approveListing: builder.mutation({
+      query: ({ id, notes }) => ({
+        url: `/admin/listings/${id}/approve`,
+        method: 'PUT',
+        body: { notes },
+      }),
+      invalidatesTags: ['Listing'],
+    }),
+
+    rejectListing: builder.mutation({
+      query: ({ id, reason, notes }) => ({
+        url: `/admin/listings/${id}/reject`,
+        method: 'PUT',
+        body: { reason, notes },
+      }),
+      invalidatesTags: ['Listing'],
+    }),
+
+    flagListing: builder.mutation({
+      query: ({ id, reason, severity, notes }) => ({
+        url: `/admin/listings/${id}/flag`,
+        method: 'PUT',
+        body: { reason, severity, notes },
+      }),
+      invalidatesTags: ['Listing'],
+    }),
+
+    unflagListing: builder.mutation({
+      query: ({ id, notes }) => ({
+        url: `/admin/listings/${id}/unflag`,
+        method: 'PUT',
+        body: { notes },
+      }),
+      invalidatesTags: ['Listing'],
+    }),
+
+    bulkModerate: builder.mutation({
+      query: ({ listingIds, action, ...actionData }) => ({
+        url: '/admin/listings/bulk-moderate',
+        method: 'PUT',
+        body: { listingIds, action, ...actionData },
+      }),
+      invalidatesTags: ['Listing'],
+    }),
+
+    deleteListing: builder.mutation({
+      query: (id) => ({
+        url: `/admin/listings/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Listing'],
+    }),
+
     // Bulk Operations
     bulkApproveUsers: builder.mutation({
       query: (userIds) => ({
@@ -2735,4 +2981,38 @@ export const {
   useGetAllVendorsAdminQuery,
   useGetAllRestaurantsAdminQuery,
   useGetVerificationStatsQuery,
+
+  // Restaurant Management System (Prompt 6)
+  useGetAdminRestaurantsStatsQuery,
+  useUpdateRestaurantStatusMutation,
+  useFlagRestaurantMutation,
+  useApproveRestaurantVerificationMutation,
+  useRejectRestaurantVerificationMutation,
+  useRequestAdditionalDocumentsMutation,
+  useGetRestaurantManagersQuery,
+  useCreateRestaurantManagerMutation,
+  useUpdateManagerPermissionsMutation,
+  useDeactivateManagerMutation,
+  useTransferOwnershipMutation,
+
+  // Catalog Management System (Prompt 6)
+  useGetAdminProductsQuery,
+  useGetAdminProductStatsQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
+  useBulkUpdateProductsMutation,
+  useFlagProductMutation,
+  useReorderCategoriesMutation,
+  useUpdateCategoryHierarchyMutation,
+
+  // Listings Management System (Prompt 6)
+  useGetAdminListingsQuery,
+  useGetAdminListingsStatsQuery,
+  useApproveListingMutation,
+  useRejectListingMutation,
+  useFlagListingMutation,
+  useUnflagListingMutation,
+  useBulkModerateMutation,
+  useDeleteListingMutation,
 } = apiSlice;

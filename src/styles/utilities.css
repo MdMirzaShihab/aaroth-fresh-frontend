@@ -44,11 +44,51 @@
 
 /* Touch Targets - Mobile-First 44px minimum */
 .touch-target {
-  @apply min-h-[44px] min-w-[44px];
+  @apply min-h-[44px] min-w-[44px] cursor-pointer select-none;
+  touch-action: manipulation; /* Prevents double-tap zoom */
 }
 
 .touch-target-large {
-  @apply min-h-[48px] min-w-[48px];
+  @apply min-h-[48px] min-w-[48px] cursor-pointer select-none;
+  touch-action: manipulation;
+}
+
+/* Touch Target Spacing - Adequate spacing between interactive elements */
+.touch-spacing {
+  @apply space-x-2 space-y-2;
+}
+
+/* Touch Feedback - Visual feedback for touch interactions */
+.touch-interactive {
+  @apply transition-all duration-150 ease-out active:scale-98 active:opacity-80;
+  -webkit-tap-highlight-color: transparent; /* Remove iOS tap highlight */
+}
+
+/* Mobile Form Controls - Optimized for touch */
+.mobile-input {
+  @apply touch-target rounded-xl border-2 px-4 py-3 text-base;
+  font-size: 16px !important; /* Prevents zoom on iOS */
+}
+
+.mobile-select {
+  @apply touch-target rounded-xl border-2 px-4 py-3 text-base bg-white;
+  font-size: 16px !important;
+}
+
+.mobile-button {
+  @apply touch-target-large rounded-xl font-medium transition-all duration-200 active:scale-95;
+  touch-action: manipulation;
+}
+
+/* Mobile Typography - Optimized readability */
+.mobile-text {
+  font-size: clamp(14px, 2.5vw, 16px);
+  line-height: 1.6;
+}
+
+.mobile-heading {
+  font-size: clamp(18px, 4vw, 24px);
+  line-height: 1.4;
 }
 
 /* Responsive Utilities - Mobile-First Enhancement */
@@ -64,6 +104,132 @@
   @apply mx-4 sm:mx-6 lg:mx-8;
 }
 
+/* Mobile Data Tables - Card-based layout for small screens */
+.mobile-table {
+  @apply block lg:table;
+}
+
+.mobile-table-header {
+  @apply hidden lg:table-header-group;
+}
+
+.mobile-table-body {
+  @apply block lg:table-row-group;
+}
+
+.mobile-table-row {
+  @apply block border border-gray-200 rounded-xl mb-4 p-4 lg:table-row lg:border-0 lg:rounded-none lg:mb-0 lg:p-0;
+}
+
+.mobile-table-cell {
+  @apply block border-0 border-b border-gray-100 px-0 py-2 text-right lg:table-cell lg:border lg:px-4 lg:py-3 lg:text-left;
+}
+
+.mobile-table-cell::before {
+  content: attr(data-label) ": ";
+  @apply float-left font-medium text-gray-600 lg:hidden;
+}
+
+/* Mobile Navigation - Touch-optimized navigation */
+.mobile-nav {
+  @apply fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 lg:relative lg:bottom-auto lg:border-t-0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-nav-item {
+  @apply flex flex-col items-center justify-center touch-target-large text-xs;
+}
+
+/* Mobile Cards - Optimized card layouts */
+.mobile-card {
+  @apply block rounded-2xl border border-gray-200 bg-white shadow-sm p-6 mb-4 touch-interactive;
+}
+
+.mobile-card-header {
+  @apply flex items-center justify-between mb-4 pb-4 border-b border-gray-100;
+}
+
+.mobile-card-content {
+  @apply space-y-3;
+}
+
+.mobile-card-actions {
+  @apply flex flex-col sm:flex-row gap-2 pt-4 mt-4 border-t border-gray-100;
+}
+
+/* Swipe Gestures - Visual indicators for swipeable content */
+.swipeable {
+  @apply relative overflow-hidden;
+  scroll-snap-type: x mandatory;
+}
+
+.swipeable::after {
+  content: '';
+  @apply absolute right-2 top-1/2 w-1 h-6 bg-gray-300 rounded-full transform -translate-y-1/2;
+  animation: swipe-hint 2s ease-in-out infinite;
+}
+
+@keyframes swipe-hint {
+  0%, 100% { opacity: 0.3; transform: translateY(-50%) translateX(0); }
+  50% { opacity: 1; transform: translateY(-50%) translateX(4px); }
+}
+
+/* Pull to Refresh - Loading indicator */
+.pull-to-refresh {
+  @apply relative;
+}
+
+.pull-to-refresh-indicator {
+  @apply absolute top-0 left-0 right-0 flex items-center justify-center p-4 transform -translate-y-full transition-transform;
+}
+
+.pull-to-refresh.pulling .pull-to-refresh-indicator {
+  @apply transform translate-y-0;
+}
+
+/* Virtual Keyboard Adjustments */
+.keyboard-adjust {
+  transition: padding-bottom 0.3s ease;
+}
+
+.keyboard-open .keyboard-adjust {
+  padding-bottom: 300px; /* Approximate keyboard height */
+}
+
+/* Safe Area Support - For devices with notches */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Mobile Modal - Full-screen on mobile */
+.mobile-modal {
+  @apply fixed inset-0 z-50 lg:inset-auto lg:top-1/2 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 lg:max-w-lg lg:w-full lg:rounded-2xl;
+}
+
+.mobile-modal-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-200 safe-area-top;
+}
+
+.mobile-modal-content {
+  @apply flex-1 overflow-y-auto p-4;
+}
+
+.mobile-modal-footer {
+  @apply p-4 border-t border-gray-200 safe-area-bottom;
+}
+
 /* Smooth Theme Transitions */
 .theme-transition {
   @apply transition-all duration-300 ease-in-out;
@@ -72,6 +238,355 @@
 /* Improved Card Hover Effects */
 .card-hover {
   @apply hover:shadow-xl hover:shadow-glow-olive/10 dark:hover:shadow-sage-green/10 hover:-translate-y-1 transition-all duration-300;
+}
+
+/* ================================================
+ * ACCESSIBILITY UTILITIES - WCAG 2.1 AA Compliance
+ * ================================================ */
+
+/* Screen Reader Only - Content for assistive technology only */
+.sr-only {
+  @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+  clip: rect(0, 0, 0, 0);
+}
+
+.not-sr-only {
+  @apply static w-auto h-auto p-0 m-0 overflow-visible whitespace-normal;
+  clip: auto;
+}
+
+/* Focus Management - Modern WCAG-compliant focus indicators */
+.focus-visible-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-muted-olive/60 focus-visible:ring-offset-2 focus-visible:rounded-lg;
+}
+
+.focus-visible-ring-inset {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-muted-olive/60 focus-visible:rounded-lg;
+}
+
+.focus-visible-ring-thick {
+  @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-muted-olive/60 focus-visible:ring-offset-2 focus-visible:rounded-lg;
+}
+
+/* High Contrast Focus Rings */
+.focus-high-contrast {
+  @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+
+/* Skip Links - Keyboard navigation shortcuts */
+.skip-link {
+  @apply absolute top-4 left-4 bg-bottle-green text-white px-4 py-2 rounded-lg font-medium z-50;
+  @apply transform -translate-y-20 opacity-0 transition-all duration-200;
+  @apply focus:translate-y-0 focus:opacity-100 focus-visible:outline-none;
+  @apply focus-visible:ring-2 focus-visible:ring-mint-fresh focus-visible:ring-offset-2;
+}
+
+/* Live Regions - Dynamic content announcements */
+.live-region-polite {
+  @apply sr-only;
+  aria-live: polite;
+  aria-atomic: true;
+}
+
+.live-region-assertive {
+  @apply sr-only;
+  aria-live: assertive;
+  aria-atomic: true;
+}
+
+/* Color Contrast Utilities - WCAG AA compliant combinations */
+.text-contrast-high {
+  @apply text-gray-900;
+  color: #1a202c; /* 15.8:1 ratio on white */
+}
+
+.text-contrast-medium {
+  @apply text-gray-700;
+  color: #4a5568; /* 7.0:1 ratio on white */
+}
+
+.text-contrast-minimum {
+  @apply text-gray-600;
+  color: #718096; /* 4.6:1 ratio on white */
+}
+
+/* Dark mode contrast */
+.dark .text-contrast-high {
+  @apply text-gray-100;
+  color: #f7fafc; /* 14.1:1 ratio on dark */
+}
+
+.dark .text-contrast-medium {
+  @apply text-gray-200;
+  color: #e2e8f0; /* 11.6:1 ratio on dark */
+}
+
+.dark .text-contrast-minimum {
+  @apply text-gray-300;
+  color: #cbd5e0; /* 8.2:1 ratio on dark */
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .high-contrast-text {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border-color: #000000 !important;
+  }
+  
+  .high-contrast-button {
+    color: #ffffff !important;
+    background-color: #000000 !important;
+    border: 2px solid #000000 !important;
+  }
+  
+  .high-contrast-link {
+    color: #0000ff !important;
+    text-decoration: underline !important;
+  }
+  
+  .high-contrast-focus {
+    outline: 3px solid #ff0000 !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Form Accessibility - Enhanced form controls */
+.form-control-accessible {
+  @apply focus-visible-ring px-4 py-3 min-h-[44px] text-base border-2 rounded-xl;
+  font-size: 16px !important; /* Prevents zoom on iOS */
+}
+
+.form-control-error {
+  @apply border-tomato-red/60 bg-tomato-red/5 focus-visible:ring-tomato-red/60;
+}
+
+.form-control-success {
+  @apply border-mint-fresh/60 bg-mint-fresh/5 focus-visible:ring-mint-fresh/60;
+}
+
+.form-label-accessible {
+  @apply block text-sm font-medium mb-2 text-contrast-high cursor-pointer;
+}
+
+.form-error-message {
+  @apply text-tomato-red/90 text-sm mt-2 flex items-center gap-2;
+  /* Use role="alert" and aria-live="polite" in JSX */
+}
+
+.form-description {
+  @apply text-text-muted text-sm mt-1;
+}
+
+/* Button Accessibility - WCAG compliant interactive elements */
+.button-accessible {
+  @apply min-h-[44px] min-w-[44px] px-4 py-2 font-medium rounded-xl;
+  @apply focus-visible-ring transition-all duration-200;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  touch-action: manipulation;
+}
+
+.button-primary-accessible {
+  @apply button-accessible bg-bottle-green text-white;
+  @apply hover:bg-bottle-green/90 active:bg-bottle-green/95;
+}
+
+.button-secondary-accessible {
+  @apply button-accessible border-2 border-gray-300 bg-white text-gray-900;
+  @apply hover:bg-gray-50 active:bg-gray-100;
+}
+
+.button-danger-accessible {
+  @apply button-accessible bg-tomato-red text-white;
+  @apply hover:bg-tomato-red/90 active:bg-tomato-red/95;
+}
+
+/* Link Accessibility - Enhanced link styling */
+.link-accessible {
+  @apply text-bottle-green underline focus-visible-ring rounded;
+  @apply hover:text-bottle-green/80 visited:text-dusty-cedar;
+}
+
+.link-button-accessible {
+  @apply button-accessible bg-transparent text-bottle-green border-2 border-bottle-green;
+  @apply hover:bg-bottle-green hover:text-white;
+}
+
+/* Navigation Accessibility - Keyboard-friendly navigation */
+.nav-accessible {
+  @apply focus-visible-ring rounded-lg px-3 py-2 transition-colors duration-200;
+}
+
+.nav-item-active {
+  @apply bg-muted-olive/10 text-bottle-green font-medium;
+  aria-current: page;
+}
+
+.nav-item-inactive {
+  @apply text-text-muted hover:text-text-dark hover:bg-gray-100/50;
+}
+
+/* Table Accessibility - Enhanced data table styling */
+.table-accessible {
+  @apply w-full border-collapse;
+}
+
+.table-header-accessible {
+  @apply bg-gray-50 border-b border-gray-200 text-left font-medium text-contrast-high;
+  @apply px-4 py-3 text-sm tracking-wide uppercase;
+}
+
+.table-cell-accessible {
+  @apply px-4 py-3 border-b border-gray-100 text-contrast-medium;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-muted-olive/40;
+}
+
+.table-row-accessible {
+  @apply hover:bg-gray-50/80 transition-colors duration-150;
+}
+
+/* Card Accessibility - Enhanced card components */
+.card-accessible {
+  @apply rounded-xl border border-gray-200 bg-white shadow-sm p-6;
+  @apply focus-visible-ring hover:shadow-md transition-all duration-200;
+}
+
+.card-interactive-accessible {
+  @apply card-accessible cursor-pointer;
+  @apply hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+}
+
+/* Modal Accessibility - WCAG compliant dialogs */
+.modal-overlay-accessible {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4;
+  @apply backdrop-blur-sm;
+}
+
+.modal-content-accessible {
+  @apply bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh];
+  @apply focus-visible:outline-none overflow-hidden;
+}
+
+.modal-header-accessible {
+  @apply px-6 py-4 border-b border-gray-200 flex items-center justify-between;
+}
+
+.modal-body-accessible {
+  @apply px-6 py-4 overflow-y-auto;
+}
+
+.modal-footer-accessible {
+  @apply px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3;
+}
+
+/* Status Indicators - Accessible status communication */
+.status-success-accessible {
+  @apply bg-mint-fresh/10 text-bottle-green border border-mint-fresh/20 rounded-lg p-3;
+  @apply flex items-center gap-3;
+}
+
+.status-error-accessible {
+  @apply bg-tomato-red/10 text-tomato-red/90 border border-tomato-red/20 rounded-lg p-3;
+  @apply flex items-center gap-3;
+}
+
+.status-warning-accessible {
+  @apply bg-earthy-yellow/10 text-earthy-brown border border-earthy-yellow/20 rounded-lg p-3;
+  @apply flex items-center gap-3;
+}
+
+.status-info-accessible {
+  @apply bg-dusty-cedar/10 text-dusty-cedar border border-dusty-cedar/20 rounded-lg p-3;
+  @apply flex items-center gap-3;
+}
+
+/* Loading States - Accessible loading indicators */
+.loading-accessible {
+  @apply flex items-center justify-center gap-3 p-4;
+}
+
+.loading-spinner-accessible {
+  @apply animate-spin w-5 h-5 border-2 border-muted-olive/30 border-t-muted-olive rounded-full;
+}
+
+/* Progress Indicators - WCAG compliant progress bars */
+.progress-accessible {
+  @apply w-full bg-gray-200 rounded-full h-2 overflow-hidden;
+}
+
+.progress-bar-accessible {
+  @apply h-full bg-bottle-green rounded-full transition-all duration-300;
+}
+
+/* Tooltip Accessibility - Enhanced tooltips */
+.tooltip-accessible {
+  @apply absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900;
+  @apply rounded-lg shadow-lg pointer-events-none;
+  @apply opacity-0 transform scale-95 transition-all duration-200;
+}
+
+.tooltip-visible {
+  @apply opacity-100 transform scale-100;
+}
+
+/* Badge and Tag Accessibility */
+.badge-accessible {
+  @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+  @apply focus-visible-ring;
+}
+
+.badge-status {
+  @apply badge-accessible bg-mint-fresh/10 text-bottle-green border border-mint-fresh/20;
+}
+
+.badge-priority {
+  @apply badge-accessible bg-tomato-red/10 text-tomato-red/90 border border-tomato-red/20;
+}
+
+/* Responsive Text Sizing - Maintains readability across devices */
+.text-responsive {
+  font-size: clamp(14px, 2.5vw, 16px);
+  line-height: 1.6;
+}
+
+.text-responsive-heading {
+  font-size: clamp(18px, 4vw, 24px);
+  line-height: 1.4;
+}
+
+.text-responsive-large {
+  font-size: clamp(16px, 3vw, 18px);
+  line-height: 1.5;
+}
+
+/* Dark Mode Accessibility - Enhanced contrast in dark theme */
+.dark .focus-visible-ring {
+  @apply focus-visible:ring-sage-green/60 focus-visible:ring-offset-gray-800;
+}
+
+.dark .card-accessible {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .modal-content-accessible {
+  @apply bg-gray-800 border border-gray-700;
+}
+
+.dark .table-header-accessible {
+  @apply bg-gray-700 border-gray-600 text-gray-100;
+}
+
+.dark .table-cell-accessible {
+  @apply border-gray-700 text-gray-200;
+}
+
+.dark .table-row-accessible {
+  @apply hover:bg-gray-700/50;
+}
+
+/* Keyboard Navigation Indicators */
+.keyboard-navigation-active .nav-accessible {
+  @apply ring-2 ring-muted-olive/40 ring-offset-2;
 }
 
 /* Reduced Motion Support - Accessibility */
@@ -94,7 +609,39 @@
   .hover\:scale-\[1\.02\]:hover,
   .hover\:-translate-y-1:hover,
   .hover\:-translate-y-0\.5:hover,
-  .card-hover:hover {
+  .card-hover:hover,
+  .card-interactive-accessible:hover {
     transform: none;
+  }
+  
+  .motion-reduce-disable {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Forced Colors Mode - Windows High Contrast */
+@media (forced-colors: active) {
+  .forced-colors-border {
+    border: 1px solid ButtonBorder;
+  }
+  
+  .forced-colors-focus {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+  
+  .forced-colors-text {
+    color: ButtonText;
+    background-color: ButtonFace;
+  }
+  
+  .forced-colors-link {
+    color: LinkText;
+  }
+  
+  .forced-colors-visited {
+    color: VisitedText;
   }
 }

@@ -402,3 +402,285 @@ if (process.env.NODE_ENV === 'development') {
     }
   }, 30000); // Check every 30 seconds
 }
+
+// ================================================
+// ENHANCED PERFORMANCE UTILITIES (Prompt 8)
+// ================================================
+
+// Virtual scrolling implementation for large data sets
+export const virtualScrolling = {
+  /**
+   * Calculates visible items for virtual scrolling
+   * @param {Object} config - Virtual scroll configuration
+   * @returns {Object} Virtual scroll state
+   */
+  calculateVisibleItems(config) {
+    const {
+      items = [],
+      containerHeight,
+      itemHeight,
+      scrollTop,
+      overscan = 5, // Extra items to render for smooth scrolling
+    } = config;
+
+    const totalHeight = items.length * itemHeight;
+    const visibleStart = Math.floor(scrollTop / itemHeight);
+    const visibleEnd = Math.min(
+      visibleStart + Math.ceil(containerHeight / itemHeight),
+      items.length
+    );
+
+    // Add overscan for smooth scrolling
+    const startIndex = Math.max(0, visibleStart - overscan);
+    const endIndex = Math.min(items.length, visibleEnd + overscan);
+
+    const visibleItems = items.slice(startIndex, endIndex).map((item, index) => ({
+      ...item,
+      index: startIndex + index,
+      key: item.id || item._id || startIndex + index,
+    }));
+
+    return {
+      visibleItems,
+      startIndex,
+      endIndex,
+      totalHeight,
+      offsetY: startIndex * itemHeight,
+    };
+  },
+
+  /**
+   * Creates virtual scroll container props
+   * @param {Object} config - Container configuration
+   * @returns {Object} Container props
+   */
+  createContainerProps(config) {
+    const { height, onScroll } = config;
+    
+    return {
+      style: {
+        height,
+        overflow: 'auto',
+        position: 'relative',
+      },
+      onScroll: onScroll,
+    };
+  },
+
+  /**
+   * Creates virtual item wrapper props
+   * @param {Object} config - Item wrapper configuration
+   * @returns {Object} Wrapper props
+   */
+  createItemWrapperProps(config) {
+    const { totalHeight, offsetY } = config;
+    
+    return {
+      style: {
+        height: totalHeight,
+        position: 'relative',
+      },
+      children: {
+        style: {
+          transform: `translateY(${offsetY}px)`,
+          position: 'absolute',
+          width: '100%',
+        },
+      },
+    };
+  },
+};
+
+// Advanced memoization utilities
+export const memoization = {
+  /**
+   * Creates shallow comparison for props
+   * @param {Object} prevProps - Previous props
+   * @param {Object} nextProps - Next props
+   * @returns {boolean} True if props are equal
+   */
+  shallowEqual(prevProps, nextProps) {
+    const prevKeys = Object.keys(prevProps);
+    const nextKeys = Object.keys(nextProps);
+
+    if (prevKeys.length !== nextKeys.length) {
+      return false;
+    }
+
+    return prevKeys.every(key => prevProps[key] === nextProps[key]);
+  },
+
+  /**
+   * Creates deep comparison for props (expensive, use sparingly)
+   * @param {Object} prevProps - Previous props
+   * @param {Object} nextProps - Next props  
+   * @returns {boolean} True if props are equal
+   */
+  deepEqual(prevProps, nextProps) {
+    return JSON.stringify(prevProps) === JSON.stringify(nextProps);
+  },
+
+  /**
+   * Memoizes expensive calculations with performance tracking
+   * @param {Function} computation - Expensive computation
+   * @param {Array} dependencies - Dependency array
+   * @param {string} name - Computation name for debugging
+   * @returns {any} Memoized result
+   */
+  memoizeComputation(computation, dependencies, name = 'computation') {
+    const React = require('react');
+    return React.useMemo(() => {
+      if (process.env.NODE_ENV === 'development') {
+        perfMonitor.mark(`${name}-compute`);
+        const result = computation();
+        const computeTime = perfMonitor.measure(`${name}-compute`);
+        
+        if (computeTime > 10) {
+          console.warn(`Expensive computation: ${name} took ${computeTime.toFixed(2)}ms`);
+        }
+        
+        return result;
+      }
+      return computation();
+    }, dependencies);
+  },
+};
+
+// Component optimization patterns
+export const componentOptimization = {
+  /**
+   * Creates performance-optimized table component
+   * @param {Object} config - Table configuration
+   * @returns {Object} Optimized table utilities
+   */
+  optimizeTable(config) {
+    const {
+      data = [],
+      columns = [],
+      enableVirtualScrolling = true,
+      rowHeight = 50,
+      containerHeight = 400,
+    } = config;
+
+    // Calculate virtual scrolling for table rows
+    const getVirtualizedRows = (scrollTop) => {
+      if (!enableVirtualScrolling) return data;
+      
+      return virtualScrolling.calculateVisibleItems({
+        items: data,
+        containerHeight,
+        itemHeight: rowHeight,
+        scrollTop,
+      });
+    };
+
+    return {
+      getVirtualizedRows,
+      totalHeight: data.length * rowHeight,
+      isVirtualized: enableVirtualScrolling,
+    };
+  },
+
+  /**
+   * Creates intersection observer for lazy loading
+   * @param {Function} callback - Intersection callback
+   * @param {Object} options - Observer options
+   * @returns {IntersectionObserver} Observer instance
+   */
+  createLazyLoadObserver(callback, options = {}) {
+    const { threshold = 0.1, rootMargin = '50px' } = options;
+    
+    return new IntersectionObserver(callback, {
+      threshold,
+      rootMargin,
+    });
+  },
+};
+
+// Memory management utilities
+export const memoryManagement = {
+  /**
+   * Tracks component memory usage in development
+   * @param {string} componentName - Component name
+   */
+  trackComponentMemory(componentName) {
+    if (process.env.NODE_ENV !== 'development') return () => {};
+
+    const initialMemory = getMemoryUsage();
+    
+    return () => {
+      const finalMemory = getMemoryUsage();
+      if (initialMemory.supported && finalMemory.supported) {
+        const memoryDiff = finalMemory.used - initialMemory.used;
+        if (memoryDiff > 1) { // More than 1MB increase
+          console.warn(
+            `Memory increase: ${componentName} used +${memoryDiff.toFixed(2)}MB`
+          );
+        }
+      }
+    };
+  },
+
+  /**
+   * Creates cleanup tracker for components
+   */
+  CleanupTracker: class {
+    constructor(componentName = 'Unknown') {
+      this.componentName = componentName;
+      this.timers = [];
+      this.observers = [];
+      this.listeners = [];
+      this.subscriptions = [];
+    }
+
+    addTimer(timerId) {
+      this.timers.push(timerId);
+    }
+
+    addObserver(observer) {
+      this.observers.push(observer);
+    }
+
+    addListener(element, event, handler, options) {
+      element.addEventListener(event, handler, options);
+      this.listeners.push({ element, event, handler });
+    }
+
+    addSubscription(unsubscribe) {
+      this.subscriptions.push(unsubscribe);
+    }
+
+    cleanup() {
+      // Clear timers
+      this.timers.forEach(timerId => clearTimeout(timerId));
+      this.timers = [];
+
+      // Disconnect observers
+      this.observers.forEach(observer => {
+        if (observer.disconnect) observer.disconnect();
+        if (observer.unobserve) observer.unobserve();
+      });
+      this.observers = [];
+
+      // Remove event listeners
+      this.listeners.forEach(({ element, event, handler }) => {
+        element.removeEventListener(event, handler);
+      });
+      this.listeners = [];
+
+      // Call unsubscribe functions
+      this.subscriptions.forEach(unsubscribe => {
+        try {
+          unsubscribe();
+        } catch (error) {
+          console.warn(`Cleanup failed for ${this.componentName}:`, error);
+        }
+      });
+      this.subscriptions = [];
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Cleanup] ${this.componentName} cleaned up successfully`);
+      }
+    }
+  },
+};
