@@ -723,7 +723,7 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-bottle-green to-mint-fresh rounded-2xl flex items-center justify-center text-white">
-                    <getRoleIcon(manager.role) className="w-5 h-5" />
+                    {React.createElement(getRoleIcon(manager.role), { className: "w-5 h-5" })}
                   </div>
                   <div>
                     <h6 className="font-medium text-text-dark">{manager.name}</h6>

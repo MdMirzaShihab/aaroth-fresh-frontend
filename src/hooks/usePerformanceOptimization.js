@@ -174,11 +174,12 @@ export const useLazyLoading = (config = {}) => {
   const createLazyComponent = useCallback((importFn, fallback = null) => {
     const LazyComponent = React.lazy(importFn);
     
-    return memo((props) => (
-      <React.Suspense fallback={fallback || <div className="loading-accessible">Loading...</div>}>
-        <LazyComponent {...props} />
-      </React.Suspense>
-    ));
+    return memo((props) => 
+      React.createElement(React.Suspense, 
+        { fallback: fallback || React.createElement('div', { className: 'loading-accessible' }, 'Loading...') },
+        React.createElement(LazyComponent, props)
+      )
+    );
   }, []);
 
   // Preload component on hover

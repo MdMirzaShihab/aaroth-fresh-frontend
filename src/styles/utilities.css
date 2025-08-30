@@ -60,7 +60,7 @@
 
 /* Touch Feedback - Visual feedback for touch interactions */
 .touch-interactive {
-  @apply transition-all duration-150 ease-out active:scale-98 active:opacity-80;
+  @apply transition-all duration-150 ease-out active:scale-95 active:opacity-80;
   -webkit-tap-highlight-color: transparent; /* Remove iOS tap highlight */
 }
 

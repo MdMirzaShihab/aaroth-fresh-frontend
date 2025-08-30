@@ -2764,7 +2764,6 @@ export const {
   useGetListingQuery,
   useCreateListingMutation,
   useUpdateListingMutation,
-  useDeleteListingMutation,
 
   // Orders
   useGetOrdersQuery,
@@ -2899,7 +2898,6 @@ export const {
   // Legacy useVerifyRestaurantMutation removed - use unified approval system
 
   // Admin - Listings Management
-  useGetAdminListingsQuery,
   useGetAdminFeaturedListingsQuery,
   useGetFlaggedListingsQuery,
   useGetAdminListingQuery,
@@ -2953,7 +2951,6 @@ export const {
   useResetSystemSettingsMutation,
 
   // Content Moderation System
-  useFlagListingMutation,
 
   // Enhanced User Management
   useGetVendorsQuery,
@@ -2989,19 +2986,6 @@ export const {
   useApproveRestaurantVerificationMutation,
   useRejectRestaurantVerificationMutation,
   useRequestAdditionalDocumentsMutation,
-  useGetRestaurantManagersQuery,
-  useCreateRestaurantManagerMutation,
-  useUpdateManagerPermissionsMutation,
-  useDeactivateManagerMutation,
-  useTransferOwnershipMutation,
-
-  // Catalog Management System (Prompt 6)
-  useGetAdminProductsQuery,
-  useGetAdminProductStatsQuery,
-  useCreateProductMutation,
-  useUpdateProductMutation,
-  useDeleteProductMutation,
-  useBulkUpdateProductsMutation,
   useFlagProductMutation,
   useReorderCategoriesMutation,
   useUpdateCategoryHierarchyMutation,

@@ -310,20 +310,18 @@ export const focusManagement = {
    * @returns {JSX} Skip link component
    */
   createSkipLinks(links) {
-    return links.map((link, index) => (
-      <a
-        key={index}
-        href={link.href}
-        className={`
+    return links.map((link, index) => 
+      React.createElement('a', {
+        key: index,
+        href: link.href,
+        className: `
           sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
           bg-bottle-green text-white px-4 py-2 rounded-lg font-medium z-50
           transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 
           focus-visible:ring-mint-fresh focus-visible:ring-offset-2
-        `}
-      >
-        {link.text}
-      </a>
-    ));
+        `
+      }, link.text)
+    );
   },
 };
 
