@@ -58,10 +58,10 @@ const CategoryFilters = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Filter className="w-5 h-5 text-bottle-green" />
+          <Filter className="w-5 h-5 text-muted-olive" />
           <h3 className="text-lg font-semibold text-text-dark">Filters</h3>
           {activeFiltersCount > 0 && (
-            <span className="bg-bottle-green text-white text-xs px-2 py-1 rounded-full">
+            <span className="bg-muted-olive text-white text-xs px-2 py-1 rounded-full">
               {activeFiltersCount}
             </span>
           )}
@@ -117,7 +117,7 @@ const CategoryFilters = ({
                   )
                 }
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green appearance-none pr-10"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive appearance-none pr-10"
               >
                 <option value="all">All Status</option>
                 <option value="true">Active</option>
@@ -142,7 +142,7 @@ const CategoryFilters = ({
                   )
                 }
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green appearance-none pr-10"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive appearance-none pr-10"
               >
                 <option value="all">All</option>
                 <option value="true">Available</option>
@@ -171,7 +171,7 @@ const CategoryFilters = ({
                 )
               }
               disabled={isLoading}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green appearance-none pr-10"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive appearance-none pr-10"
             >
               <option value="all">All Admin Status</option>
               <option value="active">Active</option>
@@ -199,7 +199,7 @@ const CategoryFilters = ({
                 )
               }
               disabled={isLoading}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green appearance-none pr-10"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive appearance-none pr-10"
             >
               <option value="all">All Levels</option>
               <option value="0">Level 0 (Root)</option>
@@ -223,7 +223,7 @@ const CategoryFilters = ({
                 handleFilterChange('limit', parseInt(e.target.value))
               }
               disabled={isLoading}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green appearance-none pr-10"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive appearance-none pr-10"
             >
               <option value="10">10</option>
               <option value="20">20</option>
@@ -258,7 +258,7 @@ const CategoryFilters = ({
                 size="sm"
                 onClick={() => handleSortChange(sort.key)}
                 className={`flex items-center gap-1 ${
-                  isActive ? 'bg-bottle-green text-white' : ''
+                  isActive ? 'bg-muted-olive text-white' : ''
                 }`}
                 disabled={isLoading}
               >
@@ -284,12 +284,12 @@ const CategoryFilters = ({
             </span>
 
             {filters.search && (
-              <div className="flex items-center gap-1 bg-bottle-green/10 text-bottle-green px-2 py-1 rounded-lg text-sm">
+              <div className="flex items-center gap-1 bg-muted-olive/10 text-muted-olive px-2 py-1 rounded-lg text-sm">
                 <Search className="w-3 h-3" />
                 <span>"{filters.search}"</span>
                 <button
                   onClick={() => handleFilterChange('search', '')}
-                  className="hover:bg-bottle-green/20 rounded p-0.5 ml-1"
+                  className="hover:bg-muted-olive/20 rounded p-0.5 ml-1"
                 >
                   <X className="w-3 h-3" />
                 </button>

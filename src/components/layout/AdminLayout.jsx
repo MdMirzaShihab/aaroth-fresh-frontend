@@ -138,7 +138,7 @@ const AdminLayout = () => {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-gradient-to-br from-bottle-green to-mint-fresh rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-muted-olive to-sage-green rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>
             <span className="ml-3 text-xl font-semibold text-gray-900">
@@ -166,14 +166,14 @@ const AdminLayout = () => {
                 onClick={() => setSidebarOpen(false)}
                 className={`group flex items-center px-3 py-3 text-sm font-medium rounded-xl mb-1 transition-all duration-200 ${
                   isActive
-                    ? 'bg-gradient-to-r from-bottle-green/10 to-mint-fresh/10 text-bottle-green border-l-4 border-bottle-green'
+                    ? 'bg-gradient-to-r from-muted-olive/10 to-sage-green/10 text-muted-olive border-l-4 border-muted-olive'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
                 <Icon
                   className={`mr-3 h-5 w-5 flex-shrink-0 ${
                     isActive
-                      ? 'text-bottle-green'
+                      ? 'text-muted-olive'
                       : 'text-gray-400 group-hover:text-gray-500'
                   }`}
                 />
@@ -202,7 +202,7 @@ const AdminLayout = () => {
         {/* Admin Profile & Logout */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
           <div className="flex items-center mb-3 p-2 rounded-lg bg-gray-50">
-            <div className="w-8 h-8 bg-gradient-to-br from-bottle-green to-mint-fresh rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-muted-olive to-sage-green rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>
             <div className="ml-3 flex-1 min-w-0">

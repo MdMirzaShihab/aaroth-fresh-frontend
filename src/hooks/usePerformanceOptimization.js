@@ -4,7 +4,7 @@
  * Provides comprehensive performance optimization for admin-v2 components
  */
 
-import { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
 import { performanceMonitor, virtualScrolling, memoization, networkOptimization } from '../utils/performance';
 
 /**

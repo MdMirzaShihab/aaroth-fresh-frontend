@@ -49,7 +49,7 @@ const ChangeImpactIndicator = ({ change }) => {
       case 'medium':
         return { color: 'sage-green', icon: Info, label: 'Medium Impact' };
       case 'low':
-        return { color: 'mint-fresh', icon: CheckCircle, label: 'Low Impact' };
+        return { color: 'sage-green', icon: CheckCircle, label: 'Low Impact' };
       default:
         return { color: 'text-muted', icon: Info, label: 'Unknown Impact' };
     }
@@ -80,7 +80,7 @@ const HistoryEntry = ({
   const getChangeTypeConfig = (type) => {
     switch (type) {
       case 'create':
-        return { color: 'mint-fresh', icon: GitCommit, label: 'Created' };
+        return { color: 'sage-green', icon: GitCommit, label: 'Created' };
       case 'update':
         return { color: 'sage-green', icon: Activity, label: 'Updated' };
       case 'delete':
@@ -529,7 +529,7 @@ const SettingsHistory = ({ onClose, category }) => {
                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
                   : 'bg-white border-gray-200 text-text-dark placeholder-text-muted'
                 }
-                focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20
+                focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20
               `}
             />
           </div>
@@ -544,7 +544,7 @@ const SettingsHistory = ({ onClose, category }) => {
                 ? 'bg-gray-700 border-gray-600 text-white' 
                 : 'bg-white border-gray-200 text-text-dark'
               }
-              focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20
+              focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20
             `}
           >
             {timeFilterOptions.map(option => (
@@ -564,7 +564,7 @@ const SettingsHistory = ({ onClose, category }) => {
                 ? 'bg-gray-700 border-gray-600 text-white' 
                 : 'bg-white border-gray-200 text-text-dark'
               }
-              focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20
+              focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20
             `}
           >
             {typeFilterOptions.map(option => (

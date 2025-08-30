@@ -48,7 +48,7 @@ export const TouchFriendlyButton = ({
     primary:
       'bg-gradient-secondary text-white hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 disabled:opacity-50',
     secondary:
-      'border-2 border-bottle-green/30 text-bottle-green hover:bg-bottle-green/5 disabled:opacity-50',
+      'border-2 border-muted-olive/30 text-muted-olive hover:bg-muted-olive/5 disabled:opacity-50',
     outline:
       'border border-gray-300 text-text-dark hover:bg-gray-50 disabled:opacity-50',
     ghost: 'text-text-dark hover:bg-gray-100 disabled:opacity-50',
@@ -163,7 +163,7 @@ export const MobileNavigation = ({ items = [], currentPath, onItemClick }) => {
               key={index}
               onClick={() => onItemClick(item.path)}
               variant="ghost"
-              className={`flex-col gap-1 py-2 px-1 min-h-[56px] ${isActive ? 'text-bottle-green' : 'text-gray-600'}`}
+              className={`flex-col gap-1 py-2 px-1 min-h-[56px] ${isActive ? 'text-muted-olive' : 'text-gray-600'}`}
             >
               <Icon className="w-5 h-5" />
               <span className="text-xs font-medium truncate">{item.label}</span>

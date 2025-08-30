@@ -54,7 +54,7 @@ const ApprovalFilters = ({
       value: 'approved',
       label: 'Approved',
       icon: CheckCircle,
-      color: 'text-bottle-green',
+      color: 'text-muted-olive',
     },
     {
       value: 'rejected',
@@ -136,7 +136,7 @@ const ApprovalFilters = ({
             <select
               value={selectedType}
               onChange={(e) => onTypeChange(e.target.value)}
-              className="appearance-none px-4 py-3 pr-10 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 min-w-[140px] min-h-[44px]"
+              className="appearance-none px-4 py-3 pr-10 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 min-w-[140px] min-h-[44px]"
             >
               {typeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -154,7 +154,7 @@ const ApprovalFilters = ({
             <select
               value={selectedStatus}
               onChange={(e) => onStatusChange(e.target.value)}
-              className="appearance-none px-4 py-3 pr-10 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 min-w-[140px] min-h-[44px]"
+              className="appearance-none px-4 py-3 pr-10 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 min-w-[140px] min-h-[44px]"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -173,8 +173,8 @@ const ApprovalFilters = ({
               onClick={() => onViewModeChange('card')}
               className={`p-2 rounded-xl transition-all duration-200 min-h-[36px] min-w-[36px] flex items-center justify-center ${
                 viewMode === 'card'
-                  ? 'bg-white dark:bg-gray-600 shadow-sm text-bottle-green'
-                  : 'text-gray-600 hover:text-bottle-green dark:text-gray-300 dark:hover:text-green-400'
+                  ? 'bg-white dark:bg-gray-600 shadow-sm text-muted-olive'
+                  : 'text-gray-600 hover:text-muted-olive dark:text-gray-300 dark:hover:text-green-400'
               }`}
               title="Card view"
             >
@@ -184,8 +184,8 @@ const ApprovalFilters = ({
               onClick={() => onViewModeChange('table')}
               className={`p-2 rounded-xl transition-all duration-200 min-h-[36px] min-w-[36px] flex items-center justify-center ${
                 viewMode === 'table'
-                  ? 'bg-white dark:bg-gray-600 shadow-sm text-bottle-green'
-                  : 'text-gray-600 hover:text-bottle-green dark:text-gray-300 dark:hover:text-green-400'
+                  ? 'bg-white dark:bg-gray-600 shadow-sm text-muted-olive'
+                  : 'text-gray-600 hover:text-muted-olive dark:text-gray-300 dark:hover:text-green-400'
               }`}
               title="Table view"
             >
@@ -230,7 +230,7 @@ const ApprovalFilters = ({
               onClick={filter.action}
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-bottle-green text-white shadow-sm'
+                  ? 'bg-muted-olive text-white shadow-sm'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >

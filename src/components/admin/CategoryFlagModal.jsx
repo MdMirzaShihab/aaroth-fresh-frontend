@@ -99,7 +99,7 @@ const CategoryFlagModal = ({ isOpen, onClose, category, onSuccess }) => {
           {willBeFlagged ? (
             <Flag className="w-5 h-5 text-tomato-red" />
           ) : (
-            <CheckCircle className="w-5 h-5 text-bottle-green" />
+            <CheckCircle className="w-5 h-5 text-muted-olive" />
           )}
           <span>{willBeFlagged ? 'Flag Category' : 'Enable Category'}</span>
         </div>
@@ -135,7 +135,7 @@ const CategoryFlagModal = ({ isOpen, onClose, category, onSuccess }) => {
                     Flagged
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 bg-bottle-green/10 text-bottle-green px-2 py-1 rounded-lg text-xs">
+                  <span className="inline-flex items-center gap-1 bg-muted-olive/10 text-muted-olive px-2 py-1 rounded-lg text-xs">
                     <Eye className="w-3 h-3" />
                     Available
                   </span>
@@ -196,10 +196,10 @@ const CategoryFlagModal = ({ isOpen, onClose, category, onSuccess }) => {
                 value="true"
                 checked={formData.isAvailable === true}
                 onChange={() => setFormData({ ...formData, isAvailable: true })}
-                className="w-4 h-4 text-bottle-green border-gray-300 focus:ring-bottle-green"
+                className="w-4 h-4 text-muted-olive border-gray-300 focus:ring-muted-olive"
               />
               <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4 text-bottle-green" />
+                <Eye className="w-4 h-4 text-muted-olive" />
                 <div>
                   <span className="font-medium text-text-dark">Available</span>
                   <p className="text-xs text-text-muted">
@@ -250,7 +250,7 @@ const CategoryFlagModal = ({ isOpen, onClose, category, onSuccess }) => {
               placeholder="e.g., Category no longer relevant, needs restructuring, quality issues..."
               rows={3}
               maxLength={500}
-              className={`w-full px-4 py-3 border rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 resize-none ${
+              className={`w-full px-4 py-3 border rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 resize-none ${
                 errors.flagReason
                   ? 'border-tomato-red/50 bg-tomato-red/5'
                   : 'border-gray-200'
@@ -315,7 +315,7 @@ const CategoryFlagModal = ({ isOpen, onClose, category, onSuccess }) => {
             className={`flex items-center gap-2 ${
               willBeFlagged
                 ? 'bg-tomato-red hover:bg-tomato-red/90 text-white'
-                : 'bg-bottle-green hover:bg-bottle-green/90 text-white'
+                : 'bg-muted-olive hover:bg-muted-olive/90 text-white'
             }`}
           >
             {isLoading ? (

@@ -306,7 +306,7 @@ const Profile = () => {
                         }))
                       }
                       disabled={!isEditing}
-                      className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                      className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -334,7 +334,7 @@ const Profile = () => {
                         }
                       }}
                       disabled={!isEditing}
-                      className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                      className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                       placeholder={phoneInputUtils.placeholder}
                     />
                   </div>
@@ -488,7 +488,7 @@ const Profile = () => {
                           currentPassword: e.target.value,
                         }))
                       }
-                      className="w-full px-4 pr-12 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+                      className="w-full px-4 pr-12 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
                       placeholder="Enter current password"
                     />
                     <button
@@ -521,7 +521,7 @@ const Profile = () => {
                           newPassword: e.target.value,
                         }))
                       }
-                      className="w-full px-4 pr-12 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+                      className="w-full px-4 pr-12 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
                       placeholder="Enter new password"
                     />
                     <button
@@ -551,7 +551,7 @@ const Profile = () => {
                         confirmPassword: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
                     placeholder="Confirm new password"
                   />
                 </div>
@@ -628,7 +628,7 @@ const Profile = () => {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-bottle-green/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-bottle-green"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-muted-olive/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-muted-olive"></div>
                     </label>
                   </div>
                 ))}

@@ -98,8 +98,8 @@ const CreateRestaurantManager = () => {
       1: { text: 'Weak', color: 'text-orange-500' },
       2: { text: 'Fair', color: 'text-earthy-yellow' },
       3: { text: 'Good', color: 'text-blue-500' },
-      4: { text: 'Strong', color: 'text-bottle-green' },
-      5: { text: 'Very Strong', color: 'text-mint-fresh' },
+      4: { text: 'Strong', color: 'text-muted-olive' },
+      5: { text: 'Very Strong', color: 'text-sage-green' },
     };
 
     return { score, ...strength[Math.min(score, 5)] };
@@ -191,7 +191,7 @@ const CreateRestaurantManager = () => {
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={handleCancel}
-            className="w-10 h-10 rounded-2xl bg-white border border-gray-200 flex items-center justify-center hover:border-bottle-green/30 transition-colors"
+            className="w-10 h-10 rounded-2xl bg-white border border-gray-200 flex items-center justify-center hover:border-muted-olive/30 transition-colors"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -203,7 +203,7 @@ const CreateRestaurantManager = () => {
             <p className="text-text-muted">
               Add a new restaurant manager account for an existing restaurant
               {preSelectedRestaurantName && (
-                <span className="block text-bottle-green mt-1 font-medium">
+                <span className="block text-muted-olive mt-1 font-medium">
                   Pre-selected: {preSelectedRestaurantName}
                 </span>
               )}
@@ -247,7 +247,7 @@ const CreateRestaurantManager = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.name
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter full name"
                 />
@@ -277,7 +277,7 @@ const CreateRestaurantManager = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.email
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter email address"
                 />
@@ -307,7 +307,7 @@ const CreateRestaurantManager = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.phone
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="+8801234567890"
                 />
@@ -337,7 +337,7 @@ const CreateRestaurantManager = () => {
                   className={`w-full pl-10 pr-12 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.password
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter password"
                 />
@@ -370,7 +370,7 @@ const CreateRestaurantManager = () => {
                                 ? 'bg-earthy-yellow'
                                 : passwordStrength.score <= 4
                                   ? 'bg-blue-500'
-                                  : 'bg-bottle-green'
+                                  : 'bg-muted-olive'
                         }`}
                         style={{
                           width: `${(passwordStrength.score / 5) * 100}%`,
@@ -437,7 +437,7 @@ const CreateRestaurantManager = () => {
                     className={`w-full pl-4 pr-10 py-3 rounded-2xl border transition-colors min-h-[44px] appearance-none bg-white ${
                       errors.restaurantId
                         ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                        : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                        : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                     }`}
                   >
                     <option value="">Select a restaurant...</option>
@@ -464,9 +464,9 @@ const CreateRestaurantManager = () => {
 
             {/* Selected Restaurant Details */}
             {selectedRestaurant && (
-              <Card className="p-4 bg-bottle-green/5 border-bottle-green/20">
+              <Card className="p-4 bg-muted-olive/5 border-muted-olive/20">
                 <div className="flex items-start gap-3">
-                  <Building2 className="w-5 h-5 text-bottle-green flex-shrink-0 mt-0.5" />
+                  <Building2 className="w-5 h-5 text-muted-olive flex-shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-text-dark mb-1">
                       {selectedRestaurant.name}

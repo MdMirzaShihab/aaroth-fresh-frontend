@@ -119,11 +119,11 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
         case 'new_order':
         case 'order_confirmed':
         case 'order_ready':
-          return <ShoppingCart className={`${iconClass} text-bottle-green`} />;
+          return <ShoppingCart className={`${iconClass} text-muted-olive`} />;
         case 'order_cancelled':
           return <X className={`${iconClass} text-tomato-red`} />;
         case 'listing_approved':
-          return <Package className={`${iconClass} text-mint-fresh`} />;
+          return <Package className={`${iconClass} text-sage-green`} />;
         case 'low_inventory':
           return <AlertTriangle className={`${iconClass} text-amber-500`} />;
         case 'budget_alert':
@@ -143,7 +143,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
     // Fallback to notification type
     switch (notification.type) {
       case 'success':
-        return <CheckCircle className={`${iconClass} text-bottle-green`} />;
+        return <CheckCircle className={`${iconClass} text-muted-olive`} />;
       case 'error':
         return <AlertCircle className={`${iconClass} text-tomato-red`} />;
       case 'warning':
@@ -192,7 +192,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
       {/* Notification Center Panel */}
       <div className="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-bottle-green to-mint-fresh text-white">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-muted-olive to-sage-green text-white">
           <div className="flex items-center gap-3">
             <Bell className="w-6 h-6" />
             <h2 className="text-xl font-semibold">Notifications</h2>
@@ -236,7 +236,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                   onChange={(e) =>
                     handleSettingsUpdate({ enablePush: e.target.checked })
                   }
-                  className="rounded text-bottle-green focus:ring-bottle-green"
+                  className="rounded text-muted-olive focus:ring-muted-olive"
                 />
                 <span className="text-sm text-text-dark">
                   Browser notifications
@@ -250,7 +250,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                   onChange={(e) =>
                     handleSettingsUpdate({ enableSound: e.target.checked })
                   }
-                  className="rounded text-bottle-green focus:ring-bottle-green"
+                  className="rounded text-muted-olive focus:ring-muted-olive"
                 />
                 <span className="text-sm text-text-dark">Sound alerts</span>
               </label>
@@ -262,7 +262,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                   onChange={(e) =>
                     handleSettingsUpdate({ enableEmail: e.target.checked })
                   }
-                  className="rounded text-bottle-green focus:ring-bottle-green"
+                  className="rounded text-muted-olive focus:ring-muted-olive"
                 />
                 <span className="text-sm text-text-dark">
                   Email notifications
@@ -288,7 +288,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                           },
                         })
                       }
-                      className="rounded text-bottle-green focus:ring-bottle-green"
+                      className="rounded text-muted-olive focus:ring-muted-olive"
                     />
                     <span className="capitalize text-text-dark">{type}</span>
                   </label>
@@ -310,7 +310,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                 onClick={() => setActiveFilter(option.value)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   isActive
-                    ? 'bg-bottle-green text-white shadow-sm'
+                    ? 'bg-muted-olive text-white shadow-sm'
                     : 'text-text-muted hover:text-text-dark hover:bg-white'
                 }`}
               >
@@ -321,7 +321,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                     className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${
                       isActive
                         ? 'bg-white/20 text-white'
-                        : 'bg-bottle-green text-white'
+                        : 'bg-muted-olive text-white'
                     }`}
                   >
                     {option.count}
@@ -337,7 +337,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
           <div className="flex items-center gap-2 p-4 border-b border-gray-200">
             <button
               onClick={handleMarkAllAsRead}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors"
               disabled={unreadCount === 0}
             >
               <CheckCheck className="w-4 h-4" />
@@ -406,7 +406,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                               className="p-1 hover:bg-gray-200 rounded transition-colors"
                               title="Mark as read"
                             >
-                              <Check className="w-3 h-3 text-bottle-green" />
+                              <Check className="w-3 h-3 text-muted-olive" />
                             </button>
                           )}
 
@@ -447,7 +447,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
                               <button
                                 key={index}
                                 onClick={action.action}
-                                className="px-3 py-1 text-xs bg-bottle-green text-white rounded-lg hover:bg-bottle-green/80 transition-colors"
+                                className="px-3 py-1 text-xs bg-muted-olive text-white rounded-lg hover:bg-muted-olive/80 transition-colors"
                               >
                                 {action.label}
                               </button>
@@ -458,7 +458,7 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
 
                     {/* Unread indicator */}
                     {!notification.read && (
-                      <div className="w-2 h-2 bg-bottle-green rounded-full flex-shrink-0 mt-2" />
+                      <div className="w-2 h-2 bg-muted-olive rounded-full flex-shrink-0 mt-2" />
                     )}
                   </div>
                 </div>

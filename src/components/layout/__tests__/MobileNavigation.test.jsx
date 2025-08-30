@@ -122,8 +122,8 @@ describe('MobileNavigation', () => {
     const dashboardButton = screen.getByLabelText('Dashboard');
 
     // Should have active styling classes
-    expect(dashboardButton).toHaveClass('bg-bottle-green/10');
-    expect(dashboardButton).toHaveClass('text-bottle-green');
+    expect(dashboardButton).toHaveClass('bg-muted-olive/10');
+    expect(dashboardButton).toHaveClass('text-muted-olive');
   });
 
   it('meets mobile-first accessibility requirements', () => {

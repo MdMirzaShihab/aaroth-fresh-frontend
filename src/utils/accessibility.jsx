@@ -316,9 +316,9 @@ export const focusManagement = {
         href: link.href,
         className: `
           sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
-          bg-bottle-green text-white px-4 py-2 rounded-lg font-medium z-50
+          bg-muted-olive text-white px-4 py-2 rounded-lg font-medium z-50
           transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 
-          focus-visible:ring-mint-fresh focus-visible:ring-offset-2
+          focus-visible:ring-sage-green focus-visible:ring-offset-2
         `
       }, link.text)
     );

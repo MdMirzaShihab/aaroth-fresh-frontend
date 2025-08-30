@@ -31,7 +31,7 @@ const CapabilityGate = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bottle-green"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-muted-olive"></div>
         <span className="ml-3 text-text-muted">Checking permissions...</span>
       </div>
     );

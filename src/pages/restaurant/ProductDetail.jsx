@@ -163,7 +163,7 @@ const ProductDetail = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-mint-fresh/20 to-bottle-green/20 flex items-center justify-center">
+              <div className="w-full h-full bg-gradient-to-br from-sage-green/20 to-muted-olive/20 flex items-center justify-center">
                 <div className="text-8xl opacity-20">🥬</div>
               </div>
             )}
@@ -189,13 +189,13 @@ const ProductDetail = () => {
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-wrap gap-2">
               {product.isOrganic && (
-                <span className="bg-mint-fresh/20 backdrop-blur-sm border border-mint-fresh/30 text-bottle-green dark:text-green-400 text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                <span className="bg-sage-green/20 backdrop-blur-sm border border-sage-green/30 text-muted-olive dark:text-green-400 text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
                   <Leaf className="w-4 h-4" />
                   Organic
                 </span>
               )}
               {product.isLocallySourced && (
-                <span className="bg-bottle-green/20 backdrop-blur-sm border border-bottle-green/30 text-bottle-green dark:text-green-400 text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                <span className="bg-muted-olive/20 backdrop-blur-sm border border-muted-olive/30 text-muted-olive dark:text-green-400 text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
                   Local
                 </span>
@@ -228,7 +228,7 @@ const ProductDetail = () => {
                   onClick={() => setCurrentImageIndex(index)}
                   className={`flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden border-2 transition-colors ${
                     currentImageIndex === index
-                      ? 'border-bottle-green'
+                      ? 'border-muted-olive'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -274,8 +274,8 @@ const ProductDetail = () => {
               Vendor Information
             </h3>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-bottle-green/20 to-mint-fresh/20 rounded-xl flex items-center justify-center">
-                <Package className="w-6 h-6 text-bottle-green dark:text-green-400" />
+              <div className="w-12 h-12 bg-gradient-to-br from-muted-olive/20 to-sage-green/20 rounded-xl flex items-center justify-center">
+                <Package className="w-6 h-6 text-muted-olive dark:text-green-400" />
               </div>
               <div>
                 <p className="font-medium text-text-dark dark:text-white">
@@ -293,14 +293,14 @@ const ProductDetail = () => {
           <div className="glass rounded-2xl p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-3xl font-bold text-bottle-green dark:text-green-400">
+                <p className="text-3xl font-bold text-muted-olive dark:text-green-400">
                   {formatCurrency(price)}
                 </p>
                 <p className="text-text-muted dark:text-gray-300">per {unit}</p>
               </div>
               <div className="text-right">
                 <p
-                  className={`font-medium ${quantityAvailable > 0 ? 'text-mint-fresh dark:text-green-400' : 'text-tomato-red'}`}
+                  className={`font-medium ${quantityAvailable > 0 ? 'text-sage-green dark:text-green-400' : 'text-tomato-red'}`}
                 >
                   {quantityAvailable > 0 ? 'In Stock' : 'Out of Stock'}
                 </p>
@@ -373,7 +373,7 @@ const ProductDetail = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'border-bottle-green text-bottle-green dark:text-green-400'
+                      ? 'border-muted-olive text-muted-olive dark:text-green-400'
                       : 'border-transparent text-text-muted hover:text-text-dark dark:text-gray-300 dark:hover:text-white'
                   }`}
                 >
@@ -425,7 +425,7 @@ const ProductDetail = () => {
                       <span
                         className={`px-3 py-1 rounded-lg text-sm font-medium ${
                           isInSeason
-                            ? 'bg-mint-fresh/20 text-bottle-green dark:text-green-400'
+                            ? 'bg-sage-green/20 text-muted-olive dark:text-green-400'
                             : 'bg-gray-100 text-gray-600'
                         }`}
                       >
@@ -471,7 +471,7 @@ const ProductDetail = () => {
                                 (condition, index) => (
                                   <span
                                     key={index}
-                                    className="bg-bottle-green/10 text-bottle-green dark:text-green-400 px-2 py-1 rounded text-sm"
+                                    className="bg-muted-olive/10 text-muted-olive dark:text-green-400 px-2 py-1 rounded text-sm"
                                   >
                                     {condition}
                                   </span>
@@ -494,7 +494,7 @@ const ProductDetail = () => {
                           {listing.certifications.map((cert, index) => (
                             <span
                               key={index}
-                              className="bg-mint-fresh/10 text-bottle-green dark:text-green-400 px-3 py-1 rounded-lg text-sm font-medium"
+                              className="bg-sage-green/10 text-muted-olive dark:text-green-400 px-3 py-1 rounded-lg text-sm font-medium"
                             >
                               {cert}
                             </span>
@@ -515,7 +515,7 @@ const ProductDetail = () => {
                       <div className="space-y-3">
                         {listing.deliveryOptions.selfPickup?.enabled && (
                           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                            <Package className="w-5 h-5 text-bottle-green dark:text-green-400" />
+                            <Package className="w-5 h-5 text-muted-olive dark:text-green-400" />
                             <div>
                               <p className="font-medium text-text-dark dark:text-white">
                                 Self Pickup
@@ -528,7 +528,7 @@ const ProductDetail = () => {
                         )}
                         {listing.deliveryOptions.delivery?.enabled && (
                           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                            <Truck className="w-5 h-5 text-bottle-green dark:text-green-400" />
+                            <Truck className="w-5 h-5 text-muted-olive dark:text-green-400" />
                             <div>
                               <p className="font-medium text-text-dark dark:text-white">
                                 Home Delivery

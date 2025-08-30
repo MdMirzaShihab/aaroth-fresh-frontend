@@ -15,7 +15,7 @@ import {
   motionAccessibility,
   formAccessibility,
   createAriaAttributes,
-} from '../utils/accessibility';
+} from '../utils/accessibility.jsx';
 
 /**
  * Hook for focus management and keyboard navigation

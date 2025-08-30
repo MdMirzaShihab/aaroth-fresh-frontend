@@ -60,13 +60,13 @@ const AdminMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
 
   const getPerformanceColor = () => {
-    if (performance === 'excellent') return isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20';
+    if (performance === 'excellent') return isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20';
     if (performance === 'good') return isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20';
     if (performance === 'poor') return isDarkMode ? 'bg-tomato-red/5 border-tomato-red/20' : 'bg-tomato-red/5 border-tomato-red/20';
     return isDarkMode ? 'bg-gray-800/50 border-gray-700/50' : 'bg-white/80 border-gray-200/50';
@@ -157,7 +157,7 @@ const AdminLeaderboardItem = ({ admin, rank, metric = 'efficiency' }) => {
   };
 
   const getPerformanceBadge = () => {
-    if (admin.efficiency >= 95) return { label: 'Excellent', color: 'text-mint-fresh bg-mint-fresh/10' };
+    if (admin.efficiency >= 95) return { label: 'Excellent', color: 'text-sage-green bg-sage-green/10' };
     if (admin.efficiency >= 85) return { label: 'Good', color: 'text-sage-green bg-sage-green/10' };
     if (admin.efficiency >= 70) return { label: 'Average', color: 'text-earthy-yellow bg-earthy-yellow/10' };
     return { label: 'Needs Improvement', color: 'text-tomato-red bg-tomato-red/10' };
@@ -179,7 +179,7 @@ const AdminLeaderboardItem = ({ admin, rank, metric = 'efficiency' }) => {
         #{rank}
       </div>
       
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                       flex items-center justify-center shadow-lg text-white font-medium">
         <User className="w-5 h-5" />
       </div>
@@ -478,8 +478,8 @@ const AdminPerformance = ({
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
                   ${chartView === view.id
                     ? isDarkMode 
-                      ? 'bg-mint-fresh/20 text-mint-fresh'
-                      : 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-sage-green/20 text-sage-green'
+                      : 'bg-white text-muted-olive shadow-sm'
                     : isDarkMode
                       ? 'text-gray-400 hover:text-gray-300'
                       : 'text-text-muted hover:text-text-dark'
@@ -512,7 +512,7 @@ const AdminPerformance = ({
           change={5.8}
           trend="up"
           icon={Award}
-          color="mint-fresh"
+          color="sage-green"
           subtitle="Avg team performance"
           target="85%+"
           performance={teamMetrics.avgEfficiency >= 90 ? 'excellent' : teamMetrics.avgEfficiency >= 80 ? 'good' : 'poor'}
@@ -558,7 +558,7 @@ const AdminPerformance = ({
           change={-25.4}
           trend="up" // Fewer escalations is better
           icon={AlertTriangle}
-          color={teamMetrics.totalEscalations < 5 ? 'bottle-green' : teamMetrics.totalEscalations < 10 ? 'earthy-yellow' : 'tomato-red'}
+          color={teamMetrics.totalEscalations < 5 ? 'muted-olive' : teamMetrics.totalEscalations < 10 ? 'earthy-yellow' : 'tomato-red'}
           subtitle="Issues escalated"
           performance={teamMetrics.totalEscalations < 5 ? 'excellent' : teamMetrics.totalEscalations < 10 ? 'good' : 'poor'}
           isLoading={isLoading}
@@ -704,7 +704,7 @@ const AdminPerformance = ({
           <div className={`
             p-4 rounded-xl text-center
             ${teamMetrics.taskDistribution >= 80 
-              ? isDarkMode ? 'bg-mint-fresh/5 border border-mint-fresh/20' : 'bg-mint-fresh/5 border border-mint-fresh/20'
+              ? isDarkMode ? 'bg-sage-green/5 border border-sage-green/20' : 'bg-sage-green/5 border border-sage-green/20'
               : teamMetrics.taskDistribution >= 70
                 ? isDarkMode ? 'bg-earthy-yellow/5 border border-earthy-yellow/20' : 'bg-earthy-yellow/5 border border-earthy-yellow/20'
                 : 'bg-tomato-red/5 border border-tomato-red/20'
@@ -717,7 +717,7 @@ const AdminPerformance = ({
               Workload Balance Score
             </p>
             <p className={`text-xs mt-1 ${
-              teamMetrics.taskDistribution >= 80 ? 'text-mint-fresh' :
+              teamMetrics.taskDistribution >= 80 ? 'text-sage-green' :
               teamMetrics.taskDistribution >= 70 ? 'text-earthy-yellow' :
               'text-tomato-red'
             }`}>
@@ -755,14 +755,14 @@ const AdminPerformance = ({
               onClick={() => toast.success(`Analyzing ${dept.name} department`)}
             >
               <div className="flex items-center justify-between mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-bottle-green to-sage-green 
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-muted-olive to-sage-green 
                                flex items-center justify-center">
                   <Building2 className="w-4 h-4 text-white" />
                 </div>
                 <div className={`
                   px-2 py-1 rounded text-xs font-medium
                   ${dept.avgEfficiency >= 90 
-                    ? isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'
+                    ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
                     : dept.avgEfficiency >= 80
                       ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
                       : 'bg-tomato-red/10 text-tomato-red'
@@ -811,13 +811,13 @@ const AdminPerformance = ({
           <div className={`
             p-4 rounded-xl border
             ${teamMetrics.avgEfficiency >= 90
-              ? isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20'
+              ? isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
               : isDarkMode ? 'bg-earthy-yellow/5 border-earthy-yellow/20' : 'bg-earthy-yellow/5 border-earthy-yellow/20'
             }
           `}>
             <div className="flex items-center gap-3 mb-2">
               <Award className={`w-5 h-5 ${
-                teamMetrics.avgEfficiency >= 90 ? 'text-mint-fresh' : 'text-earthy-yellow'
+                teamMetrics.avgEfficiency >= 90 ? 'text-sage-green' : 'text-earthy-yellow'
               }`} />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 Team Excellence
@@ -853,13 +853,13 @@ const AdminPerformance = ({
           <div className={`
             p-4 rounded-xl border
             ${teamMetrics.totalEscalations < 10
-              ? isDarkMode ? 'bg-bottle-green/5 border-bottle-green/20' : 'bg-bottle-green/5 border-bottle-green/20'
+              ? isDarkMode ? 'bg-muted-olive/5 border-muted-olive/20' : 'bg-muted-olive/5 border-muted-olive/20'
               : isDarkMode ? 'bg-tomato-red/5 border-tomato-red/20' : 'bg-tomato-red/5 border-tomato-red/20'
             }
           `}>
             <div className="flex items-center gap-3 mb-2">
               <Target className={`w-5 h-5 ${
-                teamMetrics.totalEscalations < 10 ? 'text-bottle-green' : 'text-tomato-red'
+                teamMetrics.totalEscalations < 10 ? 'text-muted-olive' : 'text-tomato-red'
               }`} />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 Issue Resolution

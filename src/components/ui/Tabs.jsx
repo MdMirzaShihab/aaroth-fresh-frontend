@@ -16,18 +16,18 @@ const TabsContext = createContext(null);
 
 // Tab variants following organic design
 const tabVariants = cva(
-  'relative inline-flex items-center justify-center px-4 py-3 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 whitespace-nowrap min-h-[44px]',
+  'relative inline-flex items-center justify-center px-4 py-3 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 whitespace-nowrap min-h-[44px]',
   {
     variants: {
       variant: {
         default:
-          'text-text-muted hover:text-text-dark data-[state=active]:text-bottle-green data-[state=active]:bg-bottle-green/5 rounded-2xl hover:bg-earthy-beige/30',
+          'text-text-muted hover:text-text-dark data-[state=active]:text-muted-olive data-[state=active]:bg-muted-olive/5 rounded-2xl hover:bg-earthy-beige/30',
         underline:
-          'text-text-muted hover:text-text-dark data-[state=active]:text-bottle-green border-b-2 border-transparent data-[state=active]:border-bottle-green rounded-none',
+          'text-text-muted hover:text-text-dark data-[state=active]:text-muted-olive border-b-2 border-transparent data-[state=active]:border-muted-olive rounded-none',
         pills:
           'text-text-muted hover:text-text-dark data-[state=active]:text-white data-[state=active]:bg-gradient-secondary rounded-2xl hover:bg-earthy-beige/30',
         minimal:
-          'text-text-muted hover:text-text-dark data-[state=active]:text-bottle-green hover:bg-transparent',
+          'text-text-muted hover:text-text-dark data-[state=active]:text-muted-olive hover:bg-transparent',
       },
       size: {
         sm: 'px-3 py-2 text-xs min-h-[36px]',
@@ -297,7 +297,7 @@ const TabsTrigger = forwardRef(
 
         {/* Active Tab Indicator for underline variant */}
         {variant === 'underline' && isActive && (
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-bottle-green rounded-full" />
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted-olive rounded-full" />
         )}
       </button>
     );

@@ -48,7 +48,7 @@ const ListingDetailsModal = ({ isOpen, onClose, listingId }) => {
   const getStatusBadge = (status) => {
     const statusConfig = {
       active: {
-        color: 'bg-mint-fresh/20 text-bottle-green',
+        color: 'bg-sage-green/20 text-muted-olive',
         icon: CheckCircle,
         text: 'Active',
       },
@@ -95,7 +95,7 @@ const ListingDetailsModal = ({ isOpen, onClose, listingId }) => {
       },
       shipped: { color: 'bg-indigo-100 text-indigo-700', text: 'Shipped' },
       delivered: {
-        color: 'bg-mint-fresh/20 text-bottle-green',
+        color: 'bg-sage-green/20 text-muted-olive',
         text: 'Delivered',
       },
       cancelled: {

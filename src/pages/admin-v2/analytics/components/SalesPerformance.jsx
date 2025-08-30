@@ -38,7 +38,7 @@ const SalesMetricCard = ({
   change, 
   trend, 
   icon: Icon, 
-  color = 'mint-fresh',
+  color = 'sage-green',
   subtitle,
   onClick,
   isLoading = false,
@@ -53,7 +53,7 @@ const SalesMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -327,8 +327,8 @@ const SalesPerformance = ({
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
                   ${chartView === view.id
                     ? isDarkMode 
-                      ? 'bg-mint-fresh/20 text-mint-fresh'
-                      : 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-sage-green/20 text-sage-green'
+                      : 'bg-white text-muted-olive shadow-sm'
                     : isDarkMode
                       ? 'text-gray-400 hover:text-gray-300'
                       : 'text-text-muted hover:text-text-dark'
@@ -356,8 +356,8 @@ const SalesPerformance = ({
                   p-2 rounded-lg transition-all duration-200
                   ${chartType === option.type
                     ? isDarkMode 
-                      ? 'bg-mint-fresh/20 text-mint-fresh'
-                      : 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-sage-green/20 text-sage-green'
+                      : 'bg-white text-muted-olive shadow-sm'
                     : isDarkMode
                       ? 'text-gray-400 hover:text-gray-300'
                       : 'text-text-muted hover:text-text-dark'
@@ -389,7 +389,7 @@ const SalesPerformance = ({
           change={salesMetrics.revenueGrowth.toFixed(1)}
           trend={salesMetrics.revenueGrowth > 0 ? 'up' : 'down'}
           icon={DollarSign}
-          color="mint-fresh"
+          color="sage-green"
           subtitle={`${timeRange} period`}
           isLoading={isLoading}
         />
@@ -439,7 +439,7 @@ const SalesPerformance = ({
           change={15.7}
           trend="up"
           icon={Users}
-          color="bottle-green"
+          color="muted-olive"
           subtitle="Unique buyers"
           isLoading={isLoading}
         />
@@ -637,13 +637,13 @@ const SalesPerformance = ({
           <div className={`
             p-4 rounded-xl border
             ${salesMetrics.revenueGrowth > 0
-              ? isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20'
+              ? isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
               : isDarkMode ? 'bg-tomato-red/5 border-tomato-red/20' : 'bg-tomato-red/5 border-tomato-red/20'
             }
           `}>
             <div className="flex items-center gap-3 mb-2">
               <TrendingUp className={`w-5 h-5 ${
-                salesMetrics.revenueGrowth > 0 ? 'text-mint-fresh' : 'text-tomato-red'
+                salesMetrics.revenueGrowth > 0 ? 'text-sage-green' : 'text-tomato-red'
               }`} />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 Revenue Growth
@@ -678,10 +678,10 @@ const SalesPerformance = ({
 
           <div className={`
             p-4 rounded-xl border
-            ${isDarkMode ? 'bg-bottle-green/5 border-bottle-green/20' : 'bg-bottle-green/5 border-bottle-green/20'}
+            ${isDarkMode ? 'bg-muted-olive/5 border-muted-olive/20' : 'bg-muted-olive/5 border-muted-olive/20'}
           `}>
             <div className="flex items-center gap-3 mb-2">
-              <Target className="w-5 h-5 text-bottle-green" />
+              <Target className="w-5 h-5 text-muted-olive" />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 Performance Health
               </span>

@@ -246,11 +246,11 @@ const QuickActionPanel = ({
       },
       green: {
         bg: isDarkMode 
-          ? (isActive ? 'bg-mint-fresh/30' : 'bg-mint-fresh/20') 
-          : (isActive ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10'),
-        text: isDarkMode ? 'text-mint-fresh' : 'text-bottle-green',
-        border: 'border-mint-fresh/30',
-        hover: isDarkMode ? 'hover:bg-mint-fresh/25' : 'hover:bg-mint-fresh/15'
+          ? (isActive ? 'bg-sage-green/30' : 'bg-sage-green/20') 
+          : (isActive ? 'bg-sage-green/20' : 'bg-sage-green/10'),
+        text: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
+        border: 'border-sage-green/30',
+        hover: isDarkMode ? 'hover:bg-sage-green/25' : 'hover:bg-sage-green/15'
       },
       blue: {
         bg: isDarkMode 
@@ -372,7 +372,7 @@ const QuickActionPanel = ({
                         text-xs px-1.5 py-0.5 rounded font-medium flex items-center gap-1
                         ${action.currentState
                           ? 'bg-tomato-red/20 text-tomato-red'
-                          : 'bg-mint-fresh/20 text-bottle-green'
+                          : 'bg-sage-green/20 text-muted-olive'
                         }
                       `}>
                         {action.currentState ? (
@@ -412,7 +412,7 @@ const QuickActionPanel = ({
       <Card className={`p-6 ${className}`}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Zap className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <Zap className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
               Quick Actions
             </h3>
@@ -422,7 +422,7 @@ const QuickActionPanel = ({
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${
               systemStatus.healthy 
-                ? (isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green')
+                ? (isDarkMode ? 'bg-sage-green' : 'bg-muted-olive')
                 : 'bg-tomato-red animate-pulse'
             }`} />
             <span className={`text-xs font-medium ${

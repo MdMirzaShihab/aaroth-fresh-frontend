@@ -55,8 +55,8 @@ class WidgetErrorBoundary extends React.Component {
               className={`
                 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200
                 ${isDarkMode 
-                  ? 'bg-mint-fresh/20 text-mint-fresh hover:bg-mint-fresh/30' 
-                  : 'bg-bottle-green/10 text-bottle-green hover:bg-bottle-green/20'
+                  ? 'bg-sage-green/20 text-sage-green hover:bg-sage-green/30' 
+                  : 'bg-muted-olive/10 text-muted-olive hover:bg-muted-olive/20'
                 }
               `}
             >

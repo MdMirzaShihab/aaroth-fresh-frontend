@@ -197,7 +197,7 @@ const VerificationToggleModal = ({
               <div
                 className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
                   currentStatus === 'approved'
-                    ? 'bg-mint-fresh/20 text-bottle-green'
+                    ? 'bg-sage-green/20 text-muted-olive'
                     : currentStatus === 'rejected'
                       ? 'bg-tomato-red/20 text-tomato-red'
                       : 'bg-amber-100 text-amber-700'
@@ -246,7 +246,7 @@ const VerificationToggleModal = ({
               disabled={currentStatus === 'approved'}
               className={`p-4 border-2 rounded-2xl transition-all ${
                 selectedAction === 'approved'
-                  ? 'border-bottle-green bg-mint-fresh/10 text-bottle-green'
+                  ? 'border-muted-olive bg-sage-green/10 text-muted-olive'
                   : currentStatus === 'approved'
                     ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
                     : 'border-gray-200 hover:border-gray-300 text-text-muted'
@@ -256,7 +256,7 @@ const VerificationToggleModal = ({
                 <div
                   className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                     selectedAction === 'approved'
-                      ? 'bg-bottle-green text-white'
+                      ? 'bg-muted-olive text-white'
                       : currentStatus === 'approved'
                         ? 'bg-gray-200 text-gray-400'
                         : 'bg-gray-100 text-gray-600'
@@ -382,7 +382,7 @@ const VerificationToggleModal = ({
                       className={`px-3 py-2 rounded-xl text-sm transition-colors ${
                         reason === template
                           ? selectedAction === 'approved'
-                            ? 'bg-bottle-green text-white'
+                            ? 'bg-muted-olive text-white'
                             : selectedAction === 'rejected'
                               ? 'bg-tomato-red text-white'
                               : 'bg-amber-600 text-white'
@@ -413,7 +413,7 @@ const VerificationToggleModal = ({
                 rows={selectedAction === 'rejected' ? 5 : 4}
                 className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 ${
                   selectedAction === 'approved'
-                    ? 'focus:ring-bottle-green/20'
+                    ? 'focus:ring-muted-olive/20'
                     : selectedAction === 'rejected'
                       ? 'focus:ring-tomato-red/20'
                       : 'focus:ring-amber-600/20'
@@ -428,7 +428,7 @@ const VerificationToggleModal = ({
           <Button
             className={`flex-1 ${
               selectedAction === 'approved'
-                ? 'bg-bottle-green hover:bg-bottle-green/90'
+                ? 'bg-muted-olive hover:bg-muted-olive/90'
                 : selectedAction === 'rejected'
                   ? 'bg-tomato-red hover:bg-tomato-red/90'
                   : selectedAction === 'pending'

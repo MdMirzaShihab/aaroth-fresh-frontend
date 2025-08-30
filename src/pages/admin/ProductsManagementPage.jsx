@@ -188,7 +188,7 @@ const ProductsManagementPage = () => {
   };
 
   const getPerformanceColor = (score) => {
-    if (score >= 80) return 'text-mint-fresh';
+    if (score >= 80) return 'text-sage-green';
     if (score >= 60) return 'text-earthy-yellow';
     if (score >= 40) return 'text-amber-600';
     return 'text-tomato-red';
@@ -196,7 +196,7 @@ const ProductsManagementPage = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      active: { color: 'bg-mint-fresh/10 text-mint-fresh', label: 'Active' },
+      active: { color: 'bg-sage-green/10 text-sage-green', label: 'Active' },
       inactive: { color: 'bg-gray-100 text-gray-600', label: 'Inactive' },
       flagged: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Flagged' },
       draft: { color: 'bg-blue-100 text-blue-600', label: 'Draft' },
@@ -226,7 +226,7 @@ const ProductsManagementPage = () => {
           className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-bottle-green to-earthy-brown bg-clip-text text-transparent">
+            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-muted-olive to-earthy-brown bg-clip-text text-transparent">
               Products Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
@@ -272,13 +272,13 @@ const ProductsManagementPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-text-muted text-sm font-medium">Total Products</p>
-                <p className="text-2xl font-bold text-bottle-green">{stats.totalProducts}</p>
-                <p className="text-xs text-mint-fresh mt-1">
+                <p className="text-2xl font-bold text-muted-olive">{stats.totalProducts}</p>
+                <p className="text-xs text-sage-green mt-1">
                   {stats.activeProducts} active
                 </p>
               </div>
-              <div className="w-12 h-12 bg-bottle-green/10 rounded-2xl flex items-center justify-center">
-                <Package className="w-6 h-6 text-bottle-green" />
+              <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center">
+                <Package className="w-6 h-6 text-muted-olive" />
               </div>
             </div>
           </Card>
@@ -309,8 +309,8 @@ const ProductsManagementPage = () => {
                   Overall score
                 </p>
               </div>
-              <div className="w-12 h-12 bg-mint-fresh/10 rounded-2xl flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-mint-fresh" />
+              <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-sage-green" />
               </div>
             </div>
           </Card>
@@ -357,7 +357,7 @@ const ProductsManagementPage = () => {
                       : 'hover:bg-earthy-beige/20 text-text-dark'
                   }`}
                 >
-                  <tab.icon className={`w-5 h-5 ${viewMode === tab.id ? 'text-white' : 'text-bottle-green'}`} />
+                  <tab.icon className={`w-5 h-5 ${viewMode === tab.id ? 'text-white' : 'text-muted-olive'}`} />
                   <span className="font-medium">{tab.label}</span>
                 </button>
               ))}
@@ -445,7 +445,7 @@ const ProductsManagementPage = () => {
                                 type="checkbox"
                                 checked={selectedProducts.size === products.length && products.length > 0}
                                 onChange={handleSelectAll}
-                                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                                className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                               />
                               <span className="text-sm font-medium text-text-dark">
                                 Select All
@@ -561,7 +561,7 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
     activate: {
       title: 'Activate Products',
       description: `Activate ${selectedCount} selected products?`,
-      color: 'mint-fresh',
+      color: 'sage-green',
       icon: CheckCircle,
     },
     deactivate: {
@@ -586,7 +586,7 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
     category: {
       title: 'Update Category',
       description: `Update category for ${selectedCount} selected products?`,
-      color: 'bottle-green',
+      color: 'muted-olive',
       icon: Archive,
       requiresInput: true,
     },
@@ -604,9 +604,9 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
         <div className={`p-4 rounded-2xl ${config.dangerous ? 'bg-tomato-red/5 border border-tomato-red/20' : 'bg-gray-50'}`}>
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
-              config.dangerous ? 'bg-tomato-red/10' : 'bg-bottle-green/10'
+              config.dangerous ? 'bg-tomato-red/10' : 'bg-muted-olive/10'
             }`}>
-              <config.icon className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-bottle-green'}`} />
+              <config.icon className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-muted-olive'}`} />
             </div>
             <div>
               <h4 className="font-semibold text-text-dark">{config.title}</h4>
@@ -620,7 +620,7 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
             <select
               value={actionData.categoryId || ''}
               onChange={(e) => setActionData({ ...actionData, categoryId: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               required
             >
               <option value="">Select category</option>
@@ -640,7 +640,7 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
               onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
               placeholder="Explain why these products are being flagged..."
               rows={3}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 resize-none"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
               required
             />
           </FormField>
@@ -652,7 +652,7 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
           </Button>
           <Button
             onClick={handleSubmit}
-            className={`${config.dangerous ? 'bg-tomato-red hover:bg-tomato-red/90' : 'bg-bottle-green hover:bg-bottle-green/90'} text-white`}
+            className={`${config.dangerous ? 'bg-tomato-red hover:bg-tomato-red/90' : 'bg-muted-olive hover:bg-muted-olive/90'} text-white`}
           >
             {config.title}
           </Button>

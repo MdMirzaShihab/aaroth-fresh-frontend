@@ -63,7 +63,7 @@ const SETTINGS_CATEGORIES = [
     key: 'general',
     label: 'General Configuration',
     icon: Globe,
-    color: 'mint-fresh',
+    color: 'sage-green',
     description: 'App name, descriptions, file limits, branding',
     settings: [
       {
@@ -706,11 +706,11 @@ const SystemSettings = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className={`flex items-center gap-2 p-3 rounded-xl ${
-            isDarkMode ? 'bg-mint-fresh/10 border border-mint-fresh/20' : 'bg-mint-fresh/5 border border-mint-fresh/20'
+            isDarkMode ? 'bg-sage-green/10 border border-sage-green/20' : 'bg-sage-green/5 border border-sage-green/20'
           }`}
         >
-          <CheckCircle className="w-4 h-4 text-mint-fresh" />
-          <span className={`text-sm ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`}>
+          <CheckCircle className="w-4 h-4 text-sage-green" />
+          <span className={`text-sm ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}>
             Settings saved at {lastSaved.toLocaleTimeString()}
           </span>
         </motion.div>
@@ -786,7 +786,7 @@ const SystemSettings = () => {
                     <Button
                       onClick={handleSaveAllSettings}
                       disabled={isBulkUpdating}
-                      className={`button-primary-accessible bg-gradient-to-r from-bottle-green to-sage-green hover:from-bottle-green/90 hover:to-sage-green/90 ${getFocusClasses()}`}
+                      className={`button-primary-accessible bg-gradient-to-r from-muted-olive to-sage-green hover:from-muted-olive/90 hover:to-sage-green/90 ${getFocusClasses()}`}
                       {...getAriaProps({
                         label: isBulkUpdating ? 'Saving changes' : `Save ${dirtySettingsCount} changes`,
                         busy: isBulkUpdating,

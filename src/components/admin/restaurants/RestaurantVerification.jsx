@@ -211,7 +211,7 @@ const RestaurantVerification = ({
             <select
               value={filterUrgency}
               onChange={(e) => setFilterUrgency(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-2xl bg-white text-sm focus:ring-2 focus:ring-bottle-green/20"
+              className="px-3 py-2 border border-gray-200 rounded-2xl bg-white text-sm focus:ring-2 focus:ring-muted-olive/20"
             >
               <option value="all">All Urgency</option>
               <option value="critical">Critical</option>
@@ -224,7 +224,7 @@ const RestaurantVerification = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-2xl bg-white text-sm focus:ring-2 focus:ring-bottle-green/20"
+              className="px-3 py-2 border border-gray-200 rounded-2xl bg-white text-sm focus:ring-2 focus:ring-muted-olive/20"
             >
               <option value="urgency">Sort by Urgency</option>
               <option value="date">Sort by Date</option>
@@ -369,7 +369,7 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
             <div className="flex items-center gap-2">
               {/* Completion Progress */}
               <div className="text-center">
-                <div className={`text-lg font-bold ${completionRate === 100 ? 'text-mint-fresh' : 'text-amber-600'}`}>
+                <div className={`text-lg font-bold ${completionRate === 100 ? 'text-sage-green' : 'text-amber-600'}`}>
                   {completionRate}%
                 </div>
                 <div className="text-xs text-text-muted">Complete</div>
@@ -424,7 +424,7 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
                   key={doc.name}
                   className={`p-2 rounded-xl text-xs font-medium text-center ${
                     doc.submitted
-                      ? 'bg-mint-fresh/10 text-mint-fresh'
+                      ? 'bg-sage-green/10 text-sage-green'
                       : doc.required
                         ? 'bg-tomato-red/10 text-tomato-red'
                         : 'bg-gray-100 text-gray-600'
@@ -472,7 +472,7 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
                       <span>Risk Score:</span>
                       <span className={`font-medium ${
                         restaurant.riskScore >= 70 ? 'text-tomato-red' : 
-                        restaurant.riskScore >= 40 ? 'text-amber-600' : 'text-mint-fresh'
+                        restaurant.riskScore >= 40 ? 'text-amber-600' : 'text-sage-green'
                       }`}>
                         {restaurant.riskScore || 0}/100
                       </span>
@@ -495,7 +495,7 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
                         key={index}
                         className="p-2 bg-gray-50 hover:bg-gray-100 rounded-2xl text-sm flex items-center gap-2 transition-colors"
                       >
-                        <FileText className="w-4 h-4 text-bottle-green" />
+                        <FileText className="w-4 h-4 text-muted-olive" />
                         <span className="truncate">{doc.name}</span>
                         <Eye className="w-3 h-3 text-text-muted" />
                       </button>
@@ -514,7 +514,7 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
               <Button
                 size="sm"
                 onClick={() => onAction(restaurant, 'approve')}
-                className="bg-mint-fresh hover:bg-mint-fresh/90 text-white flex items-center gap-2"
+                className="bg-sage-green hover:bg-sage-green/90 text-white flex items-center gap-2"
                 disabled={completionRate < 80}
               >
                 <CheckCircle className="w-4 h-4" />
@@ -557,7 +557,7 @@ const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubm
   const modalConfig = {
     approve: {
       title: 'Approve Verification',
-      color: 'mint-fresh',
+      color: 'sage-green',
       icon: CheckCircle,
     },
     reject: {
@@ -630,7 +630,7 @@ const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubm
                           : docs.filter(d => d !== doc)
                       });
                     }}
-                    className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                    className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                   />
                   <span className="text-sm">{doc}</span>
                 </label>
@@ -652,7 +652,7 @@ const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubm
               'Explain what documents are needed and why...'
             }
             rows={4}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 resize-none"
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
             required={type !== 'approve'}
           />
         </FormField>

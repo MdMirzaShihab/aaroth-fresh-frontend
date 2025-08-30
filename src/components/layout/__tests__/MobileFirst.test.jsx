@@ -146,7 +146,7 @@ describe('Mobile-First Design Validation', () => {
           button.className.includes('hover:text-') ||
           button.className.includes('hover:bg-') ||
           button.className.includes('group-hover:') ||
-          button.className.includes('bg-bottle-green/10'); // Active state
+          button.className.includes('bg-muted-olive/10'); // Active state
         expect(hasVisualFeedback).toBe(true);
       });
     });
@@ -294,8 +294,8 @@ describe('Mobile-First Design Validation', () => {
 
       // Dashboard should be active (mocked location is /vendor/dashboard)
       const dashboardButton = screen.getByLabelText('Dashboard');
-      expect(dashboardButton).toHaveClass('bg-bottle-green/10');
-      expect(dashboardButton).toHaveClass('text-bottle-green');
+      expect(dashboardButton).toHaveClass('bg-muted-olive/10');
+      expect(dashboardButton).toHaveClass('text-muted-olive');
     });
   });
 

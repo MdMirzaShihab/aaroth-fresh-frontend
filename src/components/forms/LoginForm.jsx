@@ -164,7 +164,7 @@ const LoginForm = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-text-muted/60 hover:text-bottle-green transition-colors duration-200"
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-text-muted/60 hover:text-muted-olive transition-colors duration-200"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -185,7 +185,7 @@ const LoginForm = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-3">
@@ -204,14 +204,14 @@ const LoginForm = () => {
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="text-bottle-green hover:text-bottle-green/80 font-medium transition-colors duration-200 focus:outline-none focus:underline"
+              className="text-muted-olive hover:text-muted-olive/80 font-medium transition-colors duration-200 focus:outline-none focus:underline"
             >
               Sign up here
             </Link>
           </p>
           <Link
             to="/forgot-password"
-            className="block text-text-muted/80 hover:text-bottle-green text-sm transition-colors duration-200 focus:outline-none focus:underline"
+            className="block text-text-muted/80 hover:text-muted-olive text-sm transition-colors duration-200 focus:outline-none focus:underline"
           >
             Forgot your password?
           </Link>

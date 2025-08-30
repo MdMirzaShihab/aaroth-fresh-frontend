@@ -342,7 +342,7 @@ const AdminProductManagement = () => {
             selectedProducts.size === products.length && products.length > 0
           }
           onChange={handleSelectAll}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       cell: (product) => (
@@ -350,7 +350,7 @@ const AdminProductManagement = () => {
           type="checkbox"
           checked={selectedProducts.has(product._id)}
           onChange={() => handleSelectProduct(product._id)}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       width: '48px',
@@ -381,7 +381,7 @@ const AdminProductManagement = () => {
               {product.category?.name || 'No Category'}
             </p>
             {product.variety && (
-              <p className="text-xs text-bottle-green truncate">
+              <p className="text-xs text-muted-olive truncate">
                 {product.variety}
               </p>
             )}
@@ -442,7 +442,7 @@ const AdminProductManagement = () => {
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
             product.isActive
-              ? 'bg-mint-fresh/20 text-bottle-green'
+              ? 'bg-sage-green/20 text-muted-olive'
               : 'bg-gray-100 text-gray-600'
           }`}
         >
@@ -458,7 +458,7 @@ const AdminProductManagement = () => {
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
             product.adminStatus === 'active'
-              ? 'bg-mint-fresh/20 text-bottle-green'
+              ? 'bg-sage-green/20 text-muted-olive'
               : product.adminStatus === 'inactive'
                 ? 'bg-amber-100 text-amber-800'
                 : 'bg-gray-100 text-gray-600'
@@ -491,7 +491,7 @@ const AdminProductManagement = () => {
         <div className="flex items-center gap-1">
           <button
             onClick={() => handleEdit(product)}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+            className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Edit product"
           >
             <Edit3 className="w-4 h-4" />
@@ -601,7 +601,7 @@ const AdminProductManagement = () => {
                 setSelectedCategory(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               <option value="all">All Categories</option>
               {categories.map((category) => (
@@ -753,7 +753,7 @@ const AdminProductManagement = () => {
               }
               placeholder="Enter product description"
               rows={3}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               required
             />
           </FormField>
@@ -764,7 +764,7 @@ const AdminProductManagement = () => {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, category: e.target.value }))
               }
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               required
             >
               <option value="">Select Category</option>
@@ -809,7 +809,7 @@ const AdminProductManagement = () => {
                     isOrganic: e.target.checked,
                   }))
                 }
-                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
               />
               <span className="text-sm text-text-dark dark:text-white">
                 Organic
@@ -826,7 +826,7 @@ const AdminProductManagement = () => {
                     isLocallySourced: e.target.checked,
                   }))
                 }
-                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
               />
               <span className="text-sm text-text-dark dark:text-white">
                 Locally Sourced
@@ -843,7 +843,7 @@ const AdminProductManagement = () => {
                     isSeasonal: e.target.checked,
                   }))
                 }
-                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
               />
               <span className="text-sm text-text-dark dark:text-white">
                 Seasonal Product

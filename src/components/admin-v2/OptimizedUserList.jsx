@@ -51,7 +51,7 @@ const UserRow = memo(({
 
   const getStatusColor = useMemo(() => {
     switch (user.verificationStatus) {
-      case 'approved': return 'mint-fresh';
+      case 'approved': return 'sage-green';
       case 'pending': return 'earthy-yellow';
       case 'rejected': return 'tomato-red';
       default: return 'dusty-cedar';
@@ -76,7 +76,7 @@ const UserRow = memo(({
         flex items-center p-4 border border-gray-200 rounded-xl mb-2 cursor-pointer
         transition-all duration-200 ${getFocusClasses()}
         ${isDarkMode ? 'bg-gray-800/50 border-gray-700/50 hover:bg-gray-700/50' : 'bg-white/80 hover:bg-gray-50'}
-        ${isSelected ? 'ring-2 ring-bottle-green/30 border-bottle-green/50' : ''}
+        ${isSelected ? 'ring-2 ring-muted-olive/30 border-muted-olive/50' : ''}
       `}
       onClick={handleRowClick}
       initial={{ opacity: 0, y: 20 }}
@@ -174,7 +174,7 @@ const UserRow = memo(({
                 e.stopPropagation();
                 onSelect(user._id, e.target.checked);
               }}
-              className={`w-4 h-4 rounded border-gray-300 text-bottle-green ${getFocusClasses()}`}
+              className={`w-4 h-4 rounded border-gray-300 text-muted-olive ${getFocusClasses()}`}
               {...getAriaProps({ label: `Select user ${user.name}` })}
             />
             
@@ -343,7 +343,7 @@ const UserListControls = memo(({
         {selectedCount > 0 && (
           <div className={`
             flex items-center justify-between p-3 rounded-lg
-            ${isDarkMode ? 'bg-bottle-green/20' : 'bg-bottle-green/10'}
+            ${isDarkMode ? 'bg-muted-olive/20' : 'bg-muted-olive/10'}
           `}>
             <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
               {selectedCount} of {totalCount} users selected
@@ -354,7 +354,7 @@ const UserListControls = memo(({
                 size="sm"
                 variant="outline"
                 onClick={() => onBulkAction('approve')}
-                className={`button-accessible text-mint-fresh border-mint-fresh/30 hover:bg-mint-fresh/10 ${getFocusClasses()}`}
+                className={`button-accessible text-sage-green border-sage-green/30 hover:bg-sage-green/10 ${getFocusClasses()}`}
                 {...getAriaProps({ label: `Approve ${selectedCount} selected users` })}
               >
                 <CheckCircle className="w-3 h-3 mr-1" />

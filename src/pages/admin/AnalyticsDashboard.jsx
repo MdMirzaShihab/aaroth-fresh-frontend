@@ -254,7 +254,7 @@ const AnalyticsDashboard = () => {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+            className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
           >
             {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -483,7 +483,7 @@ const AnalyticsDashboard = () => {
                   >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-bottle-green rounded-full"></div>
+                        <div className="w-3 h-3 bg-muted-olive rounded-full"></div>
                         <span className="font-medium text-text-dark dark:text-white">
                           {region.region}
                         </span>

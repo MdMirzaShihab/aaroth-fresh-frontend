@@ -101,7 +101,7 @@ const OrderManagement = () => {
     {
       value: 'delivered',
       label: 'Delivered',
-      color: 'text-bottle-green bg-mint-fresh/20',
+      color: 'text-muted-olive bg-sage-green/20',
       icon: CheckCircle,
     },
     {
@@ -275,7 +275,7 @@ const OrderManagement = () => {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="flex items-center gap-3">
-          <RefreshCw className="w-6 h-6 animate-spin text-bottle-green" />
+          <RefreshCw className="w-6 h-6 animate-spin text-muted-olive" />
           <span className="text-lg font-medium text-text-dark">
             Loading orders...
           </span>
@@ -341,10 +341,10 @@ const OrderManagement = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-gradient-card p-6 rounded-3xl shadow-soft">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-mint-fresh/20 rounded-2xl">
-                <Package className="w-6 h-6 text-bottle-green" />
+              <div className="p-3 bg-sage-green/20 rounded-2xl">
+                <Package className="w-6 h-6 text-muted-olive" />
               </div>
-              <span className="text-sm font-medium text-bottle-green bg-mint-fresh/20 px-2 py-1 rounded-xl">
+              <span className="text-sm font-medium text-muted-olive bg-sage-green/20 px-2 py-1 rounded-xl">
                 {analytics.ordersChange || '+0%'}
               </span>
             </div>
@@ -389,7 +389,7 @@ const OrderManagement = () => {
               <div className="p-3 bg-earthy-yellow/20 rounded-2xl">
                 <span className="text-lg font-bold text-earthy-brown">৳</span>
               </div>
-              <span className="text-sm font-medium text-bottle-green bg-mint-fresh/20 px-2 py-1 rounded-xl">
+              <span className="text-sm font-medium text-muted-olive bg-sage-green/20 px-2 py-1 rounded-xl">
                 {analytics.revenueChange || '+0%'}
               </span>
             </div>
@@ -412,7 +412,7 @@ const OrderManagement = () => {
               placeholder="Search orders by restaurant name, order ID..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
             />
           </div>
 
@@ -420,7 +420,7 @@ const OrderManagement = () => {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
           >
             <option value="7d">Last 7 Days</option>
             <option value="30d">Last 30 Days</option>
@@ -433,7 +433,7 @@ const OrderManagement = () => {
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-medium transition-all duration-200 ${
                 showFilters
-                  ? 'bg-bottle-green text-white'
+                  ? 'bg-muted-olive text-white'
                   : 'bg-gray-100 hover:bg-gray-200 text-text-dark'
               }`}
             >
@@ -471,7 +471,7 @@ const OrderManagement = () => {
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilter(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
                 >
                   <option value="all">All Statuses</option>
                   {orderStatuses.map((status) => (
@@ -490,7 +490,7 @@ const OrderManagement = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
                 >
                   <option value="createdAt">Order Date</option>
                   <option value="totalAmount">Amount</option>
@@ -521,10 +521,10 @@ const OrderManagement = () => {
 
       {/* Bulk Actions */}
       {selectedOrders.length > 0 && (
-        <div className="bg-bottle-green/5 backdrop-blur-sm border border-bottle-green/20 rounded-3xl p-6 animate-fade-in">
+        <div className="bg-muted-olive/5 backdrop-blur-sm border border-muted-olive/20 rounded-3xl p-6 animate-fade-in">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex items-center gap-3">
-              <span className="text-bottle-green font-medium">
+              <span className="text-muted-olive font-medium">
                 {selectedOrders.length} orders selected
               </span>
               <button
@@ -566,7 +566,7 @@ const OrderManagement = () => {
                         orders.length > 0
                       }
                       onChange={handleSelectAll}
-                      className="w-4 h-4 text-bottle-green bg-gray-100 border-gray-300 rounded focus:ring-bottle-green/20 focus:ring-2"
+                      className="w-4 h-4 text-muted-olive bg-gray-100 border-gray-300 rounded focus:ring-muted-olive/20 focus:ring-2"
                     />
                   </th>
                   {[
@@ -608,7 +608,7 @@ const OrderManagement = () => {
                         type="checkbox"
                         checked={selectedOrders.includes(order.id)}
                         onChange={() => handleSelectOrder(order.id)}
-                        className="w-4 h-4 text-bottle-green bg-gray-100 border-gray-300 rounded focus:ring-bottle-green/20 focus:ring-2"
+                        className="w-4 h-4 text-muted-olive bg-gray-100 border-gray-300 rounded focus:ring-muted-olive/20 focus:ring-2"
                       />
                     </td>
                     <td className="px-6 py-4">
@@ -681,7 +681,7 @@ const OrderManagement = () => {
                     type="checkbox"
                     checked={selectedOrders.includes(order.id)}
                     onChange={() => handleSelectOrder(order.id)}
-                    className="w-4 h-4 text-bottle-green bg-gray-100 border-gray-300 rounded focus:ring-bottle-green/20 focus:ring-2"
+                    className="w-4 h-4 text-muted-olive bg-gray-100 border-gray-300 rounded focus:ring-muted-olive/20 focus:ring-2"
                   />
                   <div>
                     <div className="font-medium text-text-dark">
@@ -706,7 +706,7 @@ const OrderManagement = () => {
               </div>
 
               <div className="flex justify-between items-center pt-2 border-t border-gray-200/50">
-                <button className="flex items-center gap-2 text-bottle-green font-medium">
+                <button className="flex items-center gap-2 text-muted-olive font-medium">
                   <Eye className="w-4 h-4" />
                   View Details
                 </button>
@@ -763,7 +763,7 @@ const OrderManagement = () => {
                       onClick={() => setCurrentPage(pageNum)}
                       className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                         currentPage === pageNum
-                          ? 'bg-bottle-green text-white'
+                          ? 'bg-muted-olive text-white'
                           : 'text-text-dark bg-white border border-gray-200 hover:bg-gray-50'
                       }`}
                     >

@@ -65,7 +65,7 @@ const ChartContainer = ({
           {onRefresh && (
             <button
               onClick={handleRefresh}
-              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
+              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 touch-target"
               title="Refresh data"
             >
               <RefreshCw className="w-4 h-4 text-text-muted dark:text-gray-300" />
@@ -91,7 +91,7 @@ const ChartContainer = ({
           {/* Fullscreen Toggle */}
           <button
             onClick={toggleFullscreen}
-            className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
+            className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 touch-target"
             title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           >
             {isFullscreen ? (
@@ -110,7 +110,7 @@ const ChartContainer = ({
         {loading ? (
           <div className="flex items-center justify-center h-full p-4">
             <div className="flex flex-col items-center gap-3 sm:gap-4">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 border-4 border-bottle-green/20 border-t-bottle-green rounded-full animate-spin"></div>
+              <div className="w-8 h-8 sm:w-12 sm:h-12 border-4 border-muted-olive/20 border-t-muted-olive rounded-full animate-spin"></div>
               <p className="text-text-muted dark:text-gray-300 text-xs sm:text-sm text-center">
                 Loading chart data...
               </p>

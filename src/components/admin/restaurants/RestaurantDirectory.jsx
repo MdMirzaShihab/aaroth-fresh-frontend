@@ -39,9 +39,22 @@ import SearchBar from '../../ui/SearchBar';
 import { Modal } from '../../ui/Modal';
 import { Input } from '../../ui/Input';
 import FormField from '../../ui/FormField';
-import RestaurantProfileModal from './RestaurantProfileModal';
-import RestaurantLocationMap from './RestaurantLocationMap';
-import RestaurantFilters from './RestaurantFilters';
+
+// Utility functions
+const getVerificationBadge = (status) => {
+  const badges = {
+    pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending' },
+    approved: { color: 'bg-sage-green/10 text-sage-green', label: 'Verified' },
+    rejected: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Rejected' },
+  };
+  return badges[status] || badges.pending;
+};
+
+const getRiskLevel = (score) => {
+  if (score >= 70) return { color: 'text-tomato-red', label: 'High Risk', icon: AlertTriangle };
+  if (score >= 40) return { color: 'text-amber-600', label: 'Medium Risk', icon: AlertTriangle };
+  return { color: 'text-sage-green', label: 'Low Risk', icon: CheckCircle };
+};
 
 const RestaurantDirectory = ({
   restaurants,
@@ -119,21 +132,6 @@ const RestaurantDirectory = ({
     }
   };
 
-  const getVerificationBadge = (status) => {
-    const badges = {
-      pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending' },
-      approved: { color: 'bg-mint-fresh/10 text-mint-fresh', label: 'Verified' },
-      rejected: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Rejected' },
-    };
-    return badges[status] || badges.pending;
-  };
-
-  const getRiskLevel = (score) => {
-    if (score >= 70) return { color: 'text-tomato-red', label: 'High Risk', icon: AlertTriangle };
-    if (score >= 40) return { color: 'text-amber-600', label: 'Medium Risk', icon: AlertTriangle };
-    return { color: 'text-mint-fresh', label: 'Low Risk', icon: CheckCircle };
-  };
-
   if (error) {
     return (
       <EmptyState
@@ -162,7 +160,7 @@ const RestaurantDirectory = ({
               />
             </div>
             {locationFilter && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-bottle-green/10 text-bottle-green rounded-2xl text-sm">
+              <div className="flex items-center gap-2 px-3 py-2 bg-muted-olive/10 text-muted-olive rounded-2xl text-sm">
                 <MapPin className="w-4 h-4" />
                 <span>{locationFilter}</span>
                 <button
@@ -183,7 +181,7 @@ const RestaurantDirectory = ({
                 type="checkbox"
                 checked={chainGrouping}
                 onChange={(e) => setChainGrouping(e.target.checked)}
-                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
               />
               <span className="text-text-dark">Group Chains</span>
             </label>
@@ -200,7 +198,7 @@ const RestaurantDirectory = ({
                   onClick={() => setViewMode(mode)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 ${
                     viewMode === mode
-                      ? 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-white text-muted-olive shadow-sm'
                       : 'text-text-muted hover:text-text-dark'
                   }`}
                   title={label}
@@ -215,12 +213,11 @@ const RestaurantDirectory = ({
 
         {/* Advanced Filters */}
         <div className="mt-4">
-          <RestaurantFilters
-            filters={filters}
-            onFiltersChange={onFiltersChange}
-            resultCount={restaurants.length}
-            totalCount={stats.totalRestaurants}
-          />
+          <div className="p-4 bg-gray-50 rounded-lg border">
+            <p className="text-sm text-gray-600">
+              Showing {restaurants.length} restaurants
+            </p>
+          </div>
         </div>
       </Card>
 
@@ -334,18 +331,27 @@ const RestaurantDirectory = ({
       )}
 
       {/* Restaurant Profile Modal */}
-      <RestaurantProfileModal
+      <Modal
         isOpen={profileModalOpen}
         onClose={() => {
           setProfileModalOpen(false);
           setSelectedRestaurant(null);
         }}
-        restaurant={selectedRestaurant}
-        onUpdate={(updatedRestaurant) => {
-          // Handle restaurant update
-          setSelectedRestaurant(updatedRestaurant);
-        }}
-      />
+        title="Restaurant Profile"
+      >
+        <div className="p-6">
+          {selectedRestaurant && (
+            <div>
+              <h3 className="text-lg font-medium mb-4">
+                {selectedRestaurant.name}
+              </h3>
+              <p className="text-gray-600">
+                Restaurant profile details would be displayed here.
+              </p>
+            </div>
+          )}
+        </div>
+      </Modal>
 
       {/* Flag Restaurant Modal */}
       <FlagRestaurantModal
@@ -440,7 +446,7 @@ const RestaurantCard = ({
                 ) : (
                   <button
                     onClick={() => onStatusUpdate(restaurant.id, 'active')}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-mint-fresh"
+                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-sage-green"
                   >
                     <CheckCircle className="w-4 h-4" />
                     Activate
@@ -465,7 +471,7 @@ const RestaurantCard = ({
           {verificationBadge.label}
         </span>
         {restaurant.isActive ? (
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-mint-fresh/10 text-mint-fresh">
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-sage-green/10 text-sage-green">
             Active
           </span>
         ) : (
@@ -560,10 +566,10 @@ const ChainCard = ({ chain, viewMode, onRestaurantClick, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
     >
-      <Card className="p-6 glass border-bottle-green/20">
+      <Card className="p-6 glass border-muted-olive/20">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-bottle-green to-mint-fresh rounded-2xl flex items-center justify-center text-white font-bold">
+            <div className="w-12 h-12 bg-gradient-to-r from-muted-olive to-sage-green rounded-2xl flex items-center justify-center text-white font-bold">
               <Building2 className="w-6 h-6" />
             </div>
             <div>
@@ -573,7 +579,7 @@ const ChainCard = ({ chain, viewMode, onRestaurantClick, index }) => {
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-bottle-green hover:bg-bottle-green/10 p-2 rounded-xl transition-colors"
+            className="text-muted-olive hover:bg-muted-olive/10 p-2 rounded-xl transition-colors"
           >
             {expanded ? '−' : '+'}
           </button>
@@ -581,7 +587,7 @@ const ChainCard = ({ chain, viewMode, onRestaurantClick, index }) => {
 
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div className="text-center">
-            <p className="text-lg font-bold text-bottle-green">{chain.totalLocations}</p>
+            <p className="text-lg font-bold text-muted-olive">{chain.totalLocations}</p>
             <p className="text-xs text-text-muted">Locations</p>
           </div>
           <div className="text-center">

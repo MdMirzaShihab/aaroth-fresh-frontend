@@ -188,7 +188,7 @@ const ProductApproval = () => {
                   onConfirm: () => handleBulkApproval('active'),
                 })
               }
-              className="flex items-center gap-2 text-bottle-green border-bottle-green hover:bg-bottle-green hover:text-white"
+              className="flex items-center gap-2 text-muted-olive border-muted-olive hover:bg-muted-olive hover:text-white"
             >
               <CheckCircle className="w-4 h-4" />
               Approve Selected
@@ -236,7 +236,7 @@ const ProductApproval = () => {
                     products.length > 0
                   }
                   onChange={handleSelectAll}
-                  className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                  className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                 />
                 <span className="text-sm text-text-muted">Select all</span>
               </label>
@@ -260,7 +260,7 @@ const ProductApproval = () => {
                 key={product.id}
                 className={`hover:shadow-lg transition-all duration-300 ${
                   selectedProducts.has(product.id)
-                    ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5'
+                    ? 'ring-2 ring-muted-olive/30 bg-muted-olive/5'
                     : ''
                 }`}
               >
@@ -271,7 +271,7 @@ const ProductApproval = () => {
                       type="checkbox"
                       checked={selectedProducts.has(product.id)}
                       onChange={() => handleSelectProduct(product.id)}
-                      className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green mt-1"
+                      className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive mt-1"
                     />
                     <div className="flex items-center gap-1 text-xs text-earthy-brown bg-earthy-yellow/20 px-2 py-1 rounded-full">
                       <Clock className="w-3 h-3" />
@@ -350,7 +350,7 @@ const ProductApproval = () => {
                   <div className="flex items-center gap-2 mt-6">
                     <button
                       onClick={() => setViewingProduct(product)}
-                      className="flex-1 px-3 py-2 text-sm border border-gray-200 text-text-muted hover:text-bottle-green hover:border-bottle-green rounded-xl transition-colors min-h-[36px] flex items-center justify-center gap-1"
+                      className="flex-1 px-3 py-2 text-sm border border-gray-200 text-text-muted hover:text-muted-olive hover:border-muted-olive rounded-xl transition-colors min-h-[36px] flex items-center justify-center gap-1"
                     >
                       <Eye className="w-4 h-4" />
                       Review
@@ -367,7 +367,7 @@ const ProductApproval = () => {
                           onConfirm: () => handleApproval(product.id, 'active'),
                         })
                       }
-                      className="flex-1 px-3 py-2 text-sm bg-bottle-green text-white hover:bg-bottle-green/90 rounded-xl transition-colors min-h-[36px] flex items-center justify-center gap-1"
+                      className="flex-1 px-3 py-2 text-sm bg-muted-olive text-white hover:bg-muted-olive/90 rounded-xl transition-colors min-h-[36px] flex items-center justify-center gap-1"
                     >
                       <CheckCircle className="w-4 h-4" />
                       Approve

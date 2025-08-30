@@ -215,12 +215,12 @@ const SettingsCategories = ({
       <div className={`
         p-4 rounded-xl border
         ${isDarkMode 
-          ? 'bg-mint-fresh/5 border-mint-fresh/20' 
-          : 'bg-mint-fresh/5 border-mint-fresh/20'
+          ? 'bg-sage-green/5 border-sage-green/20' 
+          : 'bg-sage-green/5 border-sage-green/20'
         }
       `}>
         <h4 className={`text-sm font-medium mb-2 ${
-          isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+          isDarkMode ? 'text-sage-green' : 'text-muted-olive'
         }`}>
           Quick Help
         </h4>

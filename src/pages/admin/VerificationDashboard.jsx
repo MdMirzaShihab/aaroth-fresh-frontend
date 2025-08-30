@@ -209,8 +209,8 @@ const VerificationDashboard = () => {
       title: 'Active Users',
       value: combinedStats.activeUsers,
       icon: Users,
-      color: 'text-bottle-green',
-      bgColor: 'bg-mint-fresh/20',
+      color: 'text-muted-olive',
+      bgColor: 'bg-sage-green/20',
       trend: combinedStats.newUsersToday,
       description: `${combinedStats.newUsersToday} new today`,
     },
@@ -225,7 +225,7 @@ const VerificationDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -300,8 +300,8 @@ const VerificationDashboard = () => {
           {/* Overall Verification Rate */}
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-bottle-green/10 rounded-2xl flex items-center justify-center">
-                <Shield className="w-6 h-6 text-bottle-green" />
+              <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center">
+                <Shield className="w-6 h-6 text-muted-olive" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-text-dark">
@@ -336,7 +336,7 @@ const VerificationDashboard = () => {
                     strokeWidth="8"
                     fill="none"
                     strokeDasharray={`${overallVerificationRate * 2.51} 251`}
-                    className="text-bottle-green"
+                    className="text-muted-olive"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -431,8 +431,8 @@ const VerificationDashboard = () => {
                   key={activity._id || index}
                   className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
                 >
-                  <div className="w-8 h-8 bg-bottle-green/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Activity className="w-4 h-4 text-bottle-green" />
+                  <div className="w-8 h-8 bg-muted-olive/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Activity className="w-4 h-4 text-muted-olive" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-text-dark mb-1">

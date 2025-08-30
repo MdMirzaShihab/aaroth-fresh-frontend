@@ -77,7 +77,7 @@ const SETTINGS_TEMPLATES = [
     name: 'Production Environment',
     description: 'Secure settings for live production environment',
     icon: Zap,
-    color: 'bottle-green',
+    color: 'muted-olive',
     settings: {
       maintenanceMode: false,
       sessionTimeout: 4,
@@ -310,9 +310,9 @@ const ImportExportSection = ({ currentSettings, onSettingsUpdate }) => {
           <div className="flex items-center gap-3 mb-3">
             <div className={`
               w-8 h-8 rounded-lg flex items-center justify-center
-              ${isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10'}
+              ${isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10'}
             `}>
-              <Download className="w-4 h-4 text-mint-fresh" />
+              <Download className="w-4 h-4 text-sage-green" />
             </div>
             <div>
               <h5 className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
@@ -533,7 +533,7 @@ const BulkSettings = ({ onClose, currentSettings, onSettingsUpdate }) => {
                 title="Create Backup"
                 description="Download complete settings backup"
                 icon={Package}
-                color="mint-fresh"
+                color="sage-green"
                 onAction={handleCreateBackup}
                 actionLabel="Create Backup"
               />

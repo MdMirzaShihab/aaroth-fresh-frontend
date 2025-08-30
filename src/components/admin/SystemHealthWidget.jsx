@@ -45,7 +45,7 @@ const SystemHealthWidget = () => {
       case 'healthy':
       case 'ok':
       case 'connected':
-        return 'text-bottle-green';
+        return 'text-muted-olive';
       case 'degraded':
       case 'slow':
         return 'text-earthy-yellow';
@@ -63,7 +63,7 @@ const SystemHealthWidget = () => {
       case 'healthy':
       case 'ok':
       case 'connected':
-        return 'bg-mint-fresh/20 text-bottle-green';
+        return 'bg-sage-green/20 text-muted-olive';
       case 'degraded':
       case 'slow':
         return 'bg-earthy-yellow/20 text-earthy-brown';
@@ -80,7 +80,7 @@ const SystemHealthWidget = () => {
     return (
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Activity className="w-5 h-5 text-bottle-green animate-pulse" />
+          <Activity className="w-5 h-5 text-muted-olive animate-pulse" />
           <h3 className="text-lg font-semibold text-text-dark dark:text-white">
             System Health
           </h3>
@@ -111,7 +111,7 @@ const SystemHealthWidget = () => {
           <p className="text-text-muted mb-3">Unable to fetch system health</p>
           <button
             onClick={refetch}
-            className="px-4 py-2 bg-bottle-green/10 text-bottle-green rounded-xl hover:bg-bottle-green/20 transition-colors"
+            className="px-4 py-2 bg-muted-olive/10 text-muted-olive rounded-xl hover:bg-muted-olive/20 transition-colors"
           >
             Retry
           </button>

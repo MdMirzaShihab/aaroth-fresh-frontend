@@ -50,7 +50,7 @@ const UserProfileAvatar = ({ user, size = 'lg' }) => {
   const getRoleGradient = (role) => {
     const gradients = {
       admin: 'bg-gradient-to-br from-tomato-red via-earthy-yellow to-earthy-brown',
-      vendor: 'bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh',
+      vendor: 'bg-gradient-to-br from-muted-olive via-sage-green to-sage-green',
       restaurantOwner: 'bg-gradient-to-br from-earthy-brown via-dusty-cedar to-earthy-tan',
       restaurantManager: 'bg-gradient-to-br from-muted-olive via-sage-green to-dusty-cedar'
     };
@@ -61,7 +61,7 @@ const UserProfileAvatar = ({ user, size = 'lg' }) => {
     <div className={`${sizeClasses[size]} rounded-3xl ${getRoleGradient(user.role)} flex items-center justify-center shadow-xl text-white font-bold relative`}>
       {user.name?.charAt(0)?.toUpperCase() || 'U'}
       {user.verificationStatus === 'approved' && (
-        <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-mint-fresh rounded-full flex items-center justify-center border-2 border-white">
+        <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-sage-green rounded-full flex items-center justify-center border-2 border-white">
           <CheckCircle className="w-3 h-3 text-white" />
         </div>
       )}
@@ -80,7 +80,7 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
   return (
     <div className="space-y-6">
       {/* Header with Avatar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 bg-gradient-to-r from-sage-green/10 to-mint-fresh/10 rounded-2xl">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 bg-gradient-to-r from-sage-green/10 to-sage-green/10 rounded-2xl">
         <UserProfileAvatar user={user} size="lg" />
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
@@ -197,7 +197,7 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.isActive ? 'text-mint-fresh' : 'text-gray-400'}`}>
+            <div className={`text-lg font-bold ${user.isActive ? 'text-sage-green' : 'text-gray-400'}`}>
               {user.isActive ? <CheckCircle className="w-6 h-6 mx-auto mb-1" /> : <XCircle className="w-6 h-6 mx-auto mb-1" />}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -206,7 +206,7 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.isApproved ? 'text-mint-fresh' : 'text-earthy-yellow'}`}>
+            <div className={`text-lg font-bold ${user.isApproved ? 'text-sage-green' : 'text-earthy-yellow'}`}>
               {user.isApproved ? <CheckCircle className="w-6 h-6 mx-auto mb-1" /> : <Clock className="w-6 h-6 mx-auto mb-1" />}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -215,7 +215,7 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.verificationStatus === 'approved' ? 'text-mint-fresh' : user.verificationStatus === 'pending' ? 'text-earthy-yellow' : 'text-tomato-red'}`}>
+            <div className={`text-lg font-bold ${user.verificationStatus === 'approved' ? 'text-sage-green' : user.verificationStatus === 'pending' ? 'text-earthy-yellow' : 'text-tomato-red'}`}>
               {user.verificationStatus === 'approved' ? <CheckCircle className="w-6 h-6 mx-auto mb-1" /> : 
                user.verificationStatus === 'pending' ? <Clock className="w-6 h-6 mx-auto mb-1" /> : 
                <XCircle className="w-6 h-6 mx-auto mb-1" />}
@@ -226,7 +226,7 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.riskScore <= 30 ? 'text-mint-fresh' : user.riskScore <= 60 ? 'text-earthy-yellow' : 'text-tomato-red'}`}>
+            <div className={`text-lg font-bold ${user.riskScore <= 30 ? 'text-sage-green' : user.riskScore <= 60 ? 'text-earthy-yellow' : 'text-tomato-red'}`}>
               <span>{user.riskScore || 0}</span>
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -251,7 +251,7 @@ const ActivityTab = ({ user }) => {
       description: 'User logged in',
       timestamp: new Date(Date.now() - 1000 * 60 * 30),
       icon: Eye,
-      color: 'mint-fresh'
+      color: 'sage-green'
     },
     {
       id: 2,

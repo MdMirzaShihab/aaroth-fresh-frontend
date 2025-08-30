@@ -317,7 +317,7 @@ const BusinessMetricsChart = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <TrendingUp className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+          <TrendingUp className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
             {title}
           </h3>
@@ -334,8 +334,8 @@ const BusinessMetricsChart = ({
                   p-2 rounded-lg transition-all duration-200 touch-target-sm
                   ${chartType === value
                     ? (isDarkMode 
-                        ? 'bg-mint-fresh/20 text-mint-fresh' 
-                        : 'bg-bottle-green/10 text-bottle-green')
+                        ? 'bg-sage-green/20 text-sage-green' 
+                        : 'bg-muted-olive/10 text-muted-olive')
                     : (isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700')
                   }
                 `}

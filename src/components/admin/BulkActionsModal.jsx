@@ -196,7 +196,7 @@ const BulkActionsModal = ({
                 key={action.value}
                 className={`flex items-start gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
                   selectedAction === action.value
-                    ? 'border-bottle-green bg-bottle-green/5'
+                    ? 'border-muted-olive bg-muted-olive/5'
                     : 'border-gray-200 hover:border-gray-300'
                 } ${action.isDangerous ? 'hover:border-tomato-red/30' : ''}`}
               >
@@ -206,7 +206,7 @@ const BulkActionsModal = ({
                   value={action.value}
                   checked={selectedAction === action.value}
                   onChange={(e) => setSelectedAction(e.target.value)}
-                  className="w-4 h-4 text-bottle-green border-gray-300 focus:ring-bottle-green mt-1"
+                  className="w-4 h-4 text-muted-olive border-gray-300 focus:ring-muted-olive mt-1"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
@@ -214,7 +214,7 @@ const BulkActionsModal = ({
                       className={`w-4 h-4 ${
                         action.isDangerous
                           ? 'text-tomato-red'
-                          : 'text-bottle-green'
+                          : 'text-muted-olive'
                       }`}
                     />
                     <span className="font-medium text-text-dark">
@@ -249,7 +249,7 @@ const BulkActionsModal = ({
                     onChange={(e) =>
                       setActionData({ ...actionData, status: e.target.value })
                     }
-                    className="w-4 h-4 text-bottle-green border-gray-300 focus:ring-bottle-green"
+                    className="w-4 h-4 text-muted-olive border-gray-300 focus:ring-muted-olive"
                   />
                   <status.icon className="w-4 h-4 text-text-muted" />
                   <span className="text-text-dark">{status.label}</span>
@@ -325,7 +325,7 @@ const BulkActionsModal = ({
                       : 'Optional notes...'
               }
               rows={3}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
               maxLength={500}
               required={selectedAction === 'delete_listings'}
             />
@@ -401,7 +401,7 @@ const BulkActionsModal = ({
             className={`${
               selectedActionObj?.isDangerous
                 ? 'bg-tomato-red hover:bg-tomato-red/90'
-                : 'bg-bottle-green hover:bg-bottle-green/90'
+                : 'bg-muted-olive hover:bg-muted-olive/90'
             } text-white`}
           >
             {isLoading

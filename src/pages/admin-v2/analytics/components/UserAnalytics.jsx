@@ -59,7 +59,7 @@ const UserMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -138,7 +138,7 @@ const UserSegmentCard = ({ segment, onClick, isActive = false }) => {
       className={`
         glass-card rounded-xl p-4 border cursor-pointer transition-all duration-200
         ${isActive 
-          ? isDarkMode ? 'border-mint-fresh/50 bg-mint-fresh/5' : 'border-bottle-green/50 bg-bottle-green/5'
+          ? isDarkMode ? 'border-sage-green/50 bg-sage-green/5' : 'border-muted-olive/50 bg-muted-olive/5'
           : isDarkMode ? 'border-gray-700/50 hover:border-gray-600' : 'border-gray-200/50 hover:border-gray-300'
         }
       `}
@@ -147,13 +147,13 @@ const UserSegmentCard = ({ segment, onClick, isActive = false }) => {
         <div className={`
           w-8 h-8 rounded-lg flex items-center justify-center
           ${isActive 
-            ? isDarkMode ? 'bg-mint-fresh/20' : 'bg-bottle-green/10'
+            ? isDarkMode ? 'bg-sage-green/20' : 'bg-muted-olive/10'
             : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
           }
         `}>
           <segment.icon className={`w-4 h-4 ${
             isActive 
-              ? isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+              ? isDarkMode ? 'text-sage-green' : 'text-muted-olive'
               : isDarkMode ? 'text-gray-400' : 'text-text-muted'
           }`} />
         </div>
@@ -167,7 +167,7 @@ const UserSegmentCard = ({ segment, onClick, isActive = false }) => {
             </p>
             <span className={`text-xs font-medium ${
               segment.growth > 0 
-                ? 'text-mint-fresh' 
+                ? 'text-sage-green' 
                 : segment.growth < 0 
                   ? 'text-tomato-red' 
                   : isDarkMode ? 'text-gray-400' : 'text-text-muted'
@@ -429,8 +429,8 @@ const UserAnalytics = ({
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
                   ${chartView === view.id
                     ? isDarkMode 
-                      ? 'bg-mint-fresh/20 text-mint-fresh'
-                      : 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-sage-green/20 text-sage-green'
+                      : 'bg-white text-muted-olive shadow-sm'
                     : isDarkMode
                       ? 'text-gray-400 hover:text-gray-300'
                       : 'text-text-muted hover:text-text-dark'
@@ -463,7 +463,7 @@ const UserAnalytics = ({
           change={userMetrics.userGrowth}
           trend={userMetrics.userGrowth > 0 ? 'up' : 'down'}
           icon={Users}
-          color="mint-fresh"
+          color="sage-green"
           subtitle="All time"
           isLoading={isLoading}
         />
@@ -513,7 +513,7 @@ const UserAnalytics = ({
           change={8.7}
           trend="up"
           icon={Activity}
-          color="bottle-green"
+          color="muted-olive"
           subtitle="DAU"
           isLoading={isLoading}
         />
@@ -666,15 +666,15 @@ const UserAnalytics = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
-          <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50 border-mint-fresh/20' : 'bg-white/80 border-bottle-green/20'}`}>
+          <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50 border-sage-green/20' : 'bg-white/80 border-muted-olive/20'}`}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className={`
                   w-10 h-10 rounded-xl flex items-center justify-center
-                  ${isDarkMode ? 'bg-mint-fresh/20' : 'bg-bottle-green/10'}
+                  ${isDarkMode ? 'bg-sage-green/20' : 'bg-muted-olive/10'}
                 `}>
                   <selectedSegment.icon className={`w-5 h-5 ${
-                    isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+                    isDarkMode ? 'text-sage-green' : 'text-muted-olive'
                   }`} />
                 </div>
                 <div>
@@ -743,10 +743,10 @@ const UserAnalytics = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className={`
             p-4 rounded-xl border
-            ${isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20'}
+            ${isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'}
           `}>
             <div className="flex items-center gap-3 mb-2">
-              <UserPlus className="w-5 h-5 text-mint-fresh" />
+              <UserPlus className="w-5 h-5 text-sage-green" />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 User Acquisition
               </span>
@@ -780,13 +780,13 @@ const UserAnalytics = ({
           <div className={`
             p-4 rounded-xl border
             ${userMetrics.bounceRate < 30
-              ? isDarkMode ? 'bg-bottle-green/5 border-bottle-green/20' : 'bg-bottle-green/5 border-bottle-green/20'
+              ? isDarkMode ? 'bg-muted-olive/5 border-muted-olive/20' : 'bg-muted-olive/5 border-muted-olive/20'
               : isDarkMode ? 'bg-tomato-red/5 border-tomato-red/20' : 'bg-tomato-red/5 border-tomato-red/20'
             }
           `}>
             <div className="flex items-center gap-3 mb-2">
               <Activity className={`w-5 h-5 ${
-                userMetrics.bounceRate < 30 ? 'text-bottle-green' : 'text-tomato-red'
+                userMetrics.bounceRate < 30 ? 'text-muted-olive' : 'text-tomato-red'
               }`} />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 User Engagement
@@ -870,7 +870,7 @@ const UserAnalytics = ({
                     <span className={`
                       px-2 py-1 rounded text-xs font-medium
                       ${cohort.week1Retention > 60 
-                        ? isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'
+                        ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
                         : cohort.week1Retention > 40
                           ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
                           : 'bg-tomato-red/10 text-tomato-red'
@@ -883,7 +883,7 @@ const UserAnalytics = ({
                     <span className={`
                       px-2 py-1 rounded text-xs font-medium
                       ${cohort.month1Retention > 40 
-                        ? isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'
+                        ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
                         : cohort.month1Retention > 25
                           ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
                           : 'bg-tomato-red/10 text-tomato-red'
@@ -896,7 +896,7 @@ const UserAnalytics = ({
                     <span className={`
                       px-2 py-1 rounded text-xs font-medium
                       ${cohort.month3Retention > 25 
-                        ? isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'
+                        ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
                         : cohort.month3Retention > 15
                           ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
                           : 'bg-tomato-red/10 text-tomato-red'

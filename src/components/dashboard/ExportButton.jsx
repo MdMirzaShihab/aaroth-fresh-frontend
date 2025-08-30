@@ -266,12 +266,12 @@ const ExportButton = ({
       {isExporting && exportProgress.progress > 0 && (
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-bottle-green border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <div className="w-8 h-8 border-2 border-muted-olive border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             <div className="text-xs text-text-muted dark:text-gray-300">
               {exportProgress.message}
             </div>
             {exportProgress.progress > 0 && (
-              <div className="text-xs font-medium text-bottle-green">
+              <div className="text-xs font-medium text-muted-olive">
                 {exportProgress.progress}%
               </div>
             )}
@@ -385,7 +385,7 @@ export const ExportModal = ({
             <select
               value={selectedFormat}
               onChange={(e) => setSelectedFormat(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-bottle-green focus:border-bottle-green"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-muted-olive focus:border-muted-olive"
             >
               <option value="csv">CSV (Spreadsheet)</option>
               <option value="pdf">PDF (Report)</option>
@@ -401,7 +401,7 @@ export const ExportModal = ({
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-bottle-green focus:border-bottle-green"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-muted-olive focus:border-muted-olive"
             >
               <option value="all">All Time</option>
               <option value="week">Last 7 Days</option>
@@ -418,7 +418,7 @@ export const ExportModal = ({
                   type="checkbox"
                   checked={includeHeaders}
                   onChange={(e) => setIncludeHeaders(e.target.checked)}
-                  className="rounded text-bottle-green focus:ring-bottle-green"
+                  className="rounded text-muted-olive focus:ring-muted-olive"
                 />
                 <span className="text-sm text-text-dark dark:text-white">
                   Include column headers

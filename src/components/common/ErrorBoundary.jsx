@@ -141,11 +141,11 @@ class ErrorBoundary extends React.Component {
                 onClick={this.handleRetry}
                 disabled={this.state.retryCount >= maxRetries}
                 className={`
-                  bg-gradient-to-r from-bottle-green to-mint-fresh text-white px-8 py-3 rounded-2xl font-medium 
+                  bg-gradient-to-r from-muted-olive to-sage-green text-white px-8 py-3 rounded-2xl font-medium 
                   transition-all duration-300 hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 
-                  min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 
+                  min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 
                   flex items-center justify-center gap-2
-                  ${this.state.retryCount >= maxRetries ? 'opacity-50 cursor-not-allowed' : 'hover:from-bottle-green hover:to-mint-fresh'}
+                  ${this.state.retryCount >= maxRetries ? 'opacity-50 cursor-not-allowed' : 'hover:from-muted-olive hover:to-sage-green'}
                 `}
               >
                 <RefreshCcw className="w-4 h-4" />

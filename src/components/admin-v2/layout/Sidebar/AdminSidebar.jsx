@@ -158,8 +158,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
     const styles = {
       pending: 'bg-earthy-yellow/20 text-earthy-brown border-earthy-yellow/30',
       urgent: 'bg-tomato-red/10 text-tomato-red border-tomato-red/20 animate-pulse',
-      info: 'bg-sage-green/10 text-bottle-green border-sage-green/20',
-      success: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20'
+      info: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
+      success: 'bg-sage-green/10 text-muted-olive border-sage-green/20'
     };
     return styles[badgeType] || styles.info;
   };
@@ -185,7 +185,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           ${isDarkMode ? 'glass-1-dark' : 'glass-1'}
         `}>
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh flex items-center justify-center shadow-glow-olive">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-glow-olive">
               <span className="text-white font-bold text-lg">A</span>
             </div>
             <div>
@@ -205,7 +205,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
               lg:hidden p-2 rounded-2xl transition-all duration-200
               ${isDarkMode 
                 ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' 
-                : 'hover:bg-sage-green/10 text-text-muted hover:text-bottle-green'
+                : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'
               }
             `}
           >
@@ -251,11 +251,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                             ${isActive
                               ? `${isDarkMode 
                                   ? 'glass-3-dark text-dark-sage-accent border border-dark-sage-accent/30 shadow-dark-glow-olive/20' 
-                                  : 'glass-3 text-bottle-green border border-sage-green/30 shadow-glow-olive/20'
+                                  : 'glass-3 text-muted-olive border border-sage-green/30 shadow-glow-olive/20'
                                 }`
                               : `${isDarkMode
                                   ? 'text-dark-text-muted hover:text-dark-sage-accent hover:glass-1-dark'
-                                  : 'text-text-muted hover:text-bottle-green hover:glass-1'
+                                  : 'text-text-muted hover:text-muted-olive hover:glass-1'
                                 }`
                             }
                           `}
@@ -297,8 +297,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                                 className={({ isActive: childActive }) => `
                                   block px-4 py-2 rounded-xl text-sm transition-all duration-200
                                   ${childActive
-                                    ? `${isDarkMode ? 'text-dark-sage-accent bg-dark-sage-accent/10' : 'text-bottle-green bg-sage-green/10'}`
-                                    : `${isDarkMode ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5' : 'text-text-muted hover:text-bottle-green hover:bg-sage-green/5'}`
+                                    ? `${isDarkMode ? 'text-dark-sage-accent bg-dark-sage-accent/10' : 'text-muted-olive bg-sage-green/10'}`
+                                    : `${isDarkMode ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5' : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'}`
                                   }
                                 `}
                                 onClick={() => {
@@ -331,7 +331,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
               rounded-2xl border ${isDarkMode ? 'glass-1-dark border-dark-olive-border' : 'glass-1 border-sage-green/20'}
               ${isDarkMode 
                 ? 'text-dark-text-muted hover:text-dark-sage-accent hover:glass-2-dark' 
-                : 'text-text-muted hover:text-bottle-green hover:glass-2'
+                : 'text-text-muted hover:text-muted-olive hover:glass-2'
               }
             `}
             onClick={() => {

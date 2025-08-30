@@ -2724,6 +2724,75 @@ export const apiSlice = createApi({
       providesTags: ['Verification', 'Admin'],
       pollingInterval: 300000, // Refresh every 5 minutes
     }),
+
+    // Restaurant Manager Operations
+    updateManagerPermissions: builder.mutation({
+      query: ({ managerId, permissions }) => ({
+        url: `/admin/restaurants/managers/${managerId}/permissions`,
+        method: 'PUT',
+        body: { permissions },
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    deactivateManager: builder.mutation({
+      query: ({ managerId, reason }) => ({
+        url: `/admin/restaurants/managers/${managerId}/deactivate`,
+        method: 'PUT',
+        body: { reason },
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    transferOwnership: builder.mutation({
+      query: ({ restaurantId, newOwnerId, reason }) => ({
+        url: `/admin/restaurants/${restaurantId}/transfer-ownership`,
+        method: 'PUT',
+        body: { newOwnerId, reason },
+      }),
+      invalidatesTags: ['Restaurant', 'User'],
+    }),
+
+    // Product Management Operations
+    getAdminProductStats: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/products/stats',
+        params,
+      }),
+      providesTags: ['Product', 'Admin'],
+    }),
+
+    createProduct: builder.mutation({
+      query: (productData) => ({
+        url: '/admin/products',
+        method: 'POST',
+        body: productData,
+      }),
+      invalidatesTags: ['Product'],
+    }),
+
+    updateProduct: builder.mutation({
+      query: ({ productId, updates }) => ({
+        url: `/admin/products/${productId}`,
+        method: 'PUT',
+        body: updates,
+      }),
+      invalidatesTags: (result, error, { productId }) => [
+        { type: 'Product', id: productId },
+        'Product',
+      ],
+    }),
+
+    deleteProduct: builder.mutation({
+      query: (productId) => ({
+        url: `/admin/products/${productId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, productId) => [
+        { type: 'Product', id: productId },
+        'Product',
+      ],
+    }),
   }),
 });
 
@@ -2999,4 +3068,15 @@ export const {
   useUnflagListingMutation,
   useBulkModerateMutation,
   useDeleteListingMutation,
+
+  // Restaurant Manager Operations
+  useUpdateManagerPermissionsMutation,
+  useDeactivateManagerMutation,
+  useTransferOwnershipMutation,
+
+  // Product Management Operations
+  useGetAdminProductStatsQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
 } = apiSlice;

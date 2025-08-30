@@ -139,8 +139,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             isActive
               ? 'bg-gradient-secondary text-white shadow-md'
               : isParentActive
-                ? 'bg-bottle-green/10 text-bottle-green'
-                : 'text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800'
+                ? 'bg-muted-olive/10 text-muted-olive'
+                : 'text-text-dark dark:text-white hover:bg-muted-olive/5 dark:hover:bg-gray-800'
           }`}
         >
           {item.icon && (
@@ -150,8 +150,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                   isActive
                     ? 'text-white'
                     : isParentActive
-                      ? 'text-bottle-green'
-                      : 'text-text-muted group-hover:text-bottle-green'
+                      ? 'text-muted-olive'
+                      : 'text-text-muted group-hover:text-muted-olive'
                 }`}
               />
 
@@ -199,13 +199,13 @@ const Sidebar = ({ isOpen, onClose }) => {
                   onClick={() => handleNavigation(child.path || childPath)}
                   className={`w-full flex items-center gap-3 px-3 py-2 ml-6 rounded-lg transition-all duration-200 text-sm min-h-[36px] ${
                     isChildActive
-                      ? 'bg-bottle-green/10 text-bottle-green font-medium'
-                      : 'text-text-muted hover:text-bottle-green hover:bg-bottle-green/5 dark:hover:bg-gray-800'
+                      ? 'bg-muted-olive/10 text-muted-olive font-medium'
+                      : 'text-text-muted hover:text-muted-olive hover:bg-muted-olive/5 dark:hover:bg-gray-800'
                   }`}
                 >
                   <div
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      isChildActive ? 'bg-bottle-green' : 'bg-text-muted/30'
+                      isChildActive ? 'bg-muted-olive' : 'bg-text-muted/30'
                     }`}
                   />
                   <span className="truncate">{child.label}</span>
@@ -252,7 +252,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 {(() => {
                   const RoleIcon = getRoleIcon(user?.role);
                   return RoleIcon ? (
-                    <RoleIcon className="w-3 h-3 text-bottle-green" />
+                    <RoleIcon className="w-3 h-3 text-muted-olive" />
                   ) : null;
                 })()}
                 <p className="text-xs text-text-muted">

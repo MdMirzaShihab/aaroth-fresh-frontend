@@ -490,7 +490,7 @@ const CategoryManagement = () => {
                         <span
                           className={`text-xs px-2 py-1 rounded-full ${
                             category.adminStatus === 'active'
-                              ? 'bg-mint-fresh/10 text-mint-fresh'
+                              ? 'bg-sage-green/10 text-sage-green'
                               : category.adminStatus === 'disabled'
                                 ? 'bg-gray-100 text-gray-600'
                                 : category.adminStatus === 'deprecated'
@@ -595,7 +595,7 @@ const CategoryManagement = () => {
 
                   <button
                     onClick={() => handleEdit(category)}
-                    className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                    className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                     title="Edit category"
                   >
                     <Edit3 className="w-4 h-4" />
@@ -732,7 +732,7 @@ const CategoryManagement = () => {
                     parentCategory: e.target.value || null,
                   })
                 }
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200"
               >
                 <option value="">None (Root Category)</option>
                 {categories
@@ -770,7 +770,7 @@ const CategoryManagement = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, isActive: e.target.checked })
                   }
-                  className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                  className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                 />
                 <span className="text-text-dark font-medium">
                   Active Category
@@ -787,7 +787,7 @@ const CategoryManagement = () => {
               }
               placeholder="Optional category description"
               rows={3}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
             />
           </FormField>
 
@@ -835,7 +835,7 @@ const CategoryManagement = () => {
                 placeholder="SEO description for this category"
                 rows={2}
                 maxLength={160}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
               />
             </FormField>
           </div>

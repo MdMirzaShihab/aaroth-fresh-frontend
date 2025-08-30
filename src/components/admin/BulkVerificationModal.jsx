@@ -102,8 +102,8 @@ const BulkVerificationModal = ({
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex items-start gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="w-16 h-16 rounded-2xl bg-bottle-green/10 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-8 h-8 text-bottle-green" />
+          <div className="w-16 h-16 rounded-2xl bg-muted-olive/10 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-8 h-8 text-muted-olive" />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -145,7 +145,7 @@ const BulkVerificationModal = ({
               onClick={() => setIsVerifying(true)}
               className={`p-4 border-2 rounded-2xl transition-all ${
                 isVerifying
-                  ? 'border-bottle-green bg-mint-fresh/10 text-bottle-green'
+                  ? 'border-muted-olive bg-sage-green/10 text-muted-olive'
                   : 'border-gray-200 hover:border-gray-300 text-text-muted'
               }`}
             >
@@ -153,7 +153,7 @@ const BulkVerificationModal = ({
                 <div
                   className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                     isVerifying
-                      ? 'bg-bottle-green text-white'
+                      ? 'bg-muted-olive text-white'
                       : 'bg-gray-100 text-gray-600'
                   }`}
                 >
@@ -208,7 +208,7 @@ const BulkVerificationModal = ({
                   onClick={() => setEntityType('all')}
                   className={`px-4 py-2 rounded-xl transition-all ${
                     entityType === 'all'
-                      ? 'bg-bottle-green text-white'
+                      ? 'bg-muted-olive text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -276,7 +276,7 @@ const BulkVerificationModal = ({
                   className={`px-3 py-2 rounded-xl text-sm transition-colors ${
                     reason === template
                       ? isVerifying
-                        ? 'bg-bottle-green text-white'
+                        ? 'bg-muted-olive text-white'
                         : 'bg-tomato-red text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
@@ -295,7 +295,7 @@ const BulkVerificationModal = ({
               rows={4}
               className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 ${
                 isVerifying
-                  ? 'focus:ring-bottle-green/20'
+                  ? 'focus:ring-muted-olive/20'
                   : 'focus:ring-tomato-red/20'
               }`}
             />
@@ -325,7 +325,7 @@ const BulkVerificationModal = ({
           <Button
             className={`flex-1 ${
               isVerifying
-                ? 'bg-bottle-green hover:bg-bottle-green/90'
+                ? 'bg-muted-olive hover:bg-muted-olive/90'
                 : 'bg-tomato-red hover:bg-tomato-red/90'
             } text-white`}
             onClick={handleSubmit}

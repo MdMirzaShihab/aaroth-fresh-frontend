@@ -45,7 +45,7 @@ const VerificationStatusBadge = ({
   switch (status) {
     case 'approved':
       statusConfig = {
-        className: 'bg-mint-fresh/20 text-bottle-green border-mint-fresh/30',
+        className: 'bg-sage-green/20 text-muted-olive border-sage-green/30',
         icon: ShieldCheck,
         text: 'Approved',
         isApproved: true,

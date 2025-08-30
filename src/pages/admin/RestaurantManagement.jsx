@@ -235,7 +235,7 @@ const RestaurantManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -265,7 +265,7 @@ const RestaurantManagement = () => {
             </Button>
             <Button
               onClick={() => navigate('/admin/create-restaurant-manager')}
-              className="bg-bottle-green text-white px-6 py-2 rounded-2xl font-medium hover:shadow-lg transition-all duration-200"
+              className="bg-muted-olive text-white px-6 py-2 rounded-2xl font-medium hover:shadow-lg transition-all duration-200"
             >
               <Users className="w-4 h-4 mr-2" />
               Create Manager
@@ -377,8 +377,8 @@ const RestaurantManagement = () => {
                 onClick={() => setViewMode('card')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
                   viewMode === 'card'
-                    ? 'bg-white shadow-sm text-bottle-green'
-                    : 'text-gray-600 hover:text-bottle-green'
+                    ? 'bg-white shadow-sm text-muted-olive'
+                    : 'text-gray-600 hover:text-muted-olive'
                 }`}
               >
                 <Grid3X3 className="w-4 h-4" />
@@ -387,8 +387,8 @@ const RestaurantManagement = () => {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
                   viewMode === 'table'
-                    ? 'bg-white shadow-sm text-bottle-green'
-                    : 'text-gray-600 hover:text-bottle-green'
+                    ? 'bg-white shadow-sm text-muted-olive'
+                    : 'text-gray-600 hover:text-muted-olive'
                 }`}
               >
                 <List className="w-4 h-4" />
@@ -843,7 +843,7 @@ const RestaurantManagement = () => {
                   {/* Key metrics */}
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
-                      <p className="text-lg font-semibold text-bottle-green">
+                      <p className="text-lg font-semibold text-muted-olive">
                         {selectedRestaurant.managers?.length || 0}
                       </p>
                       <p className="text-xs text-text-muted">Managers</p>

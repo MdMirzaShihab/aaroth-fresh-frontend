@@ -37,16 +37,16 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
       title: 'Total Categories',
       value: stats?.totalCategories || 0,
       icon: Tag,
-      color: 'text-bottle-green',
-      bgColor: 'bg-bottle-green/10',
+      color: 'text-muted-olive',
+      bgColor: 'bg-muted-olive/10',
       description: 'All categories in system',
     },
     {
       title: 'Active Categories',
       value: stats?.activeCategories || 0,
       icon: CheckCircle,
-      color: 'text-mint-fresh',
-      bgColor: 'bg-mint-fresh/10',
+      color: 'text-sage-green',
+      bgColor: 'bg-sage-green/10',
       description: 'Currently active categories',
       percentage:
         stats?.totalCategories > 0
@@ -123,7 +123,7 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
       {stats && (
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-bottle-green" />
+            <BarChart3 className="w-5 h-5 text-muted-olive" />
             <h3 className="text-lg font-semibold text-text-dark">
               Category Health Overview
             </h3>
@@ -135,7 +135,7 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
               <div>
                 <div className="flex justify-between text-sm font-medium mb-1">
                   <span className="text-text-dark">Active Status</span>
-                  <span className="text-mint-fresh">
+                  <span className="text-sage-green">
                     {stats.totalCategories > 0
                       ? Math.round(
                           (stats.activeCategories / stats.totalCategories) * 100
@@ -146,7 +146,7 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-mint-fresh h-2 rounded-full transition-all duration-500"
+                    className="bg-sage-green h-2 rounded-full transition-all duration-500"
                     style={{
                       width: `${
                         stats.totalCategories > 0
@@ -197,7 +197,7 @@ const CategoryStatistics = ({ stats, isLoading = false }) => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="w-3 h-3 text-mint-fresh" />
+                    <CheckCircle className="w-3 h-3 text-sage-green" />
                     <span className="text-text-muted">Active Categories</span>
                   </div>
                   <span className="text-text-dark font-medium">

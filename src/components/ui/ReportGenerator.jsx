@@ -48,7 +48,7 @@ const ReportTemplateCard = ({ template, isSelected, onSelect }) => {
       className={`
         glass-card rounded-xl p-4 border cursor-pointer transition-all duration-200
         ${isSelected 
-          ? isDarkMode ? 'border-mint-fresh/50 bg-mint-fresh/5' : 'border-bottle-green/50 bg-bottle-green/5'
+          ? isDarkMode ? 'border-sage-green/50 bg-sage-green/5' : 'border-muted-olive/50 bg-muted-olive/5'
           : isDarkMode ? 'border-gray-700/50 hover:border-gray-600' : 'border-gray-200/50 hover:border-gray-300'
         }
       `}
@@ -57,13 +57,13 @@ const ReportTemplateCard = ({ template, isSelected, onSelect }) => {
         <div className={`
           w-10 h-10 rounded-lg flex items-center justify-center
           ${isSelected 
-            ? isDarkMode ? 'bg-mint-fresh/20' : 'bg-bottle-green/10'
+            ? isDarkMode ? 'bg-sage-green/20' : 'bg-muted-olive/10'
             : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
           }
         `}>
           <template.icon className={`w-5 h-5 ${
             isSelected 
-              ? isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+              ? isDarkMode ? 'text-sage-green' : 'text-muted-olive'
               : isDarkMode ? 'text-gray-400' : 'text-text-muted'
           }`} />
         </div>
@@ -76,7 +76,7 @@ const ReportTemplateCard = ({ template, isSelected, onSelect }) => {
           </p>
         </div>
         {isSelected && (
-          <CheckCircle className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+          <CheckCircle className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
         )}
       </div>
       
@@ -103,7 +103,7 @@ const ScheduleOptionCard = ({ option, isSelected, onSelect }) => {
       className={`
         p-3 rounded-lg border cursor-pointer transition-all duration-200
         ${isSelected 
-          ? isDarkMode ? 'border-mint-fresh/50 bg-mint-fresh/5' : 'border-bottle-green/50 bg-bottle-green/5'
+          ? isDarkMode ? 'border-sage-green/50 bg-sage-green/5' : 'border-muted-olive/50 bg-muted-olive/5'
           : isDarkMode ? 'border-gray-700 hover:border-gray-600' : 'border-gray-200 hover:border-gray-300'
         }
       `}
@@ -111,12 +111,12 @@ const ScheduleOptionCard = ({ option, isSelected, onSelect }) => {
       <div className="flex items-center gap-2">
         <option.icon className={`w-4 h-4 ${
           isSelected 
-            ? isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+            ? isDarkMode ? 'text-sage-green' : 'text-muted-olive'
             : isDarkMode ? 'text-gray-400' : 'text-text-muted'
         }`} />
         <span className={`text-sm font-medium ${
           isSelected 
-            ? isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+            ? isDarkMode ? 'text-sage-green' : 'text-muted-olive'
             : isDarkMode ? 'text-white' : 'text-text-dark'
         }`}>
           {option.label}
@@ -491,7 +491,7 @@ const ReportGenerator = ({
             onClick={handleGenerateReport}
             disabled={isGenerating}
             className={`
-              min-h-[44px] bg-gradient-to-r from-bottle-green to-sage-green hover:from-bottle-green/90 hover:to-sage-green/90
+              min-h-[44px] bg-gradient-to-r from-muted-olive to-sage-green hover:from-muted-olive/90 hover:to-sage-green/90
               text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200
             `}
           >
@@ -523,9 +523,9 @@ const ReportGenerator = ({
           <div className="flex items-center gap-3 mb-4">
             <div className={`
               w-10 h-10 rounded-xl flex items-center justify-center
-              ${isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10'}
+              ${isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10'}
             `}>
-              <FileText className="w-5 h-5 text-mint-fresh" />
+              <FileText className="w-5 h-5 text-sage-green" />
             </div>
             <div>
               <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
@@ -612,8 +612,8 @@ const ReportGenerator = ({
                       flex items-center justify-center gap-2 p-2 rounded-lg text-sm font-medium transition-all duration-200
                       ${reportFormat === format.id
                         ? isDarkMode 
-                          ? 'bg-mint-fresh/20 text-mint-fresh border border-mint-fresh/30'
-                          : 'bg-bottle-green/10 text-bottle-green border border-bottle-green/30'
+                          ? 'bg-sage-green/20 text-sage-green border border-sage-green/30'
+                          : 'bg-muted-olive/10 text-muted-olive border border-muted-olive/30'
                         : isDarkMode
                           ? 'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600'
                           : 'bg-gray-50 text-text-muted border border-gray-200 hover:bg-gray-100'
@@ -649,7 +649,7 @@ const ReportGenerator = ({
                       type="checkbox"
                       checked={includeSections[section.id]}
                       onChange={() => handleSectionToggle(section.id)}
-                      className="w-4 h-4 rounded border-gray-300 text-bottle-green focus:ring-bottle-green/20"
+                      className="w-4 h-4 rounded border-gray-300 text-muted-olive focus:ring-muted-olive/20"
                     />
                     <section.icon className="w-4 h-4 text-text-muted" />
                     <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-dark'}`}>
@@ -821,7 +821,7 @@ const ReportGenerator = ({
                     <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
                       Uptime
                     </p>
-                    <p className={`text-lg font-bold text-mint-fresh`}>
+                    <p className={`text-lg font-bold text-sage-green`}>
                       {(performanceData.uptime || 99.94).toFixed(2)}%
                     </p>
                   </div>

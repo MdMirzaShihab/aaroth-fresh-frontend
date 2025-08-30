@@ -275,10 +275,10 @@
 
 /* Skip Links - Keyboard navigation shortcuts */
 .skip-link {
-  @apply absolute top-4 left-4 bg-bottle-green text-white px-4 py-2 rounded-lg font-medium z-50;
+  @apply absolute top-4 left-4 bg-muted-olive text-white px-4 py-2 rounded-lg font-medium z-50;
   @apply transform -translate-y-20 opacity-0 transition-all duration-200;
   @apply focus:translate-y-0 focus:opacity-100 focus-visible:outline-none;
-  @apply focus-visible:ring-2 focus-visible:ring-mint-fresh focus-visible:ring-offset-2;
+  @apply focus-visible:ring-2 focus-visible:ring-sage-green focus-visible:ring-offset-2;
 }
 
 /* Live Regions - Dynamic content announcements */
@@ -362,7 +362,7 @@
 }
 
 .form-control-success {
-  @apply border-mint-fresh/60 bg-mint-fresh/5 focus-visible:ring-mint-fresh/60;
+  @apply border-sage-green/60 bg-sage-green/5 focus-visible:ring-sage-green/60;
 }
 
 .form-label-accessible {
@@ -387,8 +387,8 @@
 }
 
 .button-primary-accessible {
-  @apply button-accessible bg-bottle-green text-white;
-  @apply hover:bg-bottle-green/90 active:bg-bottle-green/95;
+  @apply button-accessible bg-muted-olive text-white;
+  @apply hover:bg-muted-olive/90 active:bg-muted-olive/95;
 }
 
 .button-secondary-accessible {
@@ -403,13 +403,13 @@
 
 /* Link Accessibility - Enhanced link styling */
 .link-accessible {
-  @apply text-bottle-green underline focus-visible-ring rounded;
-  @apply hover:text-bottle-green/80 visited:text-dusty-cedar;
+  @apply text-muted-olive underline focus-visible-ring rounded;
+  @apply hover:text-muted-olive/80 visited:text-dusty-cedar;
 }
 
 .link-button-accessible {
-  @apply button-accessible bg-transparent text-bottle-green border-2 border-bottle-green;
-  @apply hover:bg-bottle-green hover:text-white;
+  @apply button-accessible bg-transparent text-muted-olive border-2 border-muted-olive;
+  @apply hover:bg-muted-olive hover:text-white;
 }
 
 /* Navigation Accessibility - Keyboard-friendly navigation */
@@ -418,7 +418,7 @@
 }
 
 .nav-item-active {
-  @apply bg-muted-olive/10 text-bottle-green font-medium;
+  @apply bg-muted-olive/10 text-muted-olive font-medium;
   aria-current: page;
 }
 
@@ -481,7 +481,7 @@
 
 /* Status Indicators - Accessible status communication */
 .status-success-accessible {
-  @apply bg-mint-fresh/10 text-bottle-green border border-mint-fresh/20 rounded-lg p-3;
+  @apply bg-sage-green/10 text-muted-olive border border-sage-green/20 rounded-lg p-3;
   @apply flex items-center gap-3;
 }
 
@@ -515,7 +515,7 @@
 }
 
 .progress-bar-accessible {
-  @apply h-full bg-bottle-green rounded-full transition-all duration-300;
+  @apply h-full bg-muted-olive rounded-full transition-all duration-300;
 }
 
 /* Tooltip Accessibility - Enhanced tooltips */
@@ -536,7 +536,7 @@
 }
 
 .badge-status {
-  @apply badge-accessible bg-mint-fresh/10 text-bottle-green border border-mint-fresh/20;
+  @apply badge-accessible bg-sage-green/10 text-muted-olive border border-sage-green/20;
 }
 
 .badge-priority {

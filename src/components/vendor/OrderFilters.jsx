@@ -64,7 +64,7 @@ const OrderFilters = ({
       value: 'delivered',
       label: 'Delivered',
       count: 0,
-      color: 'text-bottle-green',
+      color: 'text-muted-olive',
     },
     {
       value: 'cancelled',
@@ -169,7 +169,7 @@ const OrderFilters = ({
               placeholder="Search orders by restaurant name, order ID, customer..."
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
             />
             {filters.search && (
               <button
@@ -185,7 +185,7 @@ const OrderFilters = ({
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
           >
             {statusOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -198,7 +198,7 @@ const OrderFilters = ({
           <select
             value={filters.dateRange}
             onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
           >
             {dateRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -212,7 +212,7 @@ const OrderFilters = ({
             onClick={() => setShowAdvanced(!showAdvanced)}
             className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-medium transition-all duration-200 whitespace-nowrap ${
               showAdvanced || hasActiveFilters
-                ? 'bg-bottle-green text-white'
+                ? 'bg-muted-olive text-white'
                 : 'bg-gray-100 hover:bg-gray-200 text-text-dark'
             }`}
           >
@@ -281,7 +281,7 @@ const OrderFilters = ({
             {/* Amount Range */}
             <div>
               <label className="block text-sm font-medium text-text-dark mb-3 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-bottle-green" />
+                <DollarSign className="w-4 h-4 text-muted-olive" />
                 Order Amount
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -292,7 +292,7 @@ const OrderFilters = ({
                   onChange={(e) =>
                     handleFilterChange('amountMin', e.target.value)
                   }
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
+                  className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
                 />
                 <input
                   type="number"
@@ -301,7 +301,7 @@ const OrderFilters = ({
                   onChange={(e) =>
                     handleFilterChange('amountMax', e.target.value)
                   }
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
+                  className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
                 />
               </div>
             </div>
@@ -309,7 +309,7 @@ const OrderFilters = ({
             {/* Restaurant Filter */}
             <div>
               <label className="block text-sm font-medium text-text-dark mb-3 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-bottle-green" />
+                <MapPin className="w-4 h-4 text-muted-olive" />
                 Restaurant
               </label>
               <select
@@ -317,7 +317,7 @@ const OrderFilters = ({
                 onChange={(e) =>
                   handleFilterChange('restaurantId', e.target.value)
                 }
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
               >
                 <option value="">All Restaurants</option>
                 {availableRestaurants.map((restaurant) => (
@@ -331,7 +331,7 @@ const OrderFilters = ({
             {/* Payment Method */}
             <div>
               <label className="block text-sm font-medium text-text-dark mb-3 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-bottle-green" />
+                <DollarSign className="w-4 h-4 text-muted-olive" />
                 Payment Method
               </label>
               <select
@@ -339,7 +339,7 @@ const OrderFilters = ({
                 onChange={(e) =>
                   handleFilterChange('paymentMethod', e.target.value)
                 }
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
               >
                 {paymentMethodOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -352,7 +352,7 @@ const OrderFilters = ({
             {/* Delivery Area */}
             <div>
               <label className="block text-sm font-medium text-text-dark mb-3 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-bottle-green" />
+                <MapPin className="w-4 h-4 text-muted-olive" />
                 Delivery Area
               </label>
               <select
@@ -360,7 +360,7 @@ const OrderFilters = ({
                 onChange={(e) =>
                   handleFilterChange('deliveryArea', e.target.value)
                 }
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
               >
                 <option value="all">All Areas</option>
                 {availableAreas.map((area) => (
@@ -376,7 +376,7 @@ const OrderFilters = ({
           {showDatePicker && (
             <div className="mt-6 pt-6 border-t border-gray-200">
               <label className="block text-sm font-medium text-text-dark mb-3 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-bottle-green" />
+                <Calendar className="w-4 h-4 text-muted-olive" />
                 Custom Date Range
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md">
@@ -390,7 +390,7 @@ const OrderFilters = ({
                     onChange={(e) =>
                       handleFilterChange('customDateFrom', e.target.value)
                     }
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -403,7 +403,7 @@ const OrderFilters = ({
                     onChange={(e) =>
                       handleFilterChange('customDateTo', e.target.value)
                     }
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green/30 transition-all duration-200"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -421,11 +421,11 @@ const OrderFilters = ({
             </span>
 
             {filters.search && (
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-muted-olive/10 text-muted-olive text-sm rounded-xl">
                 Search: "{filters.search}"
                 <button
                   onClick={() => handleFilterChange('search', '')}
-                  className="hover:bg-bottle-green/20 rounded-full p-0.5"
+                  className="hover:bg-muted-olive/20 rounded-full p-0.5"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -433,7 +433,7 @@ const OrderFilters = ({
             )}
 
             {filters.status !== 'all' && (
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-muted-olive/10 text-muted-olive text-sm rounded-xl">
                 Status:{' '}
                 {
                   statusOptions.find((opt) => opt.value === filters.status)
@@ -441,7 +441,7 @@ const OrderFilters = ({
                 }
                 <button
                   onClick={() => handleFilterChange('status', 'all')}
-                  className="hover:bg-bottle-green/20 rounded-full p-0.5"
+                  className="hover:bg-muted-olive/20 rounded-full p-0.5"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -449,7 +449,7 @@ const OrderFilters = ({
             )}
 
             {(filters.amountMin || filters.amountMax) && (
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-muted-olive/10 text-muted-olive text-sm rounded-xl">
                 Amount: ৳{filters.amountMin || '0'} - ৳
                 {filters.amountMax || '∞'}
                 <button
@@ -457,7 +457,7 @@ const OrderFilters = ({
                     handleFilterChange('amountMin', '');
                     handleFilterChange('amountMax', '');
                   }}
-                  className="hover:bg-bottle-green/20 rounded-full p-0.5"
+                  className="hover:bg-muted-olive/20 rounded-full p-0.5"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -465,7 +465,7 @@ const OrderFilters = ({
             )}
 
             {filters.paymentMethod !== 'all' && (
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-bottle-green/10 text-bottle-green text-sm rounded-xl">
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-muted-olive/10 text-muted-olive text-sm rounded-xl">
                 Payment:{' '}
                 {
                   paymentMethodOptions.find(
@@ -474,7 +474,7 @@ const OrderFilters = ({
                 }
                 <button
                   onClick={() => handleFilterChange('paymentMethod', 'all')}
-                  className="hover:bg-bottle-green/20 rounded-full p-0.5"
+                  className="hover:bg-muted-olive/20 rounded-full p-0.5"
                 >
                   <X className="w-3 h-3" />
                 </button>

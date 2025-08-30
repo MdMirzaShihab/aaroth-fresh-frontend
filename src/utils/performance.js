@@ -403,6 +403,150 @@ if (process.env.NODE_ENV === 'development') {
   }, 30000); // Check every 30 seconds
 }
 
+// Network optimization utilities
+export const networkOptimization = {
+  /**
+   * Optimized fetch with retry logic and timeout
+   * @param {string} url - Request URL
+   * @param {Object} options - Fetch options
+   * @returns {Promise} Fetch promise
+   */
+  optimizedFetch(url, options = {}) {
+    const { retries = 3, timeout = 10000, ...fetchOptions } = options;
+    
+    const fetchWithTimeout = (fetchUrl, fetchOptions, timeoutMs) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          reject(new Error('Request timeout'));
+        }, timeoutMs);
+        
+        fetch(fetchUrl, fetchOptions)
+          .then(response => {
+            clearTimeout(timeoutId);
+            resolve(response);
+          })
+          .catch(error => {
+            clearTimeout(timeoutId);
+            reject(error);
+          });
+      });
+    };
+    
+    const attemptFetch = (retryCount) => {
+      return fetchWithTimeout(url, fetchOptions, timeout)
+        .catch(error => {
+          if (retryCount > 0 && (error.name === 'TypeError' || error.message === 'Request timeout')) {
+            return attemptFetch(retryCount - 1);
+          }
+          throw error;
+        });
+    };
+    
+    return attemptFetch(retries);
+  },
+
+  /**
+   * Batch multiple requests for efficiency
+   * @param {Array} requests - Array of request configurations
+   * @param {number} batchSize - Maximum batch size
+   * @returns {Promise} Promise with batch results
+   */
+  async batchRequests(requests, batchSize = 5) {
+    const results = [];
+    
+    for (let i = 0; i < requests.length; i += batchSize) {
+      const batch = requests.slice(i, i + batchSize);
+      const batchPromises = batch.map(request => 
+        this.optimizedFetch(request.url, request.options)
+          .then(response => ({ status: 'fulfilled', value: response }))
+          .catch(error => ({ status: 'rejected', reason: error }))
+      );
+      
+      const batchResults = await Promise.allSettled(batchPromises);
+      results.push(...batchResults);
+    }
+    
+    return results;
+  },
+
+  /**
+   * Throttle function to limit execution rate
+   * @param {Function} func - Function to throttle
+   * @param {number} delay - Throttle delay in ms
+   * @returns {Function} Throttled function
+   */
+  throttle(func, delay) {
+    let timeoutId;
+    let lastExecTime = 0;
+    
+    return function (...args) {
+      const currentTime = Date.now();
+      
+      if (currentTime - lastExecTime > delay) {
+        func.apply(this, args);
+        lastExecTime = currentTime;
+      } else {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          func.apply(this, args);
+          lastExecTime = Date.now();
+        }, delay - (currentTime - lastExecTime));
+      }
+    };
+  },
+
+  /**
+   * Debounce function to delay execution
+   * @param {Function} func - Function to debounce
+   * @param {number} delay - Debounce delay in ms
+   * @returns {Function} Debounced function
+   */
+  debounce(func, delay) {
+    let timeoutId;
+    
+    return function (...args) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+  },
+};
+
+// Performance monitor with additional methods
+export const performanceMonitor = {
+  ...perfMonitor,
+  
+  /**
+   * Throttle function (alias for networkOptimization.throttle)
+   */
+  throttle: networkOptimization.throttle,
+  
+  /**
+   * Debounce function (alias for networkOptimization.debounce)
+   */
+  debounce: networkOptimization.debounce,
+  
+  /**
+   * Track component re-renders
+   */
+  trackReRenders(componentName, config = {}) {
+    if (process.env.NODE_ENV !== 'development') return;
+    
+    console.log(`[Re-render] ${componentName}`, config);
+  },
+  
+  /**
+   * Measure render time
+   */
+  measureRenderTime(componentName) {
+    const startTime = performance.now();
+    
+    return () => {
+      const endTime = performance.now();
+      return endTime - startTime;
+    };
+  },
+};
+
 // ================================================
 // ENHANCED PERFORMANCE UTILITIES (Prompt 8)
 // ================================================

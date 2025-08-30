@@ -44,11 +44,11 @@ const ProgressBar = ({
     switch (status) {
       case 'completed':
         return {
-          bg: 'bg-mint-fresh/10 dark:bg-mint-fresh/20',
-          text: 'text-bottle-green dark:text-mint-fresh',
-          icon: 'text-bottle-green dark:text-mint-fresh',
-          line: 'bg-mint-fresh',
-          border: 'border-mint-fresh',
+          bg: 'bg-sage-green/10 dark:bg-sage-green/20',
+          text: 'text-muted-olive dark:text-sage-green',
+          icon: 'text-muted-olive dark:text-sage-green',
+          line: 'bg-sage-green',
+          border: 'border-sage-green',
         };
       case 'active':
         return {
@@ -116,7 +116,7 @@ const ProgressBar = ({
         >
           <div
             className={`
-              bg-gradient-to-r from-bottle-green to-mint-fresh rounded-full transition-all duration-500
+              bg-gradient-to-r from-muted-olive to-sage-green rounded-full transition-all duration-500
               ${size === 'sm' ? 'h-1.5' : size === 'lg' ? 'h-3' : 'h-2'}
             `}
             style={{ width: `${progress}%` }}
@@ -158,7 +158,7 @@ const ProgressBar = ({
         >
           <div
             className={`
-              bg-gradient-to-r from-bottle-green to-mint-fresh rounded-full transition-all duration-500
+              bg-gradient-to-r from-muted-olive to-sage-green rounded-full transition-all duration-500
               ${size === 'sm' ? 'h-1.5' : size === 'lg' ? 'h-3' : 'h-2'}
             `}
             style={{ width: `${progress}%` }}

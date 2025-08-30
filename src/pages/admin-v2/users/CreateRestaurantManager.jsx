@@ -36,7 +36,7 @@ const PermissionCheckbox = ({ permission, checked, onChange, description }) => {
     <label className={`
       flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors
       ${checked ? 
-        `${isDarkMode ? 'bg-mint-fresh/10 border-mint-fresh/30' : 'bg-bottle-green/10 border-bottle-green/30'} border` : 
+        `${isDarkMode ? 'bg-sage-green/10 border-sage-green/30' : 'bg-muted-olive/10 border-muted-olive/30'} border` : 
         `${isDarkMode ? 'hover:bg-dark-surface' : 'hover:bg-gray-50'}`
       }
     `}>
@@ -44,7 +44,7 @@ const PermissionCheckbox = ({ permission, checked, onChange, description }) => {
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(permission.id, e.target.checked)}
-        className="mt-1 rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
+        className="mt-1 rounded border-gray-300 text-muted-olive focus:ring-muted-olive"
       />
       <div className="flex-1">
         <div className={`font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>

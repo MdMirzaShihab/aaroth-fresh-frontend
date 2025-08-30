@@ -37,7 +37,7 @@ import FileUpload from '../../components/ui/FileUpload';
 const MobileStepCard = ({ title, icon: Icon, step, totalSteps, children }) => (
   <Card className="p-6">
     <div className="flex items-center gap-3 mb-6">
-      <div className="w-10 h-10 bg-bottle-green rounded-2xl flex items-center justify-center text-white">
+      <div className="w-10 h-10 bg-muted-olive rounded-2xl flex items-center justify-center text-white">
         <Icon className="w-5 h-5" />
       </div>
       <div>
@@ -72,7 +72,7 @@ const BasicInfoFields = ({ register, errors, categories, validationRules }) => (
       <FormField label="Category" error={errors.category?.message}>
         <select
           {...register('category', validationRules.category)}
-          className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
+          className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 ${
             errors.category
               ? 'border-tomato-red/30 bg-tomato-red/5'
               : 'border-gray-200 dark:border-gray-700'
@@ -91,7 +91,7 @@ const BasicInfoFields = ({ register, errors, categories, validationRules }) => (
         <FormField label="Unit" error={errors.unit?.message}>
           <select
             {...register('unit', validationRules.unit)}
-            className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 ${
+            className={`w-full px-4 py-3 border rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 ${
               errors.unit
                 ? 'border-tomato-red/30 bg-tomato-red/5'
                 : 'border-gray-200 dark:border-gray-700'
@@ -125,7 +125,7 @@ const BasicInfoFields = ({ register, errors, categories, validationRules }) => (
       <FormField label="Status">
         <select
           {...register('status')}
-          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200"
         >
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
@@ -138,7 +138,7 @@ const BasicInfoFields = ({ register, errors, categories, validationRules }) => (
           {...register('description')}
           placeholder="Enter product description"
           rows={3}
-          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
         />
       </FormField>
 
@@ -199,7 +199,7 @@ const ImageUploadSection = ({
                 onClick={() => setSelectedImageIndex(index)}
                 className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
                   selectedImageIndex === index
-                    ? 'border-bottle-green shadow-lg'
+                    ? 'border-muted-olive shadow-lg'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -252,7 +252,7 @@ const ImageUploadSection = ({
         maxFileSize={5 * 1024 * 1024} // 5MB
         disabled={uploadingImages.size > 0}
       >
-        <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-bottle-green transition-colors">
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-muted-olive transition-colors">
           <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
           <p className="text-text-muted mb-1">
             {uploadingImages.size > 0
@@ -312,7 +312,7 @@ const AdditionalDetailsFields = ({ register }) => (
         {...register('storageInstructions')}
         placeholder="Storage and handling instructions"
         rows={3}
-        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
       />
     </FormField>
 
@@ -321,7 +321,7 @@ const AdditionalDetailsFields = ({ register }) => (
         <input
           type="checkbox"
           {...register('isOrganic')}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
         <span className="text-text-dark dark:text-white font-medium">
           Organic Product
@@ -732,7 +732,7 @@ const ProductForm = ({ isEditing = false }) => {
               onClick={() => goToStep(index)}
               className={`flex-1 h-2 rounded-full transition-colors ${
                 index <= currentStep
-                  ? 'bg-bottle-green'
+                  ? 'bg-muted-olive'
                   : 'bg-gray-200 dark:bg-gray-600'
               }`}
             />

@@ -115,9 +115,9 @@ const FileUpload = ({
       <div
         className={cn(
           'relative border-2 border-dashed rounded-3xl p-6 sm:p-8 text-center transition-all duration-300 cursor-pointer min-h-[160px] sm:min-h-[200px] flex flex-col items-center justify-center',
-          dragActive && 'border-bottle-green bg-bottle-green/5 scale-[1.02]',
+          dragActive && 'border-muted-olive bg-muted-olive/5 scale-[1.02]',
           !dragActive &&
-            'border-gray-300 hover:border-bottle-green hover:bg-bottle-green/5',
+            'border-gray-300 hover:border-muted-olive hover:bg-muted-olive/5',
           disabled && 'opacity-50 cursor-not-allowed',
           error && 'border-tomato-red/50 bg-tomato-red/5',
           'touch-manipulation' // Better touch responsiveness
@@ -144,7 +144,7 @@ const FileUpload = ({
               className={cn(
                 'w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 rounded-2xl flex items-center justify-center transition-colors duration-300',
                 dragActive
-                  ? 'bg-bottle-green text-white'
+                  ? 'bg-muted-olive text-white'
                   : 'bg-earthy-beige/30 text-text-muted'
               )}
             >
@@ -271,7 +271,7 @@ const FilePreview = ({ file, onRemove, disabled }) => {
         </p>
         <p className="text-xs text-text-muted">{formatFileSize(file.size)}</p>
         {preview && (
-          <p className="text-xs text-bottle-green mt-1 sm:hidden">
+          <p className="text-xs text-muted-olive mt-1 sm:hidden">
             Tap image to preview
           </p>
         )}

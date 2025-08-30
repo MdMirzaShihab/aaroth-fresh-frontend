@@ -257,7 +257,7 @@ const VendorsManagementPage = () => {
         <div className="px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh flex items-center justify-center shadow-glow-olive">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-glow-olive">
                 <Store className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -316,7 +316,7 @@ const VendorsManagementPage = () => {
                       {quickStats.totalVendors.toLocaleString()}
                     </p>
                   </div>
-                  <Store className={`w-4 h-4 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+                  <Store className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
                 </div>
               </Card>
 
@@ -326,11 +326,11 @@ const VendorsManagementPage = () => {
                     <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
                       Verified
                     </p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`}>
+                    <p className={`text-lg font-bold ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}>
                       {quickStats.verifiedVendors.toLocaleString()}
                     </p>
                   </div>
-                  <CheckCircle className={`w-4 h-4 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+                  <CheckCircle className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
                 </div>
               </Card>
 
@@ -374,7 +374,7 @@ const VendorsManagementPage = () => {
                   onClick={() => setViewMode(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                     viewMode === tab.id
-                      ? 'bg-white dark:bg-dark-bg text-bottle-green shadow-sm'
+                      ? 'bg-white dark:bg-dark-bg text-muted-olive shadow-sm'
                       : 'text-text-muted hover:text-text-dark dark:hover:text-dark-text-primary'
                   }`}
                 >

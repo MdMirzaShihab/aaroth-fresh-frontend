@@ -123,7 +123,7 @@ const AdminDashboard = () => {
       change: '+0%',
       changeType: 'positive',
       icon: Package,
-      color: 'bg-gradient-to-br from-bottle-green to-mint-fresh',
+      color: 'bg-gradient-to-br from-muted-olive to-sage-green',
       description: 'All vendors on platform',
     },
     {
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
                     <span
                       className={`text-sm font-medium px-2 py-1 rounded-full ${
                         metric.changeType === 'positive'
-                          ? 'bg-mint-fresh/20 text-bottle-green'
+                          ? 'bg-sage-green/20 text-muted-olive'
                           : metric.changeType === 'negative'
                             ? 'bg-tomato-red/20 text-tomato-red'
                             : 'bg-gray-100 text-gray-600'
@@ -308,9 +308,9 @@ const AdminDashboard = () => {
                   className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                     metric.urgent
                       ? 'bg-amber-100 text-amber-600'
-                      : metric.color.includes('bottle-green')
+                      : metric.color.includes('muted-olive')
                         ? 'bg-green-100 text-green-600'
-                        : metric.color.includes('mint-fresh')
+                        : metric.color.includes('sage-green')
                           ? 'bg-emerald-100 text-emerald-600'
                           : metric.color.includes('earthy-brown')
                             ? 'bg-orange-100 text-orange-600'
@@ -414,7 +414,7 @@ const AdminDashboard = () => {
         {/* Order Statistics */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4 flex items-center gap-2">
-            <div className="w-2 h-2 bg-mint-fresh rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-sage-green rounded-full animate-pulse" />
             Order Statistics
           </h3>
 
@@ -461,7 +461,7 @@ const AdminDashboard = () => {
                   key={order._id || index}
                   className="flex items-start gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0"
                 >
-                  <div className="w-2 h-2 bg-bottle-green rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-2 h-2 bg-muted-olive rounded-full mt-2 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-text-dark dark:text-white">
                       Order from{' '}
@@ -480,7 +480,7 @@ const AdminDashboard = () => {
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       order.status === 'confirmed'
-                        ? 'bg-mint-fresh/20 text-bottle-green'
+                        ? 'bg-sage-green/20 text-muted-olive'
                         : order.status === 'pending_approval'
                           ? 'bg-earthy-yellow/20 text-earthy-brown'
                           : 'bg-gray-100 text-gray-600'

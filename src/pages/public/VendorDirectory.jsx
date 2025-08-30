@@ -134,7 +134,7 @@ const VendorDirectory = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-bottle-green/10 to-mint-fresh/20">
+      <div className="bg-gradient-to-br from-muted-olive/10 to-sage-green/20">
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-text-dark mb-6">
@@ -153,13 +153,13 @@ const VendorDirectory = () => {
                   <input
                     type="text"
                     placeholder="Search vendors by name or specialty..."
-                    className="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                    className="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <select
-                  className="px-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-w-[180px]"
+                  className="px-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-w-[180px]"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
@@ -184,7 +184,7 @@ const VendorDirectory = () => {
               </button>
               <button
                 onClick={() => navigate('/products')}
-                className="border-2 border-bottle-green text-bottle-green px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-bottle-green hover:text-white transition-all duration-200"
+                className="border-2 border-muted-olive text-muted-olive px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-muted-olive hover:text-white transition-all duration-200"
               >
                 Browse Products
               </button>
@@ -221,7 +221,7 @@ const VendorDirectory = () => {
                 <p className="text-text-muted">Locations</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-mint-fresh to-bottle-green rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-sage-green to-muted-olive rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Package className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-3xl font-bold text-text-dark mb-2">
@@ -285,7 +285,7 @@ const VendorDirectory = () => {
                         setSearchTerm('');
                         setSelectedCategory('all');
                       }}
-                      className="text-bottle-green hover:text-bottle-green/80 font-medium"
+                      className="text-muted-olive hover:text-muted-olive/80 font-medium"
                     >
                       Show All Vendors
                     </button>
@@ -299,17 +299,17 @@ const VendorDirectory = () => {
                       className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group"
                       onClick={handleSignUpClick}
                     >
-                      <div className="aspect-[2/1] bg-gradient-to-br from-mint-fresh/20 to-bottle-green/20 relative overflow-hidden">
+                      <div className="aspect-[2/1] bg-gradient-to-br from-sage-green/20 to-muted-olive/20 relative overflow-hidden">
                         <div className="w-full h-full flex items-center justify-center">
                           <div className="text-8xl opacity-20">🚜</div>
                         </div>
                         {vendor.verified && (
-                          <span className="absolute top-4 left-4 bg-bottle-green text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                          <span className="absolute top-4 left-4 bg-muted-olive text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1">
                             <CheckCircle className="w-3 h-3" />
                             Verified
                           </span>
                         )}
-                        <span className="absolute top-4 right-4 bg-mint-fresh text-bottle-green text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                        <span className="absolute top-4 right-4 bg-sage-green text-muted-olive text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1">
                           <Leaf className="w-3 h-3" />
                           Fresh
                         </span>
@@ -318,7 +318,7 @@ const VendorDirectory = () => {
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-bold text-text-dark mb-2 group-hover:text-bottle-green transition-colors truncate">
+                            <h3 className="text-xl font-bold text-text-dark mb-2 group-hover:text-muted-olive transition-colors truncate">
                               {vendor.name}
                             </h3>
                             <div className="flex items-center gap-2 mb-2">
@@ -369,12 +369,12 @@ const VendorDirectory = () => {
                               <Package className="w-4 h-4" />
                               {vendor.totalProducts} products
                             </span>
-                            <span className="flex items-center gap-1 text-mint-fresh">
+                            <span className="flex items-center gap-1 text-sage-green">
                               <Star className="w-4 h-4" />
                               Top rated
                             </span>
                           </div>
-                          <button className="text-bottle-green hover:text-bottle-green/80 transition-colors font-medium text-sm">
+                          <button className="text-muted-olive hover:text-muted-olive/80 transition-colors font-medium text-sm">
                             View Profile →
                           </button>
                         </div>
@@ -388,7 +388,7 @@ const VendorDirectory = () => {
         )}
 
         {!listingsLoading && !listingsError && (
-          <div className="text-center bg-gradient-to-br from-bottle-green/5 to-mint-fresh/10 rounded-3xl p-12">
+          <div className="text-center bg-gradient-to-br from-muted-olive/5 to-sage-green/10 rounded-3xl p-12">
             <h3 className="text-2xl font-bold text-text-dark mb-4">
               Ready to Connect with Premium Vendors?
             </h3>
@@ -408,7 +408,7 @@ const VendorDirectory = () => {
               </button>
               <button
                 onClick={() => navigate('/products')}
-                className="border-2 border-bottle-green text-bottle-green px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-bottle-green hover:text-white transition-all duration-200"
+                className="border-2 border-muted-olive text-muted-olive px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-muted-olive hover:text-white transition-all duration-200"
               >
                 Browse Products
               </button>

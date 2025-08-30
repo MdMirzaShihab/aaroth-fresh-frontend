@@ -14,8 +14,6 @@ export default {
         // Secondary Colors (Sophisticated Olive-Centered Palette)
         'muted-olive': '#7f8966', // Primary secondary (unchanged)
         'sage-green': '#9CAF88', // Lighter, softer complement to muted-olive
-        'bottle-green': '#4A5D4A', // Deep green for primary actions
-        'mint-fresh': '#22c55e', // Fresh mint accent color
         'dusty-cedar': '#A0826D', // Warm earth tone that bridges olive and brown tones
 
         // Utility Colors (Enhanced Futuristic Neutrals)

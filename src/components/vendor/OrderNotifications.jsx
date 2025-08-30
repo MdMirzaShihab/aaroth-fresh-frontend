@@ -59,7 +59,7 @@ const OrderNotifications = ({ onClose }) => {
     },
     payment_received: {
       icon: DollarSign,
-      color: 'text-bottle-green bg-mint-fresh/20',
+      color: 'text-muted-olive bg-sage-green/20',
       sound: '/sounds/success.mp3',
     },
     order_updated: {
@@ -69,7 +69,7 @@ const OrderNotifications = ({ onClose }) => {
     },
     delivery_confirmed: {
       icon: CheckCircle,
-      color: 'text-bottle-green bg-mint-fresh/20',
+      color: 'text-muted-olive bg-sage-green/20',
       sound: '/sounds/success.mp3',
     },
   };
@@ -194,7 +194,7 @@ const OrderNotifications = ({ onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <Bell className="w-6 h-6 text-bottle-green" />
+            <Bell className="w-6 h-6 text-muted-olive" />
             <div>
               <h3 className="text-xl font-bold text-text-dark">
                 Notifications
@@ -211,7 +211,7 @@ const OrderNotifications = ({ onClose }) => {
               onClick={handleToggleSound}
               className={`p-2 rounded-xl transition-colors ${
                 soundEnabled
-                  ? 'bg-bottle-green/10 text-bottle-green'
+                  ? 'bg-muted-olive/10 text-muted-olive'
                   : 'bg-gray-100 text-text-muted'
               }`}
               title={soundEnabled ? 'Disable sounds' : 'Enable sounds'}
@@ -262,7 +262,7 @@ const OrderNotifications = ({ onClose }) => {
               onClick={() => setFilter(tab.value)}
               className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                 filter === tab.value
-                  ? 'bg-bottle-green text-white'
+                  ? 'bg-muted-olive text-white'
                   : 'text-text-muted hover:text-text-dark hover:bg-gray-100'
               }`}
             >
@@ -290,7 +290,7 @@ const OrderNotifications = ({ onClose }) => {
             </span>
             <button
               onClick={handleMarkAllAsRead}
-              className="flex items-center gap-2 text-sm font-medium text-bottle-green hover:text-bottle-green/80 transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-muted-olive hover:text-muted-olive/80 transition-colors"
             >
               <CheckCircle className="w-4 h-4" />
               Mark all as read
@@ -302,7 +302,7 @@ const OrderNotifications = ({ onClose }) => {
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bottle-green"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-muted-olive"></div>
             </div>
           ) : error ? (
             <div className="text-center py-8 px-4">
@@ -310,7 +310,7 @@ const OrderNotifications = ({ onClose }) => {
               <p className="text-text-muted">Failed to load notifications</p>
               <button
                 onClick={() => refetch()}
-                className="mt-2 text-bottle-green hover:text-bottle-green/80 text-sm font-medium"
+                className="mt-2 text-muted-olive hover:text-muted-olive/80 text-sm font-medium"
               >
                 Try again
               </button>
@@ -361,7 +361,7 @@ const OrderNotifications = ({ onClose }) => {
                             {notification.title}
                           </h4>
                           {!notification.read && (
-                            <div className="w-2 h-2 bg-bottle-green rounded-full flex-shrink-0 mt-2"></div>
+                            <div className="w-2 h-2 bg-muted-olive rounded-full flex-shrink-0 mt-2"></div>
                           )}
                         </div>
 
@@ -381,7 +381,7 @@ const OrderNotifications = ({ onClose }) => {
                                 // Handle navigation to order/payment details
                                 window.location.href = notification.actionUrl;
                               }}
-                              className="flex items-center gap-1 text-xs text-bottle-green hover:text-bottle-green/80 font-medium transition-colors"
+                              className="flex items-center gap-1 text-xs text-muted-olive hover:text-muted-olive/80 font-medium transition-colors"
                             >
                               <Eye className="w-3 h-3" />
                               View
@@ -403,7 +403,7 @@ const OrderNotifications = ({ onClose }) => {
             <span className="text-text-muted">Auto-refresh: 30s</span>
             <button
               onClick={() => refetch()}
-              className="text-bottle-green hover:text-bottle-green/80 font-medium transition-colors"
+              className="text-muted-olive hover:text-muted-olive/80 font-medium transition-colors"
             >
               Refresh now
             </button>

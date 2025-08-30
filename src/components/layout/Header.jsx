@@ -68,7 +68,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
           {isAuthenticated && (
             <button
               onClick={onMenuToggle}
-              className="lg:hidden w-10 h-10 rounded-2xl flex items-center justify-center text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px]"
+              className="lg:hidden w-10 h-10 rounded-2xl flex items-center justify-center text-text-dark dark:text-white hover:bg-muted-olive/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px]"
               aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
             >
               {isSidebarOpen ? (
@@ -114,7 +114,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
           {/* Theme Toggle */}
           <button
             onClick={handleThemeToggle}
-            className="w-10 h-10 rounded-2xl flex items-center justify-center text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px]"
+            className="w-10 h-10 rounded-2xl flex items-center justify-center text-text-dark dark:text-white hover:bg-muted-olive/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px]"
             aria-label={`Switch to ${themeMode === 'light' ? 'dark' : 'light'} mode`}
           >
             {themeMode === 'light' ? (
@@ -130,7 +130,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
               <div className="relative">
                 <button
                   onClick={handleNotificationToggle}
-                  className="w-10 h-10 rounded-2xl flex items-center justify-center text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px] relative"
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center text-text-dark dark:text-white hover:bg-muted-olive/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px] relative"
                   aria-label="Notifications"
                 >
                   <Bell className="w-5 h-5" />
@@ -147,7 +147,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                       Notifications
                     </h3>
                     <div className="space-y-3">
-                      <div className="p-3 rounded-2xl bg-mint-fresh/10 dark:bg-gray-800/50 border border-mint-fresh/20">
+                      <div className="p-3 rounded-2xl bg-sage-green/10 dark:bg-gray-800/50 border border-sage-green/20">
                         <p className="text-sm text-text-dark dark:text-white font-medium">
                           New order received
                         </p>
@@ -173,7 +173,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                       </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <button className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium">
+                      <button className="text-muted-olive hover:text-muted-olive/80 text-sm font-medium">
                         View all notifications
                       </button>
                     </div>
@@ -185,7 +185,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
               <div className="relative">
                 <button
                   onClick={handleUserMenuToggle}
-                  className="flex items-center gap-2 sm:gap-3 p-2 rounded-2xl hover:bg-bottle-green/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px] min-w-[44px]"
+                  className="flex items-center gap-2 sm:gap-3 p-2 rounded-2xl hover:bg-muted-olive/5 dark:hover:bg-gray-800 transition-all duration-200 min-h-[44px] min-w-[44px]"
                   aria-label="User menu"
                 >
                   <div className="w-8 h-8 bg-gradient-secondary rounded-full flex items-center justify-center">
@@ -243,7 +243,7 @@ const Header = ({ onMenuToggle, isSidebarOpen }) => {
                           onClick={() => handleUserMenuAction(item)}
                           className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl transition-all duration-200 min-h-[44px] ${
                             item.className ||
-                            'text-text-dark dark:text-white hover:bg-bottle-green/5 dark:hover:bg-gray-800'
+                            'text-text-dark dark:text-white hover:bg-muted-olive/5 dark:hover:bg-gray-800'
                           }`}
                         >
                           {item.icon && <item.icon className="w-4 h-4" />}

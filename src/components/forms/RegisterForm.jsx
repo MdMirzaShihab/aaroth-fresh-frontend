@@ -75,8 +75,8 @@ const RegisterForm = () => {
     if (score === 3)
       return { score: 3, text: 'Fair', color: 'text-earthy-yellow' };
     if (score === 4)
-      return { score: 4, text: 'Good', color: 'text-mint-fresh' };
-    return { score: 5, text: 'Strong', color: 'text-bottle-green' };
+      return { score: 4, text: 'Good', color: 'text-sage-green' };
+    return { score: 5, text: 'Strong', color: 'text-muted-olive' };
   };
 
   const passwordStrength = getPasswordStrength(passwordValue);
@@ -669,7 +669,7 @@ const RegisterForm = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-text-muted/60 hover:text-bottle-green transition-colors duration-200"
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-text-muted/60 hover:text-muted-olive transition-colors duration-200"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -708,40 +708,40 @@ const RegisterForm = () => {
                           : passwordStrength.score === 3
                             ? 'bg-earthy-yellow w-3/5'
                             : passwordStrength.score === 4
-                              ? 'bg-mint-fresh w-4/5'
+                              ? 'bg-sage-green w-4/5'
                               : passwordStrength.score === 5
-                                ? 'bg-bottle-green w-full'
+                                ? 'bg-muted-olive w-full'
                                 : 'w-0'
                     }`}
                   ></div>
                 </div>
                 <ul className="text-xs text-text-muted/80 space-y-1">
                   <li
-                    className={`flex items-center gap-2 ${passwordValue.length >= 8 ? 'text-bottle-green' : ''}`}
+                    className={`flex items-center gap-2 ${passwordValue.length >= 8 ? 'text-muted-olive' : ''}`}
                   >
                     <span>{passwordValue.length >= 8 ? '✓' : '○'}</span>
                     At least 8 characters
                   </li>
                   <li
-                    className={`flex items-center gap-2 ${/[A-Z]/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                    className={`flex items-center gap-2 ${/[A-Z]/.test(passwordValue) ? 'text-muted-olive' : ''}`}
                   >
                     <span>{/[A-Z]/.test(passwordValue) ? '✓' : '○'}</span>
                     Uppercase letter
                   </li>
                   <li
-                    className={`flex items-center gap-2 ${/[a-z]/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                    className={`flex items-center gap-2 ${/[a-z]/.test(passwordValue) ? 'text-muted-olive' : ''}`}
                   >
                     <span>{/[a-z]/.test(passwordValue) ? '✓' : '○'}</span>
                     Lowercase letter
                   </li>
                   <li
-                    className={`flex items-center gap-2 ${/\d/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                    className={`flex items-center gap-2 ${/\d/.test(passwordValue) ? 'text-muted-olive' : ''}`}
                   >
                     <span>{/\d/.test(passwordValue) ? '✓' : '○'}</span>
                     Number
                   </li>
                   <li
-                    className={`flex items-center gap-2 ${/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? 'text-bottle-green' : ''}`}
+                    className={`flex items-center gap-2 ${/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? 'text-muted-olive' : ''}`}
                   >
                     <span>
                       {/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? '✓' : '○'}
@@ -785,7 +785,7 @@ const RegisterForm = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-text-muted/60 hover:text-bottle-green transition-colors duration-200"
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-text-muted/60 hover:text-muted-olive transition-colors duration-200"
               >
                 {showConfirmPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -806,7 +806,7 @@ const RegisterForm = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-3">
@@ -825,7 +825,7 @@ const RegisterForm = () => {
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-bottle-green hover:text-bottle-green/80 font-medium transition-colors duration-200 focus:outline-none focus:underline"
+              className="text-muted-olive hover:text-muted-olive/80 font-medium transition-colors duration-200 focus:outline-none focus:underline"
             >
               Sign in here
             </Link>

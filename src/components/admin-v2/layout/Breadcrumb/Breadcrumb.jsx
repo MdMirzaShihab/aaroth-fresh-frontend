@@ -217,7 +217,7 @@ const Breadcrumb = () => {
                   `}>
                     <IconComponent className={`
                       w-4 h-4
-                      ${isDarkMode ? 'text-dark-sage-accent' : 'text-bottle-green'}
+                      ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}
                     `} />
                   </div>
                   <div>
@@ -242,7 +242,7 @@ const Breadcrumb = () => {
                     flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200
                     ${isDarkMode 
                       ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5' 
-                      : 'text-text-muted hover:text-bottle-green hover:bg-sage-green/5'
+                      : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'
                     }
                     hover:scale-105 hover:shadow-glow-olive/10
                   `}

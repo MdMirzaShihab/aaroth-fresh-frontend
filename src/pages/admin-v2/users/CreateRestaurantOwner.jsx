@@ -48,16 +48,16 @@ const StepIndicator = ({ currentStep, totalSteps, steps }) => {
               <div className={`
                 flex items-center gap-3 px-4 py-2 rounded-xl transition-all
                 ${isActive ? 
-                  `${isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-bottle-green/20 text-bottle-green'}` :
+                  `${isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-muted-olive/20 text-muted-olive'}` :
                   isCompleted ? 
-                  'bg-mint-fresh/10 text-mint-fresh' :
+                  'bg-sage-green/10 text-sage-green' :
                   `${isDarkMode ? 'bg-dark-surface text-dark-text-muted' : 'bg-gray-100 text-gray-500'}`
                 }
               `}>
                 <div className={`
                   w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                  ${isActive ? 'bg-bottle-green text-white' :
-                    isCompleted ? 'bg-mint-fresh text-white' : 
+                  ${isActive ? 'bg-muted-olive text-white' :
+                    isCompleted ? 'bg-sage-green text-white' : 
                     'bg-gray-300 text-gray-500'
                   }
                 `}>
@@ -73,7 +73,7 @@ const StepIndicator = ({ currentStep, totalSteps, steps }) => {
               {index < steps.length - 1 && (
                 <div className={`
                   w-12 h-0.5 mx-2
-                  ${isCompleted ? 'bg-mint-fresh' : 'bg-gray-300'}
+                  ${isCompleted ? 'bg-sage-green' : 'bg-gray-300'}
                 `} />
               )}
             </div>
@@ -412,11 +412,11 @@ const CreateRestaurantOwner = ({ isOpen, onClose, onSuccess }) => {
               </h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${watchedValues.businessLicense ? 'bg-mint-fresh' : 'bg-gray-300'}`} />
+                  <div className={`w-3 h-3 rounded-full ${watchedValues.businessLicense ? 'bg-sage-green' : 'bg-gray-300'}`} />
                   <span>Business License</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${watchedValues.idDocument ? 'bg-mint-fresh' : 'bg-gray-300'}`} />
+                  <div className={`w-3 h-3 rounded-full ${watchedValues.idDocument ? 'bg-sage-green' : 'bg-gray-300'}`} />
                   <span>ID Document</span>
                 </div>
               </div>
@@ -434,7 +434,7 @@ const CreateRestaurantOwner = ({ isOpen, onClose, onSuccess }) => {
       <div className="p-6">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh flex items-center justify-center shadow-lg">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-lg">
             <Utensils className="w-8 h-8 text-white" />
           </div>
           <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>

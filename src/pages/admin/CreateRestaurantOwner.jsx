@@ -66,8 +66,8 @@ const CreateRestaurantOwner = () => {
       1: { text: 'Weak', color: 'text-orange-500' },
       2: { text: 'Fair', color: 'text-earthy-yellow' },
       3: { text: 'Good', color: 'text-blue-500' },
-      4: { text: 'Strong', color: 'text-bottle-green' },
-      5: { text: 'Very Strong', color: 'text-mint-fresh' },
+      4: { text: 'Strong', color: 'text-muted-olive' },
+      5: { text: 'Very Strong', color: 'text-sage-green' },
     };
 
     return { score, ...strength[Math.min(score, 5)] };
@@ -216,7 +216,7 @@ const CreateRestaurantOwner = () => {
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={handleCancel}
-            className="w-10 h-10 rounded-2xl bg-white border border-gray-200 flex items-center justify-center hover:border-bottle-green/30 transition-colors"
+            className="w-10 h-10 rounded-2xl bg-white border border-gray-200 flex items-center justify-center hover:border-muted-olive/30 transition-colors"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -268,7 +268,7 @@ const CreateRestaurantOwner = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.name
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter full name"
                 />
@@ -298,7 +298,7 @@ const CreateRestaurantOwner = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.email
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter email address"
                 />
@@ -328,7 +328,7 @@ const CreateRestaurantOwner = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.phone
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="+8801234567890"
                 />
@@ -358,7 +358,7 @@ const CreateRestaurantOwner = () => {
                   className={`w-full pl-10 pr-12 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.password
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter password"
                 />
@@ -391,7 +391,7 @@ const CreateRestaurantOwner = () => {
                                 ? 'bg-earthy-yellow'
                                 : passwordStrength.score <= 4
                                   ? 'bg-blue-500'
-                                  : 'bg-bottle-green'
+                                  : 'bg-muted-olive'
                         }`}
                         style={{
                           width: `${(passwordStrength.score / 5) * 100}%`,
@@ -454,7 +454,7 @@ const CreateRestaurantOwner = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.restaurantName
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter restaurant name"
                 />
@@ -484,7 +484,7 @@ const CreateRestaurantOwner = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.ownerName
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter owner name"
                 />
@@ -517,7 +517,7 @@ const CreateRestaurantOwner = () => {
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.tradeLicenseNo
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                      : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                      : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                   }`}
                   placeholder="Enter trade license number"
                 />
@@ -535,7 +535,7 @@ const CreateRestaurantOwner = () => {
         {/* Address Information */}
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-mint-fresh to-bottle-green rounded-2xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-sage-green to-muted-olive rounded-2xl flex items-center justify-center">
               <MapPin className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -567,7 +567,7 @@ const CreateRestaurantOwner = () => {
                 className={`w-full px-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                   errors.address?.street
                     ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                    : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                    : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                 }`}
                 placeholder="Enter street address"
               />
@@ -594,7 +594,7 @@ const CreateRestaurantOwner = () => {
                 className={`w-full px-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                   errors.address?.city
                     ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                    : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                    : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                 }`}
                 placeholder="Enter city"
               />
@@ -621,7 +621,7 @@ const CreateRestaurantOwner = () => {
                 className={`w-full px-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                   errors.address?.area
                     ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                    : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                    : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                 }`}
                 placeholder="Enter area"
               />
@@ -651,7 +651,7 @@ const CreateRestaurantOwner = () => {
                 className={`w-full px-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                   errors.address?.postalCode
                     ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
-                    : 'border-gray-200 focus:border-bottle-green/50 focus:ring-2 focus:ring-bottle-green/10'
+                    : 'border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10'
                 }`}
                 placeholder="1234"
               />

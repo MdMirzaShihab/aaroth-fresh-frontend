@@ -365,7 +365,7 @@ const SafeDeleteModal = ({ isOpen, onClose, category, onSuccess }) => {
                         ? 'border-red-500 focus:ring-red-200'
                         : isConfirmed
                           ? 'border-green-500 focus:ring-green-200'
-                          : 'border-gray-200 focus:ring-bottle-green/20 focus:border-bottle-green'
+                          : 'border-gray-200 focus:ring-muted-olive/20 focus:border-muted-olive'
                     }`}
                     autoComplete="off"
                   />

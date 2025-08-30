@@ -103,7 +103,7 @@ const JSONEditor = ({ value, onChange, disabled, schema }) => {
         className={`
           w-full p-3 border rounded-lg font-mono text-sm resize-vertical
           ${isValid 
-            ? 'border-gray-200 focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20' 
+            ? 'border-gray-200 focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20' 
             : 'border-tomato-red focus:border-tomato-red focus:ring-2 focus:ring-tomato-red/20'
           }
           disabled:bg-gray-50 disabled:cursor-not-allowed
@@ -141,8 +141,8 @@ const MultiSelectInput = ({ value = [], options = [], onChange, disabled }) => {
             flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-200 touch-target
             ${value.includes(option.value)
               ? isDarkMode 
-                ? 'bg-bottle-green/10 border-bottle-green/30' 
-                : 'bg-bottle-green/5 border-bottle-green/20'
+                ? 'bg-muted-olive/10 border-muted-olive/30' 
+                : 'bg-muted-olive/5 border-muted-olive/20'
               : isDarkMode
                 ? 'bg-gray-800 border-gray-700 hover:bg-gray-700'
                 : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -155,7 +155,7 @@ const MultiSelectInput = ({ value = [], options = [], onChange, disabled }) => {
             checked={value.includes(option.value)}
             onChange={() => handleToggle(option.value)}
             disabled={disabled}
-            className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green/20"
+            className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive/20"
             aria-describedby={`${option.value}-desc`}
           />
           <div className="flex-1">
@@ -269,11 +269,11 @@ const SettingEditor = ({
       w-full px-4 py-3 border rounded-xl transition-all duration-200 touch-target
       ${isDirty 
         ? 'border-earthy-yellow/50 bg-earthy-yellow/5' 
-        : 'border-gray-200 focus:border-bottle-green'
+        : 'border-gray-200 focus:border-muted-olive'
       }
       ${validationError 
         ? 'border-tomato-red focus:border-tomato-red focus:ring-2 focus:ring-tomato-red/20' 
-        : 'focus:ring-2 focus:ring-bottle-green/20'
+        : 'focus:ring-2 focus:ring-muted-olive/20'
       }
       disabled:bg-gray-50 disabled:cursor-not-allowed
       ${isDarkMode 
@@ -346,7 +346,7 @@ const SettingEditor = ({
               <div className={`
                 w-8 h-8 rounded-lg flex items-center justify-center
                 ${value 
-                  ? 'bg-mint-fresh/20 text-mint-fresh' 
+                  ? 'bg-sage-green/20 text-sage-green' 
                   : isDarkMode 
                     ? 'bg-gray-700 text-gray-400' 
                     : 'bg-gray-200 text-text-muted'
@@ -364,8 +364,8 @@ const SettingEditor = ({
               onClick={() => handleChange(!value)}
               className={`
                 relative inline-flex h-8 w-14 items-center rounded-full transition-colors
-                focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target
-                ${value ? 'bg-bottle-green' : 'bg-gray-200'}
+                focus:outline-none focus:ring-2 focus:ring-muted-olive/20 touch-target
+                ${value ? 'bg-muted-olive' : 'bg-gray-200'}
               `}
               role="switch"
               aria-checked={value}
@@ -513,7 +513,7 @@ const SettingEditor = ({
               size="sm"
               onClick={handleSave}
               disabled={isSaving || !!validationError}
-              className="min-h-[36px] bg-gradient-to-r from-bottle-green to-sage-green hover:from-bottle-green/90 hover:to-sage-green/90"
+              className="min-h-[36px] bg-gradient-to-r from-muted-olive to-sage-green hover:from-muted-olive/90 hover:to-sage-green/90"
             >
               {isSaving ? (
                 <LoadingSpinner size="sm" className="mr-2" />

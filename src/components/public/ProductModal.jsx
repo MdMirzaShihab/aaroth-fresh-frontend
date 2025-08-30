@@ -159,7 +159,7 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-mint-fresh/20 to-bottle-green/20 flex items-center justify-center">
+                <div className="w-full h-full bg-gradient-to-br from-sage-green/20 to-muted-olive/20 flex items-center justify-center">
                   <div className="text-8xl opacity-20">🥬</div>
                 </div>
               )}
@@ -185,13 +185,13 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                 {product.isOrganic && (
-                  <span className="bg-mint-fresh/20 backdrop-blur-sm border border-mint-fresh/30 text-bottle-green text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                  <span className="bg-sage-green/20 backdrop-blur-sm border border-sage-green/30 text-muted-olive text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
                     <Leaf className="w-4 h-4" />
                     Organic
                   </span>
                 )}
                 {product.isLocallySourced && (
-                  <span className="bg-bottle-green/20 backdrop-blur-sm border border-bottle-green/30 text-bottle-green text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                  <span className="bg-muted-olive/20 backdrop-blur-sm border border-muted-olive/30 text-muted-olive text-sm px-3 py-1 rounded-full font-medium flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
                     Local
                   </span>
@@ -215,7 +215,7 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                     onClick={() => setCurrentImageIndex(index)}
                     className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
                       currentImageIndex === index
-                        ? 'border-bottle-green'
+                        ? 'border-muted-olive'
                         : 'border-transparent'
                     }`}
                   >
@@ -256,12 +256,12 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
             </div>
 
             {/* Price Information */}
-            <div className="mb-6 p-4 bg-mint-fresh/10 rounded-2xl">
+            <div className="mb-6 p-4 bg-sage-green/10 rounded-2xl">
               <h4 className="font-semibold text-text-dark mb-2">Pricing</h4>
               {priceRange ? (
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-bottle-green">
+                    <p className="text-2xl font-bold text-muted-olive">
                       {formatPrice(priceRange.min)} -{' '}
                       {formatPrice(priceRange.max)}
                     </p>
@@ -293,7 +293,7 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'border-bottle-green text-bottle-green'
+                      ? 'border-muted-olive text-muted-olive'
                       : 'border-transparent text-text-muted hover:text-text-dark'
                   }`}
                 >
@@ -378,8 +378,8 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                         </h5>
                         <div className="grid grid-cols-2 gap-4">
                           {product.nutritionalInfo.calories && (
-                            <div className="text-center p-3 bg-mint-fresh/10 rounded-lg">
-                              <p className="text-2xl font-bold text-bottle-green">
+                            <div className="text-center p-3 bg-sage-green/10 rounded-lg">
+                              <p className="text-2xl font-bold text-muted-olive">
                                 {product.nutritionalInfo.calories}
                               </p>
                               <p className="text-text-muted text-sm">
@@ -388,24 +388,24 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                             </div>
                           )}
                           {product.nutritionalInfo.protein && (
-                            <div className="text-center p-3 bg-mint-fresh/10 rounded-lg">
-                              <p className="text-2xl font-bold text-bottle-green">
+                            <div className="text-center p-3 bg-sage-green/10 rounded-lg">
+                              <p className="text-2xl font-bold text-muted-olive">
                                 {product.nutritionalInfo.protein}g
                               </p>
                               <p className="text-text-muted text-sm">Protein</p>
                             </div>
                           )}
                           {product.nutritionalInfo.carbs && (
-                            <div className="text-center p-3 bg-mint-fresh/10 rounded-lg">
-                              <p className="text-2xl font-bold text-bottle-green">
+                            <div className="text-center p-3 bg-sage-green/10 rounded-lg">
+                              <p className="text-2xl font-bold text-muted-olive">
                                 {product.nutritionalInfo.carbs}g
                               </p>
                               <p className="text-text-muted text-sm">Carbs</p>
                             </div>
                           )}
                           {product.nutritionalInfo.fiber && (
-                            <div className="text-center p-3 bg-mint-fresh/10 rounded-lg">
-                              <p className="text-2xl font-bold text-bottle-green">
+                            <div className="text-center p-3 bg-sage-green/10 rounded-lg">
+                              <p className="text-2xl font-bold text-muted-olive">
                                 {product.nutritionalInfo.fiber}g
                               </p>
                               <p className="text-text-muted text-sm">Fiber</p>
@@ -517,7 +517,7 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                                 (condition, index) => (
                                   <span
                                     key={index}
-                                    className="bg-bottle-green/10 text-bottle-green px-3 py-1 rounded-lg text-sm capitalize"
+                                    className="bg-muted-olive/10 text-muted-olive px-3 py-1 rounded-lg text-sm capitalize"
                                   >
                                     {condition}
                                   </span>
@@ -553,7 +553,7 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-lg font-semibold text-bottle-green">
+                              <p className="text-lg font-semibold text-muted-olive">
                                 {formatPrice(
                                   listing.pricing?.[0]?.pricePerUnit
                                 )}
@@ -572,7 +572,7 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                               {listing.availability?.unit}
                             </span>
                             {listing.deliveryOptions?.delivery?.enabled && (
-                              <span className="text-bottle-green flex items-center gap-1">
+                              <span className="text-muted-olive flex items-center gap-1">
                                 <Truck className="w-4 h-4" />
                                 Delivery Available
                               </span>

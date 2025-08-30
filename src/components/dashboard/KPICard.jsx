@@ -41,7 +41,7 @@ const KPICard = ({
   const getTrendStyle = () => {
     switch (trend) {
       case 'up':
-        return 'text-mint-fresh';
+        return 'text-sage-green';
       case 'down':
         return 'text-tomato-red';
       case 'neutral':
@@ -129,10 +129,10 @@ const KPICard = ({
             <div
               className={`h-2 rounded-full transition-all duration-500 ${
                 trend === 'up'
-                  ? 'bg-mint-fresh'
+                  ? 'bg-sage-green'
                   : trend === 'down'
                     ? 'bg-tomato-red'
-                    : 'bg-bottle-green'
+                    : 'bg-muted-olive'
               }`}
               style={{ width: `${Math.min(Math.max(value, 0), 100)}%` }}
             ></div>

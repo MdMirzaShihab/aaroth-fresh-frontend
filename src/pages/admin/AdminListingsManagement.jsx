@@ -263,7 +263,7 @@ const AdminListingsManagement = () => {
     switch (status?.toLowerCase()) {
       case 'active':
         return {
-          className: 'bg-mint-fresh/20 text-bottle-green',
+          className: 'bg-sage-green/20 text-muted-olive',
           icon: CheckCircle,
           text: 'Active',
         };
@@ -305,7 +305,7 @@ const AdminListingsManagement = () => {
             selectedListings.size === listings.length && listings.length > 0
           }
           onChange={handleSelectAll}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       cell: (listing) => (
@@ -313,7 +313,7 @@ const AdminListingsManagement = () => {
           type="checkbox"
           checked={selectedListings.has(listing._id)}
           onChange={() => handleSelectListing(listing._id)}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       width: '48px',
@@ -359,7 +359,7 @@ const AdminListingsManagement = () => {
                 listing.product?.category?.name ||
                 'No Category'}
             </p>
-            <p className="text-xs text-bottle-green truncate">
+            <p className="text-xs text-muted-olive truncate">
               {listing.qualityGrade || 'Standard'}
             </p>
           </div>
@@ -517,7 +517,7 @@ const AdminListingsManagement = () => {
           {/* Status Update Button */}
           <button
             onClick={() => setStatusModal({ isOpen: true, listing })}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+            className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Update status"
           >
             <Settings className="w-4 h-4" />
@@ -538,7 +538,7 @@ const AdminListingsManagement = () => {
 
           <button
             onClick={() => handleViewListing(listing._id)}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+            className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="View listing details"
           >
             <Eye className="w-4 h-4" />
@@ -616,13 +616,13 @@ const AdminListingsManagement = () => {
           )}
           {stats && (
             <>
-              <div className="bg-mint-fresh/10 rounded-xl px-4 py-2">
-                <p className="text-sm text-bottle-green font-medium">
+              <div className="bg-sage-green/10 rounded-xl px-4 py-2">
+                <p className="text-sm text-muted-olive font-medium">
                   {stats.totalListings || totalListings} Total
                 </p>
               </div>
-              <div className="bg-bottle-green/10 rounded-xl px-4 py-2">
-                <p className="text-sm text-bottle-green font-medium">
+              <div className="bg-muted-olive/10 rounded-xl px-4 py-2">
+                <p className="text-sm text-muted-olive font-medium">
                   {stats.activeListings || 0} Active
                 </p>
               </div>
@@ -669,7 +669,7 @@ const AdminListingsManagement = () => {
                 setSelectedCategory(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               <option value="all">All Categories</option>
               {categories.map((category) => (
@@ -685,7 +685,7 @@ const AdminListingsManagement = () => {
                 setSelectedStatus(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -700,7 +700,7 @@ const AdminListingsManagement = () => {
                 setSelectedFeatured(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               <option value="all">All Listings</option>
               <option value="true">Featured Only</option>
@@ -713,7 +713,7 @@ const AdminListingsManagement = () => {
                 setSelectedFlagged(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               <option value="all">All Flags</option>
               <option value="true">Flagged Only</option>
@@ -728,7 +728,7 @@ const AdminListingsManagement = () => {
                 setSortOrder(newSortOrder);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               <option value="createdAt-desc">Newest First</option>
               <option value="createdAt-asc">Oldest First</option>

@@ -75,7 +75,7 @@ const AdminHeader = ({ onMenuClick }) => {
                 lg:hidden p-3 rounded-2xl transition-all duration-200
                 ${isDarkMode 
                   ? 'hover:glass-2-dark text-dark-text-muted hover:text-dark-sage-accent' 
-                  : 'hover:glass-2 text-text-muted hover:text-bottle-green'
+                  : 'hover:glass-2 text-text-muted hover:text-muted-olive'
                 }
               `}
             >
@@ -99,7 +99,7 @@ const AdminHeader = ({ onMenuClick }) => {
               `}
             >
               <Search className={`w-5 h-5 ${searchFocused 
-                ? (isDarkMode ? 'text-dark-sage-accent' : 'text-bottle-green')
+                ? (isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive')
                 : (isDarkMode ? 'text-dark-text-muted' : 'text-text-muted')
               }`} />
               <input
@@ -138,7 +138,7 @@ const AdminHeader = ({ onMenuClick }) => {
                 rounded-2xl transition-all duration-200 hidden md:flex
                 ${isDarkMode 
                   ? 'hover:glass-2-dark text-dark-text-muted hover:text-dark-sage-accent' 
-                  : 'hover:glass-2 text-text-muted hover:text-bottle-green'
+                  : 'hover:glass-2 text-text-muted hover:text-muted-olive'
                 }
               `}
               title="Quick Export Dashboard"
@@ -183,8 +183,8 @@ const AdminHeader = ({ onMenuClick }) => {
                 className={`
                   rounded-2xl transition-all duration-200 relative
                   ${notificationsOpen
-                    ? `${isDarkMode ? 'glass-3-dark text-dark-sage-accent' : 'glass-3 text-bottle-green'}`
-                    : `${isDarkMode ? 'hover:glass-2-dark text-dark-text-muted hover:text-dark-sage-accent' : 'hover:glass-2 text-text-muted hover:text-bottle-green'}`
+                    ? `${isDarkMode ? 'glass-3-dark text-dark-sage-accent' : 'glass-3 text-muted-olive'}`
+                    : `${isDarkMode ? 'hover:glass-2-dark text-dark-text-muted hover:text-dark-sage-accent' : 'hover:glass-2 text-text-muted hover:text-muted-olive'}`
                   }
                 `}
                 title="Notifications"
@@ -229,7 +229,7 @@ const AdminHeader = ({ onMenuClick }) => {
                             <div className={`
                               w-2 h-2 rounded-full mt-2 flex-shrink-0
                               ${notification.type === 'urgent' ? 'bg-tomato-red animate-pulse' : 
-                                notification.type === 'success' ? 'bg-mint-fresh' : 'bg-sage-green'}
+                                notification.type === 'success' ? 'bg-sage-green' : 'bg-sage-green'}
                             `} />
                             <div className="flex-1 min-w-0">
                               <p className={`font-medium text-sm ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
@@ -259,7 +259,7 @@ const AdminHeader = ({ onMenuClick }) => {
                 sm:hidden rounded-2xl transition-all duration-200
                 ${isDarkMode 
                   ? 'hover:glass-2-dark text-dark-text-muted hover:text-dark-sage-accent' 
-                  : 'hover:glass-2 text-text-muted hover:text-bottle-green'
+                  : 'hover:glass-2 text-text-muted hover:text-muted-olive'
                 }
               `}
               title="Search"
@@ -288,10 +288,10 @@ const AdminHeader = ({ onMenuClick }) => {
                   </div>
                 </div>
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh flex items-center justify-center shadow-glow-olive">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-glow-olive">
                     <User className="w-5 h-5 text-white" />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-mint-fresh rounded-full border-2 border-white dark:border-dark-bg flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-sage-green rounded-full border-2 border-white dark:border-dark-bg flex items-center justify-center">
                     <div className="w-2 h-2 bg-white rounded-full" />
                   </div>
                 </div>
@@ -315,7 +315,7 @@ const AdminHeader = ({ onMenuClick }) => {
                 >
                   <div className="p-4">
                     <div className="flex items-center gap-3 pb-3 border-b border-sage-green/20 dark:border-dark-olive-border">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center">
                         <User className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -330,21 +330,21 @@ const AdminHeader = ({ onMenuClick }) => {
                     <div className="py-2 space-y-1">
                       <button className={`
                         w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors
-                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-bottle-green'}
+                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'}
                       `}>
                         <Settings className="w-4 h-4" />
                         <span>Account Settings</span>
                       </button>
                       <button className={`
                         w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors
-                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-bottle-green'}
+                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'}
                       `}>
                         <BarChart3 className="w-4 h-4" />
                         <span>Admin Analytics</span>
                       </button>
                       <button className={`
                         w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors
-                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-bottle-green'}
+                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'}
                       `}>
                         <Shield className="w-4 h-4" />
                         <span>Security</span>

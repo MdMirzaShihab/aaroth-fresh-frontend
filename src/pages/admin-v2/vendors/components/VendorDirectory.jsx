@@ -44,7 +44,7 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
 
   const getVerificationStatusColor = (status) => {
     const colors = {
-      approved: 'text-mint-fresh bg-mint-fresh/10 border-mint-fresh/20',
+      approved: 'text-sage-green bg-sage-green/10 border-sage-green/20',
       pending: 'text-earthy-yellow bg-earthy-yellow/10 border-earthy-yellow/20',
       rejected: 'text-tomato-red bg-tomato-red/10 border-tomato-red/20'
     };
@@ -80,7 +80,7 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
               onChange={(e) => onSelect(vendor.id, e.target.checked)}
               className="w-4 h-4 rounded border-2 border-muted-olive/30 text-muted-olive focus:ring-muted-olive/20"
             />
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                             flex items-center justify-center shadow-lg text-white font-medium">
               <Store className="w-6 h-6" />
             </div>
@@ -131,7 +131,7 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
                         <button
                           onClick={() => onAction(vendor, 'approve_verification')}
                           className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 
-                                     dark:hover:bg-gray-600 transition-colors text-mint-fresh"
+                                     dark:hover:bg-gray-600 transition-colors text-sage-green"
                         >
                           <CheckCircle className="w-4 h-4" />
                           Approve
@@ -171,7 +171,7 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
                   ? 'bg-tomato-red/10 text-tomato-red' 
                   : vendor.riskScore > 40 
                   ? 'bg-earthy-yellow/10 text-earthy-yellow'
-                  : 'bg-mint-fresh/10 text-mint-fresh'
+                  : 'bg-sage-green/10 text-sage-green'
               }`}>
                 Risk: {vendor.riskScore}%
               </span>
@@ -204,8 +204,8 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
         {/* Performance Metrics */}
         <div className="grid grid-cols-4 gap-3 mb-4">
           <div className="text-center">
-            <div className="flex items-center justify-center w-8 h-8 bg-mint-fresh/10 rounded-lg mb-1">
-              <DollarSign className="w-4 h-4 text-mint-fresh" />
+            <div className="flex items-center justify-center w-8 h-8 bg-sage-green/10 rounded-lg mb-1">
+              <DollarSign className="w-4 h-4 text-sage-green" />
             </div>
             <p className="text-xs text-text-muted">Revenue</p>
             <p className="text-sm font-medium text-text-dark dark:text-dark-text-primary">{metrics.revenue}</p>
@@ -271,7 +271,7 @@ const VendorListItem = ({ vendor, isSelected, onSelect, onAction }) => {
         className="w-4 h-4 rounded border-2 border-muted-olive/30 text-muted-olive focus:ring-muted-olive/20"
       />
       
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                       flex items-center justify-center shadow-lg text-white font-medium">
         <Store className="w-5 h-5" />
       </div>
@@ -421,7 +421,7 @@ const VendorDirectory = ({
               onClick={() => setViewMode('cards')}
               className={`p-2 rounded-lg transition-all duration-200 ${
                 viewMode === 'cards'
-                  ? 'bg-white dark:bg-dark-bg text-bottle-green shadow-sm'
+                  ? 'bg-white dark:bg-dark-bg text-muted-olive shadow-sm'
                   : 'text-text-muted hover:text-text-dark dark:hover:text-dark-text-primary'
               }`}
             >
@@ -431,7 +431,7 @@ const VendorDirectory = ({
               onClick={() => setViewMode('list')}
               className={`p-2 rounded-lg transition-all duration-200 ${
                 viewMode === 'list'
-                  ? 'bg-white dark:bg-dark-bg text-bottle-green shadow-sm'
+                  ? 'bg-white dark:bg-dark-bg text-muted-olive shadow-sm'
                   : 'text-text-muted hover:text-text-dark dark:hover:text-dark-text-primary'
               }`}
             >

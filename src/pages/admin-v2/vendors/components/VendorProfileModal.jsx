@@ -342,7 +342,7 @@ const DocumentsSection = ({ vendor }) => {
             </div>
             
             {documents[docType.key]?.verified ? (
-              <CheckCircle className="w-5 h-5 text-mint-fresh" />
+              <CheckCircle className="w-5 h-5 text-sage-green" />
             ) : documents[docType.key]?.provided ? (
               <Clock className="w-5 h-5 text-earthy-yellow" />
             ) : (
@@ -412,8 +412,8 @@ const PerformanceSection = ({ vendor }) => {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-mint-fresh/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-            <DollarSign className="w-6 h-6 text-mint-fresh" />
+          <div className="w-12 h-12 bg-sage-green/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <DollarSign className="w-6 h-6 text-sage-green" />
           </div>
           <p className="text-2xl font-bold text-text-dark">
             ${(metrics.totalRevenue || 0).toLocaleString()}
@@ -457,7 +457,7 @@ const PerformanceSection = ({ vendor }) => {
             <div className="flex items-center gap-2">
               <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-mint-fresh rounded-full"
+                  className="h-full bg-sage-green rounded-full"
                   style={{ width: `${(metrics.rating || 0) * 20}%` }}
                 />
               </div>
@@ -503,7 +503,7 @@ const ActivitySection = ({ vendor }) => {
       message: 'Verification approved',
       timestamp: vendor.verificationDate || '2024-01-15T10:30:00Z',
       icon: CheckCircle,
-      color: 'text-mint-fresh'
+      color: 'text-sage-green'
     },
     {
       id: 2,
@@ -656,7 +656,7 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                             flex items-center justify-center shadow-lg text-white">
               <Building2 className="w-5 h-5" />
             </div>

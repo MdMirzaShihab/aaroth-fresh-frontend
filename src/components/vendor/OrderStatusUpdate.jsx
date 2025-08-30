@@ -80,7 +80,7 @@ const OrderStatusUpdate = ({
       value: 'delivered',
       label: 'Mark as Delivered',
       icon: CheckCircle,
-      color: 'text-bottle-green bg-mint-fresh/20',
+      color: 'text-muted-olive bg-sage-green/20',
       description: 'Order has been successfully delivered to customer',
       estimatedTimeRequired: false,
       nextSteps: [
@@ -273,7 +273,7 @@ const OrderStatusUpdate = ({
                     key={status.value}
                     className={`flex items-start gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
                       selectedStatus === status.value
-                        ? 'border-bottle-green bg-mint-fresh/10'
+                        ? 'border-muted-olive bg-sage-green/10'
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
@@ -307,7 +307,7 @@ const OrderStatusUpdate = ({
                               key={index}
                               className="text-xs text-text-muted flex items-center gap-2"
                             >
-                              <div className="w-1 h-1 bg-bottle-green rounded-full"></div>
+                              <div className="w-1 h-1 bg-muted-olive rounded-full"></div>
                               {step}
                             </div>
                           ))}
@@ -329,7 +329,7 @@ const OrderStatusUpdate = ({
               <select
                 value={estimatedTime}
                 onChange={(e) => setEstimatedTime(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
               >
                 <option value="">Select preparation time...</option>
                 <option value="30 minutes">30 minutes</option>
@@ -360,7 +360,7 @@ const OrderStatusUpdate = ({
                     : 'Add any notes about this status update...'
                 }
                 rows={4}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200 resize-none"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200 resize-none"
                 required={selectedOption?.requiresReason}
               />
             </div>
@@ -396,7 +396,7 @@ const OrderStatusUpdate = ({
             <button
               type="submit"
               disabled={!selectedStatus || isLoading}
-              className="flex-1 px-4 py-3 bg-bottle-green hover:bg-bottle-green/90 text-white rounded-2xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 bg-muted-olive hover:bg-muted-olive/90 text-white rounded-2xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {isLoading ? 'Updating...' : 'Update Status'}

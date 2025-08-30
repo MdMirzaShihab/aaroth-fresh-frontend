@@ -60,7 +60,7 @@ const BUSINESS_TYPES = [
 
 // Status options
 const STATUS_OPTIONS = [
-  { value: 'active', label: 'Active', color: 'text-mint-fresh' },
+  { value: 'active', label: 'Active', color: 'text-sage-green' },
   { value: 'inactive', label: 'Inactive', color: 'text-gray-500' },
   { value: 'suspended', label: 'Suspended', color: 'text-earthy-yellow' },
   { value: 'pending', label: 'Pending', color: 'text-sage-green' }
@@ -68,7 +68,7 @@ const STATUS_OPTIONS = [
 
 // Verification status options
 const VERIFICATION_STATUS_OPTIONS = [
-  { value: 'approved', label: 'Verified', color: 'text-mint-fresh' },
+  { value: 'approved', label: 'Verified', color: 'text-sage-green' },
   { value: 'pending', label: 'Pending Review', color: 'text-earthy-yellow' },
   { value: 'rejected', label: 'Rejected', color: 'text-tomato-red' }
 ];

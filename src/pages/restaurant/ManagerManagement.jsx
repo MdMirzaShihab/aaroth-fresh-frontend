@@ -235,7 +235,7 @@ const ManagerManagement = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      active: 'bg-mint-fresh/20 text-bottle-green border-mint-fresh/30',
+      active: 'bg-sage-green/20 text-muted-olive border-sage-green/30',
       inactive: 'bg-gray-100 text-gray-600 border-gray-200',
       suspended: 'bg-tomato-red/10 text-tomato-red border-tomato-red/30',
     };
@@ -362,7 +362,7 @@ const ManagerManagement = () => {
                 value && (
                   <span
                     key={key}
-                    className="px-2 py-1 bg-mint-fresh/10 text-bottle-green text-xs rounded-lg"
+                    className="px-2 py-1 bg-sage-green/10 text-muted-olive text-xs rounded-lg"
                   >
                     {key
                       .replace(/([A-Z])/g, ' $1')
@@ -382,7 +382,7 @@ const ManagerManagement = () => {
             <span
               className={`px-2 py-1 rounded-lg text-xs font-medium ${
                 manager.isActive
-                  ? 'bg-mint-fresh/20 text-bottle-green'
+                  ? 'bg-sage-green/20 text-muted-olive'
                   : 'bg-gray-100 text-gray-600'
               }`}
             >
@@ -426,7 +426,7 @@ const ManagerManagement = () => {
                       name: e.target.value,
                     }))
                   }
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                   placeholder="Enter full name"
                 />
               </div>
@@ -444,7 +444,7 @@ const ManagerManagement = () => {
                       email: e.target.value,
                     }))
                   }
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                   placeholder="Enter email address"
                 />
               </div>
@@ -462,7 +462,7 @@ const ManagerManagement = () => {
                       phone: e.target.value,
                     }))
                   }
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                   placeholder={phoneInputUtils.placeholder}
                 />
               </div>
@@ -479,7 +479,7 @@ const ManagerManagement = () => {
                       role: e.target.value,
                     }))
                   }
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                 >
                   <option value="restaurantManager">Manager</option>
                 </select>
@@ -502,7 +502,7 @@ const ManagerManagement = () => {
                         password: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                     placeholder="Enter password"
                   />
                 </div>
@@ -520,7 +520,7 @@ const ManagerManagement = () => {
                         confirmPassword: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                     placeholder="Confirm password"
                   />
                 </div>
@@ -556,7 +556,7 @@ const ManagerManagement = () => {
                           },
                         }))
                       }
-                      className="text-bottle-green focus:ring-bottle-green/20 rounded"
+                      className="text-muted-olive focus:ring-muted-olive/20 rounded"
                     />
                     <div>
                       <span className="font-medium text-text-dark">
@@ -692,13 +692,13 @@ const ManagerManagement = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search managers by name or email..."
-              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+            className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>

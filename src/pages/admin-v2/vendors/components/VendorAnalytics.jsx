@@ -54,7 +54,7 @@ const AnalyticsMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return 'text-mint-fresh';
+    if (trend === 'up') return 'text-sage-green';
     if (trend === 'down') return 'text-tomato-red';
     return 'text-text-muted';
   };
@@ -190,7 +190,7 @@ const TopPerformersLeaderboard = ({ vendors = [], metric = 'revenue' }) => {
               #{index + 1}
             </div>
             
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                             flex items-center justify-center shadow-lg text-white font-medium">
               <Building2 className="w-5 h-5" />
             </div>
@@ -346,7 +346,7 @@ const KeyInsights = ({ vendors = [] }) => {
 
   const getTrendColor = (trend) => {
     switch (trend) {
-      case 'positive': return 'text-mint-fresh';
+      case 'positive': return 'text-sage-green';
       case 'warning': return 'text-earthy-yellow';
       case 'negative': return 'text-tomato-red';
       default: return 'text-text-muted';
@@ -355,7 +355,7 @@ const KeyInsights = ({ vendors = [] }) => {
 
   const getTrendBg = (trend) => {
     switch (trend) {
-      case 'positive': return 'bg-mint-fresh/5 border-mint-fresh/20';
+      case 'positive': return 'bg-sage-green/5 border-sage-green/20';
       case 'warning': return 'bg-earthy-yellow/5 border-earthy-yellow/20';
       case 'negative': return 'bg-tomato-red/5 border-tomato-red/20';
       default: return 'bg-gray-50 border-gray-200';
@@ -452,7 +452,7 @@ const VendorAnalytics = ({
                 onClick={() => onDateRangeChange?.(period)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${
                   dateRange === period
-                    ? 'bg-white text-bottle-green shadow-sm'
+                    ? 'bg-white text-muted-olive shadow-sm'
                     : 'text-text-muted hover:text-text-dark'
                 }`}
               >
@@ -476,7 +476,7 @@ const VendorAnalytics = ({
           change={12.5}
           trend="up"
           icon={DollarSign}
-          color="mint-fresh"
+          color="sage-green"
           subtitle="This period"
         />
         <AnalyticsMetricCard

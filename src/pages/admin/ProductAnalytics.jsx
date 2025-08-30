@@ -223,7 +223,7 @@ const ProductAnalytics = () => {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+            className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
           >
             {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -412,7 +412,7 @@ const ProductAnalytics = () => {
               <select
                 value={selectedProductId || ''}
                 onChange={(e) => setSelectedProductId(e.target.value || null)}
-                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               >
                 <option value="">Select a product to analyze</option>
                 {products.map((product) => (

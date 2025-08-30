@@ -175,7 +175,7 @@ const ListingFlagModal = ({
                 : 'Any additional details about the flag...'
             }
             rows={3}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
             maxLength={1000}
           />
           <div className="text-xs text-text-muted mt-1">
@@ -203,7 +203,7 @@ const ListingFlagModal = ({
             isLoading={isLoading}
             className={`${
               isCurrentlyFlagged
-                ? 'bg-bottle-green hover:bg-bottle-green/90'
+                ? 'bg-muted-olive hover:bg-muted-olive/90'
                 : 'bg-tomato-red hover:bg-tomato-red/90'
             } text-white`}
           >

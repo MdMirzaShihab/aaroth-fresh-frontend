@@ -200,7 +200,7 @@ const App = () => {
   // App-level loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-earthy-beige via-white to-sage-green/10">
         <div className="text-center">
           <div className="relative mb-8">
             <img
@@ -208,7 +208,7 @@ const App = () => {
               alt="Aaroth Fresh"
               className="w-24 h-24 mx-auto mb-4 animate-pulse"
             />
-            <div className="w-16 h-16 border-4 border-bottle-green/20 border-t-bottle-green rounded-full animate-spin mx-auto"></div>
+            <div className="w-16 h-16 border-4 border-muted-olive/20 border-t-muted-olive rounded-full animate-spin mx-auto"></div>
           </div>
           <p className="text-text-muted font-medium">Loading Aaroth Fresh...</p>
         </div>

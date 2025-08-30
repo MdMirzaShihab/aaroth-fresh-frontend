@@ -137,7 +137,7 @@ const OwnerManagerRelations = ({
 
   const getManagerStatusBadge = (status) => {
     const badges = {
-      active: { color: 'bg-mint-fresh/10 text-mint-fresh', label: 'Active' },
+      active: { color: 'bg-sage-green/10 text-sage-green', label: 'Active' },
       pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending' },
       suspended: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Suspended' },
       inactive: { color: 'bg-gray-100 text-gray-600', label: 'Inactive' },
@@ -193,7 +193,7 @@ const OwnerManagerRelations = ({
                   onClick={() => setViewMode(mode)}
                   className={`px-3 py-2 rounded-xl transition-all duration-200 text-sm ${
                     viewMode === mode
-                      ? 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-white text-muted-olive shadow-sm'
                       : 'text-text-muted hover:text-text-dark'
                   }`}
                 >
@@ -213,7 +213,7 @@ const OwnerManagerRelations = ({
               <p className="text-text-muted text-sm font-medium">Total Restaurants</p>
               <p className="text-2xl font-bold text-text-dark">{stats.totalRestaurants}</p>
             </div>
-            <Building2 className="w-8 h-8 text-bottle-green" />
+            <Building2 className="w-8 h-8 text-muted-olive" />
           </div>
         </Card>
 
@@ -235,7 +235,7 @@ const OwnerManagerRelations = ({
                 {restaurants.filter(r => r.managersCount > 1).length}
               </p>
             </div>
-            <Users className="w-8 h-8 text-mint-fresh" />
+            <Users className="w-8 h-8 text-sage-green" />
           </div>
         </Card>
 
@@ -336,7 +336,7 @@ const RestaurantRelationCard = ({ restaurant, isSelected, onClick }) => {
       <Card
         className={`p-3 cursor-pointer transition-all duration-200 ${
           isSelected
-            ? 'border-bottle-green bg-bottle-green/5 shadow-md'
+            ? 'border-muted-olive bg-muted-olive/5 shadow-md'
             : 'hover:shadow-sm hover:border-gray-300'
         }`}
         onClick={onClick}
@@ -360,7 +360,7 @@ const RestaurantRelationCard = ({ restaurant, isSelected, onClick }) => {
             </div>
             <div className={`text-xs px-2 py-1 rounded-full mt-1 ${
               restaurant.activeManagers === restaurant.totalManagers
-                ? 'bg-mint-fresh/10 text-mint-fresh'
+                ? 'bg-sage-green/10 text-sage-green'
                 : 'bg-amber-100 text-amber-600'
             }`}>
               {restaurant.activeManagers}/{restaurant.totalManagers} active
@@ -510,9 +510,9 @@ const ManagerHierarchyCard = ({ manager, onManagerAction }) => {
   const RoleIcon = getRoleIcon(manager.role);
 
   return (
-    <Card className={`p-4 ${manager.status === 'active' ? 'border-mint-fresh/30' : 'border-gray-200'}`}>
+    <Card className={`p-4 ${manager.status === 'active' ? 'border-sage-green/30' : 'border-gray-200'}`}>
       <div className="text-center">
-        <div className="w-12 h-12 bg-gradient-to-r from-bottle-green to-mint-fresh rounded-2xl flex items-center justify-center text-white mx-auto mb-3">
+        <div className="w-12 h-12 bg-gradient-to-r from-muted-olive to-sage-green rounded-2xl flex items-center justify-center text-white mx-auto mb-3">
           <RoleIcon className="w-6 h-6" />
         </div>
         <h6 className="font-medium text-text-dark">{manager.name}</h6>
@@ -598,7 +598,7 @@ const ManagerDetailCard = ({ manager, onManagerAction, actionMenuOpen, setAction
     <Card className="p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 flex-1">
-          <div className="w-10 h-10 bg-gradient-to-r from-bottle-green to-mint-fresh rounded-2xl flex items-center justify-center text-white">
+          <div className="w-10 h-10 bg-gradient-to-r from-muted-olive to-sage-green rounded-2xl flex items-center justify-center text-white">
             <RoleIcon className="w-5 h-5" />
           </div>
           <div className="flex-1">
@@ -669,7 +669,7 @@ const ManagerDetailCard = ({ manager, onManagerAction, actionMenuOpen, setAction
                       onManagerAction('activate_manager', { manager });
                       setActionMenuOpen(null);
                     }}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-mint-fresh"
+                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-sage-green"
                   >
                     <CheckCircle className="w-4 h-4" />
                     Activate
@@ -722,7 +722,7 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
             <Card key={manager.id} className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-bottle-green to-mint-fresh rounded-2xl flex items-center justify-center text-white">
+                  <div className="w-10 h-10 bg-gradient-to-r from-muted-olive to-sage-green rounded-2xl flex items-center justify-center text-white">
                     {React.createElement(getRoleIcon(manager.role), { className: "w-5 h-5" })}
                   </div>
                   <div>
@@ -749,13 +749,13 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
                       key={permission.id}
                       className={`p-3 rounded-2xl border ${
                         hasPermission
-                          ? 'border-mint-fresh/30 bg-mint-fresh/5'
+                          ? 'border-sage-green/30 bg-sage-green/5'
                           : 'border-gray-200 bg-gray-50/50'
                       }`}
                     >
                       <div className="flex items-center gap-2">
                         <div className={`w-4 h-4 rounded flex items-center justify-center ${
-                          hasPermission ? 'bg-mint-fresh text-white' : 'bg-gray-300'
+                          hasPermission ? 'bg-sage-green text-white' : 'bg-gray-300'
                         }`}>
                           {hasPermission && <CheckCircle className="w-3 h-3" />}
                         </div>
@@ -887,7 +887,7 @@ const AddManagerForm = ({ data, onChange }) => (
       <select
         value={data.role || 'manager'}
         onChange={(e) => onChange({ ...data, role: e.target.value })}
-        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20"
+        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
       >
         <option value="manager">Manager</option>
         <option value="assistant_manager">Assistant Manager</option>
@@ -934,7 +934,7 @@ const EditPermissionsForm = ({ data, onChange }) => {
               type="checkbox"
               checked={(data.permissions || []).includes(permission.id)}
               onChange={(e) => handlePermissionChange(permission.id, e.target.checked)}
-              className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+              className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
             />
             <span className="text-sm font-medium text-text-dark">
               {permission.label}
@@ -973,7 +973,7 @@ const TransferOwnershipForm = ({ data, onChange }) => (
         onChange={(e) => onChange({ ...data, reason: e.target.value })}
         placeholder="Explain why ownership is being transferred..."
         rows={3}
-        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 resize-none"
+        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
         required
       />
     </FormField>
@@ -983,7 +983,7 @@ const TransferOwnershipForm = ({ data, onChange }) => (
 // Utility functions (moved outside to avoid re-creation)
 const getManagerStatusBadge = (status) => {
   const badges = {
-    active: { color: 'bg-mint-fresh/10 text-mint-fresh', label: 'Active' },
+    active: { color: 'bg-sage-green/10 text-sage-green', label: 'Active' },
     pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending' },
     suspended: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Suspended' },
     inactive: { color: 'bg-gray-100 text-gray-600', label: 'Inactive' },

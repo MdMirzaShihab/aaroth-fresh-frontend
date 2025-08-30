@@ -943,6 +943,20 @@ export const adminApiV2Slice = createApi({
       providesTags: ['SystemSettings'],
       keepUnusedDataFor: 300,
     }),
+
+    // Reset System Settings - Restore defaults
+    resetSystemSettings: builder.mutation({
+      query: ({ category, confirm = false }) => ({
+        url: '/system/settings/reset',
+        method: 'POST',
+        body: {
+          category,
+          confirm,
+          resetTimestamp: new Date().toISOString()
+        },
+      }),
+      invalidatesTags: ['SystemSettings', 'AdminDashboard'],
+    }),
   }),
 });
 
@@ -1029,6 +1043,9 @@ export const {
   useGenerateAnalyticsReportMutation,
   useScheduleAnalyticsReportMutation,
   useGetReportHistoryQuery,
+
+  // System Settings
+  useResetSystemSettingsMutation,
 } = adminApiV2Slice;
 
 export default adminApiV2Slice;

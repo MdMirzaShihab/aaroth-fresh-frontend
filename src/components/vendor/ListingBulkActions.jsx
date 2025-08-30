@@ -137,7 +137,7 @@ const ListingBulkActions = ({
                     quantityAvailable: e.target.value,
                   }))
                 }
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               />
             </FormField>
 
@@ -152,7 +152,7 @@ const ListingBulkActions = ({
                       harvestDate: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                 />
               </FormField>
 
@@ -166,7 +166,7 @@ const ListingBulkActions = ({
                       expiryDate: e.target.value,
                     }))
                   }
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                 />
               </FormField>
             </div>
@@ -276,7 +276,7 @@ const ListingBulkActions = ({
           {/* Selection breakdown */}
           <div className="flex items-center gap-3 text-xs">
             {selectionStats.active > 0 && (
-              <span className="flex items-center gap-1 text-bottle-green">
+              <span className="flex items-center gap-1 text-muted-olive">
                 <CheckCircle className="w-3 h-3" />
                 {selectionStats.active} active
               </span>
@@ -320,7 +320,7 @@ const ListingBulkActions = ({
           size="sm"
           onClick={() => handleBulkStatusUpdate('active')}
           disabled={isUpdating || selectionStats.active === selectedCount}
-          className="flex items-center gap-1 text-bottle-green border-bottle-green/30 hover:bg-bottle-green/10"
+          className="flex items-center gap-1 text-muted-olive border-muted-olive/30 hover:bg-muted-olive/10"
         >
           <CheckCircle className="w-4 h-4" />
           Activate ({selectedCount - selectionStats.active})
@@ -383,7 +383,7 @@ const ListingBulkActions = ({
           <button
             onClick={() => handleBulkStatusUpdate('active')}
             disabled={isUpdating}
-            className="text-xs text-bottle-green hover:underline"
+            className="text-xs text-muted-olive hover:underline"
           >
             Activate all inactive
           </button>

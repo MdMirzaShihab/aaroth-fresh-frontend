@@ -183,7 +183,7 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       const positiveChange = screen.getByText('+16.3%');
-      expect(positiveChange.closest('.bg-mint-fresh\\/20')).toBeInTheDocument();
+      expect(positiveChange.closest('.bg-sage-green\\/20')).toBeInTheDocument();
     });
   });
 

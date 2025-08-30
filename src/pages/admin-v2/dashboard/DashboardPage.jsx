@@ -376,8 +376,8 @@ const DashboardPage = () => {
             ${
               connectionIndicator.color === 'green'
                 ? isDarkMode
-                  ? 'bg-mint-fresh/20 text-mint-fresh'
-                  : 'bg-mint-fresh/10 text-bottle-green'
+                  ? 'bg-sage-green/20 text-sage-green'
+                  : 'bg-sage-green/10 text-muted-olive'
                 : connectionIndicator.color === 'yellow'
                   ? isDarkMode
                     ? 'bg-earthy-yellow/20 text-earthy-yellow'
@@ -394,8 +394,8 @@ const DashboardPage = () => {
               className={`w-2 h-2 rounded-full ${
                 connectionIndicator.status === 'connected'
                   ? isDarkMode
-                    ? 'bg-mint-fresh'
-                    : 'bg-bottle-green'
+                    ? 'bg-sage-green'
+                    : 'bg-muted-olive'
                   : connectionIndicator.status === 'connecting'
                     ? 'bg-earthy-yellow animate-pulse'
                     : connectionIndicator.status === 'fallback'
@@ -419,8 +419,8 @@ const DashboardPage = () => {
                   ${
                     visible
                       ? isDarkMode
-                        ? 'bg-mint-fresh/20 text-mint-fresh'
-                        : 'bg-bottle-green/10 text-bottle-green'
+                        ? 'bg-sage-green/20 text-sage-green'
+                        : 'bg-muted-olive/10 text-muted-olive'
                       : isDarkMode
                         ? 'text-gray-400 hover:text-gray-300'
                         : 'text-gray-600 hover:text-gray-700'
@@ -646,14 +646,14 @@ const DashboardPage = () => {
               className={`w-1.5 h-1.5 rounded-full ${
                 isConnected
                   ? isDarkMode
-                    ? 'bg-mint-fresh'
-                    : 'bg-bottle-green'
+                    ? 'bg-sage-green'
+                    : 'bg-muted-olive'
                   : 'bg-gray-400'
               } animate-pulse`}
             />
             Last updated: {format(lastUpdate, 'HH:mm:ss')}
             {realtimeMetrics.isRealTime && (
-              <span className="ml-2 px-2 py-0.5 bg-mint-fresh/20 text-mint-fresh rounded-full text-xs font-medium">
+              <span className="ml-2 px-2 py-0.5 bg-sage-green/20 text-sage-green rounded-full text-xs font-medium">
                 Real-time
               </span>
             )}

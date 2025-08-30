@@ -214,7 +214,7 @@ const ProductList = () => {
   const getStatusBadge = (status) => {
     const statusMap = {
       active: {
-        className: 'bg-mint-fresh/20 text-bottle-green',
+        className: 'bg-sage-green/20 text-muted-olive',
         icon: CheckCircle,
         text: 'Active',
       },
@@ -251,7 +251,7 @@ const ProductList = () => {
     return (
       <Card
         className={`p-4 hover:shadow-lg transition-all duration-300 ${
-          isSelected ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' : ''
+          isSelected ? 'ring-2 ring-muted-olive/30 bg-muted-olive/5' : ''
         }`}
       >
         {/* Header with selection and actions */}
@@ -260,12 +260,12 @@ const ProductList = () => {
             type="checkbox"
             checked={isSelected}
             onChange={() => onSelect(product.id)}
-            className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green mt-1"
+            className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive mt-1"
           />
           <div className="flex items-center gap-1">
             <button
               onClick={() => onEdit(product.id)}
-              className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               title="Edit product"
             >
               <Edit3 className="w-4 h-4" />
@@ -310,7 +310,7 @@ const ProductList = () => {
               <p className="text-sm text-text-muted">SKU: {product.sku}</p>
             )}
             <div className="flex items-center gap-2 mt-1">
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-bottle-green/20 text-bottle-green">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-muted-olive/20 text-muted-olive">
                 <Tag className="w-3 h-3" />
                 {getCategoryName(product.category)}
               </span>
@@ -354,7 +354,7 @@ const ProductList = () => {
         <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
           <button
             onClick={() => navigate(`/admin/products/${product.id}`)}
-            className="flex-1 px-3 py-2 text-sm border border-gray-200 text-text-muted hover:text-bottle-green hover:border-bottle-green rounded-xl transition-colors min-h-[44px] flex items-center justify-center gap-2"
+            className="flex-1 px-3 py-2 text-sm border border-gray-200 text-text-muted hover:text-muted-olive hover:border-muted-olive rounded-xl transition-colors min-h-[44px] flex items-center justify-center gap-2"
           >
             <Eye className="w-4 h-4" />
             View
@@ -382,7 +382,7 @@ const ProductList = () => {
             selectedProducts.size === products.length && products.length > 0
           }
           onChange={handleSelectAll}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       cell: (product) => (
@@ -390,7 +390,7 @@ const ProductList = () => {
           type="checkbox"
           checked={selectedProducts.has(product.id)}
           onChange={() => handleSelectProduct(product.id)}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       width: '48px',
@@ -400,7 +400,7 @@ const ProductList = () => {
       header: (
         <button
           onClick={() => handleSort('name')}
-          className="flex items-center gap-1 font-medium hover:text-bottle-green"
+          className="flex items-center gap-1 font-medium hover:text-muted-olive"
         >
           Product
           {sortBy === 'name' &&
@@ -442,7 +442,7 @@ const ProductList = () => {
       header: (
         <button
           onClick={() => handleSort('category')}
-          className="flex items-center gap-1 font-medium hover:text-bottle-green"
+          className="flex items-center gap-1 font-medium hover:text-muted-olive"
         >
           Category
           {sortBy === 'category' &&
@@ -454,7 +454,7 @@ const ProductList = () => {
         </button>
       ),
       cell: (product) => (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-bottle-green/20 text-bottle-green">
+        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-muted-olive/20 text-muted-olive">
           <Tag className="w-3 h-3" />
           {getCategoryName(product.category)}
         </span>
@@ -466,7 +466,7 @@ const ProductList = () => {
       header: (
         <button
           onClick={() => handleSort('price')}
-          className="flex items-center gap-1 font-medium hover:text-bottle-green"
+          className="flex items-center gap-1 font-medium hover:text-muted-olive"
         >
           Base Price
           {sortBy === 'price' &&
@@ -507,7 +507,7 @@ const ProductList = () => {
       header: (
         <button
           onClick={() => handleSort('listingsCount')}
-          className="flex items-center gap-1 font-medium hover:text-bottle-green"
+          className="flex items-center gap-1 font-medium hover:text-muted-olive"
         >
           Listings
           {sortBy === 'listingsCount' &&
@@ -539,7 +539,7 @@ const ProductList = () => {
       header: (
         <button
           onClick={() => handleSort('updatedAt')}
-          className="flex items-center gap-1 font-medium hover:text-bottle-green"
+          className="flex items-center gap-1 font-medium hover:text-muted-olive"
         >
           Updated
           {sortBy === 'updatedAt' &&
@@ -566,7 +566,7 @@ const ProductList = () => {
         <div className="flex items-center gap-1">
           <button
             onClick={() => navigate(`/admin/products/${product.id}`)}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+            className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="View product"
           >
             <Eye className="w-4 h-4" />
@@ -574,7 +574,7 @@ const ProductList = () => {
 
           <button
             onClick={() => navigate(`/admin/products/${product.id}/edit`)}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+            className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Edit product"
           >
             <Edit3 className="w-4 h-4" />
@@ -748,8 +748,8 @@ const ProductList = () => {
                   onClick={() => setViewMode('table')}
                   className={`p-2 rounded-xl transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
                     viewMode === 'table'
-                      ? 'bg-bottle-green text-white'
-                      : 'text-text-muted hover:text-bottle-green'
+                      ? 'bg-muted-olive text-white'
+                      : 'text-text-muted hover:text-muted-olive'
                   }`}
                   title="Table view"
                 >
@@ -759,8 +759,8 @@ const ProductList = () => {
                   onClick={() => setViewMode('cards')}
                   className={`p-2 rounded-xl transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
                     viewMode === 'cards'
-                      ? 'bg-bottle-green text-white'
-                      : 'text-text-muted hover:text-bottle-green'
+                      ? 'bg-muted-olive text-white'
+                      : 'text-text-muted hover:text-muted-olive'
                   }`}
                   title="Card view"
                 >
@@ -776,7 +776,7 @@ const ProductList = () => {
                 <Filter className="w-4 h-4" />
                 <span className="hidden sm:inline">Filters</span>
                 {(selectedCategory !== 'all' || selectedStatus !== 'all') && (
-                  <span className="w-2 h-2 bg-bottle-green rounded-full" />
+                  <span className="w-2 h-2 bg-muted-olive rounded-full" />
                 )}
               </Button>
             </div>
@@ -796,7 +796,7 @@ const ProductList = () => {
                     setSelectedCategory(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                 >
                   <option value="all">All Categories</option>
                   {categories.map((category) => (
@@ -818,7 +818,7 @@ const ProductList = () => {
                     setSelectedStatus(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                 >
                   {statusOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -837,7 +837,7 @@ const ProductList = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                    className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                   >
                     {sortOptions.map((option) => (
                       <option key={option.value} value={option.value}>

@@ -47,7 +47,7 @@ const SLAMetricCard = ({
   change, 
   trend, 
   icon: Icon, 
-  color = 'mint-fresh',
+  color = 'sage-green',
   subtitle,
   onClick,
   isLoading = false,
@@ -62,7 +62,7 @@ const SLAMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -71,9 +71,9 @@ const SLAMetricCard = ({
     switch (status) {
       case 'compliant':
         return {
-          bg: isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20',
+          bg: isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20',
           icon: CheckCircle,
-          iconColor: 'text-mint-fresh',
+          iconColor: 'text-sage-green',
         };
       case 'warning':
         return {
@@ -260,7 +260,7 @@ const SLAViolationItem = ({ violation, onAction, onResolve }) => {
               variant="outline"
               size="sm"
               onClick={() => onResolve(violation)}
-              className="text-xs text-mint-fresh border-mint-fresh/30 hover:bg-mint-fresh/10"
+              className="text-xs text-sage-green border-sage-green/30 hover:bg-sage-green/10"
             >
               <CheckCircle className="w-3 h-3 mr-1" />
               Resolve
@@ -302,7 +302,7 @@ const SLAMonitoring = ({
       current: metrics.uptimeSLA || 99.94,
       unit: '%',
       icon: Server,
-      color: 'mint-fresh',
+      color: 'sage-green',
       status: (metrics.uptimeSLA || 99.94) >= 99.9 ? 'compliant' : (metrics.uptimeSLA || 99.94) >= 99.5 ? 'warning' : 'violation',
       change: 0.02,
       trend: 'up',
@@ -362,7 +362,7 @@ const SLAMonitoring = ({
       current: 99.6,
       unit: '%',
       icon: Target,
-      color: 'bottle-green',
+      color: 'muted-olive',
       status: 99.6 >= 99.0 ? 'compliant' : 99.6 >= 98.0 ? 'warning' : 'violation',
       change: 0.3,
       trend: 'up',
@@ -572,8 +572,8 @@ const SLAMonitoring = ({
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
                   ${chartView === view.id
                     ? isDarkMode 
-                      ? 'bg-mint-fresh/20 text-mint-fresh'
-                      : 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-sage-green/20 text-sage-green'
+                      : 'bg-white text-muted-olive shadow-sm'
                     : isDarkMode
                       ? 'text-gray-400 hover:text-gray-300'
                       : 'text-text-muted hover:text-text-dark'
@@ -601,7 +601,7 @@ const SLAMonitoring = ({
       {/* SLA Health Overview */}
       <Card className={`p-6 ${
         slaHealth.status === 'excellent' 
-          ? isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20'
+          ? isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
           : slaHealth.status === 'good'
             ? isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
             : slaHealth.status === 'fair'
@@ -613,7 +613,7 @@ const SLAMonitoring = ({
             <div className={`
               w-12 h-12 rounded-xl flex items-center justify-center
               ${slaHealth.status === 'excellent' 
-                ? isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10'
+                ? isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10'
                 : slaHealth.status === 'good'
                   ? isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10'
                   : slaHealth.status === 'fair'
@@ -622,7 +622,7 @@ const SLAMonitoring = ({
               }
             `}>
               <Shield className={`w-6 h-6 ${
-                slaHealth.status === 'excellent' ? 'text-mint-fresh' :
+                slaHealth.status === 'excellent' ? 'text-sage-green' :
                 slaHealth.status === 'good' ? 'text-sage-green' :
                 slaHealth.status === 'fair' ? 'text-earthy-yellow' :
                 'text-tomato-red'
@@ -778,9 +778,9 @@ const SLAMonitoring = ({
           ) : (
             <div className={`
               flex items-center gap-3 p-6 rounded-xl text-center
-              ${isDarkMode ? 'bg-mint-fresh/5 border border-mint-fresh/20' : 'bg-mint-fresh/5 border border-mint-fresh/20'}
+              ${isDarkMode ? 'bg-sage-green/5 border border-sage-green/20' : 'bg-sage-green/5 border border-sage-green/20'}
             `}>
-              <CheckCircle className="w-6 h-6 text-mint-fresh mx-auto" />
+              <CheckCircle className="w-6 h-6 text-sage-green mx-auto" />
               <div>
                 <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                   All SLAs Compliant
@@ -825,7 +825,7 @@ const SLAMonitoring = ({
                 </div>
                 <div className={`
                   w-3 h-3 rounded-full ${
-                    sla.status === 'compliant' ? 'bg-mint-fresh' :
+                    sla.status === 'compliant' ? 'bg-sage-green' :
                     sla.status === 'warning' ? 'bg-earthy-yellow' :
                     'bg-tomato-red'
                   }
@@ -846,7 +846,7 @@ const SLAMonitoring = ({
                     Current
                   </span>
                   <span className={`font-medium ${
-                    sla.status === 'compliant' ? 'text-mint-fresh' :
+                    sla.status === 'compliant' ? 'text-sage-green' :
                     sla.status === 'warning' ? 'text-earthy-yellow' :
                     'text-tomato-red'
                   }`}>
@@ -858,7 +858,7 @@ const SLAMonitoring = ({
                 <div className={`h-1.5 rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
                   <div 
                     className={`h-full rounded-full transition-all duration-500 ${
-                      sla.status === 'compliant' ? 'bg-mint-fresh' :
+                      sla.status === 'compliant' ? 'bg-sage-green' :
                       sla.status === 'warning' ? 'bg-earthy-yellow' :
                       'bg-tomato-red'
                     }`}

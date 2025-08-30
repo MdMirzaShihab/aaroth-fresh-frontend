@@ -307,7 +307,7 @@ const CreateListing = () => {
                 {...register('productId', {
                   required: 'Please select a product',
                 })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
               >
                 <option value="">Choose a product...</option>
                 {products.map((product) => (
@@ -327,7 +327,7 @@ const CreateListing = () => {
                 {...register('qualityGrade', {
                   required: 'Please select quality grade',
                 })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
               >
                 {qualityGradeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -349,7 +349,7 @@ const CreateListing = () => {
                   })}
                   rows="4"
                   placeholder="Describe your product quality, freshness, origin, and any special features..."
-                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 resize-none"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 resize-none"
                 />
               </FormField>
             </div>
@@ -404,7 +404,7 @@ const CreateListing = () => {
                         },
                       })}
                       placeholder="0.00"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                     />
                   </FormField>
 
@@ -417,7 +417,7 @@ const CreateListing = () => {
                       {...register(`pricing.${index}.unit`, {
                         required: 'Unit is required',
                       })}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
                     >
                       {unitOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -442,7 +442,7 @@ const CreateListing = () => {
                           `pricing.${index}.bulkDiscount.minQuantity`
                         )}
                         placeholder="10"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                       />
                     </FormField>
 
@@ -455,7 +455,7 @@ const CreateListing = () => {
                           `pricing.${index}.bulkDiscount.discountPercentage`
                         )}
                         placeholder="5.0"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                       />
                     </FormField>
                   </div>
@@ -501,7 +501,7 @@ const CreateListing = () => {
                   min: { value: 0, message: 'Quantity must be 0 or greater' },
                 })}
                 placeholder="100"
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               />
             </FormField>
 
@@ -512,7 +512,7 @@ const CreateListing = () => {
               <input
                 type="date"
                 {...register('availability.harvestDate')}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               />
             </FormField>
 
@@ -523,7 +523,7 @@ const CreateListing = () => {
               <input
                 type="date"
                 {...register('availability.expiryDate')}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               />
             </FormField>
           </div>
@@ -542,7 +542,7 @@ const CreateListing = () => {
               multiple
               maxFiles={5}
               onFilesSelected={handleImageUpload}
-              className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-bottle-green transition-colors"
+              className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-muted-olive transition-colors"
             />
 
             {uploadedImages.length > 0 && (
@@ -612,7 +612,7 @@ const CreateListing = () => {
                       {...register(`deliveryOptions.${index}.type`, {
                         required: 'Type is required',
                       })}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
                     >
                       <option value="pickup">Pickup</option>
                       <option value="delivery">Delivery</option>
@@ -628,7 +628,7 @@ const CreateListing = () => {
                         min: { value: 0, message: 'Cost must be 0 or greater' },
                       })}
                       placeholder="0.00"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                     />
                   </FormField>
 
@@ -639,7 +639,7 @@ const CreateListing = () => {
                         required: 'Time range is required',
                       })}
                       placeholder="2-4 hours"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                     />
                   </FormField>
                 </div>
@@ -678,14 +678,14 @@ const CreateListing = () => {
                 step="0.01"
                 {...register('minimumOrderValue')}
                 placeholder="250.00"
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               />
             </FormField>
 
             <FormField label="Lead Time">
               <select
                 {...register('leadTime')}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
               >
                 <option value="immediate">Immediate</option>
                 <option value="30 minutes">30 minutes</option>
@@ -708,7 +708,7 @@ const CreateListing = () => {
                         type="checkbox"
                         value={option.value}
                         {...register('certifications')}
-                        className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                        className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                       />
                       <span className="text-sm text-text-dark">
                         {option.label}

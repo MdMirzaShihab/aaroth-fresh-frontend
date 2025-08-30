@@ -77,7 +77,7 @@ const QuickVerificationAction = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-4">
-        <Loader2 className="w-5 h-5 animate-spin text-bottle-green" />
+        <Loader2 className="w-5 h-5 animate-spin text-muted-olive" />
         <span className="ml-2 text-sm text-text-muted">Processing...</span>
       </div>
     );

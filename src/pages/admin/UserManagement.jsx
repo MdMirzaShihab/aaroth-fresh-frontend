@@ -238,7 +238,7 @@ const UserManagement = () => {
     switch (status?.toLowerCase()) {
       case 'active':
         return {
-          className: 'bg-mint-fresh/20 text-bottle-green',
+          className: 'bg-sage-green/20 text-muted-olive',
           icon: CheckCircle,
           text: 'Active',
         };
@@ -284,7 +284,7 @@ const UserManagement = () => {
           type="checkbox"
           checked={selectedUsers.size === users.length && users.length > 0}
           onChange={handleSelectAll}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       cell: (user) => (
@@ -292,7 +292,7 @@ const UserManagement = () => {
           type="checkbox"
           checked={selectedUsers.has(user.id)}
           onChange={() => handleSelectUser(user.id)}
-          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
         />
       ),
       width: '48px',
@@ -379,7 +379,7 @@ const UserManagement = () => {
                     onConfirm: () => handleApproval(user.id, true),
                   })
                 }
-                className="p-2 text-bottle-green hover:bg-mint-fresh/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+                className="p-2 text-muted-olive hover:bg-sage-green/20 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
                 title="Approve user"
               >
                 <UserCheck className="w-4 h-4" />
@@ -407,7 +407,7 @@ const UserManagement = () => {
             onClick={() => {
               /* Handle edit */
             }}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
+            className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Edit user"
           >
             <Edit3 className="w-4 h-4" />
@@ -491,7 +491,7 @@ const UserManagement = () => {
                   onConfirm: handleBulkApprove,
                 })
               }
-              className="text-bottle-green border-bottle-green hover:bg-bottle-green hover:text-white"
+              className="text-muted-olive border-muted-olive hover:bg-muted-olive hover:text-white"
             >
               Bulk Approve
             </Button>
@@ -553,7 +553,7 @@ const UserManagement = () => {
                 setSelectedRole(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               {roleOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -568,7 +568,7 @@ const UserManagement = () => {
                 setSelectedStatus(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20 min-h-[44px]"
+              className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-h-[44px]"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>

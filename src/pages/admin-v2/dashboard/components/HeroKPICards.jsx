@@ -80,9 +80,9 @@ const HeroKPICards = ({
       },
       green: {
         iconBg: isDarkMode 
-          ? 'bg-mint-fresh/20 border border-mint-fresh/30' 
-          : 'bg-mint-fresh/10 border border-mint-fresh/20',
-        iconColor: isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+          ? 'bg-sage-green/20 border border-sage-green/30' 
+          : 'bg-sage-green/10 border border-sage-green/20',
+        iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive'
       },
       amber: {
         iconBg: isDarkMode 
@@ -109,7 +109,7 @@ const HeroKPICards = ({
     return {
       Icon: TrendIcon,
       color: isPositive 
-        ? (isDarkMode ? 'text-mint-fresh' : 'text-bottle-green')
+        ? (isDarkMode ? 'text-sage-green' : 'text-muted-olive')
         : 'text-tomato-red',
       prefix: isPositive ? '+' : '',
       value: Math.abs(change)
@@ -182,7 +182,7 @@ const HeroKPICards = ({
               {realTimeEnabled && (
                 <div className="absolute top-4 right-4">
                   <div className={`w-2 h-2 rounded-full ${
-                    isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green'
+                    isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'
                   } animate-pulse`} />
                 </div>
               )}
@@ -260,8 +260,8 @@ const HeroKPICards = ({
                       ${kpi.urgent 
                         ? 'bg-tomato-red' 
                         : isDarkMode 
-                          ? 'bg-mint-fresh' 
-                          : 'bg-bottle-green'
+                          ? 'bg-sage-green' 
+                          : 'bg-muted-olive'
                       }
                     `}
                   />
@@ -277,7 +277,7 @@ const HeroKPICards = ({
                     Updated {kpi.lastUpdated}
                   </span>
                   {kpi.verified && (
-                    <CheckCircle className="w-3 h-3 text-mint-fresh" />
+                    <CheckCircle className="w-3 h-3 text-sage-green" />
                   )}
                 </div>
               )}

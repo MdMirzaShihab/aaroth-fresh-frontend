@@ -25,11 +25,11 @@ import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import { format, subDays, subMonths } from 'date-fns';
 
 // Metric card component
-const MetricCard = ({ title, value, change, changeType, icon: IconComponent, color = 'bottle-green' }) => {
+const MetricCard = ({ title, value, change, changeType, icon: IconComponent, color = 'muted-olive' }) => {
   const { isDarkMode } = useTheme();
   
   const getChangeColor = (type) => {
-    if (type === 'positive') return 'text-mint-fresh';
+    if (type === 'positive') return 'text-sage-green';
     if (type === 'negative') return 'text-tomato-red';
     return isDarkMode ? 'text-dark-text-muted' : 'text-text-muted';
   };
@@ -231,7 +231,7 @@ const GeographicDistribution = ({ data, loading }) => {
       {mockGeoData.map((location, index) => (
         <div key={location.country} className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full bg-bottle-green`} style={{ opacity: 1 - index * 0.2 }} />
+            <div className={`w-3 h-3 rounded-full bg-muted-olive`} style={{ opacity: 1 - index * 0.2 }} />
             <span className={`font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
               {location.country}
             </span>
@@ -306,7 +306,7 @@ const UserAnalytics = ({ data, loading = false }) => {
           change="+12.3% from last month"
           changeType="positive"
           icon={Users}
-          color="bottle-green"
+          color="muted-olive"
         />
         
         <MetricCard
@@ -315,7 +315,7 @@ const UserAnalytics = ({ data, loading = false }) => {
           change="+8.7% from last month"
           changeType="positive"
           icon={UserCheck}
-          color="mint-fresh"
+          color="sage-green"
         />
         
         <MetricCard
@@ -350,7 +350,7 @@ const UserAnalytics = ({ data, loading = false }) => {
                 New user registrations over time
               </p>
             </div>
-            <Calendar className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <Calendar className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           </div>
           <SimpleLineChart data={analyticsData.registrationTrend} />
         </Card>
@@ -366,13 +366,13 @@ const UserAnalytics = ({ data, loading = false }) => {
                 User distribution by role
               </p>
             </div>
-            <PieChart className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <PieChart className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <SimplePieChart data={analyticsData.roleDistribution} />
             <div className="space-y-3">
               {analyticsData.roleDistribution.map((role, index) => {
-                const colors = ['bottle-green', 'earthy-yellow', 'tomato-red', 'muted-olive'];
+                const colors = ['muted-olive', 'earthy-yellow', 'tomato-red', 'muted-olive'];
                 return (
                   <div key={role.role} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -407,12 +407,12 @@ const UserAnalytics = ({ data, loading = false }) => {
                 User verification breakdown
               </p>
             </div>
-            <UserCheck className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <UserCheck className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-mint-fresh" />
+                <div className="w-3 h-3 rounded-full bg-sage-green" />
                 <span className={`text-sm ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>Approved</span>
               </div>
               <span className={`font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
@@ -451,7 +451,7 @@ const UserAnalytics = ({ data, loading = false }) => {
                 Top user locations
               </p>
             </div>
-            <MapPin className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <MapPin className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           </div>
           <GeographicDistribution data={null} loading={false} />
         </Card>
@@ -467,14 +467,14 @@ const UserAnalytics = ({ data, loading = false }) => {
                 User engagement & retention
               </p>
             </div>
-            <Activity className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <Activity className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           </div>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className={`text-sm ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
                 Retention Rate
               </span>
-              <span className={`font-semibold text-mint-fresh`}>
+              <span className={`font-semibold text-sage-green`}>
                 {analyticsData.retentionRate}%
               </span>
             </div>

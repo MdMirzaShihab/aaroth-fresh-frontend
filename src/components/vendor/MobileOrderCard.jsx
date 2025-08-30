@@ -52,7 +52,7 @@ const MobileOrderCard = ({
       label: 'Shipped',
     },
     delivered: {
-      color: 'text-bottle-green bg-mint-fresh/20',
+      color: 'text-muted-olive bg-sage-green/20',
       icon: CheckCircle,
       label: 'Delivered',
     },
@@ -112,7 +112,7 @@ const MobileOrderCard = ({
       {/* Main Card */}
       <div
         className={`bg-white rounded-2xl shadow-soft p-4 mb-3 transition-all duration-200 touch-manipulation ${
-          isSelected ? 'ring-2 ring-bottle-green/30 bg-mint-fresh/5' : ''
+          isSelected ? 'ring-2 ring-muted-olive/30 bg-sage-green/5' : ''
         }`}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -134,8 +134,8 @@ const MobileOrderCard = ({
                 <div
                   className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                     isSelected
-                      ? 'bg-bottle-green border-bottle-green'
-                      : 'border-gray-300 hover:border-bottle-green'
+                      ? 'bg-muted-olive border-muted-olive'
+                      : 'border-gray-300 hover:border-muted-olive'
                   }`}
                 >
                   {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
@@ -261,7 +261,7 @@ const MobileOrderCard = ({
             e.stopPropagation();
             setShowDetails(!showDetails);
           }}
-          className="w-full mt-3 py-2 text-sm text-bottle-green font-medium hover:bg-bottle-green/5 rounded-xl transition-colors touch-target"
+          className="w-full mt-3 py-2 text-sm text-muted-olive font-medium hover:bg-muted-olive/5 rounded-xl transition-colors touch-target"
         >
           {showDetails ? 'Show Less' : 'Show Details'}
         </button>
@@ -302,7 +302,7 @@ const MobileOrderCard = ({
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 rounded-xl transition-colors touch-target"
                 >
-                  <CheckCircle className="w-4 h-4 text-bottle-green" />
+                  <CheckCircle className="w-4 h-4 text-muted-olive" />
                   <span className="text-sm font-medium text-text-dark">
                     Update Status
                   </span>

@@ -39,9 +39,9 @@ const StatusBadge = ({
         approved: {
           label: 'Approved',
           icon: CheckCircle,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         rejected: {
           label: 'Rejected',
@@ -64,9 +64,9 @@ const StatusBadge = ({
         active: {
           label: 'Active',
           icon: User,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         inactive: {
           label: 'Inactive',
@@ -96,9 +96,9 @@ const StatusBadge = ({
         compliant: {
           label: 'Compliant',
           icon: CheckCircle,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         minor_issues: {
           label: 'Minor Issues',
@@ -121,9 +121,9 @@ const StatusBadge = ({
         low: {
           label: 'Low',
           icon: Clock,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         medium: {
           label: 'Medium',
@@ -154,9 +154,9 @@ const StatusBadge = ({
         low: {
           label: 'Low Risk',
           icon: Shield,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         medium: {
           label: 'Medium Risk',
@@ -200,16 +200,16 @@ const StatusBadge = ({
         ready: {
           label: 'Ready',
           icon: Package,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         delivered: {
           label: 'Delivered',
           icon: CheckCircle,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         cancelled: {
           label: 'Cancelled',
@@ -225,9 +225,9 @@ const StatusBadge = ({
         excellent: {
           label: 'Excellent',
           icon: TrendingUp,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         good: {
           label: 'Good',
@@ -257,9 +257,9 @@ const StatusBadge = ({
         success: {
           label: 'Success',
           icon: CheckCircle,
-          classes: 'bg-mint-fresh/10 text-bottle-green border-mint-fresh/20',
+          classes: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
           darkClasses:
-            'dark:bg-mint-fresh/20 dark:text-mint-fresh dark:border-mint-fresh/30',
+            'dark:bg-sage-green/20 dark:text-sage-green dark:border-sage-green/30',
         },
         warning: {
           label: 'Warning',

@@ -95,7 +95,7 @@ const VerificationPendingScreen = () => {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-white/50">
             <h3 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
               <svg
-                className="w-5 h-5 text-bottle-green"
+                className="w-5 h-5 text-muted-olive"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -112,7 +112,7 @@ const VerificationPendingScreen = () => {
             <ul className="space-y-3 text-left">
               {nextSteps.map((step, index) => (
                 <li key={index} className="flex items-start gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-bottle-green/10 text-bottle-green rounded-full flex items-center justify-center text-sm font-medium">
+                  <span className="flex-shrink-0 w-6 h-6 bg-muted-olive/10 text-muted-olive rounded-full flex items-center justify-center text-sm font-medium">
                     {index + 1}
                   </span>
                   <span className="text-text-dark leading-relaxed">{step}</span>
@@ -158,7 +158,7 @@ const VerificationPendingScreen = () => {
               (window.location.href =
                 'mailto:admin@aarothfresh.com?subject=Verification Status Inquiry')
             }
-            className="border-2 border-bottle-green/30 text-bottle-green hover:bg-bottle-green/5 px-8 py-3 rounded-2xl font-medium transition-all duration-300 min-h-[44px] flex items-center gap-2"
+            className="border-2 border-muted-olive/30 text-muted-olive hover:bg-muted-olive/5 px-8 py-3 rounded-2xl font-medium transition-all duration-300 min-h-[44px] flex items-center gap-2"
           >
             <Mail className="w-4 h-4" />
             Contact Support

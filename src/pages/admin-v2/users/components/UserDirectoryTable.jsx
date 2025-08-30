@@ -51,7 +51,7 @@ const UserAvatar = ({ user, size = 'sm' }) => {
   const getRoleColor = (role) => {
     const colors = {
       admin: 'bg-gradient-to-br from-tomato-red via-earthy-yellow to-earthy-brown',
-      vendor: 'bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh',
+      vendor: 'bg-gradient-to-br from-muted-olive via-sage-green to-sage-green',
       restaurantOwner: 'bg-gradient-to-br from-earthy-brown via-dusty-cedar to-earthy-tan',
       restaurantManager: 'bg-gradient-to-br from-muted-olive via-sage-green to-dusty-cedar'
     };
@@ -69,7 +69,7 @@ const UserAvatar = ({ user, size = 'sm' }) => {
 const RoleBadge = ({ role, className = '' }) => {
   const roleConfig = {
     admin: { label: 'Admin', color: 'tomato-red', icon: Shield },
-    vendor: { label: 'Vendor', color: 'bottle-green', icon: Store },
+    vendor: { label: 'Vendor', color: 'muted-olive', icon: Store },
     restaurantOwner: { label: 'Owner', color: 'earthy-brown', icon: Utensils },
     restaurantManager: { label: 'Manager', color: 'muted-olive', icon: Users }
   };
@@ -88,7 +88,7 @@ const RoleBadge = ({ role, className = '' }) => {
 // Risk score indicator
 const RiskScore = ({ score, className = '' }) => {
   const getRiskLevel = (score) => {
-    if (score <= 30) return { level: 'Low', color: 'mint-fresh', bgColor: 'mint-fresh/10' };
+    if (score <= 30) return { level: 'Low', color: 'sage-green', bgColor: 'sage-green/10' };
     if (score <= 60) return { level: 'Medium', color: 'earthy-yellow', bgColor: 'earthy-yellow/10' };
     return { level: 'High', color: 'tomato-red', bgColor: 'tomato-red/10' };
   };
@@ -140,7 +140,7 @@ const UserActions = ({ user, onAction }) => {
     { id: 'view_profile', label: 'View Profile', icon: Eye },
     { id: 'edit_profile', label: 'Edit Profile', icon: Edit3 },
     ...(user.status === 'pending_approval' ? [
-      { id: 'approve', label: 'Approve User', icon: UserCheck, color: 'text-mint-fresh' },
+      { id: 'approve', label: 'Approve User', icon: UserCheck, color: 'text-sage-green' },
       { id: 'reject', label: 'Reject User', icon: UserX, color: 'text-tomato-red' }
     ] : []),
     { id: 'deactivate', label: user.isActive ? 'Deactivate' : 'Activate', icon: user.isActive ? UserX : UserCheck }
@@ -217,15 +217,6 @@ const UserDirectoryTable = memo(({
     render: { trackPerformance: true, componentName: 'UserDirectoryTable' },
   });
 
-  // Table performance optimization
-  const tablePerformance = useTablePerformance({
-    data: users,
-    columns: columns, // Use columns defined below
-    enableVirtualScrolling: users.length > 50, // Enable for large datasets
-    rowHeight: isMobile ? 120 : 80,
-    containerHeight: 600,
-  });
-
   // Column configuration
   const columns = [
     {
@@ -296,6 +287,15 @@ const UserDirectoryTable = memo(({
       )
     }
   ];
+
+  // Table performance optimization
+  const tablePerformance = useTablePerformance({
+    data: users,
+    columns: columns,
+    enableVirtualScrolling: users.length > 50, // Enable for large datasets
+    rowHeight: isMobile ? 120 : 80,
+    containerHeight: 600,
+  });
 
   // Handle sort
   const handleSort = (field) => {
@@ -401,7 +401,7 @@ const UserDirectoryTable = memo(({
                     type="checkbox"
                     checked={selectedUsers.length === users.length && users.length > 0}
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
+                    className="rounded border-gray-300 text-muted-olive focus:ring-muted-olive"
                   />
                 </th>
                 {columns.map((column) => (
@@ -409,7 +409,7 @@ const UserDirectoryTable = memo(({
                     {column.sortable ? (
                       <button
                         onClick={() => handleSort(column.key)}
-                        className="flex items-center gap-2 text-sm font-medium text-text-dark dark:text-dark-text-primary hover:text-bottle-green transition-colors"
+                        className="flex items-center gap-2 text-sm font-medium text-text-dark dark:text-dark-text-primary hover:text-muted-olive transition-colors"
                       >
                         {column.label}
                         {renderSortIcon(column.key)}
@@ -440,7 +440,7 @@ const UserDirectoryTable = memo(({
                       type="checkbox"
                       checked={selectedUsers.includes(user.id)}
                       onChange={(e) => handleUserSelect(user.id, e.target.checked)}
-                      className={`rounded border-gray-300 text-bottle-green focus:ring-bottle-green ${getFocusClasses()}`}
+                      className={`rounded border-gray-300 text-muted-olive focus:ring-muted-olive ${getFocusClasses()}`}
                       {...getAriaProps({ label: `Select user ${user.name}` })}
                     />
                   </td>
@@ -476,7 +476,7 @@ const UserDirectoryTable = memo(({
                     type="checkbox"
                     checked={selectedUsers.includes(user.id)}
                     onChange={(e) => handleUserSelect(user.id, e.target.checked)}
-                    className={`rounded border-gray-300 text-bottle-green focus:ring-bottle-green ${getFocusClasses()} touch-target`}
+                    className={`rounded border-gray-300 text-muted-olive focus:ring-muted-olive ${getFocusClasses()} touch-target`}
                     {...getAriaProps({ label: `Select user ${user.name}` })}
                   />
                   <UserAvatar user={user} size="md" />

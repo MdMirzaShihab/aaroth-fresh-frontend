@@ -56,17 +56,17 @@ const Homepage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 py-20 px-4">
+      <section className="relative bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <div className="mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-bottle-green font-medium mb-6">
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-muted-olive font-medium mb-6">
               <Leaf className="w-4 h-4" />
               Fresh • Local • Organic
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-text-dark mb-6">
               Fresh Vegetables
               <br />
-              <span className="text-bottle-green">Direct from Farms</span>
+              <span className="text-muted-olive">Direct from Farms</span>
             </h1>
             <p className="text-xl text-text-muted mb-8 max-w-2xl mx-auto">
               Connect with local vegetable vendors and get the freshest produce
@@ -84,7 +84,7 @@ const Homepage = () => {
             </Link>
             <Link
               to="/products"
-              className="bg-white border border-gray-200 text-text-dark px-8 py-4 rounded-2xl font-semibold hover:border-bottle-green/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
+              className="bg-white border border-gray-200 text-text-dark px-8 py-4 rounded-2xl font-semibold hover:border-muted-olive/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
             >
               Browse Products
             </Link>
@@ -107,8 +107,8 @@ const Homepage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="glass rounded-3xl p-8 text-center hover:shadow-soft transition-all duration-200">
-              <div className="w-16 h-16 bg-mint-fresh/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Leaf className="w-8 h-8 text-bottle-green" />
+              <div className="w-16 h-16 bg-sage-green/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Leaf className="w-8 h-8 text-muted-olive" />
               </div>
               <h3 className="text-xl font-semibold text-text-dark mb-4">
                 Farm Fresh
@@ -133,7 +133,7 @@ const Homepage = () => {
 
             <div className="glass rounded-3xl p-8 text-center hover:shadow-soft transition-all duration-200">
               <div className="w-16 h-16 bg-gradient-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <ShoppingCart className="w-8 h-8 text-bottle-green" />
+                <ShoppingCart className="w-8 h-8 text-muted-olive" />
               </div>
               <h3 className="text-xl font-semibold text-text-dark mb-4">
                 Easy Ordering
@@ -177,7 +177,7 @@ const Homepage = () => {
                   key={product.id}
                   className="overflow-hidden hover:shadow-lg transition-all duration-200"
                 >
-                  <div className="aspect-video bg-gradient-to-br from-mint-fresh/20 to-bottle-green/20 rounded-t-2xl relative overflow-hidden">
+                  <div className="aspect-video bg-gradient-to-br from-sage-green/20 to-muted-olive/20 rounded-t-2xl relative overflow-hidden">
                     {product.images && product.images.length > 0 ? (
                       <img
                         src={product.images[0]}
@@ -204,7 +204,7 @@ const Homepage = () => {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-bottle-green">
+                        <span className="text-lg font-bold text-muted-olive">
                           {product.averagePrice
                             ? `৳${product.averagePrice.toFixed(2)}`
                             : 'Price on request'}
@@ -218,7 +218,7 @@ const Homepage = () => {
                           {product.vendorName}
                         </div>
                         {product.qualityGrade && (
-                          <div className="text-xs text-bottle-green mt-1">
+                          <div className="text-xs text-muted-olive mt-1">
                             {product.qualityGrade}
                           </div>
                         )}
@@ -239,7 +239,7 @@ const Homepage = () => {
 
       {/* Categories Preview Section */}
       {categories.length > 0 && (
-        <section className="py-20 px-4 bg-gradient-to-br from-mint-fresh/5 to-earthy-beige/20">
+        <section className="py-20 px-4 bg-gradient-to-br from-sage-green/5 to-earthy-beige/20">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-text-dark mb-4">
@@ -273,7 +273,7 @@ const Homepage = () => {
             <div className="text-center mt-12">
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 text-bottle-green hover:text-bottle-green/80 font-medium transition-colors"
+                className="inline-flex items-center gap-2 text-muted-olive hover:text-muted-olive/80 font-medium transition-colors"
               >
                 View All Categories
                 <ArrowRight className="w-4 h-4" />
@@ -300,7 +300,7 @@ const Homepage = () => {
               <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-white" />
               </div>
-              <div className="text-4xl font-bold text-bottle-green mb-2">
+              <div className="text-4xl font-bold text-muted-olive mb-2">
                 {categories.length > 0
                   ? categories.reduce(
                       (total, cat) => total + (cat.productCount || 0),
@@ -314,16 +314,16 @@ const Homepage = () => {
               <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <ShoppingCart className="w-8 h-8 text-white" />
               </div>
-              <div className="text-4xl font-bold text-bottle-green mb-2">
+              <div className="text-4xl font-bold text-muted-olive mb-2">
                 500+
               </div>
               <div className="text-text-muted">Restaurants</div>
             </div>
             <div className="glass rounded-3xl p-8">
-              <div className="w-16 h-16 bg-mint-fresh/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-bottle-green" />
+              <div className="w-16 h-16 bg-sage-green/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-8 h-8 text-muted-olive" />
               </div>
-              <div className="text-4xl font-bold text-bottle-green mb-2">
+              <div className="text-4xl font-bold text-muted-olive mb-2">
                 10k+
               </div>
               <div className="text-text-muted">Orders Delivered</div>
@@ -332,7 +332,7 @@ const Homepage = () => {
               <div className="w-16 h-16 bg-earthy-yellow/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Star className="w-8 h-8 text-earthy-brown" />
               </div>
-              <div className="text-4xl font-bold text-bottle-green mb-2">
+              <div className="text-4xl font-bold text-muted-olive mb-2">
                 4.8
               </div>
               <div className="text-text-muted flex items-center justify-center gap-1">

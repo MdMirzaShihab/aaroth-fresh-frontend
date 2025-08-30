@@ -79,7 +79,7 @@ const EntityCard = ({
             <EntityIcon className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-text-dark group-hover:text-bottle-green transition-colors duration-200">
+            <h3 className="text-lg font-semibold text-text-dark group-hover:text-muted-olive transition-colors duration-200">
               {getEntityName()}
             </h3>
             <p className="text-sm text-text-muted capitalize">
@@ -167,7 +167,7 @@ const EntityCard = ({
           {onViewDetails && (
             <button
               onClick={() => onViewDetails(entity)}
-              className="flex-1 px-4 py-2 text-sm text-bottle-green hover:bg-bottle-green/5 rounded-xl font-medium transition-all duration-200 min-h-[40px] flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 text-sm text-muted-olive hover:bg-muted-olive/5 rounded-xl font-medium transition-all duration-200 min-h-[40px] flex items-center justify-center gap-2"
             >
               <User className="w-4 h-4" />
               View Details

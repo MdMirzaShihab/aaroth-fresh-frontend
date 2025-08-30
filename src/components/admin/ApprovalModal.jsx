@@ -154,7 +154,7 @@ const ApprovalModal = ({
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${
                       isApproved
-                        ? 'bg-mint-fresh/20 text-bottle-green'
+                        ? 'bg-sage-green/20 text-muted-olive'
                         : isRejected
                           ? 'bg-tomato-red/20 text-tomato-red'
                           : statusUpdatedAt
@@ -406,12 +406,12 @@ const ApprovalModal = ({
                 <div className="space-y-4">
                   {/* Current Verification Status */}
                   {(isApproved || isRejected || statusUpdatedAt) && (
-                    <div className="border-l-4 border-l-bottle-green pl-4 py-2">
+                    <div className="border-l-4 border-l-muted-olive pl-4 py-2">
                       <div className="flex items-center gap-2 mb-2">
                         {isApproved ? (
                           <>
-                            <ShieldCheck className="w-5 h-5 text-bottle-green" />
-                            <span className="font-medium text-bottle-green">
+                            <ShieldCheck className="w-5 h-5 text-muted-olive" />
+                            <span className="font-medium text-muted-olive">
                               Business Verified
                             </span>
                           </>
@@ -494,7 +494,7 @@ const ApprovalModal = ({
                 {!actionType && (
                   <div className="flex gap-3">
                     <Button
-                      className="flex-1 bg-bottle-green hover:bg-bottle-green/90"
+                      className="flex-1 bg-muted-olive hover:bg-muted-olive/90"
                       onClick={() => setActionType('approve')}
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
@@ -514,7 +514,7 @@ const ApprovalModal = ({
                 {/* Approval Form */}
                 {actionType === 'approve' && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-bottle-green">
+                    <div className="flex items-center gap-2 text-muted-olive">
                       <CheckCircle className="w-5 h-5" />
                       <span className="font-medium">Approve Application</span>
                     </div>
@@ -525,13 +525,13 @@ const ApprovalModal = ({
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder="Please provide notes about the approval (visible to the applicant)..."
                         rows={4}
-                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                       />
                     </FormField>
 
                     <div className="flex gap-3">
                       <Button
-                        className="flex-1 bg-bottle-green hover:bg-bottle-green/90"
+                        className="flex-1 bg-muted-olive hover:bg-muted-olive/90"
                         onClick={handleApprove}
                         disabled={isLoading || !notes.trim()}
                       >

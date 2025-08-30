@@ -184,7 +184,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
         title: 'Order Completion',
         status: ORDER_WORKFLOW_STATES.DELIVERED,
         icon: CheckCircle,
-        color: 'text-bottle-green bg-mint-fresh/20',
+        color: 'text-muted-olive bg-sage-green/20',
         estimatedTime: '5 minutes',
         steps: [
           {
@@ -365,7 +365,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bottle-green"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-muted-olive"></div>
       </div>
     );
   }
@@ -377,7 +377,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
         <p className="text-text-muted mb-4">Failed to load workflow</p>
         <button
           onClick={() => refetch()}
-          className="text-bottle-green hover:text-bottle-green/80 font-medium"
+          className="text-muted-olive hover:text-muted-olive/80 font-medium"
         >
           Try again
         </button>
@@ -410,7 +410,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
               {!workflowTimer ? (
                 <button
                   onClick={() => handleTimer('start')}
-                  className="p-2 bg-bottle-green text-white rounded-xl hover:opacity-90 transition-opacity"
+                  className="p-2 bg-muted-olive text-white rounded-xl hover:opacity-90 transition-opacity"
                 >
                   <Play className="w-4 h-4" />
                 </button>
@@ -447,7 +447,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                   <div
                     className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 ${
                       isCompleted
-                        ? 'bg-bottle-green text-white'
+                        ? 'bg-muted-olive text-white'
                         : isCurrent
                           ? stage.color
                           : 'bg-gray-100 text-text-muted'
@@ -472,7 +472,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                 {index < workflowStages.length - 1 && (
                   <div
                     className={`flex-1 h-0.5 mx-4 ${
-                      isCompleted ? 'bg-bottle-green' : 'bg-gray-200'
+                      isCompleted ? 'bg-muted-olive' : 'bg-gray-200'
                     }`}
                   ></div>
                 )}
@@ -498,7 +498,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
           {getNextLogicalStatus(currentStatus) && (
             <button
               onClick={handleAdvanceStatus}
-              className="flex items-center gap-2 px-4 py-2 bg-bottle-green hover:bg-bottle-green/90 text-white rounded-2xl font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-muted-olive hover:bg-muted-olive/90 text-white rounded-2xl font-medium transition-colors"
             >
               Advance to {getNextLogicalStatus(currentStatus)}
               <ChevronRight className="w-4 h-4" />
@@ -523,7 +523,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                     className="mt-1 flex-shrink-0"
                   >
                     {isCompleted ? (
-                      <CheckCircle className="w-5 h-5 text-bottle-green" />
+                      <CheckCircle className="w-5 h-5 text-muted-olive" />
                     ) : (
                       <Circle className="w-5 h-5 text-text-muted" />
                     )}
@@ -561,7 +561,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
                           }
                           placeholder="Add notes for this step..."
                           rows={2}
-                          className="w-full px-3 py-2 bg-gray-50 border-0 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200 resize-none text-sm"
+                          className="w-full px-3 py-2 bg-gray-50 border-0 rounded-xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200 resize-none text-sm"
                         />
                       </div>
                     )}
@@ -594,7 +594,7 @@ const OrderWorkflow = ({ orderId, currentStatus, onStatusChange }) => {
       {/* Workflow Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl shadow-soft p-4 text-center">
-          <div className="text-2xl font-bold text-bottle-green mb-1">
+          <div className="text-2xl font-bold text-muted-olive mb-1">
             {workflowSteps.filter((s) => s.completed).length}
           </div>
           <div className="text-sm text-text-muted">Steps Completed</div>

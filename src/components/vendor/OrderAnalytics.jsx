@@ -155,7 +155,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3">
-          <RefreshCw className="w-6 h-6 animate-spin text-bottle-green" />
+          <RefreshCw className="w-6 h-6 animate-spin text-muted-olive" />
           <span className="text-lg font-medium text-text-dark">
             Loading analytics...
           </span>
@@ -176,7 +176,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         </p>
         <button
           onClick={() => refetch()}
-          className="bg-bottle-green text-white px-6 py-3 rounded-2xl font-medium hover:opacity-90 transition-opacity"
+          className="bg-muted-olive text-white px-6 py-3 rounded-2xl font-medium hover:opacity-90 transition-opacity"
         >
           Retry
         </button>
@@ -202,7 +202,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
           <select
             value={timeRange}
             onChange={(e) => onTimeRangeChange?.(e.target.value)}
-            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200"
+            className="px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
           >
             {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -242,7 +242,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <span
               className={`text-sm font-medium px-2 py-1 rounded-xl ${
                 (analytics.orderVolumeChange || 0) >= 0
-                  ? 'text-bottle-green bg-mint-fresh/20'
+                  ? 'text-muted-olive bg-sage-green/20'
                   : 'text-tomato-red bg-tomato-red/20'
               }`}
             >
@@ -259,13 +259,13 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
         {/* Revenue */}
         <div className="bg-gradient-card p-6 rounded-3xl shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-bottle-green/20 rounded-2xl">
-              <DollarSign className="w-6 h-6 text-bottle-green" />
+            <div className="p-3 bg-muted-olive/20 rounded-2xl">
+              <DollarSign className="w-6 h-6 text-muted-olive" />
             </div>
             <span
               className={`text-sm font-medium px-2 py-1 rounded-xl ${
                 (analytics.revenueChange || 0) >= 0
-                  ? 'text-bottle-green bg-mint-fresh/20'
+                  ? 'text-muted-olive bg-sage-green/20'
                   : 'text-tomato-red bg-tomato-red/20'
               }`}
             >
@@ -288,7 +288,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <span
               className={`text-sm font-medium px-2 py-1 rounded-xl ${
                 (analytics.aovChange || 0) >= 0
-                  ? 'text-bottle-green bg-mint-fresh/20'
+                  ? 'text-muted-olive bg-sage-green/20'
                   : 'text-tomato-red bg-tomato-red/20'
               }`}
             >
@@ -311,7 +311,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <span
               className={`text-sm font-medium px-2 py-1 rounded-xl ${
                 (analytics.ratingChange || 0) >= 0
-                  ? 'text-bottle-green bg-mint-fresh/20'
+                  ? 'text-muted-olive bg-sage-green/20'
                   : 'text-tomato-red bg-tomato-red/20'
               }`}
             >
@@ -393,7 +393,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
                     confirmed: 'bg-blue-500',
                     prepared: 'bg-purple-500',
                     shipped: 'bg-indigo-500',
-                    delivered: 'bg-bottle-green',
+                    delivered: 'bg-muted-olive',
                     cancelled: 'bg-tomato-red',
                   };
 
@@ -439,7 +439,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
               {insights.map((insight, index) => {
                 const Icon = insight.icon;
                 const colors = {
-                  positive: 'text-bottle-green bg-mint-fresh/20',
+                  positive: 'text-muted-olive bg-sage-green/20',
                   negative: 'text-tomato-red bg-tomato-red/20',
                   warning: 'text-orange-600 bg-orange-50',
                 };
@@ -484,7 +484,7 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
             <div className="space-y-4">
               {analytics.topProducts.slice(0, 5).map((product, index) => (
                 <div key={product.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-bottle-green text-white rounded-xl flex items-center justify-center text-sm font-bold">
+                  <div className="w-8 h-8 bg-muted-olive text-white rounded-xl flex items-center justify-center text-sm font-bold">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -554,8 +554,8 @@ const OrderAnalytics = ({ timeRange = '30d', onTimeRangeChange }) => {
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-mint-fresh/40 rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <CalendarDays className="w-8 h-8 text-bottle-green" />
+            <div className="w-16 h-16 bg-sage-green/40 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <CalendarDays className="w-8 h-8 text-muted-olive" />
             </div>
             <div className="text-2xl font-bold text-text-dark mb-1">
               {analytics.ordersPerDay || 0}

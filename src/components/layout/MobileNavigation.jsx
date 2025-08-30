@@ -58,8 +58,8 @@ const MobileNavigation = () => {
               onClick={() => handleNavigation(item.path)}
               className={`flex flex-col items-center justify-center min-h-[64px] min-w-[56px] px-2 py-2 rounded-xl transition-all duration-200 group ${
                 isActive
-                  ? 'bg-bottle-green/10 text-bottle-green'
-                  : 'text-text-muted hover:text-bottle-green hover:bg-bottle-green/5'
+                  ? 'bg-muted-olive/10 text-muted-olive'
+                  : 'text-text-muted hover:text-muted-olive hover:bg-muted-olive/5'
               }`}
               aria-label={`${item.label}${badgeCount ? ` (${badgeCount})` : ''}`}
             >
@@ -74,8 +74,8 @@ const MobileNavigation = () => {
                 <item.icon
                   className={`w-6 h-6 ${
                     isActive
-                      ? 'text-bottle-green'
-                      : 'text-text-muted group-hover:text-bottle-green'
+                      ? 'text-muted-olive'
+                      : 'text-text-muted group-hover:text-muted-olive'
                   }`}
                 />
 
@@ -88,7 +88,7 @@ const MobileNavigation = () => {
 
                 {/* Active Indicator Dot (only if no badge) */}
                 {isActive && !badgeCount && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-bottle-green rounded-full animate-scale-in" />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-muted-olive rounded-full animate-scale-in" />
                 )}
               </div>
 
@@ -96,8 +96,8 @@ const MobileNavigation = () => {
               <span
                 className={`text-xs font-medium transition-colors duration-200 text-center leading-tight max-w-[60px] truncate ${
                   isActive
-                    ? 'text-bottle-green'
-                    : 'text-text-muted group-hover:text-bottle-green'
+                    ? 'text-muted-olive'
+                    : 'text-text-muted group-hover:text-muted-olive'
                 }`}
               >
                 {item.label}
@@ -105,7 +105,7 @@ const MobileNavigation = () => {
 
               {/* Active Bar */}
               {isActive && (
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-bottle-green rounded-full animate-fade-in" />
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-muted-olive rounded-full animate-fade-in" />
               )}
             </button>
           );

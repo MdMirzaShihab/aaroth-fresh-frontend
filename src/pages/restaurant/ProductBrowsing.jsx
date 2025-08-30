@@ -202,7 +202,7 @@ const ProductBrowsing = () => {
 
   const getAvailabilityColor = (availability) => {
     const colors = {
-      'in-stock': 'bg-mint-fresh/20 text-bottle-green dark:text-green-400',
+      'in-stock': 'bg-sage-green/20 text-muted-olive dark:text-green-400',
       'low-stock': 'bg-amber-100 text-amber-800',
       'out-of-stock': 'bg-tomato-red/10 text-tomato-red',
     };
@@ -295,14 +295,14 @@ const ProductBrowsing = () => {
         }}
         className={`glass rounded-3xl p-4 hover:shadow-soft transition-all duration-200 cursor-pointer group relative ${
           bulkMode && isSelected
-            ? 'ring-2 ring-bottle-green bg-bottle-green/5'
+            ? 'ring-2 ring-muted-olive bg-muted-olive/5'
             : ''
         } ${bulkMode && isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
         data-testid="product-card"
       >
         {/* Product Image */}
         <div className="relative mb-4">
-          <div className="aspect-square bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-2xl overflow-hidden">
+          <div className="aspect-square bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-2xl overflow-hidden">
             {product.images && product.images[0] ? (
               <img
                 src={product.images[0]}
@@ -332,7 +332,7 @@ const ProductBrowsing = () => {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
                   isSelected
-                    ? 'bg-bottle-green text-white'
+                    ? 'bg-muted-olive text-white'
                     : 'bg-white/90 backdrop-blur-sm border-2 border-gray-300'
                 } ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}
                 onClick={(e) => {
@@ -463,7 +463,7 @@ const ProductBrowsing = () => {
         className="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-soft transition-all duration-200 cursor-pointer group"
       >
         {/* Product Image */}
-        <div className="w-20 h-20 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
+        <div className="w-20 h-20 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl overflow-hidden flex-shrink-0">
           {product.images && product.images[0] ? (
             <img
               src={product.images[0]}
@@ -561,7 +561,7 @@ const ProductBrowsing = () => {
               type="text"
               placeholder="Search fresh vegetables..."
               onChange={handleSearchChange}
-              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
             />
           </div>
 
@@ -571,7 +571,7 @@ const ProductBrowsing = () => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
             >
               <option value="">All Categories</option>
               {categories && categories.length > 0 ? (
@@ -594,7 +594,7 @@ const ProductBrowsing = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
             >
               <option value="relevance">Relevance</option>
               <option value="price-low">Price: Low to High</option>
@@ -608,8 +608,8 @@ const ProductBrowsing = () => {
               onClick={() => setShowFilters(!showFilters)}
               className={`p-3 rounded-2xl border transition-all duration-200 touch-target ${
                 showFilters
-                  ? 'bg-bottle-green text-white border-bottle-green dark:bg-green-600 dark:border-green-600'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:border-green-500/30'
+                  ? 'bg-muted-olive text-white border-muted-olive dark:bg-green-600 dark:border-green-600'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-muted-olive/30 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:border-green-500/30'
               }`}
             >
               <Filter className="w-5 h-5" />
@@ -621,8 +621,8 @@ const ProductBrowsing = () => {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
                   viewMode === 'grid'
-                    ? 'bg-white shadow-sm text-bottle-green dark:text-green-400'
-                    : 'text-gray-600 hover:text-bottle-green dark:text-gray-300 dark:hover:text-green-400'
+                    ? 'bg-white shadow-sm text-muted-olive dark:text-green-400'
+                    : 'text-gray-600 hover:text-muted-olive dark:text-gray-300 dark:hover:text-green-400'
                 }`}
               >
                 <Grid3X3 className="w-4 h-4" />
@@ -631,8 +631,8 @@ const ProductBrowsing = () => {
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-xl transition-all duration-200 ${
                   viewMode === 'list'
-                    ? 'bg-white shadow-sm text-bottle-green dark:text-green-400'
-                    : 'text-gray-600 hover:text-bottle-green dark:text-gray-300 dark:hover:text-green-400'
+                    ? 'bg-white shadow-sm text-muted-olive dark:text-green-400'
+                    : 'text-gray-600 hover:text-muted-olive dark:text-gray-300 dark:hover:text-green-400'
                 }`}
               >
                 <List className="w-4 h-4" />
@@ -644,8 +644,8 @@ const ProductBrowsing = () => {
               onClick={handleToggleBulkMode}
               className={`p-3 rounded-2xl border transition-all duration-200 touch-target flex items-center gap-2 ${
                 bulkMode
-                  ? 'bg-bottle-green text-white border-bottle-green'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30'
+                  ? 'bg-muted-olive text-white border-muted-olive'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-muted-olive/30'
               }`}
             >
               <Package className="w-5 h-5" />
@@ -674,7 +674,7 @@ const ProductBrowsing = () => {
                     }))
                   }
                   placeholder="0"
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                 />
               </div>
               <div>
@@ -691,7 +691,7 @@ const ProductBrowsing = () => {
                     }))
                   }
                   placeholder="1000"
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                 />
               </div>
               <div>
@@ -708,7 +708,7 @@ const ProductBrowsing = () => {
                     }))
                   }
                   placeholder="Near me"
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                 />
               </div>
               <div>
@@ -720,7 +720,7 @@ const ProductBrowsing = () => {
                   onChange={(e) =>
                     setFilters((prev) => ({ ...prev, rating: e.target.value }))
                   }
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                 >
                   <option value="">Any Rating</option>
                   <option value="4">4+ Stars</option>
@@ -756,7 +756,7 @@ const ProductBrowsing = () => {
               {listings.length > 0 && (
                 <button
                   onClick={handleSelectAll}
-                  className="text-sm text-bottle-green hover:text-bottle-green/80 font-medium"
+                  className="text-sm text-muted-olive hover:text-muted-olive/80 font-medium"
                 >
                   Select All Available
                 </button>

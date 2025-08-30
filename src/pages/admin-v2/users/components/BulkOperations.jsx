@@ -58,7 +58,7 @@ const ProgressIndicator = ({
           {isRunning ? (
             <LoadingSpinner size="sm" />
           ) : completed === total ? (
-            <CheckCircle className="w-5 h-5 text-mint-fresh" />
+            <CheckCircle className="w-5 h-5 text-sage-green" />
           ) : (
             <Clock className="w-5 h-5 text-earthy-yellow" />
           )}
@@ -89,11 +89,11 @@ const ProgressIndicator = ({
         <ProgressBar 
           value={percentage} 
           className="h-2"
-          color={failed > 0 ? 'earthy-yellow' : 'mint-fresh'}
+          color={failed > 0 ? 'earthy-yellow' : 'sage-green'}
         />
 
         <div className="flex justify-between text-xs">
-          <span className="text-mint-fresh">
+          <span className="text-sage-green">
             ✓ {completed - failed} successful
           </span>
           {failed > 0 && (
@@ -208,7 +208,7 @@ const BulkConfirmationDialog = ({
             </div>
           )}
 
-          <div className={`p-3 rounded-lg ${operation.color === 'red' ? 'bg-tomato-red/10 text-tomato-red' : operation.color === 'orange' ? 'bg-earthy-yellow/10 text-earthy-yellow' : 'bg-mint-fresh/10 text-mint-fresh'}`}>
+          <div className={`p-3 rounded-lg ${operation.color === 'red' ? 'bg-tomato-red/10 text-tomato-red' : operation.color === 'orange' ? 'bg-earthy-yellow/10 text-earthy-yellow' : 'bg-sage-green/10 text-sage-green'}`}>
             <p className="text-sm font-medium">
               ⚠️ This action cannot be undone for certain operations. Please review carefully.
             </p>
@@ -341,14 +341,14 @@ const BulkOperations = ({
           <div 
             className={`
               px-6 py-4 cursor-pointer select-none
-              ${isDarkMode ? 'bg-dark-sage-accent/10 hover:bg-dark-sage-accent/20' : 'bg-bottle-green/10 hover:bg-bottle-green/20'}
+              ${isDarkMode ? 'bg-dark-sage-accent/10 hover:bg-dark-sage-accent/20' : 'bg-muted-olive/10 hover:bg-muted-olive/20'}
               transition-colors
             `}
             onClick={() => setIsExpanded(!isExpanded)}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Users className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+                <Users className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
                 <div>
                   <h3 className={`font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
                     Bulk Operations
@@ -435,9 +435,9 @@ const BulkOperations = ({
                         className={`
                           flex flex-col items-center gap-2 h-auto py-3 px-2
                           ${action.color === 'red' ? 'hover:border-tomato-red hover:text-tomato-red' :
-                            action.color === 'green' ? 'hover:border-mint-fresh hover:text-mint-fresh' :
+                            action.color === 'green' ? 'hover:border-sage-green hover:text-sage-green' :
                             action.color === 'orange' ? 'hover:border-earthy-yellow hover:text-earthy-yellow' :
-                            'hover:border-bottle-green hover:text-bottle-green'
+                            'hover:border-muted-olive hover:text-muted-olive'
                           }
                         `}
                       >

@@ -47,7 +47,7 @@ const CategoryUsageModal = ({ isOpen, onClose, category }) => {
       onClose={onClose}
       title={
         <div className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-bottle-green" />
+          <BarChart3 className="w-5 h-5 text-muted-olive" />
           <span>Category Usage Statistics</span>
         </div>
       }

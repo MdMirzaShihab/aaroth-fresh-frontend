@@ -120,12 +120,12 @@ const FilterPanel = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-          <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-bottle-green flex-shrink-0" />
+          <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-muted-olive flex-shrink-0" />
           <h3 className="text-base sm:text-lg font-semibold text-text-dark dark:text-white truncate">
             Filters
           </h3>
           {activeFilterCount > 0 && (
-            <span className="bg-bottle-green text-white text-xs px-2 py-1 rounded-full flex-shrink-0">
+            <span className="bg-muted-olive text-white text-xs px-2 py-1 rounded-full flex-shrink-0">
               {activeFilterCount}
             </span>
           )}
@@ -136,7 +136,7 @@ const FilterPanel = ({
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 touch-target"
               title="Reset all filters"
             >
               <RotateCcw className="w-4 h-4 text-text-muted dark:text-gray-300" />
@@ -146,7 +146,7 @@ const FilterPanel = ({
           {/* Expand/Collapse */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 touch-target"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 touch-target"
           >
             <ChevronDown
               className={`w-4 h-4 text-text-muted dark:text-gray-300 transition-transform duration-200 ${
@@ -177,7 +177,7 @@ const FilterPanel = ({
                   updateFilter('search', e.target.value);
                 }}
                 placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20 transition-all text-sm touch-target"
+                className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 transition-all text-sm touch-target"
               />
             </div>
           </div>
@@ -195,7 +195,7 @@ const FilterPanel = ({
                 onClick={() => handleDateRangeChange(option.value)}
                 className={`px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 touch-target ${
                   filters.dateRange?.type === option.value
-                    ? 'bg-bottle-green text-white'
+                    ? 'bg-muted-olive text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-text-dark dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500'
                 }`}
               >
@@ -214,7 +214,7 @@ const FilterPanel = ({
             <select
               value={filters.category || ''}
               onChange={(e) => updateFilter('category', e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20 transition-all"
+              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 transition-all"
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
@@ -235,7 +235,7 @@ const FilterPanel = ({
             <select
               value={filters.vendor || ''}
               onChange={(e) => updateFilter('vendor', e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20 transition-all"
+              className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 transition-all"
             >
               <option value="">All Vendors</option>
               {vendors.map((vendor) => (
@@ -266,7 +266,7 @@ const FilterPanel = ({
                   }}
                   className={`px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                     (filters.status || []).includes(status.value)
-                      ? 'bg-bottle-green text-white'
+                      ? 'bg-muted-olive text-white'
                       : 'bg-gray-100 dark:bg-gray-700 text-text-dark dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -292,7 +292,7 @@ const FilterPanel = ({
                   placeholder="Min price"
                   min={priceRange.min}
                   max={priceRange.max}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20 transition-all"
+                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 transition-all"
                 />
               </div>
               <div>
@@ -303,7 +303,7 @@ const FilterPanel = ({
                   placeholder="Max price"
                   min={priceRange.min}
                   max={priceRange.max}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20 transition-all"
+                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 transition-all"
                 />
               </div>
             </div>
@@ -320,7 +320,7 @@ const FilterPanel = ({
               <select
                 value={filters[filter.key] || ''}
                 onChange={(e) => updateFilter(filter.key, e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20 transition-all"
+                className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 transition-all"
               >
                 <option value="">All {filter.label}</option>
                 {filter.options.map((option) => (
@@ -335,7 +335,7 @@ const FilterPanel = ({
                 value={filters[filter.key] || ''}
                 onChange={(e) => updateFilter(filter.key, e.target.value)}
                 placeholder={filter.placeholder}
-                className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-bottle-green focus:ring-2 focus:ring-bottle-green/20 transition-all"
+                className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 transition-all"
               />
             )}
           </div>
@@ -360,14 +360,14 @@ const FilterPanel = ({
               return (
                 <span
                   key={key}
-                  className="inline-flex items-center gap-1 bg-bottle-green/10 dark:bg-bottle-green/20 text-bottle-green dark:text-mint-fresh px-3 py-1 rounded-full text-sm font-medium"
+                  className="inline-flex items-center gap-1 bg-muted-olive/10 dark:bg-muted-olive/20 text-muted-olive dark:text-sage-green px-3 py-1 rounded-full text-sm font-medium"
                 >
                   {key}: {displayValue}
                   <button
                     onClick={() =>
                       updateFilter(key, Array.isArray(value) ? [] : '')
                     }
-                    className="hover:bg-bottle-green/20 dark:hover:bg-bottle-green/30 rounded-full p-0.5"
+                    className="hover:bg-muted-olive/20 dark:hover:bg-muted-olive/30 rounded-full p-0.5"
                   >
                     <X className="w-3 h-3" />
                   </button>

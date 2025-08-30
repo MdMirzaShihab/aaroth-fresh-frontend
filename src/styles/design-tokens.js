@@ -165,11 +165,11 @@ export const components = {
   // Button Patterns
   button: {
     primary:
-      'bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-glow-green hover:-translate-y-0.5 min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-bottle-green/20',
+      'bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-glow-olive hover:-translate-y-0.5 min-h-[44px] border-0 focus:outline-none focus:ring-2 focus:ring-muted-olive/20',
     secondary:
       'bg-glass backdrop-blur-sm border border-white/20 text-text-dark px-8 py-4 rounded-2xl font-medium transition-all duration-300 hover:bg-white/10 hover:border-white/30 min-h-[44px]',
     ghost:
-      'text-bottle-green hover:text-bottle-green/80 px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:bg-bottle-green/5 min-h-[44px]',
+      'text-muted-olive hover:text-muted-olive/80 px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:bg-muted-olive/5 min-h-[44px]',
     danger:
       'bg-tomato-red/90 hover:bg-tomato-red text-white px-8 py-4 rounded-2xl font-medium transition-all duration-300 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-tomato-red/20',
   },
@@ -194,7 +194,7 @@ export const components = {
   // Layout Patterns
   layout: {
     container: 'container mx-auto px-6 sm:px-8 lg:px-12 max-w-7xl',
-    hero: 'min-h-screen flex items-center justify-center bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10',
+    hero: 'min-h-screen flex items-center justify-center bg-gradient-to-br from-earthy-beige via-white to-sage-green/10',
     section: 'py-16 px-6',
   },
 };

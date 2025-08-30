@@ -386,7 +386,7 @@ const ProductCatalog = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-mint-fresh/20 to-bottle-green/10">
+      <div className="bg-gradient-to-br from-sage-green/20 to-muted-olive/10">
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-text-dark mb-6">
@@ -406,7 +406,7 @@ const ProductCatalog = () => {
                   <input
                     type="text"
                     placeholder="Search for products, vendors, or categories..."
-                    className="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                    className="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -416,7 +416,7 @@ const ProductCatalog = () => {
                   <select
                     value={selectedCategory}
                     onChange={(e) => handleCategoryChange(e.target.value)}
-                    className="w-full px-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                    className="w-full px-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                   >
                     <option value="all">All Categories</option>
                     {categories.map((category) => (
@@ -434,8 +434,8 @@ const ProductCatalog = () => {
                   onClick={() => setShowFilters(!showFilters)}
                   className={`px-6 py-4 rounded-2xl font-medium flex items-center gap-2 transition-all duration-200 ${
                     showFilters || hasActiveFilters
-                      ? 'bg-bottle-green text-white shadow-lg'
-                      : 'bg-white text-bottle-green border border-bottle-green/20 shadow-lg hover:bg-bottle-green/5'
+                      ? 'bg-muted-olive text-white shadow-lg'
+                      : 'bg-white text-muted-olive border border-muted-olive/20 shadow-lg hover:bg-muted-olive/5'
                   }`}
                 >
                   <SlidersHorizontal className="w-5 h-5" />
@@ -481,7 +481,7 @@ const ProductCatalog = () => {
                           onChange={(e) =>
                             handleFilterChange('minPrice', e.target.value)
                           }
-                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                         />
                         <input
                           type="number"
@@ -490,7 +490,7 @@ const ProductCatalog = () => {
                           onChange={(e) =>
                             handleFilterChange('maxPrice', e.target.value)
                           }
-                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                         />
                       </div>
                     </div>
@@ -503,7 +503,7 @@ const ProductCatalog = () => {
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                       >
                         <option value="name">Name</option>
                         <option value="price">Price (Low to High)</option>
@@ -526,7 +526,7 @@ const ProductCatalog = () => {
                             onChange={(e) =>
                               handleFilterChange('organic', e.target.checked)
                             }
-                            className="mr-2 rounded border-gray-300 text-bottle-green focus:ring-bottle-green/20"
+                            className="mr-2 rounded border-gray-300 text-muted-olive focus:ring-muted-olive/20"
                           />
                           <span className="text-sm">Organic</span>
                         </label>
@@ -537,7 +537,7 @@ const ProductCatalog = () => {
                             onChange={(e) =>
                               handleFilterChange('local', e.target.checked)
                             }
-                            className="mr-2 rounded border-gray-300 text-bottle-green focus:ring-bottle-green/20"
+                            className="mr-2 rounded border-gray-300 text-muted-olive focus:ring-muted-olive/20"
                           />
                           <span className="text-sm">Local</span>
                         </label>
@@ -548,7 +548,7 @@ const ProductCatalog = () => {
                             onChange={(e) =>
                               handleFilterChange('seasonal', e.target.checked)
                             }
-                            className="mr-2 rounded border-gray-300 text-bottle-green focus:ring-bottle-green/20"
+                            className="mr-2 rounded border-gray-300 text-muted-olive focus:ring-muted-olive/20"
                           />
                           <span className="text-sm">Seasonal</span>
                         </label>
@@ -565,7 +565,7 @@ const ProductCatalog = () => {
                           onClick={() => setViewMode('grid')}
                           className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors ${
                             viewMode === 'grid'
-                              ? 'bg-bottle-green text-white'
+                              ? 'bg-muted-olive text-white'
                               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
                         >
@@ -576,7 +576,7 @@ const ProductCatalog = () => {
                           onClick={() => setViewMode('list')}
                           className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors ${
                             viewMode === 'list'
-                              ? 'bg-bottle-green text-white'
+                              ? 'bg-muted-olive text-white'
                               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
                         >
@@ -592,7 +592,7 @@ const ProductCatalog = () => {
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <button
                         onClick={clearFilters}
-                        className="text-bottle-green hover:text-bottle-green/80 font-medium flex items-center gap-2"
+                        className="text-muted-olive hover:text-muted-olive/80 font-medium flex items-center gap-2"
                       >
                         <X className="w-4 h-4" />
                         Clear All Filters
@@ -614,7 +614,7 @@ const ProductCatalog = () => {
               </button>
               <button
                 onClick={() => navigate('/about')}
-                className="border-2 border-bottle-green text-bottle-green px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-bottle-green hover:text-white transition-all duration-200"
+                className="border-2 border-muted-olive text-muted-olive px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-muted-olive hover:text-white transition-all duration-200"
               >
                 Learn More
               </button>
@@ -655,7 +655,7 @@ const ProductCatalog = () => {
                     key={category._id || category.id}
                     className={`p-6 text-center hover:shadow-lg transition-all duration-200 cursor-pointer group ${
                       selectedCategory === (category._id || category.id)
-                        ? 'ring-2 ring-bottle-green bg-mint-fresh/10'
+                        ? 'ring-2 ring-muted-olive bg-sage-green/10'
                         : ''
                     }`}
                     onClick={() =>
@@ -672,7 +672,7 @@ const ProductCatalog = () => {
                       {category.description ||
                         `Fresh ${category.name.toLowerCase()}`}
                     </p>
-                    <p className="text-xs text-bottle-green font-medium">
+                    <p className="text-xs text-muted-olive font-medium">
                       {category.productCount || 0} products
                     </p>
                   </Card>
@@ -712,7 +712,7 @@ const ProductCatalog = () => {
                       onClick={() => setViewMode('grid')}
                       className={`p-2 rounded-lg transition-colors ${
                         viewMode === 'grid'
-                          ? 'bg-bottle-green text-white'
+                          ? 'bg-muted-olive text-white'
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
@@ -722,7 +722,7 @@ const ProductCatalog = () => {
                       onClick={() => setViewMode('list')}
                       className={`p-2 rounded-lg transition-colors ${
                         viewMode === 'list'
-                          ? 'bg-bottle-green text-white'
+                          ? 'bg-muted-olive text-white'
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
@@ -732,7 +732,7 @@ const ProductCatalog = () => {
 
                   <button
                     onClick={clearFilters}
-                    className="text-bottle-green hover:text-bottle-green/80 font-medium flex items-center gap-2"
+                    className="text-muted-olive hover:text-muted-olive/80 font-medium flex items-center gap-2"
                   >
                     Clear Filters
                     <ArrowRight className="w-4 h-4" />
@@ -780,7 +780,7 @@ const ProductCatalog = () => {
                   </p>
                   <button
                     onClick={clearFilters}
-                    className="text-bottle-green hover:text-bottle-green/80 font-medium"
+                    className="text-muted-olive hover:text-muted-olive/80 font-medium"
                   >
                     Clear All Filters
                   </button>

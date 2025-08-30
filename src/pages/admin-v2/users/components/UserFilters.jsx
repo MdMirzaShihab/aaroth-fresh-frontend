@@ -31,7 +31,7 @@ import { Input } from '../../../../components/ui';
 import { getUserFilters } from '../../../../services/admin-v2/usersService';
 
 // Quick filter chips component
-const FilterChip = ({ label, count, isActive, onClick, onRemove, icon: IconComponent, color = 'bottle-green' }) => {
+const FilterChip = ({ label, count, isActive, onClick, onRemove, icon: IconComponent, color = 'muted-olive' }) => {
   const { isDarkMode } = useTheme();
 
   return (
@@ -263,7 +263,7 @@ const UserFilters = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Filter className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+          <Filter className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           <div>
             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
               Advanced Filters
@@ -271,7 +271,7 @@ const UserFilters = ({
             <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
               Showing {userCounts.filtered.toLocaleString()} of {userCounts.total.toLocaleString()} users
               {activeFilterCount > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-bottle-green/10 text-bottle-green rounded-full text-xs font-medium">
+                <span className="ml-2 px-2 py-0.5 bg-muted-olive/10 text-muted-olive rounded-full text-xs font-medium">
                   {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} active
                 </span>
               )}

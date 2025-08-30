@@ -296,8 +296,8 @@ const AdminSystemSettings = () => {
           <div className="ml-4">
             <button
               onClick={() => handleSettingChange(field.key, !value)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-bottle-green focus:ring-offset-2 ${
-                value ? 'bg-bottle-green' : 'bg-gray-200'
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-muted-olive focus:ring-offset-2 ${
+                value ? 'bg-muted-olive' : 'bg-gray-200'
               }`}
             >
               <span
@@ -426,7 +426,7 @@ const AdminSystemSettings = () => {
 
       {/* Last Saved Indicator */}
       {lastSaved && (
-        <div className="flex items-center gap-2 text-sm text-bottle-green">
+        <div className="flex items-center gap-2 text-sm text-muted-olive">
           <CheckCircle className="w-4 h-4" />
           Settings saved at {lastSaved.toLocaleTimeString()}
         </div>
@@ -440,8 +440,8 @@ const AdminSystemSettings = () => {
             return (
               <Card key={section.id} className="p-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-bottle-green/10 rounded-full flex items-center justify-center">
-                    <SectionIcon className="w-5 h-5 text-bottle-green" />
+                  <div className="w-10 h-10 bg-muted-olive/10 rounded-full flex items-center justify-center">
+                    <SectionIcon className="w-5 h-5 text-muted-olive" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-text-dark dark:text-white">
@@ -470,7 +470,7 @@ const AdminSystemSettings = () => {
           {/* Quick Info */}
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Info className="w-5 h-5 text-bottle-green" />
+              <Info className="w-5 h-5 text-muted-olive" />
               <h3 className="text-lg font-semibold text-text-dark dark:text-white">
                 System Information
               </h3>
@@ -507,7 +507,7 @@ const AdminSystemSettings = () => {
           {/* Maintenance Actions */}
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Server className="w-5 h-5 text-bottle-green" />
+              <Server className="w-5 h-5 text-muted-olive" />
               <h3 className="text-lg font-semibold text-text-dark dark:text-white">
                 Maintenance
               </h3>

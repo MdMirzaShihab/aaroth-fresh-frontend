@@ -193,9 +193,9 @@ const SystemHealthWidget = ({
   const getColorScheme = (status) => {
     const schemes = {
       green: {
-        bg: isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10',
-        text: isDarkMode ? 'text-mint-fresh' : 'text-bottle-green',
-        icon: isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'
+        bg: isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10',
+        text: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
+        icon: isDarkMode ? 'text-sage-green' : 'text-muted-olive'
       },
       yellow: {
         bg: isDarkMode ? 'bg-earthy-yellow/20' : 'bg-earthy-yellow/10',
@@ -277,7 +277,7 @@ const SystemHealthWidget = ({
             animate={{ width: `${Math.min(100, (metric.value / metric.threshold) * 100)}%` }}
             transition={{ duration: 1, delay: index * 0.1 }}
             className={`h-full rounded-full ${
-              status === 'green' ? 'bg-mint-fresh' :
+              status === 'green' ? 'bg-sage-green' :
               status === 'yellow' ? 'bg-earthy-yellow' : 'bg-tomato-red'
             }`}
           />
@@ -312,7 +312,7 @@ const SystemHealthWidget = ({
             </span>
           </div>
           {status === 'green' ? (
-            <CheckCircle className="w-3 lg:w-4 h-3 lg:h-4 text-mint-fresh" />
+            <CheckCircle className="w-3 lg:w-4 h-3 lg:h-4 text-sage-green" />
           ) : status === 'yellow' ? (
             <AlertTriangle className="w-3 lg:w-4 h-3 lg:h-4 text-earthy-yellow" />
           ) : (
@@ -337,7 +337,7 @@ const SystemHealthWidget = ({
               animate={{ width: `${Math.min(100, compliance)}%` }}
               transition={{ duration: 1, delay: index * 0.1 }}
               className={`h-full rounded-full ${
-                status === 'green' ? 'bg-mint-fresh' :
+                status === 'green' ? 'bg-sage-green' :
                 status === 'yellow' ? 'bg-earthy-yellow' : 'bg-tomato-red'
               }`}
             />
@@ -384,7 +384,7 @@ const SystemHealthWidget = ({
             animate={{ width: `${resource.value}%` }}
             transition={{ duration: 1, delay: index * 0.1 }}
             className={`h-full rounded-full ${
-              status === 'green' ? 'bg-mint-fresh' :
+              status === 'green' ? 'bg-sage-green' :
               status === 'yellow' ? 'bg-earthy-yellow' : 'bg-tomato-red'
             }`}
           />
@@ -398,7 +398,7 @@ const SystemHealthWidget = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Activity className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+          <Activity className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
           <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
             System Health
           </h3>
@@ -411,7 +411,7 @@ const SystemHealthWidget = ({
               Health Score
             </div>
             <div className={`text-lg font-bold ${
-              overallHealthScore >= 90 ? (isDarkMode ? 'text-mint-fresh' : 'text-bottle-green') :
+              overallHealthScore >= 90 ? (isDarkMode ? 'text-sage-green' : 'text-muted-olive') :
               overallHealthScore >= 70 ? (isDarkMode ? 'text-earthy-yellow' : 'text-earthy-brown') :
               'text-tomato-red'
             }`}>
@@ -421,13 +421,13 @@ const SystemHealthWidget = ({
           
           <div className={`
             w-12 h-12 rounded-2xl flex items-center justify-center
-            ${overallHealthScore >= 90 ? (isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10') :
+            ${overallHealthScore >= 90 ? (isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10') :
               overallHealthScore >= 70 ? (isDarkMode ? 'bg-earthy-yellow/20' : 'bg-earthy-yellow/10') :
               'bg-tomato-red/20'
             }
           `}>
             {overallHealthScore >= 90 ? (
-              <CheckCircle className={`w-6 h-6 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+              <CheckCircle className={`w-6 h-6 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
             ) : overallHealthScore >= 70 ? (
               <AlertTriangle className={`w-6 h-6 ${isDarkMode ? 'text-earthy-yellow' : 'text-earthy-brown'}`} />
             ) : (
@@ -475,7 +475,7 @@ const SystemHealthWidget = ({
             <span>
               Last updated: {currentTime.toLocaleTimeString()}
             </span>
-            <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green'} animate-pulse`} />
+            <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'} animate-pulse`} />
           </div>
         </div>
       </div>

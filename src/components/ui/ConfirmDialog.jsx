@@ -21,7 +21,7 @@ const confirmDialogVariants = cva('text-center space-y-6', {
       destructive: 'text-tomato-red',
       warning: 'text-amber-700',
       info: 'text-blue-700',
-      success: 'text-bottle-green',
+      success: 'text-muted-olive',
     },
     size: {
       sm: 'max-w-sm',
@@ -45,7 +45,7 @@ const iconVariants = cva(
         destructive: 'bg-tomato-red/10 text-tomato-red',
         warning: 'bg-amber-100 text-amber-600',
         info: 'bg-blue-100 text-blue-600',
-        success: 'bg-mint-fresh/10 text-bottle-green',
+        success: 'bg-sage-green/10 text-muted-olive',
       },
     },
     defaultVariants: {

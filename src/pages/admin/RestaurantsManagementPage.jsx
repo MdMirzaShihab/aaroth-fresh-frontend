@@ -140,7 +140,7 @@ const RestaurantsManagementPage = () => {
           className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-bottle-green to-earthy-brown bg-clip-text text-transparent">
+            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-muted-olive to-earthy-brown bg-clip-text text-transparent">
               Restaurant Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
@@ -173,13 +173,13 @@ const RestaurantsManagementPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-text-muted text-sm font-medium">Total Restaurants</p>
-                <p className="text-2xl font-bold text-bottle-green">{stats.totalRestaurants}</p>
-                <p className="text-xs text-mint-fresh mt-1">
+                <p className="text-2xl font-bold text-muted-olive">{stats.totalRestaurants}</p>
+                <p className="text-xs text-sage-green mt-1">
                   +{stats.monthlyGrowth || 0}% this month
                 </p>
               </div>
-              <div className="w-12 h-12 bg-bottle-green/10 rounded-2xl flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-bottle-green" />
+              <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center">
+                <Building2 className="w-6 h-6 text-muted-olive" />
               </div>
             </div>
           </Card>
@@ -208,13 +208,13 @@ const RestaurantsManagementPage = () => {
               <div>
                 <p className="text-text-muted text-sm font-medium">Active Restaurants</p>
                 <p className="text-2xl font-bold text-text-dark">{stats.activeRestaurants}</p>
-                <p className="text-xs text-mint-fresh mt-1">
+                <p className="text-xs text-sage-green mt-1">
                   {stats.totalRestaurants > 0 ? 
                     Math.round((stats.activeRestaurants / stats.totalRestaurants) * 100) : 0}% active rate
                 </p>
               </div>
-              <div className="w-12 h-12 bg-mint-fresh/10 rounded-2xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-mint-fresh" />
+              <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-sage-green" />
               </div>
             </div>
           </Card>
@@ -244,7 +244,7 @@ const RestaurantsManagementPage = () => {
           >
             <Card className="p-4 glass">
               <div className="flex items-center gap-2 mb-4">
-                <MapPin className="w-5 h-5 text-bottle-green" />
+                <MapPin className="w-5 h-5 text-muted-olive" />
                 <h3 className="text-lg font-semibold text-text-dark">Top Locations</h3>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -284,7 +284,7 @@ const RestaurantsManagementPage = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <tab.icon className={`w-5 h-5 ${
-                        activeTab === tab.id ? 'text-white' : 'text-bottle-green'
+                        activeTab === tab.id ? 'text-white' : 'text-muted-olive'
                       }`} />
                       <div>
                         <h3 className={`font-semibold ${
@@ -308,7 +308,7 @@ const RestaurantsManagementPage = () => {
                           ? 'bg-white/20 text-white'
                           : tab.urgent
                             ? 'bg-earthy-yellow/20 text-earthy-yellow'
-                            : 'bg-bottle-green/10 text-bottle-green'
+                            : 'bg-muted-olive/10 text-muted-olive'
                       }`}>
                         {tab.badge}
                       </span>

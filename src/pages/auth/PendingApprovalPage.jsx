@@ -79,8 +79,8 @@ const PendingApprovalPage = () => {
 
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <div className="bg-mint-fresh/20 p-2 rounded-full mt-1">
-                  <CheckCircle className="w-4 h-4 text-bottle-green" />
+                <div className="bg-sage-green/20 p-2 rounded-full mt-1">
+                  <CheckCircle className="w-4 h-4 text-muted-olive" />
                 </div>
                 <div>
                   <p className="font-medium text-text-dark text-sm">
@@ -93,8 +93,8 @@ const PendingApprovalPage = () => {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="bg-mint-fresh/20 p-2 rounded-full mt-1">
-                  <CheckCircle className="w-4 h-4 text-bottle-green" />
+                <div className="bg-sage-green/20 p-2 rounded-full mt-1">
+                  <CheckCircle className="w-4 h-4 text-muted-olive" />
                 </div>
                 <div>
                   <p className="font-medium text-text-dark text-sm">
@@ -124,7 +124,7 @@ const PendingApprovalPage = () => {
           </div>
 
           {/* Contact Information */}
-          <div className="bg-mint-fresh/10 rounded-2xl p-6 mb-8">
+          <div className="bg-sage-green/10 rounded-2xl p-6 mb-8">
             <h4 className="text-lg font-medium text-text-dark mb-3">
               Need Help?
             </h4>
@@ -136,13 +136,13 @@ const PendingApprovalPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="tel:+8801234567890"
-                className="flex-1 bg-white hover:bg-gray-50 text-text-dark px-4 py-3 rounded-xl text-sm font-medium transition-colors duration-200 border focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="flex-1 bg-white hover:bg-gray-50 text-text-dark px-4 py-3 rounded-xl text-sm font-medium transition-colors duration-200 border focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               >
                 Call Support
               </a>
               <a
                 href="mailto:support@aarothfresh.com"
-                className="flex-1 bg-bottle-green hover:bg-bottle-green/90 text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="flex-1 bg-muted-olive hover:bg-muted-olive/90 text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               >
                 Email Us
               </a>

@@ -177,9 +177,9 @@ const VerificationPipeline = ({
         border: 'border-blue-500/30'
       },
       normal: {
-        bg: isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10',
-        text: isDarkMode ? 'text-mint-fresh' : 'text-bottle-green',
-        border: 'border-mint-fresh/30'
+        bg: isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10',
+        text: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
+        border: 'border-sage-green/30'
       }
     };
     return schemes[urgency] || schemes.normal;
@@ -344,7 +344,7 @@ const VerificationPipeline = ({
             <div className={`
               flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-medium
               ${stageConfig.color === 'green' 
-                ? (isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green')
+                ? (isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive')
                 : stageConfig.color === 'red'
                 ? 'bg-tomato-red/20 text-tomato-red'
                 : stageConfig.color === 'amber'
@@ -366,7 +366,7 @@ const VerificationPipeline = ({
                     e.stopPropagation();
                     handleVerificationAction(item, 'approve');
                   }}
-                  className="p-1 h-8 w-8 text-mint-fresh hover:bg-mint-fresh/10"
+                  className="p-1 h-8 w-8 text-sage-green hover:bg-sage-green/10"
                 >
                   <Check className="w-4 h-4" />
                 </Button>
@@ -418,7 +418,7 @@ const VerificationPipeline = ({
               }}
               transition={{ duration: 1, delay: index * 0.1 }}
               className={`h-full rounded-full ${
-                stageConfig.color === 'green' ? 'bg-mint-fresh' :
+                stageConfig.color === 'green' ? 'bg-sage-green' :
                 stageConfig.color === 'red' ? 'bg-tomato-red' :
                 stageConfig.color === 'amber' ? 'bg-earthy-yellow' :
                 'bg-blue-500'
@@ -436,7 +436,7 @@ const VerificationPipeline = ({
       <div className="p-6 pb-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <Timer className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <Timer className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
               Verification Pipeline
             </h3>
@@ -516,7 +516,7 @@ const VerificationPipeline = ({
                 <Button
                   size="sm"
                   onClick={() => handleBatchAction('approve')}
-                  className="bg-mint-fresh hover:bg-mint-fresh/90 text-white rounded-xl"
+                  className="bg-sage-green hover:bg-sage-green/90 text-white rounded-xl"
                 >
                   <Check className="w-4 h-4 mr-1" />
                   Approve ({selectedItems.size})

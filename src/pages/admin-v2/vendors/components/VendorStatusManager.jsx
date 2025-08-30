@@ -47,7 +47,7 @@ import toast from 'react-hot-toast';
 const VENDOR_STATUSES = {
   active: {
     label: 'Active',
-    color: 'text-mint-fresh bg-mint-fresh/10 border-mint-fresh/20',
+    color: 'text-sage-green bg-sage-green/10 border-sage-green/20',
     icon: CheckCircle,
     description: 'Vendor is fully operational and can receive orders'
   },
@@ -121,7 +121,7 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
 
   const getRiskColor = (level) => {
     const colors = {
-      low: 'text-mint-fresh bg-mint-fresh/10 border-mint-fresh/20',
+      low: 'text-sage-green bg-sage-green/10 border-sage-green/20',
       medium: 'text-earthy-yellow bg-earthy-yellow/10 border-earthy-yellow/20',
       high: 'text-tomato-red bg-tomato-red/10 border-tomato-red/20'
     };
@@ -154,8 +154,8 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
         </Card>
 
         <Card className="p-4 text-center">
-          <div className="w-10 h-10 bg-mint-fresh/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-            <DollarSign className="w-5 h-5 text-mint-fresh" />
+          <div className="w-10 h-10 bg-sage-green/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+            <DollarSign className="w-5 h-5 text-sage-green" />
           </div>
           <p className="text-2xl font-bold text-text-dark">${totalRevenue.toLocaleString()}</p>
           <p className="text-xs text-text-muted">Total Revenue</p>
@@ -527,7 +527,7 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                               flex items-center justify-center shadow-lg text-white">
                 <Shield className="w-5 h-5" />
               </div>
@@ -581,7 +581,7 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
                 </p>
                 <Button
                   onClick={() => setShowStatusChange(true)}
-                  className="w-full bg-gradient-to-r from-sage-green to-mint-fresh text-white"
+                  className="w-full bg-gradient-to-r from-sage-green to-sage-green text-white"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Change Status

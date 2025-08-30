@@ -97,8 +97,8 @@ describe('ListingStatusToggle', () => {
       const badge = screen.getByText('Active');
       expect(badge).toBeInTheDocument();
       expect(badge.closest('span')).toHaveClass(
-        'text-bottle-green',
-        'bg-mint-fresh/20'
+        'text-muted-olive',
+        'bg-sage-green/20'
       );
     });
 
@@ -169,7 +169,7 @@ describe('ListingStatusToggle', () => {
       );
 
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('text-bottle-green', 'border-bottle-green/30');
+      expect(button).toHaveClass('text-muted-olive', 'border-muted-olive/30');
       expect(screen.getByText('Activate')).toBeInTheDocument();
     });
 

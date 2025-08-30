@@ -56,9 +56,9 @@ const ProductCard = ({
   const getCertificationBadges = () => {
     const badges = [];
     if (product.isOrganic)
-      badges.push({ text: 'Organic', icon: Leaf, color: 'mint-fresh' });
+      badges.push({ text: 'Organic', icon: Leaf, color: 'sage-green' });
     if (product.isLocallySourced)
-      badges.push({ text: 'Local', icon: MapPin, color: 'bottle-green' });
+      badges.push({ text: 'Local', icon: MapPin, color: 'muted-olive' });
     if (product.certifications && product.certifications.length > 0) {
       badges.push({
         text: 'Certified',
@@ -73,7 +73,7 @@ const ProductCard = ({
   const getSeasonalityInfo = () => {
     if (!product.seasonality) return null;
     if (product.seasonality.includes('year-round'))
-      return { text: 'Year-round', color: 'bottle-green' };
+      return { text: 'Year-round', color: 'muted-olive' };
     return { text: 'Seasonal', color: 'earthy-yellow' };
   };
 
@@ -103,7 +103,7 @@ const ProductCard = ({
 
         {/* Fallback background */}
         <div
-          className="w-full h-full bg-gradient-to-br from-mint-fresh/20 to-bottle-green/20 flex items-center justify-center"
+          className="w-full h-full bg-gradient-to-br from-sage-green/20 to-muted-olive/20 flex items-center justify-center"
           style={{ display: primaryImageUrl ? 'none' : 'flex' }}
         >
           <div className="text-6xl opacity-20">🥬</div>
@@ -116,7 +116,7 @@ const ProductCard = ({
             return (
               <span
                 key={index}
-                className={`bg-${badge.color}/20 backdrop-blur-sm border border-${badge.color}/30 text-${badge.color === 'mint-fresh' ? 'bottle-green' : 'text-dark'} text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1`}
+                className={`bg-${badge.color}/20 backdrop-blur-sm border border-${badge.color}/30 text-${badge.color === 'sage-green' ? 'muted-olive' : 'text-dark'} text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1`}
               >
                 <IconComponent className="w-3 h-3" />
                 {badge.text}
@@ -127,7 +127,7 @@ const ProductCard = ({
 
         {/* Vendor count */}
         <div className="absolute top-3 right-3">
-          <span className="bg-white/90 backdrop-blur-sm text-bottle-green text-xs px-2 py-1 rounded-full font-medium">
+          <span className="bg-white/90 backdrop-blur-sm text-muted-olive text-xs px-2 py-1 rounded-full font-medium">
             {product.activeListingsCount || product.vendorCount || 0} vendors
           </span>
         </div>
@@ -149,7 +149,7 @@ const ProductCard = ({
       <div className="p-4">
         {/* Product Name & Category */}
         <div className="mb-3">
-          <h3 className="font-semibold text-text-dark mb-1 group-hover:text-bottle-green transition-colors line-clamp-2">
+          <h3 className="font-semibold text-text-dark mb-1 group-hover:text-muted-olive transition-colors line-clamp-2">
             {product.name}
           </h3>
           <p className="text-text-muted text-sm">
@@ -171,7 +171,7 @@ const ProductCard = ({
           <div className="flex items-center justify-between mb-1">
             {product.priceRange ? (
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-bottle-green">
+                <span className="text-lg font-bold text-muted-olive">
                   {formatPrice(product.priceRange.min)} -{' '}
                   {formatPrice(product.priceRange.max)}
                 </span>
@@ -181,7 +181,7 @@ const ProductCard = ({
               </div>
             ) : (
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-bottle-green">
+                <span className="text-lg font-bold text-muted-olive">
                   {formatPrice(product.averagePrice || product.price)}
                 </span>
                 <span className="text-xs text-text-muted">
@@ -210,7 +210,7 @@ const ProductCard = ({
               {nutritionalHighlights.map((highlight, index) => (
                 <span
                   key={index}
-                  className="bg-mint-fresh/10 text-bottle-green text-xs px-2 py-1 rounded-lg font-medium"
+                  className="bg-sage-green/10 text-muted-olive text-xs px-2 py-1 rounded-lg font-medium"
                 >
                   {highlight}
                 </span>
@@ -260,7 +260,7 @@ const ProductCard = ({
 
         {/* Action Button */}
         <div className="flex items-center justify-between">
-          <button className="text-sm text-bottle-green hover:text-bottle-green/80 transition-colors flex items-center gap-1 group">
+          <button className="text-sm text-muted-olive hover:text-muted-olive/80 transition-colors flex items-center gap-1 group">
             View Details
             <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </button>
@@ -270,9 +270,9 @@ const ProductCard = ({
             {product.isSeasonal && (
               <Clock className="w-3 h-3 text-earthy-yellow" />
             )}
-            {product.isOrganic && <Leaf className="w-3 h-3 text-mint-fresh" />}
+            {product.isOrganic && <Leaf className="w-3 h-3 text-sage-green" />}
             {product.isLocallySourced && (
-              <MapPin className="w-3 h-3 text-bottle-green" />
+              <MapPin className="w-3 h-3 text-muted-olive" />
             )}
           </div>
         </div>

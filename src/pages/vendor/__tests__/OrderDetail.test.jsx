@@ -466,7 +466,7 @@ describe('OrderDetail', () => {
         const confirmedStatus = screen
           .getByText('Order Confirmed')
           .closest('div');
-        expect(confirmedStatus).toHaveClass('bg-bottle-green', 'text-white');
+        expect(confirmedStatus).toHaveClass('bg-muted-olive', 'text-white');
       });
     });
   });

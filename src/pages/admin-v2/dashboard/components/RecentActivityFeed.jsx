@@ -62,15 +62,15 @@ const RecentActivityFeed = ({
     vendor_verified: {
       icon: CheckCircle,
       color: 'green',
-      bgColor: isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10',
-      iconColor: isDarkMode ? 'text-mint-fresh' : 'text-bottle-green',
+      bgColor: isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10',
+      iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
       label: 'Vendor Verified'
     },
     restaurant_approved: {
       icon: Store,
       color: 'green',
-      bgColor: isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10',
-      iconColor: isDarkMode ? 'text-mint-fresh' : 'text-bottle-green',
+      bgColor: isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10',
+      iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
       label: 'Restaurant Approved'
     },
     product_created: {
@@ -310,7 +310,7 @@ const RecentActivityFeed = ({
                     ? 'bg-tomato-red/10 text-tomato-red' 
                     : activity.priority === 'medium'
                       ? 'bg-earthy-yellow/10 text-earthy-brown'
-                      : 'bg-mint-fresh/10 text-bottle-green'
+                      : 'bg-sage-green/10 text-muted-olive'
                   }
                 `}>
                   {activity.priority}
@@ -357,14 +357,14 @@ const RecentActivityFeed = ({
       <div className="p-6 pb-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <Activity className={`w-5 h-5 ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`} />
+            <Activity className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
               Recent Activity
             </h3>
             {realTimeEnabled && (
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green'} animate-pulse`} />
-                <span className={`text-xs font-medium ${isDarkMode ? 'text-mint-fresh' : 'text-bottle-green'}`}>
+                <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'} animate-pulse`} />
+                <span className={`text-xs font-medium ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}>
                   Live
                 </span>
               </div>
@@ -411,13 +411,13 @@ const RecentActivityFeed = ({
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={`
                 rounded-xl flex items-center gap-2
-                ${selectedFilters.length > 0 ? 'bg-sage-green/10 text-bottle-green' : ''}
+                ${selectedFilters.length > 0 ? 'bg-sage-green/10 text-muted-olive' : ''}
               `}
             >
               <Filter className="w-4 h-4" />
               Filters
               {selectedFilters.length > 0 && (
-                <span className="ml-1 px-2 py-0.5 bg-bottle-green text-white rounded-full text-xs">
+                <span className="ml-1 px-2 py-0.5 bg-muted-olive text-white rounded-full text-xs">
                   {selectedFilters.length}
                 </span>
               )}

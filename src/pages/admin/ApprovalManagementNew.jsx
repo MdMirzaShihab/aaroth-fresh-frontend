@@ -308,7 +308,7 @@ const ApprovalManagementNew = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -347,7 +347,7 @@ const ApprovalManagementNew = () => {
               <div className="text-sm text-text-muted">Pending Review</div>
             </div>
             <div className="bg-gradient-glass backdrop-blur-md rounded-2xl p-4 border border-white/20">
-              <div className="text-2xl font-semibold text-bottle-green mb-1">
+              <div className="text-2xl font-semibold text-muted-olive mb-1">
                 {stats.verified}
               </div>
               <div className="text-sm text-text-muted">Approved</div>
@@ -382,8 +382,8 @@ const ApprovalManagementNew = () => {
                 variant={activeTab === key ? 'primary' : 'outline'}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                   activeTab === key
-                    ? 'bg-bottle-green text-white'
-                    : 'text-text-dark hover:bg-bottle-green/5'
+                    ? 'bg-muted-olive text-white'
+                    : 'text-text-dark hover:bg-muted-olive/5'
                 }`}
               >
                 <Icon className="w-4 h-4" />

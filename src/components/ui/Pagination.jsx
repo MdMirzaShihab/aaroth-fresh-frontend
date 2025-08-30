@@ -6,18 +6,18 @@ import Button from './Button';
 
 // Pagination item variants following futuristic minimalism
 const paginationItemVariants = cva(
-  'inline-flex items-center justify-center rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-bottle-green/20 active:scale-95 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center rounded-2xl font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-muted-olive/20 active:scale-95 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'min-h-[44px] min-w-[44px] px-3 py-2 bg-earthy-beige/30 text-text-dark hover:bg-bottle-green hover:text-white hover:shadow-lg hover:shadow-glow-green/20 hover:-translate-y-0.5',
+          'min-h-[44px] min-w-[44px] px-3 py-2 bg-earthy-beige/30 text-text-dark hover:bg-muted-olive hover:text-white hover:shadow-lg hover:shadow-glow-green/20 hover:-translate-y-0.5',
         active:
           'min-h-[44px] min-w-[44px] px-3 py-2 bg-gradient-secondary text-white shadow-lg shadow-glow-green/20',
         ghost:
-          'min-h-[44px] min-w-[44px] px-3 py-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10',
+          'min-h-[44px] min-w-[44px] px-3 py-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10',
         outline:
-          'min-h-[44px] min-w-[44px] px-3 py-2 border-2 border-gray-300 text-text-dark hover:border-bottle-green hover:bg-bottle-green/5',
+          'min-h-[44px] min-w-[44px] px-3 py-2 border-2 border-gray-300 text-text-dark hover:border-muted-olive hover:bg-muted-olive/5',
       },
       size: {
         default: 'text-sm',
@@ -304,8 +304,8 @@ export const MobilePagination = ({
               className={cn(
                 'w-2 h-2 rounded-full transition-all duration-300',
                 page === currentPage
-                  ? 'bg-bottle-green scale-125'
-                  : 'bg-gray-300 hover:bg-bottle-green/50'
+                  ? 'bg-muted-olive scale-125'
+                  : 'bg-gray-300 hover:bg-muted-olive/50'
               )}
               onClick={() => handlePageChange(page)}
               disabled={disabled}
@@ -358,7 +358,7 @@ export const CompactPagination = ({
     <div className={cn('flex items-center gap-1', className)} {...props}>
       <button
         className={cn(
-          'p-1 rounded-lg hover:bg-bottle-green/10 transition-colors duration-200 min-h-[32px] min-w-[32px] flex items-center justify-center',
+          'p-1 rounded-lg hover:bg-muted-olive/10 transition-colors duration-200 min-h-[32px] min-w-[32px] flex items-center justify-center',
           (disabled || currentPage === 1) && 'opacity-50 cursor-not-allowed'
         )}
         onClick={() => handlePageChange(currentPage - 1)}
@@ -374,7 +374,7 @@ export const CompactPagination = ({
 
       <button
         className={cn(
-          'p-1 rounded-lg hover:bg-bottle-green/10 transition-colors duration-200 min-h-[32px] min-w-[32px] flex items-center justify-center',
+          'p-1 rounded-lg hover:bg-muted-olive/10 transition-colors duration-200 min-h-[32px] min-w-[32px] flex items-center justify-center',
           (disabled || currentPage === totalPages) &&
             'opacity-50 cursor-not-allowed'
         )}
@@ -460,7 +460,7 @@ export const InfiniteScrollTrigger = ({
     >
       {loading && (
         <div className="flex items-center justify-center gap-2">
-          <div className="animate-spin rounded-full h-6 w-6 border-2 border-bottle-green/20 border-t-bottle-green" />
+          <div className="animate-spin rounded-full h-6 w-6 border-2 border-muted-olive/20 border-t-muted-olive" />
           <span className="text-sm text-text-muted">Loading more...</span>
         </div>
       )}

@@ -51,7 +51,7 @@ const BULK_OPERATIONS = {
   approve: {
     label: 'Approve Verification',
     icon: CheckCircle,
-    color: 'text-mint-fresh bg-mint-fresh/10 border-mint-fresh/20',
+    color: 'text-sage-green bg-sage-green/10 border-sage-green/20',
     description: 'Approve selected vendors for platform access'
   },
   reject: {
@@ -95,7 +95,7 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
     switch (status) {
       case 'running': return <Loader2 className="w-5 h-5 animate-spin text-sage-green" />;
       case 'paused': return <PauseCircle className="w-5 h-5 text-earthy-yellow" />;
-      case 'completed': return <CheckCircle className="w-5 h-5 text-mint-fresh" />;
+      case 'completed': return <CheckCircle className="w-5 h-5 text-sage-green" />;
       case 'cancelled': return <StopCircle className="w-5 h-5 text-tomato-red" />;
       case 'error': return <XCircle className="w-5 h-5 text-tomato-red" />;
       default: return <Clock className="w-5 h-5 text-text-muted" />;
@@ -163,7 +163,7 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
-            className="h-full bg-gradient-to-r from-sage-green to-mint-fresh transition-all duration-300"
+            className="h-full bg-gradient-to-r from-sage-green to-sage-green transition-all duration-300"
           />
         </div>
       </div>
@@ -175,7 +175,7 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
           <p className="text-text-muted">Processed</p>
         </div>
         <div>
-          <p className="font-semibold text-mint-fresh">{processed - errors}</p>
+          <p className="font-semibold text-sage-green">{processed - errors}</p>
           <p className="text-text-muted">Successful</p>
         </div>
         <div>
@@ -189,9 +189,9 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mt-4 p-3 bg-mint-fresh/10 border border-mint-fresh/20 rounded-xl"
+          className="mt-4 p-3 bg-sage-green/10 border border-sage-green/20 rounded-xl"
         >
-          <p className="text-sm text-mint-fresh font-medium">
+          <p className="text-sm text-sage-green font-medium">
             Operation completed successfully! {processed - errors} vendors processed, {errors} errors.
           </p>
         </motion.div>
@@ -270,7 +270,7 @@ const BulkOperationModal = ({
           <div className="p-3 space-y-2">
             {selectedVendors.slice(0, 10).map((vendor) => (
               <div key={vendor.id} className="flex items-center gap-3 text-sm">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                                 flex items-center justify-center text-white text-xs font-medium">
                   <Building2 className="w-4 h-4" />
                 </div>

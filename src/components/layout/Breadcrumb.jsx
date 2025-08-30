@@ -125,7 +125,7 @@ const Breadcrumb = ({ customItems = null }) => {
             ) : (
               <button
                 onClick={() => handleNavigation(item.path)}
-                className="hover:text-bottle-green transition-colors duration-200 truncate max-w-[150px] text-left"
+                className="hover:text-muted-olive transition-colors duration-200 truncate max-w-[150px] text-left"
               >
                 {item.label}
               </button>

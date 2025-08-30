@@ -69,7 +69,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
 
   const getUrgencyColor = (urgencyLevel) => {
     const colors = {
-      low: 'text-mint-fresh',
+      low: 'text-sage-green',
       medium: 'text-amber-500',
       high: 'text-orange-500',
       critical: 'text-tomato-red'
@@ -118,7 +118,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
           <div key={key} className="text-center">
             <div className={`w-12 h-12 rounded-2xl mx-auto mb-2 flex items-center justify-center ${
               doc.verified 
-                ? 'bg-mint-fresh/10 text-bottle-green' 
+                ? 'bg-sage-green/10 text-muted-olive' 
                 : doc.provided 
                   ? 'bg-amber-100 text-amber-700'
                   : 'bg-gray-100 text-gray-500'
@@ -191,7 +191,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
           <Button
             variant="primary"
             onClick={() => setShowApprovalModal(true)}
-            className="flex-1 bg-gradient-to-r from-mint-fresh to-bottle-green"
+            className="flex-1 bg-gradient-to-r from-sage-green to-muted-olive"
             disabled={isLoading}
           >
             <CheckCircle className="w-4 h-4 mr-2" />
@@ -233,7 +233,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
               variant="primary"
               onClick={handleApprove}
               disabled={isLoading}
-              className="flex-1 bg-gradient-to-r from-mint-fresh to-bottle-green"
+              className="flex-1 bg-gradient-to-r from-sage-green to-muted-olive"
             >
               {isLoading ? 'Approving...' : 'Confirm Approval'}
             </Button>

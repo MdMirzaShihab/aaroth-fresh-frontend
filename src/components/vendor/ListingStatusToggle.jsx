@@ -30,8 +30,8 @@ const ListingStatusToggle = ({
     active: {
       label: 'Active',
       icon: CheckCircle,
-      color: 'text-bottle-green',
-      bgColor: 'bg-mint-fresh/20',
+      color: 'text-muted-olive',
+      bgColor: 'bg-sage-green/20',
       description: 'Listing is visible to customers',
     },
     inactive: {
@@ -137,7 +137,7 @@ const ListingStatusToggle = ({
             />
             <div
               className={`block w-10 h-6 rounded-full transition-colors ${
-                listing.status === 'active' ? 'bg-bottle-green' : 'bg-gray-300'
+                listing.status === 'active' ? 'bg-muted-olive' : 'bg-gray-300'
               } ${isLoading ? 'opacity-50' : ''}`}
             >
               <div
@@ -191,7 +191,7 @@ const ListingStatusToggle = ({
             });
           }}
           disabled={isLoading || listing.status === 'pending'}
-          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 bg-white"
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
         >
           {availableStatuses.map(([key, status]) => (
             <option key={key} value={key}>
@@ -222,7 +222,7 @@ const ListingStatusToggle = ({
         className={`flex items-center gap-2 ${className} ${
           listing.status === 'active'
             ? 'text-orange-600 border-orange-200 hover:bg-orange-50'
-            : 'text-bottle-green border-bottle-green/30 hover:bg-bottle-green/10'
+            : 'text-muted-olive border-muted-olive/30 hover:bg-muted-olive/10'
         }`}
         title={`Click to ${nextStatus === 'active' ? 'activate' : 'deactivate'} listing`}
       >

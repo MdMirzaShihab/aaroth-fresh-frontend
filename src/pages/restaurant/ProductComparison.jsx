@@ -72,7 +72,7 @@ const ProductComparison = () => {
 
   const getAvailabilityColor = (availability) => {
     const colors = {
-      'in-stock': 'bg-mint-fresh/20 text-bottle-green',
+      'in-stock': 'bg-sage-green/20 text-muted-olive',
       'low-stock': 'bg-amber-100 text-amber-800',
       'out-of-stock': 'bg-tomato-red/10 text-tomato-red',
     };
@@ -92,7 +92,7 @@ const ProductComparison = () => {
     switch (type) {
       case 'image':
         return value ? (
-          <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden mx-auto">
+          <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl overflow-hidden mx-auto">
             <img
               src={value}
               alt="Product"
@@ -136,7 +136,7 @@ const ProductComparison = () => {
         return (
           <div className="flex justify-center">
             {value === 'Yes' ? (
-              <CheckCircle className="w-5 h-5 text-mint-fresh" />
+              <CheckCircle className="w-5 h-5 text-sage-green" />
             ) : (
               <X className="w-5 h-5 text-gray-400" />
             )}
@@ -254,13 +254,13 @@ const ProductComparison = () => {
       {showStats && (
         <div className="glass rounded-3xl p-6 animate-fade-in">
           <h2 className="text-xl font-semibold text-text-dark mb-4 flex items-center gap-2">
-            <Award className="w-5 h-5 text-bottle-green" />
+            <Award className="w-5 h-5 text-muted-olive" />
             Comparison Statistics
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-green-50 rounded-2xl p-4">
-              <div className="text-2xl font-bold text-bottle-green">
+              <div className="text-2xl font-bold text-muted-olive">
                 {formatCurrency(stats.averagePrice)}
               </div>
               <div className="text-sm text-green-700">Average Price</div>
@@ -296,7 +296,7 @@ const ProductComparison = () => {
           <div key={product.id} className="glass rounded-3xl p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
+                <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl overflow-hidden flex-shrink-0">
                   {product.image ? (
                     <img
                       src={product.image}

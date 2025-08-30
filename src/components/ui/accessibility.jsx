@@ -29,8 +29,8 @@ export const SkipLinks = ({ links = [], className, ...props }) => (
         href={link.href}
         className={cn(
           'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50',
-          'bg-bottle-green text-white px-6 py-3 rounded-2xl font-medium',
-          'focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-bottle-green',
+          'bg-muted-olive text-white px-6 py-3 rounded-2xl font-medium',
+          'focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-muted-olive',
           'transition-all duration-200',
           className
         )}

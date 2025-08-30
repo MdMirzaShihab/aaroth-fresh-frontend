@@ -259,15 +259,15 @@ const ListingsManagementPage = () => {
     
     const badges = {
       pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending Review', urgent: true },
-      approved: { color: 'bg-mint-fresh/10 text-mint-fresh', label: 'Approved', urgent: false },
+      approved: { color: 'bg-sage-green/10 text-sage-green', label: 'Approved', urgent: false },
       rejected: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Rejected', urgent: false },
     };
     return badges[status] || badges.pending;
   };
 
   const getQualityColor = (score) => {
-    if (score >= 90) return 'text-mint-fresh';
-    if (score >= 70) return 'text-bottle-green';
+    if (score >= 90) return 'text-sage-green';
+    if (score >= 70) return 'text-muted-olive';
     if (score >= 50) return 'text-earthy-yellow';
     if (score >= 30) return 'text-amber-600';
     return 'text-tomato-red';
@@ -277,7 +277,7 @@ const ListingsManagementPage = () => {
     if (listing.isFlagged) return { level: 'high', color: 'text-tomato-red', label: 'High' };
     if (listing.qualityScore < 30) return { level: 'high', color: 'text-tomato-red', label: 'High' };
     if (listing.qualityScore < 50) return { level: 'medium', color: 'text-amber-600', label: 'Medium' };
-    return { level: 'low', color: 'text-mint-fresh', label: 'Low' };
+    return { level: 'low', color: 'text-sage-green', label: 'Low' };
   };
 
   if (listingsError || statsError) {
@@ -302,7 +302,7 @@ const ListingsManagementPage = () => {
           className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-bottle-green to-earthy-brown bg-clip-text text-transparent">
+            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-muted-olive to-earthy-brown bg-clip-text text-transparent">
               Listings Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
@@ -341,13 +341,13 @@ const ListingsManagementPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-text-muted text-sm font-medium">Total Listings</p>
-                <p className="text-2xl font-bold text-bottle-green">{stats.totalListings}</p>
-                <p className="text-xs text-mint-fresh mt-1">
+                <p className="text-2xl font-bold text-muted-olive">{stats.totalListings}</p>
+                <p className="text-xs text-sage-green mt-1">
                   {stats.approvedListings} approved
                 </p>
               </div>
-              <div className="w-12 h-12 bg-bottle-green/10 rounded-2xl flex items-center justify-center">
-                <Package className="w-6 h-6 text-bottle-green" />
+              <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center">
+                <Package className="w-6 h-6 text-muted-olive" />
               </div>
             </div>
           </Card>
@@ -404,8 +404,8 @@ const ListingsManagementPage = () => {
                   Overall score
                 </p>
               </div>
-              <div className="w-12 h-12 bg-mint-fresh/10 rounded-2xl flex items-center justify-center">
-                <Star className="w-6 h-6 text-mint-fresh" />
+              <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
+                <Star className="w-6 h-6 text-sage-green" />
               </div>
             </div>
           </Card>
@@ -452,7 +452,7 @@ const ListingsManagementPage = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <tab.icon className={`w-5 h-5 ${
-                        viewMode === tab.id ? 'text-white' : 'text-bottle-green'
+                        viewMode === tab.id ? 'text-white' : 'text-muted-olive'
                       }`} />
                       <span className="font-medium">{tab.label}</span>
                     </div>
@@ -574,7 +574,7 @@ const ListingsManagementPage = () => {
                                 type="checkbox"
                                 checked={selectedListings.size === listings.length && listings.length > 0}
                                 onChange={handleSelectAll}
-                                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                                className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                               />
                               <span className="text-sm font-medium text-text-dark">
                                 Select All
@@ -698,7 +698,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
   const modalConfig = {
     approve: {
       title: 'Approve Listing',
-      color: 'mint-fresh',
+      color: 'sage-green',
       icon: CheckCircle,
       description: 'This listing will be made public and available to customers.',
     },
@@ -716,7 +716,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
     },
     unflag: {
       title: 'Remove Flag',
-      color: 'bottle-green',
+      color: 'muted-olive',
       icon: Shield,
       description: 'Remove the flag from this listing.',
     },
@@ -749,7 +749,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
           <div className="flex-1">
             <h4 className="font-semibold text-text-dark truncate">{listing.title}</h4>
             <p className="text-sm text-text-muted">{listing.vendorName}</p>
-            <p className="text-sm font-medium text-bottle-green">${listing.price}/{listing.unit}</p>
+            <p className="text-sm font-medium text-muted-olive">${listing.price}/{listing.unit}</p>
           </div>
         </div>
 
@@ -757,18 +757,18 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
         <div className={`p-4 rounded-2xl border ${
           config.color === 'tomato-red' ? 'bg-tomato-red/5 border-tomato-red/20' :
           config.color === 'amber-500' ? 'bg-amber-50 border-amber-200' :
-          'bg-mint-fresh/5 border-mint-fresh/20'
+          'bg-sage-green/5 border-sage-green/20'
         }`}>
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
               config.color === 'tomato-red' ? 'bg-tomato-red/10' :
               config.color === 'amber-500' ? 'bg-amber-100' :
-              'bg-mint-fresh/10'
+              'bg-sage-green/10'
             }`}>
               <config.icon className={`w-4 h-4 ${
                 config.color === 'tomato-red' ? 'text-tomato-red' :
                 config.color === 'amber-500' ? 'text-amber-600' :
-                'text-mint-fresh'
+                'text-sage-green'
               }`} />
             </div>
             <p className="text-sm text-text-dark">{config.description}</p>
@@ -781,7 +781,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
             <select
               value={actionData.reason || ''}
               onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               required
             >
               <option value="">Select a reason</option>
@@ -802,7 +802,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
               <select
                 value={actionData.reason || ''}
                 onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
                 required
               >
                 <option value="">Select a reason</option>
@@ -820,7 +820,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
               <select
                 value={actionData.severity || 'medium'}
                 onChange={(e) => setActionData({ ...actionData, severity: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               >
                 <option value="low">Low - Minor concerns</option>
                 <option value="medium">Medium - Moderate issues</option>
@@ -842,7 +842,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
               'Any additional notes...'
             }
             rows={4}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 resize-none"
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
             required={type !== 'approve' && type !== 'unflag'}
           />
         </FormField>
@@ -856,7 +856,7 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
             className={`${
               config.color === 'tomato-red' ? 'bg-tomato-red hover:bg-tomato-red/90' :
               config.color === 'amber-500' ? 'bg-amber-500 hover:bg-amber-500/90' :
-              'bg-mint-fresh hover:bg-mint-fresh/90'
+              'bg-sage-green hover:bg-sage-green/90'
             } text-white flex items-center gap-2`}
           >
             <config.icon className="w-4 h-4" />
@@ -878,7 +878,7 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
     approve: {
       title: 'Bulk Approve Listings',
       description: `Approve ${selectedCount} selected listings?`,
-      color: 'mint-fresh',
+      color: 'sage-green',
       icon: CheckCircle,
     },
     reject: {
@@ -916,9 +916,9 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
         <div className={`p-4 rounded-2xl ${config.dangerous ? 'bg-tomato-red/5 border border-tomato-red/20' : 'bg-gray-50'}`}>
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
-              config.dangerous ? 'bg-tomato-red/10' : 'bg-bottle-green/10'
+              config.dangerous ? 'bg-tomato-red/10' : 'bg-muted-olive/10'
             }`}>
-              <config.icon className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-bottle-green'}`} />
+              <config.icon className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-muted-olive'}`} />
             </div>
             <div>
               <h4 className="font-semibold text-text-dark">{config.title}</h4>
@@ -932,7 +932,7 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
             <select
               value={actionData.reason || ''}
               onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20"
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               required
             >
               <option value="">Select a reason</option>
@@ -951,7 +951,7 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
             onChange={(e) => setActionData({ ...actionData, notes: e.target.value })}
             placeholder="Add notes for this bulk action..."
             rows={3}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 resize-none"
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
             required={config.requiresReason}
           />
         </FormField>
@@ -962,7 +962,7 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
           </Button>
           <Button
             onClick={handleSubmit}
-            className={`${config.dangerous ? 'bg-tomato-red hover:bg-tomato-red/90' : 'bg-bottle-green hover:bg-bottle-green/90'} text-white`}
+            className={`${config.dangerous ? 'bg-tomato-red hover:bg-tomato-red/90' : 'bg-muted-olive hover:bg-muted-olive/90'} text-white`}
           >
             {config.title}
           </Button>

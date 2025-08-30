@@ -104,7 +104,7 @@ describe('Toast Component', () => {
         />
       );
 
-      expect(screen.getByRole('alert')).toHaveClass('bg-mint-fresh/10');
+      expect(screen.getByRole('alert')).toHaveClass('bg-sage-green/10');
 
       rerender(
         <Toast
@@ -346,7 +346,7 @@ describe('Toast Component', () => {
       render(<SuccessToast message="Success!" onClose={vi.fn()} />);
 
       const toast = screen.getByRole('alert');
-      expect(toast).toHaveClass('bg-mint-fresh/10');
+      expect(toast).toHaveClass('bg-sage-green/10');
       expect(screen.getByText('Success!')).toBeInTheDocument();
     });
 

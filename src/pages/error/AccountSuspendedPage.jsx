@@ -27,7 +27,7 @@ const AccountSuspendedPage = () => {
             </a>
             <Link
               to="/"
-              className="bg-white border border-gray-200 text-text-dark px-6 py-3 rounded-2xl font-medium hover:border-bottle-green/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
+              className="bg-white border border-gray-200 text-text-dark px-6 py-3 rounded-2xl font-medium hover:border-muted-olive/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
             >
               <Home className="w-5 h-5" />
               Go Home

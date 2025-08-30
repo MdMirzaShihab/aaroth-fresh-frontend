@@ -10,7 +10,7 @@ const STATUS_OPTIONS = [
     label: 'Active',
     description: 'Listing is live and visible to customers',
     icon: CheckCircle,
-    color: 'text-bottle-green',
+    color: 'text-muted-olive',
   },
   {
     value: 'inactive',
@@ -143,7 +143,7 @@ const ListingStatusModal = ({
                 key={status.value}
                 className={`flex items-start gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${
                   selectedStatus === status.value
-                    ? 'border-bottle-green bg-bottle-green/5'
+                    ? 'border-muted-olive bg-muted-olive/5'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -153,7 +153,7 @@ const ListingStatusModal = ({
                   value={status.value}
                   checked={selectedStatus === status.value}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-4 h-4 text-bottle-green border-gray-300 focus:ring-bottle-green mt-1"
+                  className="w-4 h-4 text-muted-olive border-gray-300 focus:ring-muted-olive mt-1"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ const ListingStatusModal = ({
             onChange={(e) => setReason(e.target.value)}
             placeholder="Why are you changing the status? (e.g., Vendor request, Quality issues, Stock update)"
             rows={3}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
             maxLength={500}
           />
           <div className="text-xs text-text-muted mt-1">
@@ -237,7 +237,7 @@ const ListingStatusModal = ({
             type="submit"
             isLoading={isLoading}
             disabled={selectedStatus === listing?.status}
-            className="bg-bottle-green hover:bg-bottle-green/90 text-white"
+            className="bg-muted-olive hover:bg-muted-olive/90 text-white"
           >
             {isLoading ? 'Updating...' : 'Update Status'}
           </Button>

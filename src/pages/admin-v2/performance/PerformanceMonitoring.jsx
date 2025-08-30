@@ -55,7 +55,7 @@ const PerformanceMetricCard = ({
   change, 
   trend, 
   icon: Icon, 
-  color = 'mint-fresh',
+  color = 'sage-green',
   subtitle,
   status,
   onClick,
@@ -72,13 +72,13 @@ const PerformanceMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
 
   const getStatusColor = () => {
-    if (status === 'healthy') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (status === 'healthy') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (status === 'warning') return 'text-earthy-yellow';
     if (status === 'critical') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
@@ -141,7 +141,7 @@ const PerformanceMetricCard = ({
               {status && (
                 <div className={`
                   w-2 h-2 rounded-full ${
-                    status === 'healthy' ? 'bg-mint-fresh' :
+                    status === 'healthy' ? 'bg-sage-green' :
                     status === 'warning' ? 'bg-earthy-yellow' :
                     status === 'critical' ? 'bg-tomato-red' :
                     'bg-gray-400'
@@ -177,9 +177,9 @@ const SystemStatusIndicator = ({ status, label, value, unit = '', onClick }) => 
     switch (status) {
       case 'healthy':
         return {
-          bg: isDarkMode ? 'bg-mint-fresh/20' : 'bg-mint-fresh/10',
-          text: 'text-mint-fresh',
-          border: 'border-mint-fresh/30',
+          bg: isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10',
+          text: 'text-sage-green',
+          border: 'border-sage-green/30',
           icon: CheckCircle,
         };
       case 'warning':
@@ -252,8 +252,8 @@ const TabNavigation = ({ activeTab, onTabChange, tabs }) => {
             flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium min-h-[44px]
             ${activeTab === tab.id
               ? isDarkMode 
-                ? 'bg-mint-fresh/20 text-mint-fresh shadow-sm'
-                : 'bg-white text-bottle-green shadow-sm'
+                ? 'bg-sage-green/20 text-sage-green shadow-sm'
+                : 'bg-white text-muted-olive shadow-sm'
               : isDarkMode
                 ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
                 : 'text-text-muted hover:text-text-dark hover:bg-white/50'
@@ -373,7 +373,7 @@ const PerformanceMonitoring = () => {
       change: 2.1,
       trend: 'up',
       icon: Activity,
-      color: 'mint-fresh',
+      color: 'sage-green',
       subtitle: 'Overall health score',
       status: systemMetrics.errorRate < 1 && systemMetrics.uptime > 99.5 ? 'healthy' : 'warning',
     },
@@ -409,7 +409,7 @@ const PerformanceMonitoring = () => {
       change: -15.3,
       trend: 'up', // Lower error rate is better
       icon: AlertTriangle,
-      color: systemMetrics.errorRate < 1 ? 'bottle-green' : systemMetrics.errorRate < 3 ? 'earthy-yellow' : 'tomato-red',
+      color: systemMetrics.errorRate < 1 ? 'muted-olive' : systemMetrics.errorRate < 3 ? 'earthy-yellow' : 'tomato-red',
       subtitle: 'Request failures',
       status: systemMetrics.errorRate < 1 ? 'healthy' : systemMetrics.errorRate < 3 ? 'warning' : 'critical',
       threshold: '< 1%',
@@ -568,7 +568,7 @@ const PerformanceMonitoring = () => {
           <div className={`
             flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-medium
             ${connectionStatus === 'connected'
-              ? isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'
+              ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
               : connectionStatus === 'connecting'
                 ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
                 : 'bg-tomato-red/20 text-tomato-red'
@@ -576,7 +576,7 @@ const PerformanceMonitoring = () => {
           `}>
             <div className={`w-2 h-2 rounded-full ${
               connectionStatus === 'connected'
-                ? isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green'
+                ? isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'
                 : connectionStatus === 'connecting'
                   ? 'bg-earthy-yellow animate-pulse'
                   : 'bg-tomato-red'
@@ -885,9 +885,9 @@ const PerformanceMonitoring = () => {
                  adminMetrics.verificationBacklog <= 20 && (
                   <div className={`
                     flex items-center gap-3 p-4 rounded-xl
-                    ${isDarkMode ? 'bg-mint-fresh/5 border border-mint-fresh/20' : 'bg-mint-fresh/5 border border-mint-fresh/20'}
+                    ${isDarkMode ? 'bg-sage-green/5 border border-sage-green/20' : 'bg-sage-green/5 border border-sage-green/20'}
                   `}>
-                    <CheckCircle className="w-5 h-5 text-mint-fresh" />
+                    <CheckCircle className="w-5 h-5 text-sage-green" />
                     <div>
                       <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                         All Systems Operational
@@ -932,12 +932,12 @@ const PerformanceMonitoring = () => {
           `}>
             <div className={`w-1.5 h-1.5 rounded-full ${
               isConnected 
-                ? isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green'
+                ? isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'
                 : 'bg-gray-400'
             } animate-pulse`} />
             Last updated: {format(lastUpdate, 'HH:mm:ss')}
             {isConnected && (
-              <span className="ml-2 px-2 py-0.5 bg-mint-fresh/20 text-mint-fresh rounded-full text-xs font-medium">
+              <span className="ml-2 px-2 py-0.5 bg-sage-green/20 text-sage-green rounded-full text-xs font-medium">
                 Live
               </span>
             )}

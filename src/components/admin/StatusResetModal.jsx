@@ -160,7 +160,7 @@ const StatusResetModal = ({ approval, onClose, onResetStatus, isLoading }) => {
                 <div
                   className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
                     isCurrentlyVerified
-                      ? 'bg-mint-fresh/20 text-bottle-green'
+                      ? 'bg-sage-green/20 text-muted-olive'
                       : 'bg-gray-100 text-gray-600'
                   }`}
                 >

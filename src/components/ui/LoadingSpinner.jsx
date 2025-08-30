@@ -370,7 +370,7 @@ export const ProgressBar = ({
   progress = 0,
   className = '',
   showPercentage = false,
-  color = 'bottle-green',
+  color = 'muted-olive',
   ...props
 }) => {
   const clampedProgress = Math.min(Math.max(progress, 0), 100);

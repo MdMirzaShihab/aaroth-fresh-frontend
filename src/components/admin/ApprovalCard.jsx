@@ -34,7 +34,7 @@ const ApprovalCard = ({
         };
       case 'approved':
         return {
-          className: 'bg-mint-fresh/20 text-bottle-green border-mint-fresh/30',
+          className: 'bg-sage-green/20 text-muted-olive border-sage-green/30',
           icon: CheckCircle,
           text: 'Approved',
         };
@@ -106,7 +106,7 @@ const ApprovalCard = ({
   return (
     <div
       className={`glass rounded-3xl p-6 hover:shadow-soft transition-all duration-200 cursor-pointer group relative ${
-        selected ? 'ring-2 ring-bottle-green bg-bottle-green/5' : ''
+        selected ? 'ring-2 ring-muted-olive bg-muted-olive/5' : ''
       }`}
       onClick={() => onViewDetails(approval)}
     >
@@ -115,8 +115,8 @@ const ApprovalCard = ({
         <div
           className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
             selected
-              ? 'bg-bottle-green border-bottle-green text-white'
-              : 'border-gray-300 hover:border-bottle-green'
+              ? 'bg-muted-olive border-muted-olive text-white'
+              : 'border-gray-300 hover:border-muted-olive'
           }`}
           onClick={(e) => {
             e.stopPropagation();
@@ -255,7 +255,7 @@ const ApprovalCard = ({
             <>
               <Button
                 size="sm"
-                className="flex-1 bg-bottle-green hover:bg-bottle-green/90 text-white"
+                className="flex-1 bg-muted-olive hover:bg-muted-olive/90 text-white"
                 onClick={(e) => {
                   e.stopPropagation();
                   onApprove({ notes: 'Documents verified and approved' });
@@ -307,7 +307,7 @@ const ApprovalCard = ({
         )}
 
       {/* Hover Effect Indicator */}
-      <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-bottle-green/20 transition-all duration-200 pointer-events-none" />
+      <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-muted-olive/20 transition-all duration-200 pointer-events-none" />
     </div>
   );
 };

@@ -75,7 +75,7 @@ const OrderHistory = () => {
         label: 'Shipped',
       },
       delivered: {
-        color: 'bg-mint-fresh/20 text-bottle-green border-mint-fresh/30',
+        color: 'bg-sage-green/20 text-muted-olive border-sage-green/30',
         icon: CheckCircle,
         label: 'Delivered',
       },
@@ -166,7 +166,7 @@ const OrderHistory = () => {
               {formatCurrency(order.totalAmount)}
             </p>
             {order.savedAmount && order.savedAmount > 0 && (
-              <p className="text-sm text-mint-fresh">
+              <p className="text-sm text-sage-green">
                 Saved {formatCurrency(order.savedAmount)}
               </p>
             )}
@@ -174,14 +174,14 @@ const OrderHistory = () => {
 
           <div className="flex items-center gap-2">
             {order.status === 'delivered' && (
-              <button className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium flex items-center gap-1 transition-colors">
+              <button className="text-muted-olive hover:text-muted-olive/80 text-sm font-medium flex items-center gap-1 transition-colors">
                 <Repeat className="w-4 h-4" />
                 Reorder
               </button>
             )}
             <button
               onClick={() => navigate(`/restaurant/orders/${order._id}`)}
-              className="bg-gradient-primary/10 text-bottle-green px-4 py-2 rounded-xl font-medium hover:bg-gradient-primary/20 transition-all duration-200 flex items-center gap-1 touch-target"
+              className="bg-gradient-primary/10 text-muted-olive px-4 py-2 rounded-xl font-medium hover:bg-gradient-primary/20 transition-all duration-200 flex items-center gap-1 touch-target"
             >
               <Eye className="w-4 h-4" />
               View Details
@@ -207,7 +207,7 @@ const OrderHistory = () => {
             onClick={() => {
               /* Export functionality */
             }}
-            className="bg-white border border-gray-200 text-text-dark px-4 py-2 rounded-2xl font-medium hover:border-bottle-green/30 transition-all duration-200 flex items-center gap-2 touch-target"
+            className="bg-white border border-gray-200 text-text-dark px-4 py-2 rounded-2xl font-medium hover:border-muted-olive/30 transition-all duration-200 flex items-center gap-2 touch-target"
           >
             <Download className="w-4 h-4" />
             Export
@@ -231,7 +231,7 @@ const OrderHistory = () => {
               type="text"
               placeholder="Search orders by number, items, or vendor..."
               onChange={handleSearchChange}
-              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
             />
           </div>
 
@@ -241,7 +241,7 @@ const OrderHistory = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
             >
               <option value="">All Status</option>
               <option value="pending">Pending</option>
@@ -256,7 +256,7 @@ const OrderHistory = () => {
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
             >
               <option value="all">All Time</option>
               <option value="today">Today</option>
@@ -269,7 +269,7 @@ const OrderHistory = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+              className="px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -282,8 +282,8 @@ const OrderHistory = () => {
               onClick={() => setShowFilters(!showFilters)}
               className={`p-3 rounded-2xl border transition-all duration-200 touch-target ${
                 showFilters
-                  ? 'bg-bottle-green text-white border-bottle-green'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-bottle-green/30'
+                  ? 'bg-muted-olive text-white border-muted-olive'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-muted-olive/30'
               }`}
             >
               <Filter className="w-5 h-5" />
@@ -312,7 +312,7 @@ const OrderHistory = () => {
             <p className="text-sm text-text-muted">Total Spent</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-mint-fresh">
+            <p className="text-2xl font-bold text-sage-green">
               {formatCurrency(
                 orders.reduce((sum, o) => sum + (o.savedAmount || 0), 0)
               )}
@@ -377,7 +377,7 @@ const OrderHistory = () => {
       {/* Load More */}
       {orders.length > 0 && orders.length % 20 === 0 && (
         <div className="text-center">
-          <button className="bg-white border border-gray-200 text-text-dark px-8 py-3 rounded-2xl font-medium hover:border-bottle-green/30 transition-all duration-200 touch-target">
+          <button className="bg-white border border-gray-200 text-text-dark px-8 py-3 rounded-2xl font-medium hover:border-muted-olive/30 transition-all duration-200 touch-target">
             Load More Orders
           </button>
         </div>

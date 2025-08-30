@@ -89,12 +89,12 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-mint-fresh/20 to-bottle-green/10">
+      <div className="bg-gradient-to-br from-sage-green/20 to-muted-olive/10">
         <div className="max-w-7xl mx-auto px-4 py-20">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-text-dark mb-8">
               Revolutionizing
-              <span className="text-bottle-green block">
+              <span className="text-muted-olive block">
                 Restaurant Sourcing
               </span>
             </h1>
@@ -114,7 +114,7 @@ const AboutPage = () => {
               </button>
               <button
                 onClick={() => navigate('/products')}
-                className="border-2 border-bottle-green text-bottle-green px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-bottle-green hover:text-white transition-all duration-200"
+                className="border-2 border-muted-olive text-muted-olive px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-muted-olive hover:text-white transition-all duration-200"
               >
                 Explore Products
               </button>
@@ -129,7 +129,7 @@ const AboutPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl md:text-5xl font-bold text-bottle-green mb-2">
+                <div className="text-4xl md:text-5xl font-bold text-muted-olive mb-2">
                   {stat.number}
                 </div>
                 <p className="text-text-muted font-medium">{stat.label}</p>
@@ -162,7 +162,7 @@ const AboutPage = () => {
                   connected food ecosystem."
                 </p>
                 <div className="mt-6 pt-6 border-t border-gray-100">
-                  <p className="font-semibold text-bottle-green">
+                  <p className="font-semibold text-muted-olive">
                     — Aaroth Fresh Team
                   </p>
                 </div>
@@ -282,7 +282,7 @@ const AboutPage = () => {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-mint-fresh to-bottle-green rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-sage-green to-muted-olive rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-white">3</span>
               </div>
               <h3 className="text-xl font-bold text-text-dark mb-4">
@@ -298,7 +298,7 @@ const AboutPage = () => {
       </div>
 
       {/* Contact Section */}
-      <div className="bg-gradient-to-br from-bottle-green/10 to-mint-fresh/20 py-20">
+      <div className="bg-gradient-to-br from-muted-olive/10 to-sage-green/20 py-20">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-text-dark mb-6">
@@ -315,7 +315,7 @@ const AboutPage = () => {
               </div>
               <h3 className="text-lg font-bold text-text-dark mb-2">Call Us</h3>
               <p className="text-text-muted">Mon-Fri, 8AM-6PM EST</p>
-              <p className="text-bottle-green font-semibold">1-800-AAROTH-1</p>
+              <p className="text-muted-olive font-semibold">1-800-AAROTH-1</p>
             </Card>
             <Card className="p-6 text-center">
               <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -325,7 +325,7 @@ const AboutPage = () => {
                 Email Us
               </h3>
               <p className="text-text-muted">Response within 24 hours</p>
-              <p className="text-bottle-green font-semibold">
+              <p className="text-muted-olive font-semibold">
                 hello@aarothfresh.com
               </p>
             </Card>

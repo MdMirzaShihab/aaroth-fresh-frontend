@@ -21,7 +21,7 @@ const alertBannerVariants = cva(
     variants: {
       variant: {
         info: 'bg-blue-50/80 border-blue-200/50 text-blue-800',
-        success: 'bg-mint-fresh/10 border-mint-fresh/20 text-bottle-green',
+        success: 'bg-sage-green/10 border-sage-green/20 text-muted-olive',
         warning: 'bg-amber-50/80 border-amber-200/50 text-amber-800',
         error: 'bg-tomato-red/5 border-tomato-red/20 text-tomato-red/90',
         default: 'bg-earthy-beige/20 border-earthy-brown/20 text-text-dark',

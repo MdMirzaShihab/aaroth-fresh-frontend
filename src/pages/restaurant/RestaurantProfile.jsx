@@ -123,7 +123,7 @@ const RestaurantProfile = () => {
               </h3>
               <p className="text-text-muted">Owner: {user?.name}</p>
               <div className="flex items-center gap-2 mt-1">
-                <div className="w-2 h-2 bg-mint-fresh rounded-full"></div>
+                <div className="w-2 h-2 bg-sage-green rounded-full"></div>
                 <span className="text-sm text-text-muted">
                   {user?.isApproved
                     ? 'Verified Restaurant'
@@ -155,7 +155,7 @@ const RestaurantProfile = () => {
                       }))
                     }
                     disabled={!isEditing}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                     placeholder="Enter restaurant name"
                   />
                 </div>
@@ -174,7 +174,7 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                 >
                   <option value="">Select restaurant type</option>
                   <option value="fine-dining">Fine Dining</option>
@@ -200,7 +200,7 @@ const RestaurantProfile = () => {
                   }
                   disabled={!isEditing}
                   rows={3}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                   placeholder="Tell us about your restaurant..."
                 />
               </div>
@@ -232,7 +232,7 @@ const RestaurantProfile = () => {
                       }))
                     }
                     disabled={!isEditing}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                     placeholder="Street address"
                   />
                 </div>
@@ -254,7 +254,7 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                   placeholder="City"
                 />
               </div>
@@ -275,7 +275,7 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                   placeholder="Area"
                 />
               </div>
@@ -296,7 +296,7 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
                   placeholder="Postal code"
                 />
               </div>
@@ -340,7 +340,7 @@ const RestaurantProfile = () => {
                             }
                           }}
                           disabled={!isEditing}
-                          className="text-bottle-green focus:ring-bottle-green/20 rounded"
+                          className="text-muted-olive focus:ring-muted-olive/20 rounded"
                         />
                         <span className="text-sm text-text-muted">Open</span>
                       </label>
@@ -362,7 +362,7 @@ const RestaurantProfile = () => {
                               }
                             }}
                             disabled={!isEditing}
-                            className="px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green disabled:bg-gray-50"
+                            className="px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive disabled:bg-gray-50"
                           />
                           <span className="text-text-muted">to</span>
                           <input
@@ -383,7 +383,7 @@ const RestaurantProfile = () => {
                               }
                             }}
                             disabled={!isEditing}
-                            className="px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green disabled:bg-gray-50"
+                            className="px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive disabled:bg-gray-50"
                           />
                         </>
                       )}

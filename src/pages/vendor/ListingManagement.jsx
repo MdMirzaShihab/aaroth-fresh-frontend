@@ -212,7 +212,7 @@ const ListingManagement = () => {
   // Get status styling
   const getStatusColor = (status) => {
     const colors = {
-      active: 'text-bottle-green bg-mint-fresh/20',
+      active: 'text-muted-olive bg-sage-green/20',
       inactive: 'text-gray-600 bg-gray-100',
       out_of_stock: 'text-tomato-red bg-tomato-red/20',
       pending: 'text-orange-600 bg-orange-50',
@@ -275,8 +275,8 @@ const ListingManagement = () => {
           {stats && (
             <div className="flex flex-wrap items-center gap-4 mt-3 text-sm">
               <div className="flex items-center gap-1">
-                <CheckCircle className="w-4 h-4 text-bottle-green" />
-                <span className="text-bottle-green font-medium">
+                <CheckCircle className="w-4 h-4 text-muted-olive" />
+                <span className="text-muted-olive font-medium">
                   {stats.activeListings || 0} Active
                 </span>
               </div>
@@ -356,7 +356,7 @@ const ListingManagement = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               >
                 {statusOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -373,7 +373,7 @@ const ListingManagement = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -390,7 +390,7 @@ const ListingManagement = () => {
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20"
+                className="w-full px-3 py-2 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               >
                 <option value="desc">Newest First</option>
                 <option value="asc">Oldest First</option>
@@ -410,7 +410,7 @@ const ListingManagement = () => {
                   listings.length > 0
                 }
                 onChange={handleSelectAll}
-                className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
               />
               <span className="text-sm text-text-muted">
                 Select all {listings.length} listings
@@ -458,20 +458,20 @@ const ListingManagement = () => {
                           listings.length > 0
                         }
                         onChange={handleSelectAll}
-                        className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                        className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                       />
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-text-dark">
                       Product
                     </th>
                     <th
-                      className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-bottle-green"
+                      className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-muted-olive"
                       onClick={() => handleSort('price')}
                     >
                       Price
                     </th>
                     <th
-                      className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-bottle-green"
+                      className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-muted-olive"
                       onClick={() => handleSort('availableQuantity')}
                     >
                       Stock
@@ -480,7 +480,7 @@ const ListingManagement = () => {
                       Status
                     </th>
                     <th
-                      className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-bottle-green"
+                      className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-muted-olive"
                       onClick={() => handleSort('updatedAt')}
                     >
                       Last Updated
@@ -501,7 +501,7 @@ const ListingManagement = () => {
                           type="checkbox"
                           checked={selectedListings.has(listing.id)}
                           onChange={() => handleSelectListing(listing.id)}
-                          className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                          className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                         />
                       </td>
                       <td className="px-6 py-4">
@@ -569,7 +569,7 @@ const ListingManagement = () => {
                             onClick={() =>
                               navigate(`/vendor/listings/${listing.id}`)
                             }
-                            className="p-2 text-text-muted hover:text-bottle-green rounded-lg transition-colors"
+                            className="p-2 text-text-muted hover:text-muted-olive rounded-lg transition-colors"
                             title="View details"
                           >
                             <Eye className="w-4 h-4" />
@@ -609,14 +609,14 @@ const ListingManagement = () => {
             {listings.map((listing) => (
               <Card
                 key={listing.id}
-                className={`p-4 ${selectedListings.has(listing.id) ? 'ring-2 ring-bottle-green/30 bg-bottle-green/5' : ''}`}
+                className={`p-4 ${selectedListings.has(listing.id) ? 'ring-2 ring-muted-olive/30 bg-muted-olive/5' : ''}`}
               >
                 <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
                     checked={selectedListings.has(listing.id)}
                     onChange={() => handleSelectListing(listing.id)}
-                    className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green mt-1"
+                    className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive mt-1"
                   />
 
                   <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
@@ -660,7 +660,7 @@ const ListingManagement = () => {
                           onClick={() =>
                             navigate(`/vendor/listings/${listing.id}`)
                           }
-                          className="p-2 text-text-muted hover:text-bottle-green rounded-lg transition-colors"
+                          className="p-2 text-text-muted hover:text-muted-olive rounded-lg transition-colors"
                           title="View details"
                         >
                           <Eye className="w-4 h-4" />

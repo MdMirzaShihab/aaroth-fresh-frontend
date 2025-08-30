@@ -51,7 +51,7 @@ const AnalyticsMetricCard = ({
   change, 
   trend, 
   icon: Icon, 
-  color = 'bottle-green',
+  color = 'muted-olive',
   subtitle,
   onClick,
   isLoading = false 
@@ -65,7 +65,7 @@ const AnalyticsMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -143,8 +143,8 @@ const TabNavigation = ({ activeTab, onTabChange, tabs }) => {
             flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium min-h-[44px]
             ${activeTab === tab.id
               ? isDarkMode 
-                ? 'bg-mint-fresh/20 text-mint-fresh shadow-sm'
-                : 'bg-white text-bottle-green shadow-sm'
+                ? 'bg-sage-green/20 text-sage-green shadow-sm'
+                : 'bg-white text-muted-olive shadow-sm'
               : isDarkMode
                 ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
                 : 'text-text-muted hover:text-text-dark hover:bg-white/50'
@@ -221,7 +221,7 @@ const BusinessAnalytics = () => {
         change: data.revenueGrowth || 18.5,
         trend: (data.revenueGrowth || 18.5) > 0 ? 'up' : 'down',
         icon: DollarSign,
-        color: 'mint-fresh',
+        color: 'sage-green',
         subtitle: `${timeRange} period`,
       },
       {
@@ -271,7 +271,7 @@ const BusinessAnalytics = () => {
         change: data.satisfactionGrowth || 5.2,
         trend: (data.satisfactionGrowth || 5.2) > 0 ? 'up' : 'down',
         icon: Star,
-        color: 'bottle-green',
+        color: 'muted-olive',
         subtitle: 'Platform rating',
       },
     ];
@@ -352,10 +352,8 @@ const BusinessAnalytics = () => {
       <EmptyState
         title="Failed to load analytics"
         description="There was an error loading analytics data. Please try again."
-        action={{
-          label: 'Retry',
-          onClick: handleRefresh,
-        }}
+        actionLabel="Retry"
+        onAction={handleRefresh}
       />
     );
   }
@@ -378,9 +376,9 @@ const BusinessAnalytics = () => {
           {isConnected && (
             <div className={`
               flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-medium
-              ${isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'}
+              ${isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'}
             `}>
-              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green'} animate-pulse`} />
+              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'} animate-pulse`} />
               Live Data
             </div>
           )}
@@ -523,7 +521,7 @@ const BusinessAnalytics = () => {
                   </div>
                   <div className={`
                     px-3 py-1 rounded-xl text-sm font-medium
-                    ${isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'}
+                    ${isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'}
                   `}>
                     Excellent
                   </div>
@@ -537,7 +535,7 @@ const BusinessAnalytics = () => {
                         ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}
                       `}></div>
                       <div className={`
-                        absolute inset-0 rounded-full border-8 border-mint-fresh border-t-transparent
+                        absolute inset-0 rounded-full border-8 border-sage-green border-t-transparent
                         transform rotate-[${(overviewData?.data?.healthScore || 87) * 3.6}deg]
                         transition-transform duration-1000 ease-out
                       `}></div>
@@ -585,10 +583,10 @@ const BusinessAnalytics = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className={`
                   p-4 rounded-xl border
-                  ${isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20'}
+                  ${isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'}
                 `}>
                   <div className="flex items-center gap-3 mb-2">
-                    <TrendingUp className="w-5 h-5 text-mint-fresh" />
+                    <TrendingUp className="w-5 h-5 text-sage-green" />
                     <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                       Growth Acceleration
                     </span>
@@ -669,12 +667,12 @@ const BusinessAnalytics = () => {
           `}>
             <div className={`w-1.5 h-1.5 rounded-full ${
               isConnected 
-                ? isDarkMode ? 'bg-mint-fresh' : 'bg-bottle-green'
+                ? isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'
                 : 'bg-gray-400'
             } animate-pulse`} />
             Last updated: {format(lastUpdate, 'HH:mm:ss')}
             {isConnected && (
-              <span className="ml-2 px-2 py-0.5 bg-mint-fresh/20 text-mint-fresh rounded-full text-xs font-medium">
+              <span className="ml-2 px-2 py-0.5 bg-sage-green/20 text-sage-green rounded-full text-xs font-medium">
                 Live
               </span>
             )}

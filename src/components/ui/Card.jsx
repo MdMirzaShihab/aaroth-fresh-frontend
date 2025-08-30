@@ -38,7 +38,7 @@ const getCardVariants = (isDarkMode) => cva(
         // Gradient - Earth-tone gradient (dark mode adaptation)
         gradient: isDarkMode
           ? 'bg-gradient-to-br from-dark-olive-surface via-dark-olive-bg to-dark-sage-accent/10 border-dark-olive-border/50 shadow-dark-depth-1 hover:shadow-dark-depth-3'
-          : 'bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 border-white/50 shadow-sm hover:shadow-xl',
+          : 'bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 border-white/50 shadow-sm hover:shadow-xl',
 
         // Interactive - For clickable cards with olive theme (dark mode)
         interactive: isDarkMode
@@ -251,7 +251,7 @@ const ProductCard = forwardRef(
 
           {/* Discount */}
           {discount && (
-            <div className="absolute top-3 right-3 bg-mint-fresh text-bottle-green px-2 py-1 rounded-full text-xs font-medium">
+            <div className="absolute top-3 right-3 bg-sage-green text-muted-olive px-2 py-1 rounded-full text-xs font-medium">
               {discount}% OFF
             </div>
           )}

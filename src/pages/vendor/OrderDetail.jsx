@@ -93,7 +93,7 @@ const OrderDetail = () => {
     {
       value: 'delivered',
       label: 'Order Delivered',
-      color: 'text-bottle-green bg-mint-fresh/20',
+      color: 'text-muted-olive bg-sage-green/20',
       icon: CheckCircle,
       description: 'Order has been successfully delivered',
     },
@@ -180,7 +180,7 @@ const OrderDetail = () => {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="flex items-center gap-3">
-          <RefreshCw className="w-6 h-6 animate-spin text-bottle-green" />
+          <RefreshCw className="w-6 h-6 animate-spin text-muted-olive" />
           <span className="text-lg font-medium text-text-dark">
             Loading order details...
           </span>
@@ -232,7 +232,7 @@ const OrderDetail = () => {
         </p>
         <button
           onClick={() => navigate('/vendor/orders')}
-          className="bg-bottle-green text-white px-6 py-3 rounded-2xl font-medium hover:opacity-90 transition-opacity"
+          className="bg-muted-olive text-white px-6 py-3 rounded-2xl font-medium hover:opacity-90 transition-opacity"
         >
           Back to Orders
         </button>
@@ -292,7 +292,7 @@ const OrderDetail = () => {
             order.status !== 'cancelled' && (
               <button
                 onClick={() => setShowStatusUpdate(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-bottle-green hover:bg-bottle-green/90 text-white rounded-2xl font-medium transition-all duration-200"
+                className="flex items-center gap-2 px-6 py-3 bg-muted-olive hover:bg-muted-olive/90 text-white rounded-2xl font-medium transition-all duration-200"
               >
                 <Edit3 className="w-4 h-4" />
                 Update Status
@@ -321,7 +321,7 @@ const OrderDetail = () => {
                     value={status.value}
                     checked={selectedStatus === status.value}
                     onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="text-bottle-green focus:ring-bottle-green/20"
+                    className="text-muted-olive focus:ring-muted-olive/20"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -347,7 +347,7 @@ const OrderDetail = () => {
                 onChange={(e) => setStatusNotes(e.target.value)}
                 placeholder="Add any notes about this status update..."
                 rows={3}
-                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-bottle-green/20 focus:bg-white transition-all duration-200 resize-none"
+                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200 resize-none"
               />
             </div>
 
@@ -367,7 +367,7 @@ const OrderDetail = () => {
                   selectedStatus && handleStatusUpdate(selectedStatus)
                 }
                 disabled={!selectedStatus}
-                className="flex-1 px-4 py-3 bg-bottle-green hover:bg-bottle-green/90 text-white rounded-2xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 bg-muted-olive hover:bg-muted-olive/90 text-white rounded-2xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Update Status
               </button>
@@ -382,7 +382,7 @@ const OrderDetail = () => {
           {/* Customer Information */}
           <div className="bg-white rounded-3xl shadow-soft p-6">
             <h3 className="text-xl font-bold text-text-dark mb-6 flex items-center gap-3">
-              <User className="w-6 h-6 text-bottle-green" />
+              <User className="w-6 h-6 text-muted-olive" />
               Customer Information
             </h3>
 
@@ -471,7 +471,7 @@ const OrderDetail = () => {
           {/* Order Items */}
           <div className="bg-white rounded-3xl shadow-soft p-6">
             <h3 className="text-xl font-bold text-text-dark mb-6 flex items-center gap-3">
-              <Package className="w-6 h-6 text-bottle-green" />
+              <Package className="w-6 h-6 text-muted-olive" />
               Order Items
             </h3>
 
@@ -568,7 +568,7 @@ const OrderDetail = () => {
           {order.notes && (
             <div className="bg-white rounded-3xl shadow-soft p-6">
               <h3 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-3">
-                <MessageSquare className="w-6 h-6 text-bottle-green" />
+                <MessageSquare className="w-6 h-6 text-muted-olive" />
                 Special Instructions
               </h3>
               <div className="bg-amber-50/80 rounded-2xl p-4">
@@ -583,7 +583,7 @@ const OrderDetail = () => {
           {/* Status Timeline */}
           <div className="bg-white rounded-3xl shadow-soft p-6">
             <h3 className="text-xl font-bold text-text-dark mb-6 flex items-center gap-3">
-              <Clock className="w-6 h-6 text-bottle-green" />
+              <Clock className="w-6 h-6 text-muted-olive" />
               Order Timeline
             </h3>
 
@@ -604,8 +604,8 @@ const OrderDetail = () => {
                       className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
                         isCompleted
                           ? isCurrent
-                            ? 'bg-bottle-green text-white'
-                            : 'bg-mint-fresh/40 text-bottle-green'
+                            ? 'bg-muted-olive text-white'
+                            : 'bg-sage-green/40 text-muted-olive'
                           : 'bg-gray-100 text-text-muted'
                       }`}
                     >
@@ -645,7 +645,7 @@ const OrderDetail = () => {
           {workflowSteps.length > 0 && !workflowLoading && (
             <div className="bg-white rounded-3xl shadow-soft p-6">
               <h3 className="text-xl font-bold text-text-dark mb-6 flex items-center gap-3">
-                <CheckCircle className="w-6 h-6 text-bottle-green" />
+                <CheckCircle className="w-6 h-6 text-muted-olive" />
                 Fulfillment Checklist
               </h3>
 
@@ -658,7 +658,7 @@ const OrderDetail = () => {
                       onChange={(e) =>
                         handleStepUpdate(step.id, e.target.checked, step.notes)
                       }
-                      className="w-5 h-5 text-bottle-green bg-gray-100 border-gray-300 rounded focus:ring-bottle-green/20 focus:ring-2 mt-0.5"
+                      className="w-5 h-5 text-muted-olive bg-gray-100 border-gray-300 rounded focus:ring-muted-olive/20 focus:ring-2 mt-0.5"
                     />
                     <div className="flex-1">
                       <div

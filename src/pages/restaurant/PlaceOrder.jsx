@@ -172,7 +172,7 @@ const PlaceOrder = () => {
               {stepNum < 4 && (
                 <div
                   className={`hidden sm:block w-16 h-0.5 ml-4 ${
-                    step > stepNum ? 'bg-bottle-green' : 'bg-gray-200'
+                    step > stepNum ? 'bg-muted-olive' : 'bg-gray-200'
                   }`}
                 />
               )}
@@ -204,7 +204,7 @@ const PlaceOrder = () => {
                   >
                     <div className="flex items-center gap-4">
                       {/* Product Image */}
-                      <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-mint-fresh/10 rounded-xl overflow-hidden flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl overflow-hidden flex-shrink-0">
                         {item.image ? (
                           <img
                             src={item.image}
@@ -276,7 +276,7 @@ const PlaceOrder = () => {
               <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => navigate('/restaurant/browse')}
-                  className="text-bottle-green dark:text-green-400 hover:text-bottle-green/80 dark:hover:text-green-300 font-medium transition-colors"
+                  className="text-muted-olive dark:text-green-400 hover:text-muted-olive/80 dark:hover:text-green-300 font-medium transition-colors"
                 >
                   Continue Shopping
                 </button>
@@ -313,7 +313,7 @@ const PlaceOrder = () => {
                     }
                     placeholder="Enter your complete delivery address"
                     rows={3}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
                     required
                   />
                 </div>
@@ -333,7 +333,7 @@ const PlaceOrder = () => {
                       }))
                     }
                     placeholder="+880 1712-345-678"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
                     required
                   />
                 </div>
@@ -356,7 +356,7 @@ const PlaceOrder = () => {
                             preferredDeliveryTime: e.target.value,
                           }))
                         }
-                        className="text-bottle-green focus:ring-bottle-green/20"
+                        className="text-muted-olive focus:ring-muted-olive/20"
                       />
                       <span className="text-text-dark dark:text-white">
                         As soon as possible
@@ -376,7 +376,7 @@ const PlaceOrder = () => {
                             preferredDeliveryTime: e.target.value,
                           }))
                         }
-                        className="text-bottle-green focus:ring-bottle-green/20"
+                        className="text-muted-olive focus:ring-muted-olive/20"
                       />
                       <span className="text-text-dark dark:text-white">
                         Schedule for later
@@ -393,7 +393,7 @@ const PlaceOrder = () => {
                           }))
                         }
                         min={new Date().toISOString().slice(0, 16)}
-                        className="ml-6 px-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+                        className="ml-6 px-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
                       />
                     )}
                   </div>
@@ -414,7 +414,7 @@ const PlaceOrder = () => {
                     }
                     placeholder="Any special delivery instructions..."
                     rows={2}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
                   />
                 </div>
               </div>
@@ -445,14 +445,14 @@ const PlaceOrder = () => {
               </h2>
 
               <div className="space-y-4">
-                <label className="flex items-center p-4 bg-white/50 border border-gray-200 rounded-2xl cursor-pointer hover:border-bottle-green/30 transition-all duration-200">
+                <label className="flex items-center p-4 bg-white/50 border border-gray-200 rounded-2xl cursor-pointer hover:border-muted-olive/30 transition-all duration-200">
                   <input
                     type="radio"
                     name="paymentMethod"
                     value="cash"
                     checked={paymentMethod === 'cash'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="text-bottle-green focus:ring-bottle-green/20 mr-4"
+                    className="text-muted-olive focus:ring-muted-olive/20 mr-4"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
@@ -469,13 +469,13 @@ const PlaceOrder = () => {
                   </div>
                 </label>
 
-                <label className="flex items-center p-4 bg-white/50 border border-gray-200 rounded-2xl cursor-pointer hover:border-bottle-green/30 transition-all duration-200 opacity-50">
+                <label className="flex items-center p-4 bg-white/50 border border-gray-200 rounded-2xl cursor-pointer hover:border-muted-olive/30 transition-all duration-200 opacity-50">
                   <input
                     type="radio"
                     name="paymentMethod"
                     value="card"
                     disabled
-                    className="text-bottle-green focus:ring-bottle-green/20 mr-4"
+                    className="text-muted-olive focus:ring-muted-olive/20 mr-4"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
@@ -495,13 +495,13 @@ const PlaceOrder = () => {
                   </div>
                 </label>
 
-                <label className="flex items-center p-4 bg-white/50 border border-gray-200 rounded-2xl cursor-pointer hover:border-bottle-green/30 transition-all duration-200 opacity-50">
+                <label className="flex items-center p-4 bg-white/50 border border-gray-200 rounded-2xl cursor-pointer hover:border-muted-olive/30 transition-all duration-200 opacity-50">
                   <input
                     type="radio"
                     name="paymentMethod"
                     value="mobile"
                     disabled
-                    className="text-bottle-green focus:ring-bottle-green/20 mr-4"
+                    className="text-muted-olive focus:ring-muted-olive/20 mr-4"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
@@ -555,7 +555,7 @@ const PlaceOrder = () => {
                     </h3>
                     <button
                       onClick={() => setStep(2)}
-                      className="text-bottle-green dark:text-green-400 hover:text-bottle-green/80 dark:hover:text-green-300 text-sm font-medium"
+                      className="text-muted-olive dark:text-green-400 hover:text-muted-olive/80 dark:hover:text-green-300 text-sm font-medium"
                     >
                       <Edit className="w-4 h-4 inline mr-1" />
                       Edit
@@ -603,7 +603,7 @@ const PlaceOrder = () => {
                     </h3>
                     <button
                       onClick={() => setStep(3)}
-                      className="text-bottle-green dark:text-green-400 hover:text-bottle-green/80 dark:hover:text-green-300 text-sm font-medium"
+                      className="text-muted-olive dark:text-green-400 hover:text-muted-olive/80 dark:hover:text-green-300 text-sm font-medium"
                     >
                       <Edit className="w-4 h-4 inline mr-1" />
                       Change
@@ -669,7 +669,7 @@ const PlaceOrder = () => {
                 </span>
                 <span className="font-medium text-text-dark dark:text-white">
                   {deliveryFee === 0 ? (
-                    <span className="text-mint-fresh dark:text-green-400">
+                    <span className="text-sage-green dark:text-green-400">
                       Free
                     </span>
                   ) : (

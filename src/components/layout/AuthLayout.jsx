@@ -29,11 +29,11 @@ const AuthLayout = ({
       case 'vendor':
         return 'bg-gradient-to-br from-earthy-beige via-white to-earthy-yellow/10';
       case 'restaurant':
-        return 'bg-gradient-to-br from-mint-fresh/10 via-white to-earthy-beige/20';
+        return 'bg-gradient-to-br from-sage-green/10 via-white to-earthy-beige/20';
       case 'admin':
-        return 'bg-gradient-to-br from-bottle-green/5 via-white to-earthy-beige/10';
+        return 'bg-gradient-to-br from-muted-olive/5 via-white to-earthy-beige/10';
       default:
-        return 'bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10';
+        return 'bg-gradient-to-br from-earthy-beige via-white to-sage-green/10';
     }
   };
 
@@ -44,8 +44,8 @@ const AuthLayout = ({
       {/* Background Pattern - Subtle organic shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-earthy-yellow/5 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-mint-fresh/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-1/3 w-32 h-32 bg-bottle-green/5 rounded-full blur-2xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-sage-green/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-1/3 w-32 h-32 bg-muted-olive/5 rounded-full blur-2xl"></div>
       </div>
 
       <div className="relative w-full max-w-md z-10">
@@ -54,7 +54,7 @@ const AuthLayout = ({
           {/* Logo */}
           <Link
             to="/"
-            className="inline-flex items-center gap-3 mb-8 group focus:outline-none focus:ring-2 focus:ring-bottle-green/40 focus:ring-offset-4 rounded-2xl"
+            className="inline-flex items-center gap-3 mb-8 group focus:outline-none focus:ring-2 focus:ring-muted-olive/40 focus:ring-offset-4 rounded-2xl"
           >
             <div className="p-3 rounded-2xl shadow-lg group-hover:shadow-xl group-hover:shadow-glow-green/20 transition-all duration-300 group-hover:scale-105">
               <img
@@ -64,7 +64,7 @@ const AuthLayout = ({
               />
             </div>
             <div className="text-left">
-              <h1 className="text-2xl font-medium text-text-dark group-hover:text-bottle-green transition-colors duration-300">
+              <h1 className="text-2xl font-medium text-text-dark group-hover:text-muted-olive transition-colors duration-300">
                 Aaroth Fresh
               </h1>
               <p className="text-sm text-text-muted">B2B Marketplace</p>
@@ -75,7 +75,7 @@ const AuthLayout = ({
           {showBackButton && (
             <Link
               to={backButtonPath}
-              className="inline-flex items-center gap-2 text-text-muted hover:text-bottle-green text-sm transition-colors duration-200 mb-6 focus:outline-none focus:underline"
+              className="inline-flex items-center gap-2 text-text-muted hover:text-muted-olive text-sm transition-colors duration-200 mb-6 focus:outline-none focus:underline"
             >
               <ArrowLeft className="w-4 h-4" />
               {backButtonText}
@@ -105,21 +105,21 @@ const AuthLayout = ({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-text-muted/80">
             <Link
               to="/privacy"
-              className="hover:text-bottle-green transition-colors duration-200 focus:outline-none focus:underline"
+              className="hover:text-muted-olive transition-colors duration-200 focus:outline-none focus:underline"
             >
               Privacy Policy
             </Link>
             <span className="hidden sm:inline text-text-muted/60">•</span>
             <Link
               to="/terms"
-              className="hover:text-bottle-green transition-colors duration-200 focus:outline-none focus:underline"
+              className="hover:text-muted-olive transition-colors duration-200 focus:outline-none focus:underline"
             >
               Terms of Service
             </Link>
             <span className="hidden sm:inline text-text-muted/60">•</span>
             <Link
               to="/support"
-              className="hover:text-bottle-green transition-colors duration-200 focus:outline-none focus:underline"
+              className="hover:text-muted-olive transition-colors duration-200 focus:outline-none focus:underline"
             >
               Support
             </Link>

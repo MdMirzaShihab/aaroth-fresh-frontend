@@ -202,11 +202,11 @@ export { cn } from '../../utils';
 export const DesignSystem = {
   // Color variants for consistent theming
   variants: {
-    success: 'mint-fresh',
+    success: 'sage-green',
     error: 'tomato-red',
     warning: 'earthy-yellow',
     info: 'blue',
-    primary: 'bottle-green',
+    primary: 'muted-olive',
     secondary: 'earthy-brown',
     default: 'text-dark',
   },

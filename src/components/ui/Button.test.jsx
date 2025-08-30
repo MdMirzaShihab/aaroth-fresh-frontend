@@ -28,7 +28,7 @@ describe('Button Component', () => {
     expect(screen.getByRole('button')).toHaveClass('border-2');
 
     rerender(<Button variant="ghost">Ghost</Button>);
-    expect(screen.getByRole('button')).toHaveClass('text-bottle-green');
+    expect(screen.getByRole('button')).toHaveClass('text-muted-olive');
   });
 
   it('applies different sizes correctly', () => {
@@ -164,7 +164,7 @@ describe('Button Component', () => {
       expect(screen.getByRole('button')).toHaveClass('text-white');
 
       rerender(<Button variant="outline">Outline</Button>);
-      expect(screen.getByRole('button')).toHaveClass('text-bottle-green');
+      expect(screen.getByRole('button')).toHaveClass('text-muted-olive');
     });
 
     it('maintains focus visibility', async () => {

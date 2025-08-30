@@ -60,7 +60,7 @@ const ProductMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-mint-fresh' : 'text-bottle-green';
+    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -118,7 +118,7 @@ const ProductMetricCard = ({
               <div className={`
                 inline-flex px-2 py-1 rounded text-xs font-medium
                 ${status === 'healthy' 
-                  ? isDarkMode ? 'bg-mint-fresh/20 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'
+                  ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
                   : status === 'warning'
                     ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
                     : 'bg-tomato-red/10 text-tomato-red'
@@ -171,7 +171,7 @@ const TopProductItem = ({ product, rank, metric = 'revenue' }) => {
         #{rank}
       </div>
       
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                       flex items-center justify-center shadow-lg">
         <Leaf className="w-5 h-5 text-white" />
       </div>
@@ -484,8 +484,8 @@ const ProductAnalytics = ({
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
                   ${chartView === view.id
                     ? isDarkMode 
-                      ? 'bg-mint-fresh/20 text-mint-fresh'
-                      : 'bg-white text-bottle-green shadow-sm'
+                      ? 'bg-sage-green/20 text-sage-green'
+                      : 'bg-white text-muted-olive shadow-sm'
                     : isDarkMode
                       ? 'text-gray-400 hover:text-gray-300'
                       : 'text-text-muted hover:text-text-dark'
@@ -528,7 +528,7 @@ const ProductAnalytics = ({
           change={5.7}
           trend="up"
           icon={Eye}
-          color="mint-fresh"
+          color="sage-green"
           subtitle="In stock"
           status="healthy"
           isLoading={isLoading}
@@ -559,7 +559,7 @@ const ProductAnalytics = ({
           change={3.1}
           trend="up"
           icon={Star}
-          color="bottle-green"
+          color="muted-olive"
           subtitle="Platform wide"
           isLoading={isLoading}
         />
@@ -771,7 +771,7 @@ const ProductAnalytics = ({
               className={`
                 p-4 rounded-xl border cursor-pointer transition-all duration-200
                 ${selectedCategory?.name === category.name
-                  ? isDarkMode ? 'border-mint-fresh/50 bg-mint-fresh/5' : 'border-bottle-green/50 bg-bottle-green/5'
+                  ? isDarkMode ? 'border-sage-green/50 bg-sage-green/5' : 'border-muted-olive/50 bg-muted-olive/5'
                   : isDarkMode ? 'border-gray-700 hover:border-gray-600 bg-gray-700/30' : 'border-gray-200 hover:border-gray-300 bg-gray-50'
                 }
               `}
@@ -784,7 +784,7 @@ const ProductAnalytics = ({
                   <Tags className="w-4 h-4" style={{ color: category.color }} />
                 </div>
                 <div className={`flex items-center gap-1 ${
-                  category.growth > 0 ? 'text-mint-fresh' : 'text-tomato-red'
+                  category.growth > 0 ? 'text-sage-green' : 'text-tomato-red'
                 }`}>
                   {category.growth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                   <span className="text-xs font-medium">{category.growth.toFixed(1)}%</span>
@@ -823,7 +823,7 @@ const ProductAnalytics = ({
           exit={{ opacity: 0, y: -20 }}
         >
           <Card className={`p-6 ${
-            isDarkMode ? 'bg-gray-800/50 border-mint-fresh/20' : 'bg-white/80 border-bottle-green/20'
+            isDarkMode ? 'bg-gray-800/50 border-sage-green/20' : 'bg-white/80 border-muted-olive/20'
           }`}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -899,10 +899,10 @@ const ProductAnalytics = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className={`
             p-4 rounded-xl border
-            ${isDarkMode ? 'bg-mint-fresh/5 border-mint-fresh/20' : 'bg-mint-fresh/5 border-mint-fresh/20'}
+            ${isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'}
           `}>
             <div className="flex items-center gap-3 mb-2">
-              <TrendingUp className="w-5 h-5 text-mint-fresh" />
+              <TrendingUp className="w-5 h-5 text-sage-green" />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 Best Performers
               </span>
@@ -935,10 +935,10 @@ const ProductAnalytics = ({
 
           <div className={`
             p-4 rounded-xl border
-            ${isDarkMode ? 'bg-bottle-green/5 border-bottle-green/20' : 'bg-bottle-green/5 border-bottle-green/20'}
+            ${isDarkMode ? 'bg-muted-olive/5 border-muted-olive/20' : 'bg-muted-olive/5 border-muted-olive/20'}
           `}>
             <div className="flex items-center gap-3 mb-2">
-              <Star className="w-5 h-5 text-bottle-green" />
+              <Star className="w-5 h-5 text-muted-olive" />
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
                 Quality Metrics
               </span>

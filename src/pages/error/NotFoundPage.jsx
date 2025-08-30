@@ -13,7 +13,7 @@ const NotFoundPage = () => {
             alt="Aaroth Fresh"
             className="w-16 h-16 mx-auto mb-6 opacity-80"
           />
-          <div className="text-8xl font-bold text-bottle-green mb-4">404</div>
+          <div className="text-8xl font-bold text-muted-olive mb-4">404</div>
           <h1 className="text-3xl font-bold text-text-dark mb-4">
             Page Not Found
           </h1>
@@ -23,7 +23,7 @@ const NotFoundPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => window.history.back()}
-              className="bg-white border border-gray-200 text-text-dark px-6 py-3 rounded-2xl font-medium hover:border-bottle-green/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
+              className="bg-white border border-gray-200 text-text-dark px-6 py-3 rounded-2xl font-medium hover:border-muted-olive/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
             >
               <ArrowLeft className="w-5 h-5" />
               Go Back

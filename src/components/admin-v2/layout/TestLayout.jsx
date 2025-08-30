@@ -22,14 +22,14 @@ const TestLayout = () => {
           <div className="space-y-4">
             <div className={`
               p-4 rounded-2xl 
-              ${isDarkMode ? 'bg-dark-sage-accent/10 text-dark-sage-accent' : 'bg-sage-green/10 text-bottle-green'}
+              ${isDarkMode ? 'bg-dark-sage-accent/10 text-dark-sage-accent' : 'bg-sage-green/10 text-muted-olive'}
             `}>
               ✅ <strong>Glassmorphic Design System:</strong> Working perfectly
             </div>
             
             <div className={`
               p-4 rounded-2xl 
-              ${isDarkMode ? 'bg-mint-fresh/10 text-mint-fresh' : 'bg-mint-fresh/10 text-bottle-green'}
+              ${isDarkMode ? 'bg-sage-green/10 text-sage-green' : 'bg-sage-green/10 text-muted-olive'}
             `}>
               ✅ <strong>Theme System Integration:</strong> Dark/Light modes active
             </div>
@@ -42,7 +42,7 @@ const TestLayout = () => {
             </div>
           </div>
 
-          <div className="mt-8 p-6 bg-gradient-to-br from-bottle-green/5 to-sage-green/5 rounded-2xl border border-sage-green/20">
+          <div className="mt-8 p-6 bg-gradient-to-br from-muted-olive/5 to-sage-green/5 rounded-2xl border border-sage-green/20">
             <h2 className={`text-xl font-semibold mb-3 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
               🚀 Enhanced Features Ready
             </h2>
@@ -60,8 +60,8 @@ const TestLayout = () => {
               inline-flex items-center gap-2 px-6 py-3 rounded-2xl
               ${isDarkMode ? 'glass-2-dark border border-dark-sage-accent/30' : 'glass-2 border border-sage-green/30'}
             `}>
-              <div className="w-2 h-2 bg-mint-fresh rounded-full animate-pulse"></div>
-              <span className={`font-medium ${isDarkMode ? 'text-dark-sage-accent' : 'text-bottle-green'}`}>
+              <div className="w-2 h-2 bg-sage-green rounded-full animate-pulse"></div>
+              <span className={`font-medium ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}`}>
                 Admin Layout System: ACTIVE & READY
               </span>
             </div>

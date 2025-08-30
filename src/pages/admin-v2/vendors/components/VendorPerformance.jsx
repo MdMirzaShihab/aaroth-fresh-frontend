@@ -37,7 +37,7 @@ import EmptyState from '../../../../components/ui/EmptyState';
 // Performance metrics card
 const MetricsCard = ({ title, value, change, icon: Icon, trend, color = 'muted-olive' }) => {
   const getTrendColor = () => {
-    if (trend === 'up') return 'text-mint-fresh';
+    if (trend === 'up') return 'text-sage-green';
     if (trend === 'down') return 'text-tomato-red';
     return 'text-text-muted';
   };
@@ -94,7 +94,7 @@ const RankingCard = ({ vendor, rank, metric, value, change }) => {
         #{rank}
       </div>
       
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                       flex items-center justify-center shadow-lg text-white font-medium">
         <Building2 className="w-5 h-5" />
       </div>
@@ -107,7 +107,7 @@ const RankingCard = ({ vendor, rank, metric, value, change }) => {
       <div className="text-right">
         <p className="font-semibold text-text-dark">{value}</p>
         <div className={`text-xs flex items-center gap-1 ${
-          change > 0 ? 'text-mint-fresh' : change < 0 ? 'text-tomato-red' : 'text-text-muted'
+          change > 0 ? 'text-sage-green' : change < 0 ? 'text-tomato-red' : 'text-text-muted'
         }`}>
           {change > 0 && <TrendingUp className="w-3 h-3" />}
           {change < 0 && <TrendingDown className="w-3 h-3" />}
@@ -271,7 +271,7 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
                 onClick={() => setSelectedPeriod(period)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${
                   selectedPeriod === period
-                    ? 'bg-white text-bottle-green shadow-sm'
+                    ? 'bg-white text-muted-olive shadow-sm'
                     : 'text-text-muted hover:text-text-dark'
                 }`}
               >
@@ -295,7 +295,7 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
           change="12.5%"
           icon={DollarSign}
           trend="up"
-          color="mint-fresh"
+          color="sage-green"
         />
         <MetricsCard
           title="Total Orders"
@@ -402,14 +402,14 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-mint-fresh/10 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-mint-fresh" />
+            <div className="w-10 h-10 bg-sage-green/10 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-sage-green" />
             </div>
             <h3 className="font-semibold text-text-dark">Growth Insights</h3>
           </div>
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2 text-text-dark">
-              <div className="w-2 h-2 bg-mint-fresh rounded-full" />
+              <div className="w-2 h-2 bg-sage-green rounded-full" />
               Revenue up 12.5% this month
             </li>
             <li className="flex items-center gap-2 text-text-dark">
@@ -459,7 +459,7 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
               Highest monthly revenue achieved
             </li>
             <li className="flex items-center gap-2 text-text-dark">
-              <div className="w-2 h-2 bg-mint-fresh rounded-full" />
+              <div className="w-2 h-2 bg-sage-green rounded-full" />
               98% order fulfillment rate
             </li>
             <li className="flex items-center gap-2 text-text-dark">

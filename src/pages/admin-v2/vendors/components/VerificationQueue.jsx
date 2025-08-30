@@ -115,12 +115,12 @@ const DocumentStatus = ({ document, type }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <IconComponent className={`w-4 h-4 ${document.verified ? 'text-mint-fresh' : 'text-earthy-yellow'}`} />
+      <IconComponent className={`w-4 h-4 ${document.verified ? 'text-sage-green' : 'text-earthy-yellow'}`} />
       <span className="text-sm text-text-dark">
         {config?.label}
       </span>
       {document.verified ? (
-        <CheckCircle className="w-4 h-4 text-mint-fresh" />
+        <CheckCircle className="w-4 h-4 text-sage-green" />
       ) : (
         <Clock className="w-4 h-4 text-earthy-yellow" />
       )}
@@ -168,7 +168,7 @@ const VerificationChecklist = ({ vendor, onDocumentView }) => {
               className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer hover:border-muted-olive/30 ${
                 document?.provided 
                   ? document.verified 
-                    ? 'bg-mint-fresh/5 border-mint-fresh/20' 
+                    ? 'bg-sage-green/5 border-sage-green/20' 
                     : 'bg-earthy-yellow/5 border-earthy-yellow/20'
                   : 'bg-gray-50 border-gray-200'
               }`}
@@ -283,7 +283,7 @@ const VerificationActions = ({ vendor, onApprove, onReject, isProcessing }) => {
             </Button>
             <Button
               onClick={handleApprove}
-              className="flex-1 bg-mint-fresh text-white"
+              className="flex-1 bg-sage-green text-white"
             >
               Confirm Approval
             </Button>
@@ -351,7 +351,7 @@ const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, i
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-bottle-green via-sage-green to-mint-fresh 
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                             flex items-center justify-center shadow-lg text-white font-medium">
               <Building2 className="w-6 h-6" />
             </div>
@@ -394,7 +394,7 @@ const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, i
                 ? 'text-tomato-red' 
                 : vendor.riskAssessment?.score > 40 
                 ? 'text-earthy-yellow'
-                : 'text-mint-fresh'
+                : 'text-sage-green'
             }`}>
               {vendor.riskAssessment?.score || 0}%
             </p>

@@ -499,7 +499,7 @@ const CategoryManagementEnhanced = () => {
           className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
         >
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-bottle-green to-earthy-brown bg-clip-text text-transparent">
+            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-muted-olive to-earthy-brown bg-clip-text text-transparent">
               Category Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
@@ -552,7 +552,7 @@ const CategoryManagementEnhanced = () => {
                 >
                   <div className="flex items-center gap-3">
                     <tab.icon className={`w-5 h-5 ${
-                      viewMode === tab.id ? 'text-white' : 'text-bottle-green'
+                      viewMode === tab.id ? 'text-white' : 'text-muted-olive'
                     }`} />
                     <div>
                       <h3 className={`font-semibold ${
@@ -746,7 +746,7 @@ const CategoryManagementEnhanced = () => {
                     ...formData,
                     parentCategory: e.target.value || null,
                   })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200"
                 >
                   <option value="">None (Root Category)</option>
                   {categories
@@ -778,7 +778,7 @@ const CategoryManagementEnhanced = () => {
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="w-4 h-4 text-bottle-green border-gray-300 rounded focus:ring-bottle-green"
+                    className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                   />
                   <span className="text-text-dark font-medium">Active Category</span>
                 </label>
@@ -791,7 +791,7 @@ const CategoryManagementEnhanced = () => {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Optional category description"
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
               />
             </FormField>
 
@@ -831,7 +831,7 @@ const CategoryManagementEnhanced = () => {
                   placeholder="SEO description for this category"
                   rows={2}
                   maxLength={160}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-bottle-green/20 transition-all duration-200 resize-none"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
                 />
               </FormField>
             </div>
@@ -929,7 +929,7 @@ const CategoryTreeView = ({
     <Card className="p-6 glass">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <FolderTree className="w-5 h-5 text-bottle-green" />
+          <FolderTree className="w-5 h-5 text-muted-olive" />
           <h3 className="text-lg font-semibold text-text-dark">Category Tree</h3>
         </div>
         <div className="text-sm text-text-muted">
@@ -1007,8 +1007,8 @@ const CategoryTreeNode = ({
       <div
         className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-200 ${
           isDragging
-            ? 'border-bottle-green bg-bottle-green/5 shadow-lg'
-            : 'border-gray-200 hover:border-bottle-green/30 hover:bg-earthy-beige/10'
+            ? 'border-muted-olive bg-muted-olive/5 shadow-lg'
+            : 'border-gray-200 hover:border-muted-olive/30 hover:bg-earthy-beige/10'
         }`}
         style={{ paddingLeft: `${paddingLeft + 12}px` }}
       >
@@ -1079,7 +1079,7 @@ const CategoryTreeNode = ({
             )}
             
             {hasChildren && (
-              <span className="bg-bottle-green/10 text-bottle-green text-xs px-2 py-1 rounded-full">
+              <span className="bg-muted-olive/10 text-muted-olive text-xs px-2 py-1 rounded-full">
                 {category.children.length} children
               </span>
             )}
@@ -1095,7 +1095,7 @@ const CategoryTreeNode = ({
             <span>Level {category.level || 0}</span>
             <span>Order: {category.sortOrder || 0}</span>
             {category.totalProducts > 0 && (
-              <span className="text-bottle-green">
+              <span className="text-muted-olive">
                 {category.totalProducts} products
               </span>
             )}
@@ -1126,7 +1126,7 @@ const CategoryTreeNode = ({
 
           <button
             onClick={() => onEdit(category)}
-            className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors"
+            className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors"
             title="Edit category"
           >
             <Edit3 className="w-4 h-4" />
@@ -1240,7 +1240,7 @@ const CategoryListView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
                       )}
                       <span>Order: {category.sortOrder || 0}</span>
                       {category.totalProducts > 0 && (
-                        <span className="text-bottle-green">
+                        <span className="text-muted-olive">
                           {category.totalProducts} products
                         </span>
                       )}
@@ -1272,7 +1272,7 @@ const CategoryListView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
 
                   <button
                     onClick={() => onEdit(category)}
-                    className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors"
+                    className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors"
                     title="Edit category"
                   >
                     <Edit3 className="w-4 h-4" />
@@ -1353,14 +1353,14 @@ const CategoryGridView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
                       </span>
                     )}
 
-                    <span className="bg-bottle-green/10 text-bottle-green text-xs px-2 py-1 rounded-full">
+                    <span className="bg-muted-olive/10 text-muted-olive text-xs px-2 py-1 rounded-full">
                       Level {category.level || 0}
                     </span>
                   </div>
 
                   <div className="text-sm text-text-muted mb-4">
                     {category.totalProducts > 0 && (
-                      <p className="font-medium text-bottle-green">
+                      <p className="font-medium text-muted-olive">
                         {category.totalProducts} products
                       </p>
                     )}
@@ -1378,7 +1378,7 @@ const CategoryGridView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
 
                     <button
                       onClick={() => onEdit(category)}
-                      className="p-2 text-text-muted hover:text-bottle-green hover:bg-bottle-green/10 rounded-lg transition-colors"
+                      className="p-2 text-text-muted hover:text-muted-olive hover:bg-muted-olive/10 rounded-lg transition-colors"
                       title="Edit"
                     >
                       <Edit3 className="w-4 h-4" />

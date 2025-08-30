@@ -191,7 +191,7 @@ const SearchBar = ({
               key={index}
               type="button"
               onClick={() => handleSuggestionClick(suggestion)}
-              className="w-full px-4 py-2 text-left hover:bg-bottle-green/5 transition-colors duration-200 flex items-center gap-3 min-h-[44px]"
+              className="w-full px-4 py-2 text-left hover:bg-muted-olive/5 transition-colors duration-200 flex items-center gap-3 min-h-[44px]"
             >
               <Search className="w-4 h-4 text-text-muted flex-shrink-0" />
               <span className="flex-1 truncate">
@@ -264,7 +264,7 @@ const SearchBar = ({
                               : currentValues.filter((v) => v !== option.value);
                             handleFilterChange(filter.key, newValues);
                           }}
-                          className="w-4 h-4 rounded text-bottle-green focus:ring-bottle-green"
+                          className="w-4 h-4 rounded text-muted-olive focus:ring-muted-olive"
                         />
                         <span>{option.label}</span>
                       </label>

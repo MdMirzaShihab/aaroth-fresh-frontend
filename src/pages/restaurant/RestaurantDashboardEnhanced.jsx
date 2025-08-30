@@ -138,7 +138,7 @@ const RestaurantDashboardEnhanced = () => {
 
   return (
     <CapabilityGate capability="canAccessDashboard">
-      <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-mint-fresh/10 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header with Verification Status */}
           <div className="mb-8">
@@ -182,10 +182,10 @@ const RestaurantDashboardEnhanced = () => {
               <CapabilityGate capability="canPlaceOrders" showMessage={false}>
                 <Link
                   to="/restaurant/place-order"
-                  className="flex items-center gap-3 p-4 rounded-2xl hover:bg-bottle-green/5 transition-all duration-200 group border border-bottle-green/10 hover:border-bottle-green/30"
+                  className="flex items-center gap-3 p-4 rounded-2xl hover:bg-muted-olive/5 transition-all duration-200 group border border-muted-olive/10 hover:border-muted-olive/30"
                 >
-                  <div className="w-12 h-12 bg-bottle-green/10 rounded-2xl flex items-center justify-center group-hover:bg-bottle-green/20 transition-colors">
-                    <Plus className="w-6 h-6 text-bottle-green" />
+                  <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center group-hover:bg-muted-olive/20 transition-colors">
+                    <Plus className="w-6 h-6 text-muted-olive" />
                   </div>
                   <div>
                     <p className="font-medium text-text-dark">Place Order</p>
@@ -382,7 +382,7 @@ const RestaurantDashboardEnhanced = () => {
                   </h3>
                   <Link
                     to="/restaurant/orders"
-                    className="text-bottle-green hover:text-bottle-green/80 text-sm font-medium"
+                    className="text-muted-olive hover:text-muted-olive/80 text-sm font-medium"
                   >
                     View All
                   </Link>

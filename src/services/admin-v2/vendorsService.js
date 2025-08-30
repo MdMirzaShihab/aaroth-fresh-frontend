@@ -229,8 +229,23 @@ export const vendorsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ['Vendor', 'Verification', 'AdminDashboard']
     }),
 
-    // Export Vendors - Data export functionality
-    exportVendors: builder.mutation({
+    // Export Vendors Query - Get export data
+    exportVendors: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/vendors/export',
+        method: 'GET',
+        params: {
+          format: params.format || 'csv',
+          filters: JSON.stringify(params.filters || {}),
+          fields: params.fields?.join(',') || '',
+          includePerformanceData: params.includePerformanceData || false
+        }
+      }),
+      transformResponse: (response) => response.data
+    }),
+
+    // Export Vendors Mutation - Trigger export generation
+    exportVendorsMutation: builder.mutation({
       query: (params = {}) => ({
         url: '/admin/vendors/export',
         method: 'POST',
@@ -241,6 +256,61 @@ export const vendorsApiSlice = apiSlice.injectEndpoints({
           includePerformanceData: params.includePerformanceData || false
         }
       })
+    }),
+
+    // Specific Bulk Operations - Individual operations for better UX
+    bulkApproveVendors: builder.mutation({
+      query: ({ vendorIds, reason }) => ({
+        url: '/admin/vendors/bulk/approve',
+        method: 'POST',
+        body: {
+          vendorIds,
+          reason,
+          performedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: ['Vendor', 'Verification', 'AdminDashboard']
+    }),
+
+    bulkRejectVendors: builder.mutation({
+      query: ({ vendorIds, reason }) => ({
+        url: '/admin/vendors/bulk/reject',
+        method: 'POST',
+        body: {
+          vendorIds,
+          reason,
+          performedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: ['Vendor', 'Verification', 'AdminDashboard']
+    }),
+
+    bulkUpdateVendorStatus: builder.mutation({
+      query: ({ vendorIds, status, reason }) => ({
+        url: '/admin/vendors/bulk/status',
+        method: 'POST',
+        body: {
+          vendorIds,
+          status,
+          reason,
+          performedAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: ['Vendor', 'AdminDashboard']
+    }),
+
+    sendBulkVendorMessage: builder.mutation({
+      query: ({ vendorIds, message, type = 'notification' }) => ({
+        url: '/admin/vendors/bulk/message',
+        method: 'POST',
+        body: {
+          vendorIds,
+          message,
+          messageType: type,
+          sentAt: new Date().toISOString()
+        }
+      }),
+      invalidatesTags: ['Vendor']
     }),
 
     // Vendor Categories/Types - Available business categories
@@ -307,6 +377,7 @@ export const {
   useGetVendorDeletionImpactQuery,
   useGetVendorCategoriesQuery,
   useGetVendorLocationsQuery,
+  useExportVendorsQuery,
   
   // Mutations
   useUpdateVendorMutation,
@@ -318,6 +389,12 @@ export const {
   useExportVendorsMutation,
   useSendVendorMessageMutation,
   useBroadcastVendorMessageMutation,
+  
+  // Specific Bulk Operations
+  useBulkApproveVendorsMutation,
+  useBulkRejectVendorsMutation,
+  useBulkUpdateVendorStatusMutation,
+  useSendBulkVendorMessageMutation,
   
   // Lazy queries for on-demand loading
   useLazyGetVendorDetailsQuery,
