@@ -4,8 +4,20 @@
  * Provides comprehensive performance optimization for admin-v2 components
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
-import { performanceMonitor, virtualScrolling, memoization, networkOptimization } from '../utils/performance';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+  memo,
+} from 'react';
+import {
+  performanceMonitor,
+  virtualScrolling,
+  memoization,
+  networkOptimization,
+} from '../utils/performance';
 
 /**
  * Hook for virtual scrolling implementation
@@ -25,10 +37,11 @@ export const useVirtualScrolling = (config) => {
   const containerRef = useRef(null);
 
   // Throttled scroll handler for 60fps performance
-  const handleScroll = useMemo(() => 
-    performanceMonitor.throttle((e) => {
-      setScrollTop(e.target.scrollTop);
-    }, 16), // 60fps
+  const handleScroll = useMemo(
+    () =>
+      performanceMonitor.throttle((e) => {
+        setScrollTop(e.target.scrollTop);
+      }, 16), // 60fps
     []
   );
 
@@ -51,7 +64,14 @@ export const useVirtualScrolling = (config) => {
       scrollTop,
       overscan,
     });
-  }, [items, containerHeight, itemHeight, scrollTop, overscan, enableVirtualization]);
+  }, [
+    items,
+    containerHeight,
+    itemHeight,
+    scrollTop,
+    overscan,
+    enableVirtualization,
+  ]);
 
   // Container props for virtual scroll
   const getContainerProps = useCallback(() => {
@@ -144,13 +164,13 @@ export const useLazyLoading = (config = {}) => {
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const componentName = entry.target.dataset.component;
             if (componentName && !loadedComponents.has(componentName)) {
               // Trigger component preload
               entry.target.dispatchEvent(new CustomEvent('preload'));
-              setLoadedComponents(prev => new Set([...prev, componentName]));
+              setLoadedComponents((prev) => new Set([...prev, componentName]));
             }
           }
         });
@@ -173,28 +193,40 @@ export const useLazyLoading = (config = {}) => {
   // Create lazy component with preloading
   const createLazyComponent = useCallback((importFn, fallback = null) => {
     const LazyComponent = React.lazy(importFn);
-    
-    return memo((props) => 
-      React.createElement(React.Suspense, 
-        { fallback: fallback || React.createElement('div', { className: 'loading-accessible' }, 'Loading...') },
+
+    return memo((props) =>
+      React.createElement(
+        React.Suspense,
+        {
+          fallback:
+            fallback ||
+            React.createElement(
+              'div',
+              { className: 'loading-accessible' },
+              'Loading...'
+            ),
+        },
         React.createElement(LazyComponent, props)
       )
     );
   }, []);
 
   // Preload component on hover
-  const createHoverPreloader = useCallback((importFn) => {
-    let isPreloaded = false;
-    
-    return {
-      onMouseEnter: () => {
-        if (!isPreloaded && preloadOnHover) {
-          importFn();
-          isPreloaded = true;
-        }
-      },
-    };
-  }, [preloadOnHover]);
+  const createHoverPreloader = useCallback(
+    (importFn) => {
+      let isPreloaded = false;
+
+      return {
+        onMouseEnter: () => {
+          if (!isPreloaded && preloadOnHover) {
+            importFn();
+            isPreloaded = true;
+          }
+        },
+      };
+    },
+    [preloadOnHover]
+  );
 
   return {
     createLazyComponent,
@@ -210,7 +242,7 @@ export const useLazyLoading = (config = {}) => {
  * @returns {Object} Data optimization utilities
  */
 export const useDataOptimization = (config = {}) => {
-  const { 
+  const {
     enablePagination = true,
     pageSize = 20,
     enableSearch = true,
@@ -225,10 +257,11 @@ export const useDataOptimization = (config = {}) => {
 
   // Debounced search to reduce API calls
   const debouncedSearch = useMemo(
-    () => performanceMonitor.debounce((term) => {
-      setSearchTerm(term);
-      setCurrentPage(1); // Reset to first page on search
-    }, 300),
+    () =>
+      performanceMonitor.debounce((term) => {
+        setSearchTerm(term);
+        setCurrentPage(1); // Reset to first page on search
+      }, 300),
     []
   );
 
@@ -238,8 +271,8 @@ export const useDataOptimization = (config = {}) => {
 
     // Apply search filter
     if (enableSearch && searchTerm) {
-      data = data.filter(item =>
-        Object.values(item).some(value =>
+      data = data.filter((item) =>
+        Object.values(item).some((value) =>
           String(value).toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
@@ -247,10 +280,12 @@ export const useDataOptimization = (config = {}) => {
 
     // Apply filters
     if (enableFiltering && Object.keys(filters).length > 0) {
-      data = data.filter(item =>
+      data = data.filter((item) =>
         Object.entries(filters).every(([key, value]) => {
           if (!value) return true;
-          return String(item[key]).toLowerCase().includes(String(value).toLowerCase());
+          return String(item[key])
+            .toLowerCase()
+            .includes(String(value).toLowerCase());
         })
       );
     }
@@ -260,7 +295,7 @@ export const useDataOptimization = (config = {}) => {
       data = [...data].sort((a, b) => {
         const aValue = a[sortConfig.key];
         const bValue = b[sortConfig.key];
-        
+
         if (aValue < bValue) {
           return sortConfig.direction === 'asc' ? -1 : 1;
         }
@@ -272,7 +307,15 @@ export const useDataOptimization = (config = {}) => {
     }
 
     return data;
-  }, [config.data, searchTerm, filters, sortConfig, enableSearch, enableFiltering, enableSorting]);
+  }, [
+    config.data,
+    searchTerm,
+    filters,
+    sortConfig,
+    enableSearch,
+    enableFiltering,
+    enableSorting,
+  ]);
 
   // Paginated data
   const paginatedData = useMemo(() => {
@@ -287,7 +330,7 @@ export const useDataOptimization = (config = {}) => {
   const paginationInfo = useMemo(() => {
     const totalItems = processedData.length;
     const totalPages = Math.ceil(totalItems / pageSize);
-    
+
     return {
       currentPage,
       totalPages,
@@ -302,7 +345,7 @@ export const useDataOptimization = (config = {}) => {
 
   // Sorting handler
   const handleSort = useCallback((key) => {
-    setSortConfig(prev => ({
+    setSortConfig((prev) => ({
       key,
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
@@ -310,7 +353,7 @@ export const useDataOptimization = (config = {}) => {
 
   // Filter handler
   const handleFilter = useCallback((key, value) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       [key]: value,
     }));
@@ -322,24 +365,24 @@ export const useDataOptimization = (config = {}) => {
     processedData,
     paginatedData,
     paginationInfo,
-    
+
     // Search
     searchTerm,
     setSearchTerm: debouncedSearch,
-    
+
     // Sorting
     sortConfig,
     handleSort,
-    
+
     // Filtering
     filters,
     handleFilter,
     setFilters,
-    
+
     // Pagination
     currentPage,
     setCurrentPage,
-    
+
     // Utilities
     reset: () => {
       setSearchTerm('');
@@ -388,18 +431,18 @@ export const useMemoryManagement = (config = {}) => {
       }
 
       // Clear timers
-      timers.current.forEach(timerId => clearTimeout(timerId));
+      timers.current.forEach((timerId) => clearTimeout(timerId));
       timers.current = [];
 
       // Disconnect observers
-      observers.current.forEach(observer => {
+      observers.current.forEach((observer) => {
         if (observer.disconnect) observer.disconnect();
         if (observer.unobserve) observer.unobserve();
       });
       observers.current = [];
 
       // Run cleanup functions
-      cleanupFunctions.current.forEach(cleanup => {
+      cleanupFunctions.current.forEach((cleanup) => {
         try {
           cleanup();
         } catch (error) {
@@ -411,31 +454,34 @@ export const useMemoryManagement = (config = {}) => {
   }, [trackMemory, componentName]);
 
   // Create cancellable promise
-  const createCancellablePromise = useCallback((asyncFn) => {
-    let isCancelled = false;
+  const createCancellablePromise = useCallback(
+    (asyncFn) => {
+      let isCancelled = false;
 
-    const promise = new Promise((resolve, reject) => {
-      asyncFn()
-        .then(result => {
-          if (!isCancelled) {
-            resolve(result);
-          }
-        })
-        .catch(error => {
-          if (!isCancelled) {
-            reject(error);
-          }
-        });
-    });
+      const promise = new Promise((resolve, reject) => {
+        asyncFn()
+          .then((result) => {
+            if (!isCancelled) {
+              resolve(result);
+            }
+          })
+          .catch((error) => {
+            if (!isCancelled) {
+              reject(error);
+            }
+          });
+      });
 
-    const cancel = () => {
-      isCancelled = true;
-    };
+      const cancel = () => {
+        isCancelled = true;
+      };
 
-    addCleanup(cancel);
+      addCleanup(cancel);
 
-    return { promise, cancel };
-  }, [addCleanup]);
+      return { promise, cancel };
+    },
+    [addCleanup]
+  );
 
   return {
     addCleanup,
@@ -460,7 +506,7 @@ export const useRenderOptimization = (config = {}) => {
     if (!trackPerformance || !import.meta.env.DEV) return;
 
     const measureEnd = performanceMonitor.measureRenderTime(componentName);
-    
+
     return () => {
       const renderTime = measureEnd();
       renderTimes.current.push(renderTime);
@@ -468,8 +514,12 @@ export const useRenderOptimization = (config = {}) => {
 
       // Log performance stats every 10 renders
       if (renderCount.current % 10 === 0) {
-        const avgRenderTime = renderTimes.current.reduce((a, b) => a + b, 0) / renderTimes.current.length;
-        console.log(`[Render] ${componentName} - ${renderCount.current} renders, avg: ${avgRenderTime.toFixed(2)}ms`);
+        const avgRenderTime =
+          renderTimes.current.reduce((a, b) => a + b, 0) /
+          renderTimes.current.length;
+        console.log(
+          `[Render] ${componentName} - ${renderCount.current} renders, avg: ${avgRenderTime.toFixed(2)}ms`
+        );
       }
     };
   });
@@ -483,7 +533,9 @@ export const useRenderOptimization = (config = {}) => {
   const optimizedStateUpdate = useCallback((updateFn) => {
     return (prevState) => {
       const newState = updateFn(prevState);
-      return memoization.shallowEqual(prevState, newState) ? prevState : newState;
+      return memoization.shallowEqual(prevState, newState)
+        ? prevState
+        : newState;
     };
   }, []);
 
@@ -491,9 +543,11 @@ export const useRenderOptimization = (config = {}) => {
     shouldUpdate,
     optimizedStateUpdate,
     renderCount: renderCount.current,
-    averageRenderTime: renderTimes.current.length > 0 
-      ? renderTimes.current.reduce((a, b) => a + b, 0) / renderTimes.current.length 
-      : 0,
+    averageRenderTime:
+      renderTimes.current.length > 0
+        ? renderTimes.current.reduce((a, b) => a + b, 0) /
+          renderTimes.current.length
+        : 0,
   };
 };
 
@@ -527,14 +581,18 @@ export const useTablePerformance = (config) => {
 
   // Memoized table data
   const tableData = useMemo(() => {
-    return enableVirtualScrolling 
-      ? virtualScroll.virtualState.visibleItems 
+    return enableVirtualScrolling
+      ? virtualScroll.virtualState.visibleItems
       : dataOptimization.paginatedData;
-  }, [enableVirtualScrolling, virtualScroll.virtualState.visibleItems, dataOptimization.paginatedData]);
+  }, [
+    enableVirtualScrolling,
+    virtualScroll.virtualState.visibleItems,
+    dataOptimization.paginatedData,
+  ]);
 
   // Memoized column renderers
   const memoizedColumns = useMemo(() => {
-    return columns.map(column => ({
+    return columns.map((column) => ({
       ...column,
       render: column.render ? memo(column.render) : undefined,
     }));
@@ -545,7 +603,7 @@ export const useTablePerformance = (config) => {
     columns: memoizedColumns,
     virtualScroll: enableVirtualScrolling ? virtualScroll : null,
     dataOptimization: !enableVirtualScrolling ? dataOptimization : null,
-    
+
     // Performance stats
     itemCount: data.length,
     visibleItemCount: tableData.length,
@@ -568,11 +626,11 @@ export const useAPIOptimization = (config = {}) => {
     if (requestQueue.current.length === 0 || isProcessingBatch) return;
 
     setIsProcessingBatch(true);
-    
+
     try {
       const batch = requestQueue.current.splice(0, batchSize);
       const results = await networkOptimization.batchRequests(batch, batchSize);
-      
+
       // Process results
       results.forEach((result, index) => {
         const request = batch[index];
@@ -590,25 +648,31 @@ export const useAPIOptimization = (config = {}) => {
   }, [batchSize, isProcessingBatch]);
 
   // Add request to batch
-  const batchRequest = useCallback((request) => {
-    if (!enableBatching) {
-      // Execute immediately
-      return networkOptimization.optimizedFetch(request.url, request.options);
-    }
+  const batchRequest = useCallback(
+    (request) => {
+      if (!enableBatching) {
+        // Execute immediately
+        return networkOptimization.optimizedFetch(request.url, request.options);
+      }
 
-    requestQueue.current.push(request);
-    
-    // Process batch after short delay
-    setTimeout(processBatch, 100);
-  }, [enableBatching, processBatch]);
+      requestQueue.current.push(request);
+
+      // Process batch after short delay
+      setTimeout(processBatch, 100);
+    },
+    [enableBatching, processBatch]
+  );
 
   // Optimized fetch with retry
-  const optimizedFetch = useCallback((url, options = {}) => {
-    return networkOptimization.optimizedFetch(url, {
-      ...options,
-      retries: enableRetry ? 3 : 0,
-    });
-  }, [enableRetry]);
+  const optimizedFetch = useCallback(
+    (url, options = {}) => {
+      return networkOptimization.optimizedFetch(url, {
+        ...options,
+        retries: enableRetry ? 3 : 0,
+      });
+    },
+    [enableRetry]
+  );
 
   return {
     batchRequest,
@@ -633,19 +697,19 @@ export const usePerformanceOptimization = (options = {}) => {
   return {
     // Memoization
     ...memoization,
-    
+
     // Lazy loading
     ...lazyLoading,
-    
+
     // Memory management
     ...memoryManagement,
-    
+
     // Render optimization
     ...renderOptimization,
-    
+
     // API optimization
     ...apiOptimization,
-    
+
     // Utilities
     isOptimized: true,
     hasPerformanceFeatures: true,

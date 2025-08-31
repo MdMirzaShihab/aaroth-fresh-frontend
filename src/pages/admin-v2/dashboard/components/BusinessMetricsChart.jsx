@@ -17,10 +17,10 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 } from 'chart.js';
 import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2';
-import { 
+import {
   Calendar,
   Download,
   Maximize2,
@@ -29,11 +29,11 @@ import {
   PieChart,
   TrendingUp,
   Filter,
-  RefreshCcw
+  RefreshCcw,
 } from 'lucide-react';
+import { format, subDays, isWithinInterval } from 'date-fns';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Card, Button } from '../../../../components/ui';
-import { format, subDays, isWithinInterval } from 'date-fns';
 
 // Register Chart.js components
 ChartJS.register(
@@ -49,9 +49,9 @@ ChartJS.register(
   Filler
 );
 
-const BusinessMetricsChart = ({ 
-  data = [], 
-  title = "Business Metrics",
+const BusinessMetricsChart = ({
+  data = [],
+  title = 'Business Metrics',
   chartType = 'line',
   timeRange = '30d',
   onTimeRangeChange,
@@ -62,7 +62,7 @@ const BusinessMetricsChart = ({
   height = 350,
   enableDrillDown = true,
   enableExport = true,
-  className = ""
+  className = '',
 }) => {
   const { isDarkMode } = useTheme();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -75,7 +75,7 @@ const BusinessMetricsChart = ({
     { value: '30d', label: 'Last 30 Days' },
     { value: '90d', label: 'Last 90 Days' },
     { value: '1y', label: 'Last Year' },
-    { value: 'custom', label: 'Custom Range' }
+    { value: 'custom', label: 'Custom Range' },
   ];
 
   // Chart type options
@@ -83,7 +83,7 @@ const BusinessMetricsChart = ({
     { value: 'line', label: 'Line Chart', icon: LineChart },
     { value: 'bar', label: 'Bar Chart', icon: BarChart3 },
     { value: 'pie', label: 'Pie Chart', icon: PieChart },
-    { value: 'doughnut', label: 'Doughnut Chart', icon: PieChart }
+    { value: 'doughnut', label: 'Doughnut Chart', icon: PieChart },
   ];
 
   // Available metrics for filtering
@@ -91,19 +91,24 @@ const BusinessMetricsChart = ({
     { key: 'revenue', label: 'Revenue', color: '#10B981' },
     { key: 'orders', label: 'Orders', color: '#3B82F6' },
     { key: 'users', label: 'Users', color: '#8B5CF6' },
-    { key: 'conversion', label: 'Conversion Rate', color: '#F59E0B' }
+    { key: 'conversion', label: 'Conversion Rate', color: '#F59E0B' },
   ];
 
   // Theme-aware colors
-  const chartColors = useMemo(() => ({
-    primary: isDarkMode ? '#10B981' : '#059669',
-    secondary: isDarkMode ? '#3B82F6' : '#2563EB',
-    accent: isDarkMode ? '#8B5CF6' : '#7C3AED',
-    warning: isDarkMode ? '#F59E0B' : '#D97706',
-    background: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(5, 150, 105, 0.1)',
-    grid: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-    text: isDarkMode ? '#F3F4F6' : '#1F2937'
-  }), [isDarkMode]);
+  const chartColors = useMemo(
+    () => ({
+      primary: isDarkMode ? '#10B981' : '#059669',
+      secondary: isDarkMode ? '#3B82F6' : '#2563EB',
+      accent: isDarkMode ? '#8B5CF6' : '#7C3AED',
+      warning: isDarkMode ? '#F59E0B' : '#D97706',
+      background: isDarkMode
+        ? 'rgba(16, 185, 129, 0.1)'
+        : 'rgba(5, 150, 105, 0.1)',
+      grid: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+      text: isDarkMode ? '#F3F4F6' : '#1F2937',
+    }),
+    [isDarkMode]
+  );
 
   // Filter data based on time range
   const filteredData = useMemo(() => {
@@ -114,13 +119,13 @@ const BusinessMetricsChart = ({
       '7d': subDays(now, 7),
       '30d': subDays(now, 30),
       '90d': subDays(now, 90),
-      '1y': subDays(now, 365)
+      '1y': subDays(now, 365),
     };
 
     const startDate = ranges[timeRange];
     if (!startDate) return data;
 
-    return data.filter(item => {
+    return data.filter((item) => {
       const itemDate = new Date(item.date);
       return isWithinInterval(itemDate, { start: startDate, end: now });
     });
@@ -130,28 +135,38 @@ const BusinessMetricsChart = ({
   const chartData = useMemo(() => {
     if (!filteredData.length) return null;
 
-    const labels = filteredData.map(item => format(new Date(item.date), 'MMM dd'));
+    const labels = filteredData.map((item) =>
+      format(new Date(item.date), 'MMM dd')
+    );
 
     if (chartType === 'pie' || chartType === 'doughnut') {
       // Aggregate data for pie charts
       const totalValues = selectedMetrics.reduce((acc, metric) => {
-        const total = filteredData.reduce((sum, item) => sum + (item[metric] || 0), 0);
+        const total = filteredData.reduce(
+          (sum, item) => sum + (item[metric] || 0),
+          0
+        );
         acc[metric] = total;
         return acc;
       }, {});
 
       return {
-        labels: selectedMetrics.map(metric => 
-          availableMetrics.find(m => m.key === metric)?.label || metric
+        labels: selectedMetrics.map(
+          (metric) =>
+            availableMetrics.find((m) => m.key === metric)?.label || metric
         ),
-        datasets: [{
-          data: selectedMetrics.map(metric => totalValues[metric]),
-          backgroundColor: selectedMetrics.map((metric, index) => 
-            availableMetrics.find(m => m.key === metric)?.color || chartColors.primary
-          ),
-          borderWidth: isDarkMode ? 1 : 2,
-          borderColor: isDarkMode ? chartColors.grid : '#FFFFFF'
-        }]
+        datasets: [
+          {
+            data: selectedMetrics.map((metric) => totalValues[metric]),
+            backgroundColor: selectedMetrics.map(
+              (metric, index) =>
+                availableMetrics.find((m) => m.key === metric)?.color ||
+                chartColors.primary
+            ),
+            borderWidth: isDarkMode ? 1 : 2,
+            borderColor: isDarkMode ? chartColors.grid : '#FFFFFF',
+          },
+        ],
       };
     }
 
@@ -159,16 +174,14 @@ const BusinessMetricsChart = ({
     return {
       labels,
       datasets: selectedMetrics.map((metric, index) => {
-        const metricData = availableMetrics.find(m => m.key === metric);
+        const metricData = availableMetrics.find((m) => m.key === metric);
         const color = metricData?.color || chartColors.primary;
 
         return {
           label: metricData?.label || metric,
-          data: filteredData.map(item => item[metric] || 0),
+          data: filteredData.map((item) => item[metric] || 0),
           borderColor: color,
-          backgroundColor: chartType === 'line' 
-            ? `${color}20` 
-            : color,
+          backgroundColor: chartType === 'line' ? `${color}20` : color,
           fill: chartType === 'line',
           tension: 0.4,
           borderWidth: 2,
@@ -176,103 +189,134 @@ const BusinessMetricsChart = ({
           pointBorderColor: isDarkMode ? '#1F2937' : '#FFFFFF',
           pointBorderWidth: 2,
           pointRadius: 4,
-          pointHoverRadius: 6
+          pointHoverRadius: 6,
         };
-      })
+      }),
     };
-  }, [filteredData, chartType, selectedMetrics, availableMetrics, chartColors, isDarkMode]);
+  }, [
+    filteredData,
+    chartType,
+    selectedMetrics,
+    availableMetrics,
+    chartColors,
+    isDarkMode,
+  ]);
 
   // Chart options
-  const chartOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: 'index',
-      intersect: false,
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          color: chartColors.text,
-          padding: 20,
-          usePointStyle: true,
-          font: {
-            size: 12,
-            weight: '500'
-          }
-        }
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
       },
-      tooltip: {
-        backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-        titleColor: chartColors.text,
-        bodyColor: chartColors.text,
-        borderColor: chartColors.grid,
-        borderWidth: 1,
-        cornerRadius: 12,
-        padding: 12,
-        displayColors: true,
-        callbacks: {
-          label: function(context) {
-            const label = context.dataset.label || '';
-            const value = context.parsed.y || context.parsed;
-            
-            if (label.toLowerCase().includes('revenue')) {
-              return `${label}: $${value.toLocaleString()}`;
-            }
-            if (label.toLowerCase().includes('rate') || label.toLowerCase().includes('conversion')) {
-              return `${label}: ${value}%`;
-            }
-            return `${label}: ${value.toLocaleString()}`;
-          }
-        }
-      }
-    },
-    scales: chartType !== 'pie' && chartType !== 'doughnut' ? {
-      x: {
-        grid: {
-          color: chartColors.grid,
-          drawBorder: false
-        },
-        ticks: {
-          color: chartColors.text,
-          font: {
-            size: 11
-          }
-        }
-      },
-      y: {
-        grid: {
-          color: chartColors.grid,
-          drawBorder: false
-        },
-        ticks: {
-          color: chartColors.text,
-          font: {
-            size: 11
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: chartColors.text,
+            padding: 20,
+            usePointStyle: true,
+            font: {
+              size: 12,
+              weight: '500',
+            },
           },
-          callback: function(value) {
-            if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-            if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
-            return value.toLocaleString();
+        },
+        tooltip: {
+          backgroundColor: isDarkMode
+            ? 'rgba(31, 41, 55, 0.95)'
+            : 'rgba(255, 255, 255, 0.95)',
+          titleColor: chartColors.text,
+          bodyColor: chartColors.text,
+          borderColor: chartColors.grid,
+          borderWidth: 1,
+          cornerRadius: 12,
+          padding: 12,
+          displayColors: true,
+          callbacks: {
+            label(context) {
+              const label = context.dataset.label || '';
+              const value = context.parsed.y || context.parsed;
+
+              if (label.toLowerCase().includes('revenue')) {
+                return `${label}: $${value.toLocaleString()}`;
+              }
+              if (
+                label.toLowerCase().includes('rate') ||
+                label.toLowerCase().includes('conversion')
+              ) {
+                return `${label}: ${value}%`;
+              }
+              return `${label}: ${value.toLocaleString()}`;
+            },
+          },
+        },
+      },
+      scales:
+        chartType !== 'pie' && chartType !== 'doughnut'
+          ? {
+              x: {
+                grid: {
+                  color: chartColors.grid,
+                  drawBorder: false,
+                },
+                ticks: {
+                  color: chartColors.text,
+                  font: {
+                    size: 11,
+                  },
+                },
+              },
+              y: {
+                grid: {
+                  color: chartColors.grid,
+                  drawBorder: false,
+                },
+                ticks: {
+                  color: chartColors.text,
+                  font: {
+                    size: 11,
+                  },
+                  callback(value) {
+                    if (value >= 1000000)
+                      return (value / 1000000).toFixed(1) + 'M';
+                    if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
+                    return value.toLocaleString();
+                  },
+                },
+              },
+            }
+          : {},
+      onClick: enableDrillDown
+        ? (event, elements) => {
+            if (elements.length > 0) {
+              const elementIndex = elements[0].index;
+              const datasetIndex = elements[0].datasetIndex;
+              onDataPointClick?.(filteredData[elementIndex], {
+                elementIndex,
+                datasetIndex,
+              });
+            }
           }
-        }
-      }
-    } : {},
-    onClick: enableDrillDown ? (event, elements) => {
-      if (elements.length > 0) {
-        const elementIndex = elements[0].index;
-        const datasetIndex = elements[0].datasetIndex;
-        onDataPointClick?.(filteredData[elementIndex], { elementIndex, datasetIndex });
-      }
-    } : undefined
-  }), [chartType, chartColors, isDarkMode, enableDrillDown, filteredData, onDataPointClick]);
+        : undefined,
+    }),
+    [
+      chartType,
+      chartColors,
+      isDarkMode,
+      enableDrillDown,
+      filteredData,
+      onDataPointClick,
+    ]
+  );
 
   // Handle metric selection
   const handleMetricToggle = useCallback((metricKey) => {
-    setSelectedMetrics(prev => 
+    setSelectedMetrics((prev) =>
       prev.includes(metricKey)
-        ? prev.filter(m => m !== metricKey)
+        ? prev.filter((m) => m !== metricKey)
         : [...prev, metricKey]
     );
   }, []);
@@ -284,7 +328,7 @@ const BusinessMetricsChart = ({
     const commonProps = {
       data: chartData,
       options: chartOptions,
-      height: height
+      height,
     };
 
     switch (chartType) {
@@ -306,7 +350,10 @@ const BusinessMetricsChart = ({
       <Card className={`p-6 ${className}`}>
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
-          <div className={`bg-gray-200 dark:bg-gray-700 rounded`} style={{ height: `${height}px` }} />
+          <div
+            className="bg-gray-200 dark:bg-gray-700 rounded"
+            style={{ height: `${height}px` }}
+          />
         </div>
       </Card>
     );
@@ -317,8 +364,12 @@ const BusinessMetricsChart = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <TrendingUp className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
-          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+          <TrendingUp
+            className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+          />
+          <h3
+            className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+          >
             {title}
           </h3>
         </div>
@@ -332,14 +383,17 @@ const BusinessMetricsChart = ({
                 onClick={() => onChartTypeChange?.(value)}
                 className={`
                   p-2 rounded-lg transition-all duration-200 touch-target-sm
-                  ${chartType === value
-                    ? (isDarkMode 
-                        ? 'bg-sage-green/20 text-sage-green' 
-                        : 'bg-muted-olive/10 text-muted-olive')
-                    : (isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700')
+                  ${
+                    chartType === value
+                      ? isDarkMode
+                        ? 'bg-sage-green/20 text-sage-green'
+                        : 'bg-muted-olive/10 text-muted-olive'
+                      : isDarkMode
+                        ? 'text-gray-400 hover:text-gray-300'
+                        : 'text-gray-600 hover:text-gray-700'
                   }
                 `}
-                title={chartTypeOptions.find(o => o.value === value)?.label}
+                title={chartTypeOptions.find((o) => o.value === value)?.label}
               >
                 <Icon className="w-4 h-4" />
               </button>
@@ -371,8 +425,11 @@ const BusinessMetricsChart = ({
                   `}
                 >
                   <div className="space-y-2">
-                    {availableMetrics.map(metric => (
-                      <label key={metric.key} className="flex items-center gap-3 cursor-pointer">
+                    {availableMetrics.map((metric) => (
+                      <label
+                        key={metric.key}
+                        className="flex items-center gap-3 cursor-pointer"
+                      >
                         <input
                           type="checkbox"
                           checked={selectedMetrics.includes(metric.key)}
@@ -380,11 +437,13 @@ const BusinessMetricsChart = ({
                           className="rounded border-gray-300 dark:border-gray-600"
                         />
                         <div className="flex items-center gap-2">
-                          <div 
+                          <div
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: metric.color }}
                           />
-                          <span className={`text-sm ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                          <span
+                            className={`text-sm ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                          >
                             {metric.label}
                           </span>
                         </div>
@@ -402,13 +461,14 @@ const BusinessMetricsChart = ({
             onChange={(e) => onTimeRangeChange?.(e.target.value)}
             className={`
               px-3 py-2 rounded-xl border text-sm touch-target-sm
-              ${isDarkMode 
-                ? 'bg-gray-800 border-gray-700 text-white' 
-                : 'bg-white border-gray-200 text-gray-900'
+              ${
+                isDarkMode
+                  ? 'bg-gray-800 border-gray-700 text-white'
+                  : 'bg-white border-gray-200 text-gray-900'
               }
             `}
           >
-            {timeRangeOptions.map(option => (
+            {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -456,8 +516,12 @@ const BusinessMetricsChart = ({
         {filteredData.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <BarChart3 className={`w-12 h-12 mx-auto mb-4 opacity-40 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <BarChart3
+                className={`w-12 h-12 mx-auto mb-4 opacity-40 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+              />
+              <p
+                className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+              >
                 No data available for the selected time range
               </p>
             </div>
@@ -470,26 +534,37 @@ const BusinessMetricsChart = ({
       {/* Summary Stats */}
       {filteredData.length > 0 && (
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-          {selectedMetrics.map(metric => {
-            const metricData = availableMetrics.find(m => m.key === metric);
-            const total = filteredData.reduce((sum, item) => sum + (item[metric] || 0), 0);
+          {selectedMetrics.map((metric) => {
+            const metricData = availableMetrics.find((m) => m.key === metric);
+            const total = filteredData.reduce(
+              (sum, item) => sum + (item[metric] || 0),
+              0
+            );
             const average = total / filteredData.length;
 
             return (
               <div key={metric} className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-1">
-                  <div 
+                  <div
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: metricData?.color }}
                   />
-                  <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <span
+                    className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                  >
                     {metricData?.label}
                   </span>
                 </div>
-                <p className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {metric.includes('revenue') ? `$${Math.round(average).toLocaleString()}` : Math.round(average).toLocaleString()}
+                <p
+                  className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {metric.includes('revenue')
+                    ? `$${Math.round(average).toLocaleString()}`
+                    : Math.round(average).toLocaleString()}
                 </p>
-                <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                <p
+                  className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}
+                >
                   Avg per day
                 </p>
               </div>

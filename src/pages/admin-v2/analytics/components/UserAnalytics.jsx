@@ -31,27 +31,31 @@ import {
   ArrowDownRight,
   Minus,
 } from 'lucide-react';
-import { useTheme } from '../../../../hooks/useTheme';
-import { Card, Button } from '../../../../components/ui';
-import { LineChart, BarChart, DoughnutChart } from '../../../../components/ui/charts/ChartJS';
 import { format, subDays, subMonths } from 'date-fns';
 import toast from 'react-hot-toast';
+import { useTheme } from '../../../../hooks/useTheme';
+import { Card, Button } from '../../../../components/ui';
+import {
+  LineChart,
+  BarChart,
+  DoughnutChart,
+} from '../../../../components/ui/charts/ChartJS';
 
 // User metric card component
-const UserMetricCard = ({ 
-  title, 
-  value, 
-  change, 
-  trend, 
-  icon: Icon, 
+const UserMetricCard = ({
+  title,
+  value,
+  change,
+  trend,
+  icon: Icon,
   color = 'sage-green',
   subtitle,
   onClick,
   isLoading = false,
-  comparison 
+  comparison,
 }) => {
   const { isDarkMode } = useTheme();
-  
+
   const getTrendIcon = () => {
     if (trend === 'up') return ArrowUpRight;
     if (trend === 'down') return ArrowDownRight;
@@ -59,7 +63,8 @@ const UserMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
+    if (trend === 'up')
+      return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -79,13 +84,15 @@ const UserMetricCard = ({
       `}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`
+        <div
+          className={`
           w-10 h-10 rounded-xl flex items-center justify-center
           ${isDarkMode ? `bg-${color}/20` : `bg-${color}/10`}
-        `}>
+        `}
+        >
           <Icon className={`w-5 h-5 text-${color}`} />
         </div>
-        
+
         {change !== undefined && (
           <div className={`flex items-center gap-1 ${getTrendColor()}`}>
             <TrendIcon className="w-3 h-3" />
@@ -93,7 +100,7 @@ const UserMetricCard = ({
           </div>
         )}
       </div>
-      
+
       <div className="space-y-1">
         {isLoading ? (
           <div className="animate-pulse">
@@ -102,19 +109,27 @@ const UserMetricCard = ({
           </div>
         ) : (
           <>
-            <p className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <p
+              className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               {value}
             </p>
-            <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               {title}
             </p>
             {subtitle && (
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}
+              >
                 {subtitle}
               </p>
             )}
             {comparison && (
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}
+              >
                 vs {comparison}
               </p>
             )}
@@ -137,47 +152,76 @@ const UserSegmentCard = ({ segment, onClick, isActive = false }) => {
       onClick={() => onClick(segment)}
       className={`
         glass-card rounded-xl p-4 border cursor-pointer transition-all duration-200
-        ${isActive 
-          ? isDarkMode ? 'border-sage-green/50 bg-sage-green/5' : 'border-muted-olive/50 bg-muted-olive/5'
-          : isDarkMode ? 'border-gray-700/50 hover:border-gray-600' : 'border-gray-200/50 hover:border-gray-300'
+        ${
+          isActive
+            ? isDarkMode
+              ? 'border-sage-green/50 bg-sage-green/5'
+              : 'border-muted-olive/50 bg-muted-olive/5'
+            : isDarkMode
+              ? 'border-gray-700/50 hover:border-gray-600'
+              : 'border-gray-200/50 hover:border-gray-300'
         }
       `}
     >
       <div className="flex items-center gap-3">
-        <div className={`
+        <div
+          className={`
           w-8 h-8 rounded-lg flex items-center justify-center
-          ${isActive 
-            ? isDarkMode ? 'bg-sage-green/20' : 'bg-muted-olive/10'
-            : isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+          ${
+            isActive
+              ? isDarkMode
+                ? 'bg-sage-green/20'
+                : 'bg-muted-olive/10'
+              : isDarkMode
+                ? 'bg-gray-700'
+                : 'bg-gray-100'
           }
-        `}>
-          <segment.icon className={`w-4 h-4 ${
-            isActive 
-              ? isDarkMode ? 'text-sage-green' : 'text-muted-olive'
-              : isDarkMode ? 'text-gray-400' : 'text-text-muted'
-          }`} />
+        `}
+        >
+          <segment.icon
+            className={`w-4 h-4 ${
+              isActive
+                ? isDarkMode
+                  ? 'text-sage-green'
+                  : 'text-muted-olive'
+                : isDarkMode
+                  ? 'text-gray-400'
+                  : 'text-text-muted'
+            }`}
+          />
         </div>
         <div className="flex-1 min-w-0">
-          <p className={`font-medium text-sm ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+          <p
+            className={`font-medium text-sm ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             {segment.name}
           </p>
           <div className="flex items-center gap-2">
-            <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               {segment.count.toLocaleString()} users
             </p>
-            <span className={`text-xs font-medium ${
-              segment.growth > 0 
-                ? 'text-sage-green' 
-                : segment.growth < 0 
-                  ? 'text-tomato-red' 
-                  : isDarkMode ? 'text-gray-400' : 'text-text-muted'
-            }`}>
-              {segment.growth > 0 ? '+' : ''}{segment.growth.toFixed(1)}%
+            <span
+              className={`text-xs font-medium ${
+                segment.growth > 0
+                  ? 'text-sage-green'
+                  : segment.growth < 0
+                    ? 'text-tomato-red'
+                    : isDarkMode
+                      ? 'text-gray-400'
+                      : 'text-text-muted'
+              }`}
+            >
+              {segment.growth > 0 ? '+' : ''}
+              {segment.growth.toFixed(1)}%
             </span>
           </div>
         </div>
-        <div className={`text-right`}>
-          <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+        <div className="text-right">
+          <p
+            className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             {segment.percentage.toFixed(1)}%
           </p>
         </div>
@@ -186,11 +230,11 @@ const UserSegmentCard = ({ segment, onClick, isActive = false }) => {
   );
 };
 
-const UserAnalytics = ({ 
-  data = {}, 
-  isLoading = false, 
+const UserAnalytics = ({
+  data = {},
+  isLoading = false,
   timeRange = '30d',
-  onTimeRangeChange 
+  onTimeRangeChange,
 }) => {
   const { isDarkMode } = useTheme();
   const [selectedSegment, setSelectedSegment] = useState(null);
@@ -219,12 +263,12 @@ const UserAnalytics = ({
     const generateGrowthData = (days = 30) => {
       const result = [];
       let baseUsers = 3500;
-      
+
       for (let i = days - 1; i >= 0; i--) {
         const date = subDays(new Date(), i);
         const growth = Math.floor(Math.random() * 20) + 5; // 5-25 new users per day
         baseUsers += growth;
-        
+
         result.push({
           date: format(date, 'MMM dd'),
           fullDate: date,
@@ -237,67 +281,73 @@ const UserAnalytics = ({
       return result;
     };
 
-    return data.userGrowth || generateGrowthData(timeRange === '7d' ? 7 : timeRange === '90d' ? 90 : 30);
+    return (
+      data.userGrowth ||
+      generateGrowthData(timeRange === '7d' ? 7 : timeRange === '90d' ? 90 : 30)
+    );
   }, [data, timeRange]);
 
   // User segmentation data
-  const userSegments = useMemo(() => [
-    {
-      id: 'vendors',
-      name: 'Vendors',
-      icon: Users,
-      count: 1247,
-      percentage: 29.4,
-      growth: 12.8,
-      avgOrderValue: 156.30,
-      retention: 78.2,
-    },
-    {
-      id: 'restaurant-owners',
-      name: 'Restaurant Owners',
-      icon: UserCheck,
-      count: 1891,
-      percentage: 44.6,
-      growth: 18.5,
-      avgOrderValue: 203.50,
-      retention: 82.4,
-    },
-    {
-      id: 'restaurant-managers',
-      name: 'Restaurant Managers',
-      icon: UserPlus,
-      count: 743,
-      percentage: 17.5,
-      growth: 25.7,
-      avgOrderValue: 178.90,
-      retention: 69.3,
-    },
-    {
-      id: 'admins',
-      name: 'Administrators',
-      icon: Award,
-      count: 24,
-      percentage: 0.6,
-      growth: 4.3,
-      avgOrderValue: 0,
-      retention: 95.8,
-    },
-    {
-      id: 'inactive',
-      name: 'Inactive Users',
-      icon: UserX,
-      count: 333,
-      percentage: 7.9,
-      growth: -8.2,
-      avgOrderValue: 45.20,
-      retention: 12.1,
-    },
-  ], []);
+  const userSegments = useMemo(
+    () => [
+      {
+        id: 'vendors',
+        name: 'Vendors',
+        icon: Users,
+        count: 1247,
+        percentage: 29.4,
+        growth: 12.8,
+        avgOrderValue: 156.3,
+        retention: 78.2,
+      },
+      {
+        id: 'restaurant-owners',
+        name: 'Restaurant Owners',
+        icon: UserCheck,
+        count: 1891,
+        percentage: 44.6,
+        growth: 18.5,
+        avgOrderValue: 203.5,
+        retention: 82.4,
+      },
+      {
+        id: 'restaurant-managers',
+        name: 'Restaurant Managers',
+        icon: UserPlus,
+        count: 743,
+        percentage: 17.5,
+        growth: 25.7,
+        avgOrderValue: 178.9,
+        retention: 69.3,
+      },
+      {
+        id: 'admins',
+        name: 'Administrators',
+        icon: Award,
+        count: 24,
+        percentage: 0.6,
+        growth: 4.3,
+        avgOrderValue: 0,
+        retention: 95.8,
+      },
+      {
+        id: 'inactive',
+        name: 'Inactive Users',
+        icon: UserX,
+        count: 333,
+        percentage: 7.9,
+        growth: -8.2,
+        avgOrderValue: 45.2,
+        retention: 12.1,
+      },
+    ],
+    []
+  );
 
   // Retention cohort data (simplified)
   const retentionData = useMemo(() => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    return months.map(month => ({
+    return months.map((month) => ({
       month,
       newUsers: Math.floor(Math.random() * 200) + 100,
       week1Retention: Math.floor(Math.random() * 30) + 60,
@@ -308,64 +358,69 @@ const UserAnalytics = ({
   }, []);
 
   // Device and platform breakdown
-  const deviceBreakdown = useMemo(() => [
-    { label: 'Mobile', value: 68, color: '#10B981' },
-    { label: 'Desktop', value: 28, color: '#3B82F6' },
-    { label: 'Tablet', value: 4, color: '#F59E0B' },
-  ], []);
+  const deviceBreakdown = useMemo(
+    () => [
+      { label: 'Mobile', value: 68, color: '#10B981' },
+      { label: 'Desktop', value: 28, color: '#3B82F6' },
+      { label: 'Tablet', value: 4, color: '#F59E0B' },
+    ],
+    []
+  );
 
   // Chart data for user growth
   const growthChartData = useMemo(() => {
-    const labels = userGrowthData.map(item => item.date);
-    
+    const labels = userGrowthData.map((item) => item.date);
+
     if (chartView === 'growth') {
       return {
         labels,
-        datasets: [{
-          label: 'Total Users',
-          data: userGrowthData.map(item => item.totalUsers),
-          color: '#10B981',
-          borderColor: '#10B981',
-          backgroundColor: '#10B98120',
-        }],
+        datasets: [
+          {
+            label: 'Total Users',
+            data: userGrowthData.map((item) => item.totalUsers),
+            color: '#10B981',
+            borderColor: '#10B981',
+            backgroundColor: '#10B98120',
+          },
+        ],
       };
     }
-    
+
     if (chartView === 'retention') {
       return {
-        labels: retentionData.map(item => item.month),
+        labels: retentionData.map((item) => item.month),
         datasets: [
           {
             label: 'Week 1',
-            data: retentionData.map(item => item.week1Retention),
+            data: retentionData.map((item) => item.week1Retention),
             color: '#10B981',
           },
           {
             label: 'Month 1',
-            data: retentionData.map(item => item.month1Retention),
+            data: retentionData.map((item) => item.month1Retention),
             color: '#3B82F6',
           },
           {
             label: 'Month 3',
-            data: retentionData.map(item => item.month3Retention),
+            data: retentionData.map((item) => item.month3Retention),
             color: '#F59E0B',
           },
         ],
       };
     }
-    
+
     // Engagement view
     return {
       labels,
       datasets: [
         {
           label: 'Active Users',
-          data: userGrowthData.map(item => item.activeUsers),
+          data: userGrowthData.map((item) => item.activeUsers),
           color: '#10B981',
         },
         {
           label: 'New Users',
-          data: userGrowthData.map(item => item.newUsers),
+          data: userGrowthData.map((item) => item.newUsers),
           color: '#3B82F6',
         },
       ],
@@ -375,14 +430,21 @@ const UserAnalytics = ({
   // Handle chart interactions
   const handleChartClick = useCallback((dataPoint, context) => {
     const { label, value, datasetLabel } = dataPoint;
-    toast.success(`Analyzing ${datasetLabel}: ${label} (${typeof value === 'number' ? value.toLocaleString() : value})`);
+    toast.success(
+      `Analyzing ${datasetLabel}: ${label} (${typeof value === 'number' ? value.toLocaleString() : value})`
+    );
   }, []);
 
   // Handle segment selection
-  const handleSegmentClick = useCallback((segment) => {
-    setSelectedSegment(selectedSegment?.id === segment.id ? null : segment);
-    toast.success(`${selectedSegment?.id === segment.id ? 'Deselected' : 'Selected'} ${segment.name} segment`);
-  }, [selectedSegment]);
+  const handleSegmentClick = useCallback(
+    (segment) => {
+      setSelectedSegment(selectedSegment?.id === segment.id ? null : segment);
+      toast.success(
+        `${selectedSegment?.id === segment.id ? 'Deselected' : 'Selected'} ${segment.name} segment`
+      );
+    },
+    [selectedSegment]
+  );
 
   // Handle export
   const handleExport = useCallback(() => {
@@ -395,45 +457,59 @@ const UserAnalytics = ({
       exportDate: new Date().toISOString(),
       timeRange,
     };
-    
+
     toast.success('User analytics export started');
-  }, [userMetrics, userSegments, userGrowthData, retentionData, deviceBreakdown, timeRange]);
+  }, [
+    userMetrics,
+    userSegments,
+    userGrowthData,
+    retentionData,
+    deviceBreakdown,
+    timeRange,
+  ]);
 
   return (
     <div className="space-y-6">
       {/* User Analytics Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+          <h2
+            className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             User Analytics
           </h2>
-          <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+          <p
+            className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+          >
             User behavior, segmentation, and retention insights
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Chart View Toggle */}
-          <div className={`flex items-center gap-1 p-1 rounded-lg ${
-            isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
-          }`}>
+          <div
+            className={`flex items-center gap-1 p-1 rounded-lg ${
+              isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+            }`}
+          >
             {[
               { id: 'growth', label: 'Growth', icon: TrendingUp },
               { id: 'retention', label: 'Retention', icon: UserCheck },
               { id: 'engagement', label: 'Engagement', icon: Activity },
-            ].map(view => (
+            ].map((view) => (
               <button
                 key={view.id}
                 onClick={() => setChartView(view.id)}
                 className={`
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
-                  ${chartView === view.id
-                    ? isDarkMode 
-                      ? 'bg-sage-green/20 text-sage-green'
-                      : 'bg-white text-muted-olive shadow-sm'
-                    : isDarkMode
-                      ? 'text-gray-400 hover:text-gray-300'
-                      : 'text-text-muted hover:text-text-dark'
+                  ${
+                    chartView === view.id
+                      ? isDarkMode
+                        ? 'bg-sage-green/20 text-sage-green'
+                        : 'bg-white text-muted-olive shadow-sm'
+                      : isDarkMode
+                        ? 'text-gray-400 hover:text-gray-300'
+                        : 'text-text-muted hover:text-text-dark'
                   }
                 `}
               >
@@ -523,13 +599,26 @@ const UserAnalytics = ({
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
-              User {chartView === 'growth' ? 'Growth' : chartView === 'retention' ? 'Retention' : 'Engagement'} Analytics
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
+              User{' '}
+              {chartView === 'growth'
+                ? 'Growth'
+                : chartView === 'retention'
+                  ? 'Retention'
+                  : 'Engagement'}{' '}
+              Analytics
             </h3>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              {chartView === 'growth' && 'User acquisition and growth trends over time'}
-              {chartView === 'retention' && 'Cohort retention analysis by time periods'}
-              {chartView === 'engagement' && 'Daily engagement and activity patterns'}
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              {chartView === 'growth' &&
+                'User acquisition and growth trends over time'}
+              {chartView === 'retention' &&
+                'Cohort retention analysis by time periods'}
+              {chartView === 'engagement' &&
+                'Daily engagement and activity patterns'}
             </p>
           </div>
 
@@ -537,7 +626,11 @@ const UserAnalytics = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCohortPeriod(cohortPeriod === 'monthly' ? 'weekly' : 'monthly')}
+              onClick={() =>
+                setCohortPeriod(
+                  cohortPeriod === 'monthly' ? 'weekly' : 'monthly'
+                )
+              }
             >
               <Calendar className="w-4 h-4 mr-2" />
               {cohortPeriod}
@@ -554,9 +647,11 @@ const UserAnalytics = ({
               data={growthChartData}
               height={320}
               stacked={false}
-              enableDrillDown={true}
+              enableDrillDown
               onDataPointClick={handleChartClick}
-              formatTooltip={(context) => `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`}
+              formatTooltip={(context) =>
+                `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`
+              }
               borderRadius={6}
               maxBarThickness={30}
             />
@@ -565,7 +660,7 @@ const UserAnalytics = ({
               data={growthChartData}
               height={320}
               fillArea={chartView === 'growth'}
-              enableDrillDown={true}
+              enableDrillDown
               onDataPointClick={handleChartClick}
               formatTooltip={(context) => {
                 const value = context.parsed.y;
@@ -583,16 +678,20 @@ const UserAnalytics = ({
       {/* User Segmentation and Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Segments */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               User Segments
             </h3>
             <Button variant="outline" size="sm">
               <Filter className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="space-y-3">
             {userSegments.map((segment) => (
               <UserSegmentCard
@@ -606,16 +705,20 @@ const UserAnalytics = ({
         </Card>
 
         {/* Device & Platform Analytics */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Device & Platform Usage
             </h3>
             <Button variant="outline" size="sm">
               <Monitor className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="h-48 mb-4">
             <DoughnutChart
               data={deviceBreakdown}
@@ -626,31 +729,39 @@ const UserAnalytics = ({
               }}
               centerContent={(centerData) => (
                 <div className="text-center">
-                  <p className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                  <p
+                    className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                  >
                     {centerData.total}%
                   </p>
-                  <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     Coverage
                   </p>
                 </div>
               )}
             />
           </div>
-          
+
           {/* Device Stats */}
           <div className="space-y-3">
             {deviceBreakdown.map((device, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div 
+                  <div
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: device.color }}
                   />
-                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <span
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     {device.label}
                   </span>
                 </div>
-                <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                <span
+                  className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {device.value}%
                 </span>
               </div>
@@ -666,27 +777,37 @@ const UserAnalytics = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
-          <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50 border-sage-green/20' : 'bg-white/80 border-muted-olive/20'}`}>
+          <Card
+            className={`p-6 ${isDarkMode ? 'bg-gray-800/50 border-sage-green/20' : 'bg-white/80 border-muted-olive/20'}`}
+          >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className={`
+                <div
+                  className={`
                   w-10 h-10 rounded-xl flex items-center justify-center
                   ${isDarkMode ? 'bg-sage-green/20' : 'bg-muted-olive/10'}
-                `}>
-                  <selectedSegment.icon className={`w-5 h-5 ${
-                    isDarkMode ? 'text-sage-green' : 'text-muted-olive'
-                  }`} />
+                `}
+                >
+                  <selectedSegment.icon
+                    className={`w-5 h-5 ${
+                      isDarkMode ? 'text-sage-green' : 'text-muted-olive'
+                    }`}
+                  />
                 </div>
                 <div>
-                  <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                  <h3
+                    className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                  >
                     {selectedSegment.name} Analysis
                   </h3>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     Detailed insights for this user segment
                   </p>
                 </div>
               </div>
-              
+
               <Button
                 variant="ghost"
                 size="sm"
@@ -697,35 +818,59 @@ const UserAnalytics = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {selectedSegment.count.toLocaleString()}
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Total Users
                 </p>
               </div>
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {selectedSegment.percentage.toFixed(1)}%
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Platform Share
                 </p>
               </div>
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   ${selectedSegment.avgOrderValue.toFixed(2)}
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Avg Order Value
                 </p>
               </div>
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {selectedSegment.retention.toFixed(1)}%
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Retention Rate
                 </p>
               </div>
@@ -736,64 +881,107 @@ const UserAnalytics = ({
 
       {/* User Behavior Insights */}
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+        >
           User Behavior Insights
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
             ${isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'}
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
               <UserPlus className="w-5 h-5 text-sage-green" />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 User Acquisition
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              New user registrations increased by {userMetrics.userGrowth.toFixed(1)}% this period, primarily driven by mobile app referrals.
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              New user registrations increased by{' '}
+              {userMetrics.userGrowth.toFixed(1)}% this period, primarily driven
+              by mobile app referrals.
             </p>
           </div>
 
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
-            ${userMetrics.retentionRate > 60
-              ? isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
-              : isDarkMode ? 'bg-earthy-yellow/5 border-earthy-yellow/20' : 'bg-earthy-yellow/5 border-earthy-yellow/20'
+            ${
+              userMetrics.retentionRate > 60
+                ? isDarkMode
+                  ? 'bg-sage-green/5 border-sage-green/20'
+                  : 'bg-sage-green/5 border-sage-green/20'
+                : isDarkMode
+                  ? 'bg-earthy-yellow/5 border-earthy-yellow/20'
+                  : 'bg-earthy-yellow/5 border-earthy-yellow/20'
             }
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
-              <UserCheck className={`w-5 h-5 ${
-                userMetrics.retentionRate > 60 ? 'text-sage-green' : 'text-earthy-yellow'
-              }`} />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <UserCheck
+                className={`w-5 h-5 ${
+                  userMetrics.retentionRate > 60
+                    ? 'text-sage-green'
+                    : 'text-earthy-yellow'
+                }`}
+              />
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 User Retention
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               {userMetrics.retentionRate.toFixed(1)}% retention rate indicates{' '}
-              {userMetrics.retentionRate > 60 ? 'strong' : 'moderate'} user engagement and platform value.
+              {userMetrics.retentionRate > 60 ? 'strong' : 'moderate'} user
+              engagement and platform value.
             </p>
           </div>
 
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
-            ${userMetrics.bounceRate < 30
-              ? isDarkMode ? 'bg-muted-olive/5 border-muted-olive/20' : 'bg-muted-olive/5 border-muted-olive/20'
-              : isDarkMode ? 'bg-tomato-red/5 border-tomato-red/20' : 'bg-tomato-red/5 border-tomato-red/20'
+            ${
+              userMetrics.bounceRate < 30
+                ? isDarkMode
+                  ? 'bg-muted-olive/5 border-muted-olive/20'
+                  : 'bg-muted-olive/5 border-muted-olive/20'
+                : isDarkMode
+                  ? 'bg-tomato-red/5 border-tomato-red/20'
+                  : 'bg-tomato-red/5 border-tomato-red/20'
             }
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
-              <Activity className={`w-5 h-5 ${
-                userMetrics.bounceRate < 30 ? 'text-muted-olive' : 'text-tomato-red'
-              }`} />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <Activity
+                className={`w-5 h-5 ${
+                  userMetrics.bounceRate < 30
+                    ? 'text-muted-olive'
+                    : 'text-tomato-red'
+                }`}
+              />
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 User Engagement
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              {userMetrics.bounceRate.toFixed(1)}% bounce rate with {userMetrics.avgSessionDuration.toFixed(1)}m average session duration shows{' '}
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              {userMetrics.bounceRate.toFixed(1)}% bounce rate with{' '}
+              {userMetrics.avgSessionDuration.toFixed(1)}m average session
+              duration shows{' '}
               {userMetrics.bounceRate < 30 ? 'excellent' : 'good'} engagement.
             </p>
           </div>
@@ -803,55 +991,73 @@ const UserAnalytics = ({
       {/* Cohort Retention Analysis */}
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+          <h3
+            className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             Cohort Retention Analysis
           </h3>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCohortPeriod(cohortPeriod === 'monthly' ? 'weekly' : 'monthly')}
+              onClick={() =>
+                setCohortPeriod(
+                  cohortPeriod === 'monthly' ? 'weekly' : 'monthly'
+                )
+              }
             >
               {cohortPeriod} View
             </Button>
           </div>
         </div>
-        
+
         {/* Retention Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                <th className={`text-left py-3 px-2 font-medium text-sm ${
-                  isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                }`}>
+              <tr
+                className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}
+              >
+                <th
+                  className={`text-left py-3 px-2 font-medium text-sm ${
+                    isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                  }`}
+                >
                   Cohort
                 </th>
-                <th className={`text-right py-3 px-2 font-medium text-sm ${
-                  isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                }`}>
+                <th
+                  className={`text-right py-3 px-2 font-medium text-sm ${
+                    isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                  }`}
+                >
                   Users
                 </th>
-                <th className={`text-right py-3 px-2 font-medium text-sm ${
-                  isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                }`}>
+                <th
+                  className={`text-right py-3 px-2 font-medium text-sm ${
+                    isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                  }`}
+                >
                   Week 1
                 </th>
-                <th className={`text-right py-3 px-2 font-medium text-sm ${
-                  isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                }`}>
+                <th
+                  className={`text-right py-3 px-2 font-medium text-sm ${
+                    isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                  }`}
+                >
                   Month 1
                 </th>
-                <th className={`text-right py-3 px-2 font-medium text-sm ${
-                  isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                }`}>
+                <th
+                  className={`text-right py-3 px-2 font-medium text-sm ${
+                    isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                  }`}
+                >
                   Month 3
                 </th>
               </tr>
             </thead>
             <tbody>
               {retentionData.map((cohort, index) => (
-                <tr 
+                <tr
                   key={index}
                   className={`
                     border-b hover:${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-50'} transition-colors
@@ -859,49 +1065,74 @@ const UserAnalytics = ({
                   `}
                 >
                   <td className="py-3 px-2">
-                    <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                    <span
+                      className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                    >
                       {cohort.month} 2024
                     </span>
                   </td>
-                  <td className={`py-3 px-2 text-right ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <td
+                    className={`py-3 px-2 text-right ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     {cohort.newUsers}
                   </td>
                   <td className="py-3 px-2 text-right">
-                    <span className={`
+                    <span
+                      className={`
                       px-2 py-1 rounded text-xs font-medium
-                      ${cohort.week1Retention > 60 
-                        ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
-                        : cohort.week1Retention > 40
-                          ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
-                          : 'bg-tomato-red/10 text-tomato-red'
+                      ${
+                        cohort.week1Retention > 60
+                          ? isDarkMode
+                            ? 'bg-sage-green/20 text-sage-green'
+                            : 'bg-sage-green/10 text-muted-olive'
+                          : cohort.week1Retention > 40
+                            ? isDarkMode
+                              ? 'bg-earthy-yellow/20 text-earthy-yellow'
+                              : 'bg-earthy-yellow/10 text-earthy-brown'
+                            : 'bg-tomato-red/10 text-tomato-red'
                       }
-                    `}>
+                    `}
+                    >
                       {cohort.week1Retention}%
                     </span>
                   </td>
                   <td className="py-3 px-2 text-right">
-                    <span className={`
+                    <span
+                      className={`
                       px-2 py-1 rounded text-xs font-medium
-                      ${cohort.month1Retention > 40 
-                        ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
-                        : cohort.month1Retention > 25
-                          ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
-                          : 'bg-tomato-red/10 text-tomato-red'
+                      ${
+                        cohort.month1Retention > 40
+                          ? isDarkMode
+                            ? 'bg-sage-green/20 text-sage-green'
+                            : 'bg-sage-green/10 text-muted-olive'
+                          : cohort.month1Retention > 25
+                            ? isDarkMode
+                              ? 'bg-earthy-yellow/20 text-earthy-yellow'
+                              : 'bg-earthy-yellow/10 text-earthy-brown'
+                            : 'bg-tomato-red/10 text-tomato-red'
                       }
-                    `}>
+                    `}
+                    >
                       {cohort.month1Retention}%
                     </span>
                   </td>
                   <td className="py-3 px-2 text-right">
-                    <span className={`
+                    <span
+                      className={`
                       px-2 py-1 rounded text-xs font-medium
-                      ${cohort.month3Retention > 25 
-                        ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
-                        : cohort.month3Retention > 15
-                          ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
-                          : 'bg-tomato-red/10 text-tomato-red'
+                      ${
+                        cohort.month3Retention > 25
+                          ? isDarkMode
+                            ? 'bg-sage-green/20 text-sage-green'
+                            : 'bg-sage-green/10 text-muted-olive'
+                          : cohort.month3Retention > 15
+                            ? isDarkMode
+                              ? 'bg-earthy-yellow/20 text-earthy-yellow'
+                              : 'bg-earthy-yellow/10 text-earthy-brown'
+                            : 'bg-tomato-red/10 text-tomato-red'
                       }
-                    `}>
+                    `}
+                    >
                       {cohort.month3Retention}%
                     </span>
                   </td>

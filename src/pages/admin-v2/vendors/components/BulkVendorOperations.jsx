@@ -29,22 +29,19 @@ import {
   FileText,
   Send,
   Ban,
-  UserCheck
+  UserCheck,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
-import { Modal } from '../../../../components/ui';
-import { Input } from '../../../../components/ui';
+import { Card, Button, Modal, Input } from '../../../../components/ui';
 import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import {
   useBulkApproveVendorsMutation,
   useBulkRejectVendorsMutation,
   useBulkUpdateVendorStatusMutation,
   useSendBulkVendorMessageMutation,
-  useExportVendorsQuery
+  useExportVendorsQuery,
 } from '../../../../services/admin-v2/vendorsService';
-import toast from 'react-hot-toast';
 
 // Bulk operation types
 const BULK_OPERATIONS = {
@@ -52,53 +49,65 @@ const BULK_OPERATIONS = {
     label: 'Approve Verification',
     icon: CheckCircle,
     color: 'text-sage-green bg-sage-green/10 border-sage-green/20',
-    description: 'Approve selected vendors for platform access'
+    description: 'Approve selected vendors for platform access',
   },
   reject: {
     label: 'Reject Verification',
     icon: XCircle,
     color: 'text-tomato-red bg-tomato-red/10 border-tomato-red/20',
-    description: 'Reject selected vendors with reason'
+    description: 'Reject selected vendors with reason',
   },
   activate: {
     label: 'Activate Accounts',
     icon: UserCheck,
     color: 'text-sage-green bg-sage-green/10 border-sage-green/20',
-    description: 'Activate selected vendor accounts'
+    description: 'Activate selected vendor accounts',
   },
   suspend: {
     label: 'Suspend Accounts',
     icon: Ban,
     color: 'text-earthy-yellow bg-earthy-yellow/10 border-earthy-yellow/20',
-    description: 'Suspend selected vendor accounts'
+    description: 'Suspend selected vendor accounts',
   },
   message: {
     label: 'Send Message',
     icon: MessageSquare,
     color: 'text-muted-olive bg-muted-olive/10 border-muted-olive/20',
-    description: 'Send bulk message to selected vendors'
+    description: 'Send bulk message to selected vendors',
   },
   export: {
     label: 'Export Data',
     icon: Download,
     color: 'text-dusty-cedar bg-dusty-cedar/10 border-dusty-cedar/20',
-    description: 'Export selected vendor data'
-  }
+    description: 'Export selected vendor data',
+  },
 };
 
 // Bulk operation progress tracker
-const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume }) => {
+const BulkProgressTracker = ({
+  operation,
+  progress,
+  onCancel,
+  onPause,
+  onResume,
+}) => {
   const { processed, total, errors, status } = progress;
   const percentage = total > 0 ? Math.round((processed / total) * 100) : 0;
-  
+
   const getStatusIcon = () => {
     switch (status) {
-      case 'running': return <Loader2 className="w-5 h-5 animate-spin text-sage-green" />;
-      case 'paused': return <PauseCircle className="w-5 h-5 text-earthy-yellow" />;
-      case 'completed': return <CheckCircle className="w-5 h-5 text-sage-green" />;
-      case 'cancelled': return <StopCircle className="w-5 h-5 text-tomato-red" />;
-      case 'error': return <XCircle className="w-5 h-5 text-tomato-red" />;
-      default: return <Clock className="w-5 h-5 text-text-muted" />;
+      case 'running':
+        return <Loader2 className="w-5 h-5 animate-spin text-sage-green" />;
+      case 'paused':
+        return <PauseCircle className="w-5 h-5 text-earthy-yellow" />;
+      case 'completed':
+        return <CheckCircle className="w-5 h-5 text-sage-green" />;
+      case 'cancelled':
+        return <StopCircle className="w-5 h-5 text-tomato-red" />;
+      case 'error':
+        return <XCircle className="w-5 h-5 text-tomato-red" />;
+      default:
+        return <Clock className="w-5 h-5 text-text-muted" />;
     }
   };
 
@@ -112,33 +121,26 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
         <div className="flex items-center gap-3">
           {getStatusIcon()}
           <h3 className="font-semibold text-text-dark">
-            {operation.label} - {status.charAt(0).toUpperCase() + status.slice(1)}
+            {operation.label} -{' '}
+            {status.charAt(0).toUpperCase() + status.slice(1)}
           </h3>
         </div>
-        
+
         <div className="flex items-center gap-2">
           {status === 'running' && (
-            <Button
-              onClick={onPause}
-              variant="outline"
-              size="sm"
-            >
+            <Button onClick={onPause} variant="outline" size="sm">
               <PauseCircle className="w-4 h-4 mr-2" />
               Pause
             </Button>
           )}
-          
+
           {status === 'paused' && (
-            <Button
-              onClick={onResume}
-              variant="outline"
-              size="sm"
-            >
+            <Button onClick={onResume} variant="outline" size="sm">
               <PlayCircle className="w-4 h-4 mr-2" />
               Resume
             </Button>
           )}
-          
+
           {['running', 'paused'].includes(status) && (
             <Button
               onClick={onCancel}
@@ -157,7 +159,9 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
       <div className="space-y-2 mb-4">
         <div className="flex items-center justify-between text-sm">
           <span className="text-text-muted">Progress</span>
-          <span className="font-medium text-text-dark">{processed} / {total} ({percentage}%)</span>
+          <span className="font-medium text-text-dark">
+            {processed} / {total} ({percentage}%)
+          </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
           <motion.div
@@ -192,7 +196,8 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
           className="mt-4 p-3 bg-sage-green/10 border border-sage-green/20 rounded-xl"
         >
           <p className="text-sm text-sage-green font-medium">
-            Operation completed successfully! {processed - errors} vendors processed, {errors} errors.
+            Operation completed successfully! {processed - errors} vendors
+            processed, {errors} errors.
           </p>
         </motion.div>
       )}
@@ -201,13 +206,13 @@ const BulkProgressTracker = ({ operation, progress, onCancel, onPause, onResume 
 };
 
 // Bulk operation confirmation modal
-const BulkOperationModal = ({ 
-  operation, 
-  selectedVendors, 
-  isOpen, 
-  onClose, 
+const BulkOperationModal = ({
+  operation,
+  selectedVendors,
+  isOpen,
+  onClose,
   onConfirm,
-  isProcessing 
+  isProcessing,
 }) => {
   const [reason, setReason] = useState('');
   const [message, setMessage] = useState('');
@@ -223,18 +228,18 @@ const BulkOperationModal = ({
       toast.error('Please provide a reason for this action');
       return;
     }
-    
+
     if (requiresMessage && !message.trim()) {
       toast.error('Please enter a message to send');
       return;
     }
 
     const data = {
-      vendorIds: selectedVendors.map(v => v.id),
+      vendorIds: selectedVendors.map((v) => v.id),
       ...(requiresReason && { reason }),
       ...(requiresMessage && { message }),
       ...(isExportOperation && { format: exportFormat }),
-      notifyVendors
+      notifyVendors,
     };
 
     onConfirm(data);
@@ -257,25 +262,36 @@ const BulkOperationModal = ({
             <span className="font-medium">Bulk Operation Confirmation</span>
           </div>
           <p className="text-sm opacity-80">
-            You are about to {operation.description.toLowerCase()} for {selectedVendors.length} vendor{selectedVendors.length !== 1 ? 's' : ''}. 
-            This action {['reject', 'suspend', 'export'].includes(operation.id) ? 'may not be' : 'cannot be'} undone.
+            You are about to {operation.description.toLowerCase()} for{' '}
+            {selectedVendors.length} vendor
+            {selectedVendors.length !== 1 ? 's' : ''}. This action{' '}
+            {['reject', 'suspend', 'export'].includes(operation.id)
+              ? 'may not be'
+              : 'cannot be'}{' '}
+            undone.
           </p>
         </div>
 
         {/* Selected Vendors Preview */}
         <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-xl">
           <div className="p-3 bg-gray-50 border-b border-gray-200 sticky top-0">
-            <h4 className="font-medium text-text-dark">Selected Vendors ({selectedVendors.length})</h4>
+            <h4 className="font-medium text-text-dark">
+              Selected Vendors ({selectedVendors.length})
+            </h4>
           </div>
           <div className="p-3 space-y-2">
             {selectedVendors.slice(0, 10).map((vendor) => (
               <div key={vendor.id} className="flex items-center gap-3 text-sm">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
-                                flex items-center justify-center text-white text-xs font-medium">
+                <div
+                  className="w-8 h-8 rounded-lg bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
+                                flex items-center justify-center text-white text-xs font-medium"
+                >
                   <Building2 className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-text-dark truncate">{vendor.businessName}</p>
+                  <p className="font-medium text-text-dark truncate">
+                    {vendor.businessName}
+                  </p>
                   <p className="text-text-muted truncate">{vendor.ownerName}</p>
                 </div>
               </div>
@@ -291,7 +307,9 @@ const BulkOperationModal = ({
         {/* Reason Input */}
         {requiresReason && (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Reason *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Reason *
+            </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -306,7 +324,9 @@ const BulkOperationModal = ({
         {/* Message Input */}
         {requiresMessage && (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Message *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Message *
+            </label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -321,7 +341,9 @@ const BulkOperationModal = ({
         {/* Export Format */}
         {isExportOperation && (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Export Format</label>
+            <label className="text-sm font-medium text-text-dark">
+              Export Format
+            </label>
             <select
               value={exportFormat}
               onChange={(e) => setExportFormat(e.target.value)}
@@ -363,13 +385,15 @@ const BulkOperationModal = ({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isProcessing || 
-              (requiresReason && !reason.trim()) || 
+            disabled={
+              isProcessing ||
+              (requiresReason && !reason.trim()) ||
               (requiresMessage && !message.trim())
             }
-            className={`flex-1 ${operation.id === 'reject' || operation.id === 'suspend' 
-              ? 'bg-tomato-red text-white hover:bg-tomato-red/90' 
-              : 'bg-gradient-to-r from-muted-olive to-sage-green text-white'
+            className={`flex-1 ${
+              operation.id === 'reject' || operation.id === 'suspend'
+                ? 'bg-tomato-red text-white hover:bg-tomato-red/90'
+                : 'bg-gradient-to-r from-muted-olive to-sage-green text-white'
             }`}
           >
             {isProcessing ? 'Processing...' : `Confirm ${operation.label}`}
@@ -380,16 +404,16 @@ const BulkOperationModal = ({
   );
 };
 
-const BulkVendorOperations = ({ 
-  selectedVendors = [], 
+const BulkVendorOperations = ({
+  selectedVendors = [],
   onClearSelection,
-  onRefreshData 
+  onRefreshData,
 }) => {
   const { isDarkMode } = useTheme();
   const [activeOperation, setActiveOperation] = useState(null);
   const [showOperationModal, setShowOperationModal] = useState(false);
   const [bulkProgress, setBulkProgress] = useState(null);
-  
+
   // RTK Query mutations
   const [bulkApproveVendors] = useBulkApproveVendorsMutation();
   const [bulkRejectVendors] = useBulkRejectVendorsMutation();
@@ -402,10 +426,22 @@ const BulkVendorOperations = ({
 
     return {
       totalVendors: selectedVendors.length,
-      pendingVerification: selectedVendors.filter(v => v.verificationStatus === 'pending').length,
-      totalRevenue: selectedVendors.reduce((sum, v) => sum + (v.businessMetrics?.totalRevenue || 0), 0),
-      totalOrders: selectedVendors.reduce((sum, v) => sum + (v.businessMetrics?.totalOrders || 0), 0),
-      averageRating: selectedVendors.reduce((sum, v) => sum + (v.businessMetrics?.rating || 0), 0) / selectedVendors.length
+      pendingVerification: selectedVendors.filter(
+        (v) => v.verificationStatus === 'pending'
+      ).length,
+      totalRevenue: selectedVendors.reduce(
+        (sum, v) => sum + (v.businessMetrics?.totalRevenue || 0),
+        0
+      ),
+      totalOrders: selectedVendors.reduce(
+        (sum, v) => sum + (v.businessMetrics?.totalOrders || 0),
+        0
+      ),
+      averageRating:
+        selectedVendors.reduce(
+          (sum, v) => sum + (v.businessMetrics?.rating || 0),
+          0
+        ) / selectedVendors.length,
     };
   }, [selectedVendors]);
 
@@ -421,18 +457,18 @@ const BulkVendorOperations = ({
   // Execute bulk operation
   const executeBulkOperation = async (data) => {
     setShowOperationModal(false);
-    
+
     // Initialize progress tracking
     setBulkProgress({
       processed: 0,
       total: data.vendorIds.length,
       errors: 0,
-      status: 'running'
+      status: 'running',
     });
 
     try {
       let result;
-      
+
       switch (activeOperation.id) {
         case 'approve':
           result = await bulkApproveVendors(data).unwrap();
@@ -444,7 +480,7 @@ const BulkVendorOperations = ({
         case 'suspend':
           result = await bulkUpdateVendorStatus({
             ...data,
-            status: activeOperation.id === 'activate' ? 'active' : 'suspended'
+            status: activeOperation.id === 'activate' ? 'active' : 'suspended',
           }).unwrap();
           break;
         case 'message':
@@ -452,7 +488,7 @@ const BulkVendorOperations = ({
           break;
         case 'export':
           // Handle export differently - trigger download
-          const exportData = selectedVendors.map(vendor => ({
+          const exportData = selectedVendors.map((vendor) => ({
             businessName: vendor.businessName,
             ownerName: vendor.ownerName,
             email: vendor.email,
@@ -461,19 +497,20 @@ const BulkVendorOperations = ({
             verificationStatus: vendor.verificationStatus,
             totalRevenue: vendor.businessMetrics?.totalRevenue || 0,
             totalOrders: vendor.businessMetrics?.totalOrders || 0,
-            rating: vendor.businessMetrics?.rating || 0
+            rating: vendor.businessMetrics?.rating || 0,
           }));
-          
+
           // Create and download file (simplified implementation)
-          const blob = new Blob([JSON.stringify(exportData, null, 2)], 
-            { type: 'application/json' });
+          const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+            type: 'application/json',
+          });
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
           link.download = `vendors_export_${Date.now()}.json`;
           link.click();
           URL.revokeObjectURL(url);
-          
+
           result = { success: true, processed: data.vendorIds.length };
           break;
         default:
@@ -481,22 +518,23 @@ const BulkVendorOperations = ({
       }
 
       // Update progress to completed
-      setBulkProgress(prev => ({
+      setBulkProgress((prev) => ({
         ...prev,
         processed: result.processed || data.vendorIds.length,
         errors: result.errors || 0,
-        status: 'completed'
+        status: 'completed',
       }));
 
       toast.success(`${activeOperation.label} completed successfully`);
       onRefreshData?.();
-      
     } catch (error) {
-      setBulkProgress(prev => ({
+      setBulkProgress((prev) => ({
         ...prev,
-        status: 'error'
+        status: 'error',
       }));
-      toast.error(`Failed to ${activeOperation.label.toLowerCase()}: ${error.message}`);
+      toast.error(
+        `Failed to ${activeOperation.label.toLowerCase()}: ${error.message}`
+      );
     }
   };
 
@@ -524,21 +562,22 @@ const BulkVendorOperations = ({
             <div className="w-10 h-10 bg-muted-olive/10 rounded-xl flex items-center justify-center">
               <Users className="w-5 h-5 text-muted-olive" />
             </div>
-            
+
             <div>
               <h3 className="font-semibold text-text-dark">
-                {selectedVendors.length} Vendor{selectedVendors.length !== 1 ? 's' : ''} Selected
+                {selectedVendors.length} Vendor
+                {selectedVendors.length !== 1 ? 's' : ''} Selected
               </h3>
               {summaryStats && (
                 <p className="text-sm text-text-muted">
-                  {summaryStats.pendingVerification} pending verification • 
-                  ${summaryStats.totalRevenue.toLocaleString()} total revenue • 
+                  {summaryStats.pendingVerification} pending verification • $
+                  {summaryStats.totalRevenue.toLocaleString()} total revenue •
                   {summaryStats.totalOrders.toLocaleString()} total orders
                 </p>
               )}
             </div>
           </div>
-          
+
           <Button
             onClick={onClearSelection}
             variant="outline"
@@ -556,7 +595,7 @@ const BulkVendorOperations = ({
           <RefreshCw className="w-5 h-5 text-sage-green" />
           <h3 className="font-semibold text-text-dark">Bulk Operations</h3>
         </div>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {Object.entries(BULK_OPERATIONS).map(([id, operation]) => {
             const IconComponent = operation.icon;
@@ -582,9 +621,15 @@ const BulkVendorOperations = ({
         <BulkProgressTracker
           operation={activeOperation}
           progress={bulkProgress}
-          onCancel={() => setBulkProgress(prev => ({ ...prev, status: 'cancelled' }))}
-          onPause={() => setBulkProgress(prev => ({ ...prev, status: 'paused' }))}
-          onResume={() => setBulkProgress(prev => ({ ...prev, status: 'running' }))}
+          onCancel={() =>
+            setBulkProgress((prev) => ({ ...prev, status: 'cancelled' }))
+          }
+          onPause={() =>
+            setBulkProgress((prev) => ({ ...prev, status: 'paused' }))
+          }
+          onResume={() =>
+            setBulkProgress((prev) => ({ ...prev, status: 'running' }))
+          }
         />
       )}
 

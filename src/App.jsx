@@ -1,9 +1,10 @@
 import { useEffect, Suspense, lazy } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useGetCurrentUserQuery } from './store/slices/apiSlice';
 import { selectAuth } from './store/slices/authSlice';
+import { initializeTheme } from './store/slices/themeSlice';
 import authService from './services/authService';
 import AarothLogo from './assets/AarothLogo.png';
 
@@ -177,7 +178,13 @@ const PageLoader = () => (
 );
 
 const App = () => {
+  const dispatch = useDispatch();
   const { isAuthenticated, token, user } = useSelector(selectAuth);
+
+  // Initialize theme system on app start
+  useEffect(() => {
+    dispatch(initializeTheme());
+  }, [dispatch]);
 
   // Initialize authentication on app start
   useEffect(() => {
@@ -521,7 +528,7 @@ const App = () => {
                 </Suspense>
               }
             />
-            
+
             {/* Enhanced Restaurant & Catalog Management (Prompt 6) */}
             <Route
               path="restaurants"
@@ -555,7 +562,7 @@ const App = () => {
                 </Suspense>
               }
             />
-            
+
             {/* Analytics & Performance Monitoring (Prompt 7) */}
             <Route
               path="analytics"
@@ -581,7 +588,7 @@ const App = () => {
                 </Suspense>
               }
             />
-            
+
             {/* System Settings Management (Prompt 8) */}
             <Route
               path="settings"
@@ -615,7 +622,7 @@ const App = () => {
                 </Suspense>
               }
             />
-            
+
             {/* More admin-v2 routes will be added as pages are implemented */}
           </Route>
 

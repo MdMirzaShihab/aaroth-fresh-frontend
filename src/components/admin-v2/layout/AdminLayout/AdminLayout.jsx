@@ -31,17 +31,29 @@ const AdminLayoutInner = ({ children }) => {
   }, []);
 
   return (
-    <div className={`min-h-screen bg-background transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-dark-olive-bg text-dark-text-primary' 
+          : 'bg-background text-text-dark'
+      }`}
+    >
       {/* Loading overlay for layout transitions */}
       {layoutLoading && (
         <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-          <div className={`
+          <div
+            className={`
             ${isDarkMode ? 'glass-4-dark' : 'glass-4'} p-6 rounded-2xl
             border ${isDarkMode ? 'border-dark-olive-border' : 'border-sage-green/20'}
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3">
               <div className="animate-spin w-5 h-5 border-2 border-sage-green border-t-transparent rounded-full" />
-              <span className={isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}>
+              <span
+                className={
+                  isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'
+                }
+              >
                 Loading...
               </span>
             </div>
@@ -58,7 +70,7 @@ const AdminLayoutInner = ({ children }) => {
       )}
 
       {/* Sidebar */}
-      <AdminSidebar 
+      <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
@@ -66,12 +78,14 @@ const AdminLayoutInner = ({ children }) => {
       {/* Main content area */}
       <div className="flex flex-col min-h-screen lg:ml-80">
         {/* Header */}
-        <AdminHeader 
-          onMenuClick={() => setSidebarOpen(true)}
-        />
+        <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
 
         {/* Main content */}
-        <main className="flex-1 p-4 lg:p-6">
+        <main className={`flex-1 p-4 lg:p-6 ${
+          isDarkMode 
+            ? 'bg-dark-olive-bg' 
+            : 'bg-background'
+        }`}>
           <div className="max-w-7xl mx-auto">
             <Breadcrumb />
             {children || <Outlet />}
@@ -82,13 +96,9 @@ const AdminLayoutInner = ({ children }) => {
   );
 };
 
-// Main layout component simplified 
+// Main layout component simplified
 const AdminLayout = ({ children }) => {
-  return (
-    <AdminLayoutInner>
-      {children}
-    </AdminLayoutInner>
-  );
+  return <AdminLayoutInner>{children}</AdminLayoutInner>;
 };
 
 export default AdminLayout;

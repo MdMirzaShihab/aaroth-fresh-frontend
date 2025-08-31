@@ -118,7 +118,7 @@ export const showLoadingToast = (message, options = {}) => {
 export const showVerificationSuccessToast = (entityType, status) => {
   let actionText;
   let icon;
-  
+
   switch (status) {
     case 'approved':
       actionText = 'verified';
@@ -136,7 +136,7 @@ export const showVerificationSuccessToast = (entityType, status) => {
       actionText = 'updated';
       icon = '🔄';
   }
-  
+
   const message = `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} ${actionText} successfully`;
 
   return showSuccessToast(message, {
@@ -146,7 +146,12 @@ export const showVerificationSuccessToast = (entityType, status) => {
 };
 
 export const showVerificationErrorToast = (entityType, status, error) => {
-  const statusText = status === 'approved' ? 'approve' : status === 'rejected' ? 'reject' : 'update';
+  const statusText =
+    status === 'approved'
+      ? 'approve'
+      : status === 'rejected'
+        ? 'reject'
+        : 'update';
   const defaultMessage = `Failed to ${statusText} ${entityType}`;
   const message = error?.message || error?.data?.message || defaultMessage;
 

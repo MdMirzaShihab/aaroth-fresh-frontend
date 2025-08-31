@@ -26,22 +26,19 @@ import {
   RefreshCw,
   Eye,
   Ban,
-  Unlock
+  Unlock,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Modal } from '../../../../components/ui';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
-import { StatusBadge } from '../../../../components/ui';
+import { Modal, Card, Button, StatusBadge } from '../../../../components/ui';
 import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
-import { 
+import {
   useUpdateVendorStatusMutation,
   useDeactivateVendorMutation,
   useSafeDeleteVendorMutation,
   useLazyGetVendorDeletionImpactQuery,
-  useSendVendorMessageMutation
+  useSendVendorMessageMutation,
 } from '../../../../services/admin-v2/vendorsService';
-import toast from 'react-hot-toast';
 
 // Status configuration
 const VENDOR_STATUSES = {
@@ -49,31 +46,32 @@ const VENDOR_STATUSES = {
     label: 'Active',
     color: 'text-sage-green bg-sage-green/10 border-sage-green/20',
     icon: CheckCircle,
-    description: 'Vendor is fully operational and can receive orders'
+    description: 'Vendor is fully operational and can receive orders',
   },
   inactive: {
     label: 'Inactive',
     color: 'text-gray-500 bg-gray-100 border-gray-200',
     icon: XCircle,
-    description: 'Vendor account is temporarily disabled'
+    description: 'Vendor account is temporarily disabled',
   },
   suspended: {
     label: 'Suspended',
     color: 'text-earthy-yellow bg-earthy-yellow/10 border-earthy-yellow/20',
     icon: Ban,
-    description: 'Vendor account is suspended due to policy violations'
+    description: 'Vendor account is suspended due to policy violations',
   },
   pending: {
     label: 'Pending',
     color: 'text-sage-green bg-sage-green/10 border-sage-green/20',
     icon: Clock,
-    description: 'Vendor registration is pending approval'
-  }
+    description: 'Vendor registration is pending approval',
+  },
 };
 
 // Impact analysis component
 const ImpactAnalysis = ({ vendorId, onImpactData }) => {
-  const [getImpactAnalysis, { data: impactData, isLoading, error }] = useLazyGetVendorDeletionImpactQuery();
+  const [getImpactAnalysis, { data: impactData, isLoading, error }] =
+    useLazyGetVendorDeletionImpactQuery();
 
   useEffect(() => {
     if (vendorId) {
@@ -116,14 +114,14 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
     activeListings = 0,
     connectedRestaurants = 0,
     dependencies = [],
-    riskLevel = 'low'
+    riskLevel = 'low',
   } = impactData;
 
   const getRiskColor = (level) => {
     const colors = {
       low: 'text-sage-green bg-sage-green/10 border-sage-green/20',
       medium: 'text-earthy-yellow bg-earthy-yellow/10 border-earthy-yellow/20',
-      high: 'text-tomato-red bg-tomato-red/10 border-tomato-red/20'
+      high: 'text-tomato-red bg-tomato-red/10 border-tomato-red/20',
     };
     return colors[level] || colors.low;
   };
@@ -134,11 +132,15 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
       <div className={`p-4 rounded-xl border ${getRiskColor(riskLevel)}`}>
         <div className="flex items-center gap-2 mb-2">
           <AlertTriangle className="w-5 h-5" />
-          <span className="font-medium">Deletion Risk: {riskLevel.toUpperCase()}</span>
+          <span className="font-medium">
+            Deletion Risk: {riskLevel.toUpperCase()}
+          </span>
         </div>
         <p className="text-sm opacity-80">
-          {riskLevel === 'high' && 'High impact deletion - careful review required'}
-          {riskLevel === 'medium' && 'Moderate impact - some dependencies exist'}
+          {riskLevel === 'high' &&
+            'High impact deletion - careful review required'}
+          {riskLevel === 'medium' &&
+            'Moderate impact - some dependencies exist'}
           {riskLevel === 'low' && 'Low impact deletion - minimal dependencies'}
         </p>
       </div>
@@ -157,7 +159,9 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
           <div className="w-10 h-10 bg-sage-green/10 rounded-xl flex items-center justify-center mx-auto mb-2">
             <DollarSign className="w-5 h-5 text-sage-green" />
           </div>
-          <p className="text-2xl font-bold text-text-dark">${totalRevenue.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-text-dark">
+            ${totalRevenue.toLocaleString()}
+          </p>
           <p className="text-xs text-text-muted">Total Revenue</p>
         </Card>
 
@@ -173,7 +177,9 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
           <div className="w-10 h-10 bg-earthy-yellow/10 rounded-xl flex items-center justify-center mx-auto mb-2">
             <Users className="w-5 h-5 text-earthy-yellow" />
           </div>
-          <p className="text-2xl font-bold text-text-dark">{connectedRestaurants}</p>
+          <p className="text-2xl font-bold text-text-dark">
+            {connectedRestaurants}
+          </p>
           <p className="text-xs text-text-muted">Connected Restaurants</p>
         </Card>
       </div>
@@ -187,17 +193,26 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
           </h4>
           <div className="space-y-2">
             {dependencies.map((dependency, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-text-muted" />
-                  <span className="text-sm font-medium text-text-dark">{dependency.type}</span>
-                  <span className="text-xs text-text-muted">({dependency.count} items)</span>
+                  <span className="text-sm font-medium text-text-dark">
+                    {dependency.type}
+                  </span>
+                  <span className="text-xs text-text-muted">
+                    ({dependency.count} items)
+                  </span>
                 </div>
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  dependency.required 
-                    ? 'bg-tomato-red/10 text-tomato-red' 
-                    : 'bg-earthy-yellow/10 text-earthy-yellow'
-                }`}>
+                <span
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    dependency.required
+                      ? 'bg-tomato-red/10 text-tomato-red'
+                      : 'bg-earthy-yellow/10 text-earthy-yellow'
+                  }`}
+                >
                   {dependency.required ? 'Required' : 'Optional'}
                 </span>
               </div>
@@ -234,13 +249,18 @@ const StatusChangeModal = ({ vendor, isOpen, onClose, onStatusChange }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Change Vendor Status" size="default">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Change Vendor Status"
+      size="default"
+    >
       <div className="space-y-6">
         <div>
           <p className="text-text-muted mb-4">
             Change status for <strong>{vendor?.businessName}</strong>
           </p>
-          
+
           {/* Current Status */}
           <div className="p-3 bg-gray-50 rounded-xl mb-4">
             <p className="text-sm text-text-muted mb-1">Current Status</p>
@@ -250,7 +270,9 @@ const StatusChangeModal = ({ vendor, isOpen, onClose, onStatusChange }) => {
 
         {/* New Status Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-text-dark">New Status</label>
+          <label className="text-sm font-medium text-text-dark">
+            New Status
+          </label>
           <div className="grid grid-cols-2 gap-3">
             {Object.entries(VENDOR_STATUSES).map(([status, config]) => {
               const IconComponent = config.icon;
@@ -268,7 +290,9 @@ const StatusChangeModal = ({ vendor, isOpen, onClose, onStatusChange }) => {
                     <IconComponent className="w-4 h-4" />
                     <span className="font-medium">{config.label}</span>
                   </div>
-                  <p className="text-xs text-text-muted">{config.description}</p>
+                  <p className="text-xs text-text-muted">
+                    {config.description}
+                  </p>
                 </button>
               );
             })}
@@ -277,7 +301,9 @@ const StatusChangeModal = ({ vendor, isOpen, onClose, onStatusChange }) => {
 
         {/* Reason */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-text-dark">Reason for Change *</label>
+          <label className="text-sm font-medium text-text-dark">
+            Reason for Change *
+          </label>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
@@ -355,20 +381,27 @@ const SafeDeleteModal = ({ vendor, isOpen, onClose, onSafeDelete }) => {
     }
   };
 
-  const canDelete = !impactData || (
-    impactData.activeOrders === 0 || transferOrders
-  );
+  const canDelete =
+    !impactData || impactData.activeOrders === 0 || transferOrders;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Safe Delete Vendor" size="large">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Safe Delete Vendor"
+      size="large"
+    >
       <div className="space-y-6">
         <div className="p-4 bg-tomato-red/5 border border-tomato-red/20 rounded-xl">
           <div className="flex items-center gap-2 text-tomato-red mb-2">
             <AlertTriangle className="w-5 h-5" />
-            <span className="font-medium">Warning: This action cannot be undone</span>
+            <span className="font-medium">
+              Warning: This action cannot be undone
+            </span>
           </div>
           <p className="text-sm text-text-muted">
-            You are about to permanently delete <strong>{vendor?.businessName}</strong> 
+            You are about to permanently delete{' '}
+            <strong>{vendor?.businessName}</strong>
             and all associated data from the system.
           </p>
         </div>
@@ -387,14 +420,19 @@ const SafeDeleteModal = ({ vendor, isOpen, onClose, onSafeDelete }) => {
                 onChange={(e) => setTransferOrders(e.target.checked)}
                 className="w-4 h-4 rounded border-2 border-muted-olive/30 text-muted-olive focus:ring-muted-olive/20"
               />
-              <label htmlFor="transferOrders" className="font-medium text-text-dark">
+              <label
+                htmlFor="transferOrders"
+                className="font-medium text-text-dark"
+              >
                 Transfer active orders to another vendor
               </label>
             </div>
-            
+
             {transferOrders && (
               <div className="ml-7 space-y-2">
-                <label className="text-sm text-text-muted">Select vendor to transfer orders to:</label>
+                <label className="text-sm text-text-muted">
+                  Select vendor to transfer orders to:
+                </label>
                 <select
                   value={transferToVendorId}
                   onChange={(e) => setTransferToVendorId(e.target.value)}
@@ -413,7 +451,9 @@ const SafeDeleteModal = ({ vendor, isOpen, onClose, onSafeDelete }) => {
 
         {/* Deletion Reason */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-text-dark">Reason for Deletion *</label>
+          <label className="text-sm font-medium text-text-dark">
+            Reason for Deletion *
+          </label>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
@@ -451,7 +491,7 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
   const { isDarkMode } = useTheme();
   const [showStatusChange, setShowStatusChange] = useState(false);
   const [showSafeDelete, setShowSafeDelete] = useState(false);
-  
+
   const [updateVendorStatus] = useUpdateVendorStatusMutation();
   const [deactivateVendor] = useDeactivateVendorMutation();
   const [safeDeleteVendor] = useSafeDeleteVendorMutation();
@@ -464,13 +504,13 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
         await deactivateVendor({
           vendorId: vendor.id,
           reason,
-          notifyVendor
+          notifyVendor,
         }).unwrap();
       } else {
         await updateVendorStatus({
           vendorId: vendor.id,
           status: newStatus,
-          reason
+          reason,
         }).unwrap();
       }
 
@@ -478,7 +518,7 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
         await sendVendorMessage({
           vendorId: vendor.id,
           message: `Your account status has been changed to ${newStatus}. Reason: ${reason}`,
-          type: 'status_change'
+          type: 'status_change',
         });
       }
 
@@ -491,13 +531,17 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
   };
 
   // Handle safe deletion
-  const handleSafeDelete = async (reason, transferOrders, transferToVendorId) => {
+  const handleSafeDelete = async (
+    reason,
+    transferOrders,
+    transferToVendorId
+  ) => {
     try {
       await safeDeleteVendor({
         vendorId: vendor.id,
         reason,
         transferOrders,
-        transferToVendorId
+        transferToVendorId,
       }).unwrap();
 
       toast.success('Vendor deleted successfully');
@@ -509,7 +553,8 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
     }
   };
 
-  const currentStatus = VENDOR_STATUSES[vendor?.status] || VENDOR_STATUSES.active;
+  const currentStatus =
+    VENDOR_STATUSES[vendor?.status] || VENDOR_STATUSES.active;
   const StatusIcon = currentStatus.icon;
 
   if (!isOpen || !vendor) return null;
@@ -518,30 +563,30 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
     <>
       {/* Main Status Manager Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div 
+        <div
           className="absolute inset-0 bg-black/30 backdrop-blur-md"
           onClick={onClose}
         />
-        
+
         <div className="relative glass-5 rounded-3xl shadow-depth-5 w-full max-w-2xl border animate-scale-in">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
-                              flex items-center justify-center shadow-lg text-white">
+              <div
+                className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
+                              flex items-center justify-center shadow-lg text-white"
+              >
                 <Shield className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-text-dark dark:text-dark-text-primary">
                   Status Management
                 </h2>
-                <p className="text-sm text-text-muted">
-                  {vendor.businessName}
-                </p>
+                <p className="text-sm text-text-muted">{vendor.businessName}</p>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={onClose}
               className="glass-2 p-2 rounded-xl hover:glass-3 transition-all duration-200 
                          focus:outline-none focus:ring-2 focus:ring-muted-olive/30"
@@ -554,15 +599,23 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
           <div className="p-6 space-y-6">
             {/* Current Status */}
             <Card className="p-4">
-              <h3 className="font-medium text-text-dark mb-3">Current Status</h3>
+              <h3 className="font-medium text-text-dark mb-3">
+                Current Status
+              </h3>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${currentStatus.color}`}>
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${currentStatus.color}`}
+                  >
                     <StatusIcon className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="font-medium text-text-dark">{currentStatus.label}</p>
-                    <p className="text-sm text-text-muted">{currentStatus.description}</p>
+                    <p className="font-medium text-text-dark">
+                      {currentStatus.label}
+                    </p>
+                    <p className="text-sm text-text-muted">
+                      {currentStatus.description}
+                    </p>
                   </div>
                 </div>
                 <StatusBadge status={vendor.status} variant="glass" />
@@ -577,7 +630,8 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
                   <h4 className="font-medium text-text-dark">Status Control</h4>
                 </div>
                 <p className="text-sm text-text-muted mb-4">
-                  Change the vendor's operational status with proper documentation.
+                  Change the vendor's operational status with proper
+                  documentation.
                 </p>
                 <Button
                   onClick={() => setShowStatusChange(true)}
@@ -594,7 +648,8 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
                   <h4 className="font-medium text-text-dark">Safe Deletion</h4>
                 </div>
                 <p className="text-sm text-text-muted mb-4">
-                  Permanently remove vendor with impact analysis and dependency resolution.
+                  Permanently remove vendor with impact analysis and dependency
+                  resolution.
                 </p>
                 <Button
                   onClick={() => setShowSafeDelete(true)}
@@ -609,23 +664,35 @@ const VendorStatusManager = ({ vendor, isOpen, onClose, onStatusUpdate }) => {
 
             {/* Vendor Information */}
             <Card className="p-4">
-              <h3 className="font-medium text-text-dark mb-3">Vendor Information</h3>
+              <h3 className="font-medium text-text-dark mb-3">
+                Vendor Information
+              </h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-text-muted">Business Type</p>
-                  <p className="font-medium text-text-dark">{vendor.businessType}</p>
+                  <p className="font-medium text-text-dark">
+                    {vendor.businessType}
+                  </p>
                 </div>
                 <div>
                   <p className="text-text-muted">Verification Status</p>
-                  <StatusBadge status={vendor.verificationStatus} variant="glass" size="small" />
+                  <StatusBadge
+                    status={vendor.verificationStatus}
+                    variant="glass"
+                    size="small"
+                  />
                 </div>
                 <div>
                   <p className="text-text-muted">Total Orders</p>
-                  <p className="font-medium text-text-dark">{vendor.businessMetrics?.totalOrders || 0}</p>
+                  <p className="font-medium text-text-dark">
+                    {vendor.businessMetrics?.totalOrders || 0}
+                  </p>
                 </div>
                 <div>
                   <p className="text-text-muted">Risk Score</p>
-                  <p className={`font-medium ${vendor.riskScore > 70 ? 'text-tomato-red' : 'text-text-dark'}`}>
+                  <p
+                    className={`font-medium ${vendor.riskScore > 70 ? 'text-tomato-red' : 'text-text-dark'}`}
+                  >
                     {vendor.riskScore || 0}%
                   </p>
                 </div>

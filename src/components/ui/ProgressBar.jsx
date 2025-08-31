@@ -240,9 +240,7 @@ const ProgressBar = ({
                       </div>
                     )}
                     {step.timestamp && (
-                      <div
-                        className={`text-xs text-text-muted dark:text-gray-400 mt-1`}
-                      >
+                      <div className="text-xs text-text-muted dark:text-gray-400 mt-1">
                         {step.timestamp}
                       </div>
                     )}

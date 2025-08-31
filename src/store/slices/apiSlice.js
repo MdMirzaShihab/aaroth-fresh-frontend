@@ -437,8 +437,7 @@ export const apiSlice = createApi({
           id,
         })),
       ],
-      // Auto-refresh every 2 minutes for new orders
-      pollingInterval: 120000,
+      // Polling disabled for MVP
     }),
 
     getVendorOrderAnalytics: builder.query({
@@ -447,8 +446,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Order'],
-      // Refresh analytics every 5 minutes
-      pollingInterval: 300000,
+      // Polling disabled for MVP
     }),
 
     // Order Status Management with Workflow
@@ -567,8 +565,7 @@ export const apiSlice = createApi({
     getOrderNotifications: builder.query({
       query: () => '/vendor/orders/notifications',
       providesTags: ['Order'],
-      // Poll for notifications every 30 seconds
-      pollingInterval: 30000,
+      // Polling disabled for MVP
     }),
 
     markNotificationAsRead: builder.mutation({
@@ -1840,8 +1837,7 @@ export const apiSlice = createApi({
     getVendorDashboard: builder.query({
       query: () => '/vendor/dashboard',
       providesTags: ['Vendor'],
-      // Auto-refresh every 30 seconds for real-time updates
-      pollingInterval: 30000,
+      // Polling disabled for MVP
     }),
 
     getVendorAnalytics: builder.query({
@@ -1850,8 +1846,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Vendor'],
-      // Refresh analytics every 2 minutes
-      pollingInterval: 120000,
+      // Polling disabled for MVP
     }),
 
     getVendorOrders: builder.query({
@@ -2050,7 +2045,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Restaurant'],
-      pollingInterval: 300000, // 5 minutes
+      // Polling disabled for MVP
     }),
 
     // ===== VENDOR DASHBOARD ENDPOINTS =====
@@ -2064,8 +2059,7 @@ export const apiSlice = createApi({
       }),
       providesTags: ['Vendor'],
       pollingInterval: 300000, // 5-minute refresh
-      refetchOnFocus: true,
-      refetchOnReconnect: true,
+      // Auto-refetch disabled for MVP
     }),
 
     // Vendor Revenue Analytics - Revenue trends and growth
@@ -2095,7 +2089,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Vendor'],
-      pollingInterval: 600000, // 10-minute refresh for inventory
+      // Polling disabled for MVP
     }),
 
     // Vendor Order Management - Order processing interface
@@ -2105,7 +2099,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Order', 'Vendor'],
-      pollingInterval: 120000, // 2-minute refresh for orders
+      // Polling disabled for MVP
     }),
 
     // Vendor Customer Insights - Customer loyalty and acquisition
@@ -2135,7 +2129,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Notification'],
-      pollingInterval: 60000, // 1-minute refresh for notifications
+      // Polling disabled for MVP
     }),
 
     // Vendor Category Performance - Category-wise sales analytics
@@ -2188,8 +2182,7 @@ export const apiSlice = createApi({
       }),
       providesTags: ['Restaurant'],
       pollingInterval: 300000, // 5-minute refresh
-      refetchOnFocus: true,
-      refetchOnReconnect: true,
+      // Auto-refetch disabled for MVP
     }),
 
     // Restaurant Spending Analytics - Spending trends by vendor/category
@@ -2219,7 +2212,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Restaurant'],
-      pollingInterval: 600000, // 10-minute refresh for budget
+      // Polling disabled for MVP
     }),
 
     // Restaurant Order History - Complete order history with filtering
@@ -2259,7 +2252,7 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Notification'],
-      pollingInterval: 60000, // 1-minute refresh for notifications
+      // Polling disabled for MVP
     }),
 
     // Restaurant Cost Analysis - Cost optimization and savings tracking
@@ -2722,7 +2715,7 @@ export const apiSlice = createApi({
     getVerificationStats: builder.query({
       query: () => '/admin/dashboard/overview',
       providesTags: ['Verification', 'Admin'],
-      pollingInterval: 300000, // Refresh every 5 minutes
+      // Polling disabled for MVP
     }),
 
     // Restaurant Manager Operations

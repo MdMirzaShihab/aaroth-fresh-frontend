@@ -1,5 +1,5 @@
 /**
- * Catalog Service - Admin V2  
+ * Catalog Service - Admin V2
  * Business logic for products, categories, and listings management
  */
 
@@ -11,7 +11,7 @@ import { format } from 'date-fns';
 export const transformProductsData = (rawData) => {
   if (!rawData?.data?.products) return [];
 
-  return rawData.data.products.map(product => ({
+  return rawData.data.products.map((product) => ({
     id: product._id,
     name: product.name,
     category: product.categoryId?.name || 'Uncategorized',
@@ -24,7 +24,7 @@ export const transformProductsData = (rawData) => {
     updatedAt: format(new Date(product.updatedAt), 'PPp'),
     image: product.imageUrl,
     performanceScore: calculateProductPerformance(product),
-    availableActions: getProductActions(product)
+    availableActions: getProductActions(product),
   }));
 };
 
@@ -34,7 +34,7 @@ export const transformProductsData = (rawData) => {
 export const transformCategoriesData = (rawData) => {
   if (!rawData?.data) return [];
 
-  return rawData.data.map(category => ({
+  return rawData.data.map((category) => ({
     id: category._id,
     name: category.name,
     description: category.description,
@@ -48,7 +48,7 @@ export const transformCategoriesData = (rawData) => {
     createdAt: format(new Date(category.createdAt), 'PPp'),
     image: category.imageUrl,
     usageStats: calculateCategoryUsage(category),
-    availableActions: getCategoryActions(category)
+    availableActions: getCategoryActions(category),
   }));
 };
 
@@ -57,25 +57,25 @@ export const transformCategoriesData = (rawData) => {
  */
 const calculateProductPerformance = (product) => {
   let score = 0;
-  
+
   // Listing adoption
   if (product.totalListings > 50) score += 30;
   else if (product.totalListings > 20) score += 20;
   else if (product.totalListings > 5) score += 10;
-  
+
   // Order volume
   if (product.totalOrders > 100) score += 30;
   else if (product.totalOrders > 50) score += 20;
   else if (product.totalOrders > 10) score += 10;
-  
+
   // Price stability
   if (product.priceVariance < 0.1) score += 20;
   else if (product.priceVariance < 0.3) score += 10;
-  
+
   // Vendor adoption rate
   if (product.uniqueVendors > 20) score += 20;
   else if (product.uniqueVendors > 10) score += 10;
-  
+
   return Math.min(score, 100);
 };
 
@@ -84,16 +84,19 @@ const calculateProductPerformance = (product) => {
  */
 const calculateCategoryUsage = (category) => {
   return {
-    adoptionRate: category.totalProducts > 0 
-      ? ((category.activeListings / category.totalProducts) * 100).toFixed(2)
-      : 0,
-    orderRate: category.totalListings > 0
-      ? ((category.totalOrders / category.totalListings) * 100).toFixed(2)
-      : 0,
-    averageListingsPerProduct: category.totalProducts > 0
-      ? (category.totalListings / category.totalProducts).toFixed(2)
-      : 0,
-    growthTrend: category.monthlyGrowth || 0
+    adoptionRate:
+      category.totalProducts > 0
+        ? ((category.activeListings / category.totalProducts) * 100).toFixed(2)
+        : 0,
+    orderRate:
+      category.totalListings > 0
+        ? ((category.totalOrders / category.totalListings) * 100).toFixed(2)
+        : 0,
+    averageListingsPerProduct:
+      category.totalProducts > 0
+        ? (category.totalListings / category.totalProducts).toFixed(2)
+        : 0,
+    growthTrend: category.monthlyGrowth || 0,
   };
 };
 
@@ -102,17 +105,17 @@ const calculateCategoryUsage = (category) => {
  */
 const getProductActions = (product) => {
   const actions = ['view_details', 'edit', 'view_listings', 'view_analytics'];
-  
+
   if (product.status === 'active') {
     actions.push('deactivate');
   } else {
     actions.push('activate');
   }
-  
+
   if (product.totalListings > 0) {
     actions.push('export_data');
   }
-  
+
   actions.push('safe_delete');
   return actions;
 };
@@ -122,24 +125,24 @@ const getProductActions = (product) => {
  */
 const getCategoryActions = (category) => {
   const actions = ['view_details', 'edit', 'view_products', 'view_usage_stats'];
-  
+
   if (category.isAvailable) {
     actions.push('flag_unavailable');
   } else {
     actions.push('mark_available');
   }
-  
+
   if (category.totalProducts > 0) {
     actions.push('export_data');
   }
-  
+
   actions.push('safe_delete');
   return actions;
 };
 
 const catalogService = {
   transformProductsData,
-  transformCategoriesData
+  transformCategoriesData,
 };
 
 export default catalogService;

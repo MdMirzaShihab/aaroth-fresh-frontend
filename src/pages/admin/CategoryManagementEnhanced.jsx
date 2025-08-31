@@ -46,8 +46,6 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
   useSortable,
   SortableContext as TreeSortableContext,
 } from '@dnd-kit/sortable';
@@ -138,8 +136,10 @@ const CategoryManagementEnhanced = () => {
     refetch,
   } = useGetAdminCategoriesQuery(filters);
 
-  const [createCategory, { isLoading: isCreating }] = useCreateAdminCategoryMutation();
-  const [updateCategory, { isLoading: isUpdating }] = useUpdateAdminCategoryMutation();
+  const [createCategory, { isLoading: isCreating }] =
+    useCreateAdminCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] =
+    useUpdateAdminCategoryMutation();
   const [deleteCategory] = useDeleteAdminCategoryMutation();
   const [reorderCategories] = useReorderCategoriesMutation();
   const [updateCategoryHierarchy] = useUpdateCategoryHierarchyMutation();
@@ -154,9 +154,13 @@ const CategoryManagementEnhanced = () => {
   const categoryTree = useMemo(() => {
     const buildTree = (parentId = null) => {
       return categories
-        .filter(cat => cat.parentCategory?._id === parentId || (!cat.parentCategory && parentId === null))
+        .filter(
+          (cat) =>
+            cat.parentCategory?._id === parentId ||
+            (!cat.parentCategory && parentId === null)
+        )
         .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-        .map(cat => ({
+        .map((cat) => ({
           ...cat,
           children: buildTree(cat._id),
         }));
@@ -168,7 +172,7 @@ const CategoryManagementEnhanced = () => {
   const flattenTree = useCallback((tree) => {
     const flattened = [];
     const flatten = (nodes, depth = 0) => {
-      nodes.forEach(node => {
+      nodes.forEach((node) => {
         flattened.push({ ...node, depth });
         if (node.children && node.children.length > 0) {
           flatten(node.children, depth + 1);
@@ -183,10 +187,11 @@ const CategoryManagementEnhanced = () => {
   const filteredCategories = useMemo(() => {
     if (!searchTerm && viewMode !== 'tree') return categories;
     if (viewMode === 'tree') return categoryTree;
-    
-    return categories.filter(cat => 
-      cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cat.description?.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return categories.filter(
+      (cat) =>
+        cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cat.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [categories, categoryTree, searchTerm, viewMode]);
 
@@ -208,7 +213,7 @@ const CategoryManagementEnhanced = () => {
 
   // Handle category expansion in tree view
   const handleToggleExpand = useCallback((categoryId) => {
-    setExpandedCategories(prev => {
+    setExpandedCategories((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(categoryId)) {
         newSet.delete(categoryId);
@@ -222,20 +227,22 @@ const CategoryManagementEnhanced = () => {
   // Handle drag end
   const handleDragEnd = async (event) => {
     const { active, over } = event;
-    
+
     if (!over || active.id === over.id) {
       setDraggedCategory(null);
       return;
     }
 
     try {
-      const activeCategory = categories.find(cat => cat._id === active.id);
-      const overCategory = categories.find(cat => cat._id === over.id);
-      
+      const activeCategory = categories.find((cat) => cat._id === active.id);
+      const overCategory = categories.find((cat) => cat._id === over.id);
+
       if (!activeCategory || !overCategory) return;
 
       // Update hierarchy if dropping onto a different parent
-      if (activeCategory.parentCategory?._id !== overCategory.parentCategory?._id) {
+      if (
+        activeCategory.parentCategory?._id !== overCategory.parentCategory?._id
+      ) {
         await updateCategoryHierarchy({
           categoryId: activeCategory._id,
           newParentId: overCategory.parentCategory?._id || null,
@@ -248,12 +255,12 @@ const CategoryManagementEnhanced = () => {
           newSortOrder: overCategory.sortOrder,
         }).unwrap();
       }
-      
+
       refetch();
     } catch (error) {
       console.error('Failed to reorder categories:', error);
     }
-    
+
     setDraggedCategory(null);
   };
 
@@ -343,15 +350,18 @@ const CategoryManagementEnhanced = () => {
     try {
       const formDataToSend = new FormData();
       const nameValue = formData.name.trim();
-      
+
       formDataToSend.append('name', nameValue);
-      
+
       if (formData.description && formData.description.trim()) {
         formDataToSend.append('description', formData.description.trim());
       }
 
       formDataToSend.append('isActive', formData.isActive ? 'true' : 'false');
-      formDataToSend.append('sortOrder', String(parseInt(formData.sortOrder) || 0));
+      formDataToSend.append(
+        'sortOrder',
+        String(parseInt(formData.sortOrder) || 0)
+      );
 
       if (formData.parentCategory && formData.parentCategory.trim()) {
         formDataToSend.append('parentCategory', formData.parentCategory.trim());
@@ -360,11 +370,14 @@ const CategoryManagementEnhanced = () => {
       if (formData.metaTitle && formData.metaTitle.trim()) {
         formDataToSend.append('metaTitle', formData.metaTitle.trim());
       }
-      
+
       if (formData.metaDescription && formData.metaDescription.trim()) {
-        formDataToSend.append('metaDescription', formData.metaDescription.trim());
+        formDataToSend.append(
+          'metaDescription',
+          formData.metaDescription.trim()
+        );
       }
-      
+
       if (formData.metaKeywords && formData.metaKeywords.length > 0) {
         formDataToSend.append('metaKeywords', formData.metaKeywords.join(','));
       }
@@ -390,18 +403,25 @@ const CategoryManagementEnhanced = () => {
       if (error?.data?.error) {
         errorMessage = error.data.error;
         const errorText = error.data.error.toLowerCase();
-        
-        if (errorText.includes('name is required') || errorText.includes('category name')) {
-          formFieldErrors.name = 'Category name is required and must be 2-50 characters';
+
+        if (
+          errorText.includes('name is required') ||
+          errorText.includes('category name')
+        ) {
+          formFieldErrors.name =
+            'Category name is required and must be 2-50 characters';
         }
         if (errorText.includes('image')) {
-          formFieldErrors.image = 'Category image is required - upload an image file';
+          formFieldErrors.image =
+            'Category image is required - upload an image file';
         }
         if (errorText.includes('description')) {
-          formFieldErrors.description = 'Description cannot exceed 200 characters';
+          formFieldErrors.description =
+            'Description cannot exceed 200 characters';
         }
         if (errorText.includes('unique') && errorText.includes('name')) {
-          formFieldErrors.name = 'Category name already exists - choose a different name';
+          formFieldErrors.name =
+            'Category name already exists - choose a different name';
         }
       }
 
@@ -503,7 +523,8 @@ const CategoryManagementEnhanced = () => {
               Category Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
-              Organize products with hierarchical categories, drag-and-drop reordering, and tree visualization
+              Organize products with hierarchical categories, drag-and-drop
+              reordering, and tree visualization
             </p>
           </div>
 
@@ -537,9 +558,24 @@ const CategoryManagementEnhanced = () => {
           <Card className="p-2 glass">
             <div className="flex flex-col lg:flex-row gap-2">
               {[
-                { id: 'tree', label: 'Tree View', icon: FolderTree, description: 'Hierarchical tree with drag-drop' },
-                { id: 'list', label: 'List View', icon: List, description: 'Flat list with details' },
-                { id: 'grid', label: 'Grid View', icon: Grid, description: 'Visual grid layout' },
+                {
+                  id: 'tree',
+                  label: 'Tree View',
+                  icon: FolderTree,
+                  description: 'Hierarchical tree with drag-drop',
+                },
+                {
+                  id: 'list',
+                  label: 'List View',
+                  icon: List,
+                  description: 'Flat list with details',
+                },
+                {
+                  id: 'grid',
+                  label: 'Grid View',
+                  icon: Grid,
+                  description: 'Visual grid layout',
+                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -551,18 +587,26 @@ const CategoryManagementEnhanced = () => {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <tab.icon className={`w-5 h-5 ${
-                      viewMode === tab.id ? 'text-white' : 'text-muted-olive'
-                    }`} />
+                    <tab.icon
+                      className={`w-5 h-5 ${
+                        viewMode === tab.id ? 'text-white' : 'text-muted-olive'
+                      }`}
+                    />
                     <div>
-                      <h3 className={`font-semibold ${
-                        viewMode === tab.id ? 'text-white' : 'text-text-dark'
-                      }`}>
+                      <h3
+                        className={`font-semibold ${
+                          viewMode === tab.id ? 'text-white' : 'text-text-dark'
+                        }`}
+                      >
                         {tab.label}
                       </h3>
-                      <p className={`text-sm ${
-                        viewMode === tab.id ? 'text-white/80' : 'text-text-muted'
-                      }`}>
+                      <p
+                        className={`text-sm ${
+                          viewMode === tab.id
+                            ? 'text-white/80'
+                            : 'text-text-muted'
+                        }`}
+                      >
                         {tab.description}
                       </p>
                     </div>
@@ -651,7 +695,9 @@ const CategoryManagementEnhanced = () => {
                     variant="outline"
                     size="sm"
                     disabled={currentPage === 1 || isLoading}
-                    onClick={() => handleFiltersChange({ ...filters, page: currentPage - 1 })}
+                    onClick={() =>
+                      handleFiltersChange({ ...filters, page: currentPage - 1 })
+                    }
                   >
                     Previous
                   </Button>
@@ -664,7 +710,9 @@ const CategoryManagementEnhanced = () => {
                     variant="outline"
                     size="sm"
                     disabled={currentPage === totalPages || isLoading}
-                    onClick={() => handleFiltersChange({ ...filters, page: currentPage + 1 })}
+                    onClick={() =>
+                      handleFiltersChange({ ...filters, page: currentPage + 1 })
+                    }
                   >
                     Next
                   </Button>
@@ -733,7 +781,9 @@ const CategoryManagementEnhanced = () => {
               <FormField label="Category Name *" error={formErrors.name}>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Enter category name"
                   hasError={!!formErrors.name}
                 />
@@ -742,16 +792,21 @@ const CategoryManagementEnhanced = () => {
               <FormField label="Parent Category">
                 <select
                   value={formData.parentCategory || ''}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    parentCategory: e.target.value || null,
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      parentCategory: e.target.value || null,
+                    })
+                  }
                   className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200"
                 >
                   <option value="">None (Root Category)</option>
                   {categories
-                    .filter(cat => !editingCategory || cat._id !== editingCategory._id)
-                    .map(category => (
+                    .filter(
+                      (cat) =>
+                        !editingCategory || cat._id !== editingCategory._id
+                    )
+                    .map((category) => (
                       <option key={category._id} value={category._id}>
                         {category.name} (Level {category.level || 0})
                       </option>
@@ -763,10 +818,12 @@ const CategoryManagementEnhanced = () => {
                 <Input
                   type="number"
                   value={formData.sortOrder}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    sortOrder: parseInt(e.target.value) || 0,
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      sortOrder: parseInt(e.target.value) || 0,
+                    })
+                  }
                   placeholder="0"
                   min="0"
                 />
@@ -777,10 +834,14 @@ const CategoryManagementEnhanced = () => {
                   <input
                     type="checkbox"
                     checked={formData.isActive}
-                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isActive: e.target.checked })
+                    }
                     className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                   />
-                  <span className="text-text-dark font-medium">Active Category</span>
+                  <span className="text-text-dark font-medium">
+                    Active Category
+                  </span>
                 </label>
               </div>
             </div>
@@ -788,7 +849,9 @@ const CategoryManagementEnhanced = () => {
             <FormField label="Description">
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 placeholder="Optional category description"
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white text-text-dark focus:outline-none focus:ring-2 focus:ring-muted-olive/20 transition-all duration-200 resize-none"
@@ -797,13 +860,17 @@ const CategoryManagementEnhanced = () => {
 
             {/* SEO Fields */}
             <div className="space-y-4">
-              <h4 className="text-lg font-semibold text-text-dark">SEO Settings</h4>
+              <h4 className="text-lg font-semibold text-text-dark">
+                SEO Settings
+              </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField label="Meta Title">
                   <Input
                     value={formData.metaTitle}
-                    onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, metaTitle: e.target.value })
+                    }
                     placeholder="SEO title for this category"
                     maxLength={60}
                   />
@@ -812,13 +879,15 @@ const CategoryManagementEnhanced = () => {
                 <FormField label="Meta Keywords">
                   <Input
                     value={formData.metaKeywords?.join(', ') || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      metaKeywords: e.target.value
-                        .split(',')
-                        .map(k => k.trim())
-                        .filter(k => k),
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        metaKeywords: e.target.value
+                          .split(',')
+                          .map((k) => k.trim())
+                          .filter((k) => k),
+                      })
+                    }
                     placeholder="keyword1, keyword2, keyword3"
                   />
                 </FormField>
@@ -827,7 +896,12 @@ const CategoryManagementEnhanced = () => {
               <FormField label="Meta Description">
                 <textarea
                   value={formData.metaDescription}
-                  onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      metaDescription: e.target.value,
+                    })
+                  }
                   placeholder="SEO description for this category"
                   rows={2}
                   maxLength={160}
@@ -860,7 +934,9 @@ const CategoryManagementEnhanced = () => {
               <Button
                 type="submit"
                 isLoading={isCreating || isUpdating}
-                disabled={isCreating || isUpdating || (!editingCategory && !imageFile)}
+                disabled={
+                  isCreating || isUpdating || (!editingCategory && !imageFile)
+                }
                 className="flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
@@ -930,7 +1006,9 @@ const CategoryTreeView = ({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <FolderTree className="w-5 h-5 text-muted-olive" />
-          <h3 className="text-lg font-semibold text-text-dark">Category Tree</h3>
+          <h3 className="text-lg font-semibold text-text-dark">
+            Category Tree
+          </h3>
         </div>
         <div className="text-sm text-text-muted">
           Drag categories to reorder or change hierarchy
@@ -1030,13 +1108,12 @@ const CategoryTreeNode = ({
               : 'text-transparent'
           }`}
         >
-          {hasChildren && (
-            isExpanded ? (
+          {hasChildren &&
+            (isExpanded ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
               <ChevronRight className="w-4 h-4" />
-            )
-          )}
+            ))}
         </button>
 
         {/* Category Image */}
@@ -1057,40 +1134,43 @@ const CategoryTreeNode = ({
         {/* Category Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className={`font-medium truncate ${
-              searchTerm && category.name.toLowerCase().includes(searchTerm.toLowerCase())
-                ? 'bg-yellow-200'
-                : 'text-text-dark'
-            }`}>
+            <h4
+              className={`font-medium truncate ${
+                searchTerm &&
+                category.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  ? 'bg-yellow-200'
+                  : 'text-text-dark'
+              }`}
+            >
               {category.name}
             </h4>
-            
+
             {/* Status badges */}
             {!category.isActive && (
               <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
                 Inactive
               </span>
             )}
-            
+
             {category.isAvailable === false && (
               <span className="bg-tomato-red/10 text-tomato-red text-xs px-2 py-1 rounded-full">
                 Flagged
               </span>
             )}
-            
+
             {hasChildren && (
               <span className="bg-muted-olive/10 text-muted-olive text-xs px-2 py-1 rounded-full">
                 {category.children.length} children
               </span>
             )}
           </div>
-          
+
           {category.description && (
             <p className="text-sm text-text-muted truncate">
               {category.description}
             </p>
           )}
-          
+
           <div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
             <span>Level {category.level || 0}</span>
             <span>Order: {category.sortOrder || 0}</span>
@@ -1119,7 +1199,11 @@ const CategoryTreeNode = ({
                 ? 'text-tomato-red hover:bg-tomato-red/20'
                 : 'text-text-muted hover:text-amber-600 hover:bg-amber-50'
             }`}
-            title={category.isAvailable === false ? 'Category is flagged' : 'Flag category'}
+            title={
+              category.isAvailable === false
+                ? 'Category is flagged'
+                : 'Flag category'
+            }
           >
             <Flag className="w-4 h-4" />
           </button>
@@ -1173,7 +1257,13 @@ const CategoryTreeNode = ({
 };
 
 // Category List View Component
-const CategoryListView = ({ categories, onEdit, onDelete, onFlag, onViewUsage }) => {
+const CategoryListView = ({
+  categories,
+  onEdit,
+  onDelete,
+  onFlag,
+  onViewUsage,
+}) => {
   return (
     <div className="space-y-4">
       {categories.length === 0 ? (
@@ -1212,14 +1302,14 @@ const CategoryListView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
                       <h3 className="font-medium text-text-dark truncate">
                         {category.name}
                       </h3>
-                      
+
                       {/* Status badges */}
                       {!category.isActive && (
                         <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
                           Inactive
                         </span>
                       )}
-                      
+
                       {category.isAvailable === false && (
                         <span className="bg-tomato-red/10 text-tomato-red text-xs px-2 py-1 rounded-full">
                           Flagged
@@ -1265,7 +1355,11 @@ const CategoryListView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
                         ? 'text-tomato-red hover:bg-tomato-red/20'
                         : 'text-text-muted hover:text-amber-600 hover:bg-amber-50'
                     }`}
-                    title={category.isAvailable === false ? 'Category is flagged' : 'Flag category'}
+                    title={
+                      category.isAvailable === false
+                        ? 'Category is flagged'
+                        : 'Flag category'
+                    }
                   >
                     <Flag className="w-4 h-4" />
                   </button>
@@ -1296,7 +1390,13 @@ const CategoryListView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
 };
 
 // Category Grid View Component
-const CategoryGridView = ({ categories, onEdit, onDelete, onFlag, onViewUsage }) => {
+const CategoryGridView = ({
+  categories,
+  onEdit,
+  onDelete,
+  onFlag,
+  onViewUsage,
+}) => {
   return (
     <>
       {categories.length === 0 ? (
@@ -1346,7 +1446,7 @@ const CategoryGridView = ({ categories, onEdit, onDelete, onFlag, onViewUsage })
                         Inactive
                       </span>
                     )}
-                    
+
                     {category.isAvailable === false && (
                       <span className="bg-tomato-red/10 text-tomato-red text-xs px-2 py-1 rounded-full">
                         Flagged

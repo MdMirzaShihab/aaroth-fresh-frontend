@@ -30,16 +30,20 @@ import Button from '../ui/Button';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { Modal } from '../ui/Modal';
 
-const VendorDetailsModal = ({ 
-  isOpen, 
-  onClose, 
-  vendorId, 
-  onEdit, 
-  onDeactivate, 
-  onDelete, 
-  onVerificationStatusChange 
+const VendorDetailsModal = ({
+  isOpen,
+  onClose,
+  vendorId,
+  onEdit,
+  onDeactivate,
+  onDelete,
+  onVerificationStatusChange,
 }) => {
-  const { data: vendorData, isLoading, error } = useGetVendorDetailsQuery(vendorId, {
+  const {
+    data: vendorData,
+    isLoading,
+    error,
+  } = useGetVendorDetailsQuery(vendorId, {
     skip: !vendorId || !isOpen,
   });
 
@@ -62,7 +66,9 @@ const VendorDetailsModal = ({
       <Modal isOpen={isOpen} onClose={onClose} maxWidth="4xl">
         <div className="text-center py-12">
           <AlertTriangle className="w-12 h-12 text-tomato-red mx-auto mb-4" />
-          <p className="text-tomato-red font-medium">Failed to load vendor details</p>
+          <p className="text-tomato-red font-medium">
+            Failed to load vendor details
+          </p>
           <p className="text-text-muted text-sm mt-2">{error.message}</p>
         </div>
       </Modal>
@@ -77,9 +83,24 @@ const VendorDetailsModal = ({
   // Verification status helper
   const getVerificationStatus = (status) => {
     const statusMap = {
-      pending: { color: 'text-amber-600', bgColor: 'bg-amber-100', icon: Clock, label: 'Pending Verification' },
-      approved: { color: 'text-green-600', bgColor: 'bg-green-100', icon: CheckCircle, label: 'Verified' },
-      rejected: { color: 'text-red-600', bgColor: 'bg-red-100', icon: XCircle, label: 'Rejected' },
+      pending: {
+        color: 'text-amber-600',
+        bgColor: 'bg-amber-100',
+        icon: Clock,
+        label: 'Pending Verification',
+      },
+      approved: {
+        color: 'text-green-600',
+        bgColor: 'bg-green-100',
+        icon: CheckCircle,
+        label: 'Verified',
+      },
+      rejected: {
+        color: 'text-red-600',
+        bgColor: 'bg-red-100',
+        icon: XCircle,
+        label: 'Rejected',
+      },
     };
     return statusMap[status] || statusMap.pending;
   };
@@ -109,7 +130,9 @@ const VendorDetailsModal = ({
                   <h2 className="text-2xl font-bold text-text-dark">
                     {vendor.businessName}
                   </h2>
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${verificationStatus.bgColor} ${verificationStatus.color}`}>
+                  <div
+                    className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${verificationStatus.bgColor} ${verificationStatus.color}`}
+                  >
                     <StatusIcon className="w-4 h-4" />
                     {verificationStatus.label}
                   </div>
@@ -119,7 +142,7 @@ const VendorDetailsModal = ({
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
                     <span className="text-sm font-medium">
-                      {vendor.rating?.average?.toFixed(1) || '0.0'} 
+                      {vendor.rating?.average?.toFixed(1) || '0.0'}
                       <span className="text-text-muted ml-1">
                         ({vendor.rating?.count || 0} reviews)
                       </span>
@@ -172,7 +195,9 @@ const VendorDetailsModal = ({
                 <Card className="p-4 bg-blue-50 border-blue-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-blue-600 text-sm font-medium">Total Orders</p>
+                      <p className="text-blue-600 text-sm font-medium">
+                        Total Orders
+                      </p>
                       <p className="text-xl font-bold text-blue-900">
                         {orderStats.totalOrders || 0}
                       </p>
@@ -184,7 +209,9 @@ const VendorDetailsModal = ({
                 <Card className="p-4 bg-green-50 border-green-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-green-600 text-sm font-medium">Revenue</p>
+                      <p className="text-green-600 text-sm font-medium">
+                        Revenue
+                      </p>
                       <p className="text-xl font-bold text-green-900">
                         ৳{orderStats.totalAmount?.toLocaleString() || '0'}
                       </p>
@@ -196,7 +223,9 @@ const VendorDetailsModal = ({
                 <Card className="p-4 bg-purple-50 border-purple-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-purple-600 text-sm font-medium">Active Listings</p>
+                      <p className="text-purple-600 text-sm font-medium">
+                        Active Listings
+                      </p>
                       <p className="text-xl font-bold text-purple-900">
                         {listingStats.activeListings || 0}
                       </p>
@@ -208,11 +237,18 @@ const VendorDetailsModal = ({
                 <Card className="p-4 bg-orange-50 border-orange-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-orange-600 text-sm font-medium">Completion Rate</p>
+                      <p className="text-orange-600 text-sm font-medium">
+                        Completion Rate
+                      </p>
                       <p className="text-xl font-bold text-orange-900">
-                        {orderStats.totalOrders > 0 
-                          ? Math.round((orderStats.completedOrders / orderStats.totalOrders) * 100)
-                          : 0}%
+                        {orderStats.totalOrders > 0
+                          ? Math.round(
+                              (orderStats.completedOrders /
+                                orderStats.totalOrders) *
+                                100
+                            )
+                          : 0}
+                        %
                       </p>
                     </div>
                     <TrendingUp className="w-8 h-8 text-orange-500" />
@@ -251,19 +287,25 @@ const VendorDetailsModal = ({
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <span className="text-text-muted">Delivery Radius:</span>
-                      <span className="font-medium">{vendor.deliveryRadius || 10} km</span>
+                      <span className="font-medium">
+                        {vendor.deliveryRadius || 10} km
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-text-muted">Minimum Order:</span>
-                      <span className="font-medium">৳{vendor.minimumOrderValue || 0}</span>
+                      <span className="font-medium">
+                        ৳{vendor.minimumOrderValue || 0}
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-text-muted">Status:</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        vendor.isActive 
-                          ? 'bg-green-100 text-green-600' 
-                          : 'bg-red-100 text-red-600'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          vendor.isActive
+                            ? 'bg-green-100 text-green-600'
+                            : 'bg-red-100 text-red-600'
+                        }`}
+                      >
                         {vendor.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>
@@ -302,22 +344,33 @@ const VendorDetailsModal = ({
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-text-muted">Trade License Number</label>
-                    <p className="text-text-dark font-medium">{vendor.tradeLicenseNo}</p>
+                    <label className="text-sm font-medium text-text-muted">
+                      Trade License Number
+                    </label>
+                    <p className="text-text-dark font-medium">
+                      {vendor.tradeLicenseNo}
+                    </p>
                   </div>
                   {vendor.businessLicense && (
                     <>
                       <div>
-                        <label className="text-sm font-medium text-text-muted">Business License Number</label>
-                        <p className="text-text-dark font-medium">{vendor.businessLicense.number || 'Not provided'}</p>
+                        <label className="text-sm font-medium text-text-muted">
+                          Business License Number
+                        </label>
+                        <p className="text-text-dark font-medium">
+                          {vendor.businessLicense.number || 'Not provided'}
+                        </p>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-text-muted">License Expiry Date</label>
+                        <label className="text-sm font-medium text-text-muted">
+                          License Expiry Date
+                        </label>
                         <p className="text-text-dark font-medium">
-                          {vendor.businessLicense.expiryDate 
-                            ? new Date(vendor.businessLicense.expiryDate).toLocaleDateString()
-                            : 'Not provided'
-                          }
+                          {vendor.businessLicense.expiryDate
+                            ? new Date(
+                                vendor.businessLicense.expiryDate
+                              ).toLocaleDateString()
+                            : 'Not provided'}
                         </p>
                       </div>
                     </>
@@ -333,20 +386,36 @@ const VendorDetailsModal = ({
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-text-muted">Account Name</label>
-                      <p className="text-text-dark font-medium">{vendor.bankDetails.accountName || 'Not provided'}</p>
+                      <label className="text-sm font-medium text-text-muted">
+                        Account Name
+                      </label>
+                      <p className="text-text-dark font-medium">
+                        {vendor.bankDetails.accountName || 'Not provided'}
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-text-muted">Account Number</label>
-                      <p className="text-text-dark font-medium">{vendor.bankDetails.accountNumber || 'Not provided'}</p>
+                      <label className="text-sm font-medium text-text-muted">
+                        Account Number
+                      </label>
+                      <p className="text-text-dark font-medium">
+                        {vendor.bankDetails.accountNumber || 'Not provided'}
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-text-muted">Bank Name</label>
-                      <p className="text-text-dark font-medium">{vendor.bankDetails.bankName || 'Not provided'}</p>
+                      <label className="text-sm font-medium text-text-muted">
+                        Bank Name
+                      </label>
+                      <p className="text-text-dark font-medium">
+                        {vendor.bankDetails.bankName || 'Not provided'}
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-text-muted">Routing Number</label>
-                      <p className="text-text-dark font-medium">{vendor.bankDetails.routingNumber || 'Not provided'}</p>
+                      <label className="text-sm font-medium text-text-muted">
+                        Routing Number
+                      </label>
+                      <p className="text-text-dark font-medium">
+                        {vendor.bankDetails.routingNumber || 'Not provided'}
+                      </p>
                     </div>
                   </div>
                 </Card>
@@ -359,14 +428,25 @@ const VendorDetailsModal = ({
                     Operating Hours
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(vendor.operatingHours).map(([day, hours]) => (
-                      <div key={day} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                        <span className="font-medium capitalize">{day}</span>
-                        <span className={hours.closed ? 'text-red-600' : 'text-text-dark'}>
-                          {hours.closed ? 'Closed' : `${hours.open} - ${hours.close}`}
-                        </span>
-                      </div>
-                    ))}
+                    {Object.entries(vendor.operatingHours).map(
+                      ([day, hours]) => (
+                        <div
+                          key={day}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
+                        >
+                          <span className="font-medium capitalize">{day}</span>
+                          <span
+                            className={
+                              hours.closed ? 'text-red-600' : 'text-text-dark'
+                            }
+                          >
+                            {hours.closed
+                              ? 'Closed'
+                              : `${hours.open} - ${hours.close}`}
+                          </span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </Card>
               )}
@@ -410,26 +490,38 @@ const VendorDetailsModal = ({
 
               {/* Detailed Stats */}
               <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Detailed Statistics</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  Detailed Statistics
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h4 className="font-medium mb-3">Order Statistics</h4>
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-text-muted">Total Orders:</span>
-                        <span className="font-medium">{orderStats.totalOrders || 0}</span>
+                        <span className="font-medium">
+                          {orderStats.totalOrders || 0}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-text-muted">Completed Orders:</span>
-                        <span className="font-medium">{orderStats.completedOrders || 0}</span>
+                        <span className="text-text-muted">
+                          Completed Orders:
+                        </span>
+                        <span className="font-medium">
+                          {orderStats.completedOrders || 0}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-text-muted">Active Orders:</span>
-                        <span className="font-medium">{orderStats.activeOrders || 0}</span>
+                        <span className="font-medium">
+                          {orderStats.activeOrders || 0}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-text-muted">Total Revenue:</span>
-                        <span className="font-medium">৳{orderStats.totalAmount?.toLocaleString() || '0'}</span>
+                        <span className="font-medium">
+                          ৳{orderStats.totalAmount?.toLocaleString() || '0'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -439,19 +531,33 @@ const VendorDetailsModal = ({
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-text-muted">Total Listings:</span>
-                        <span className="font-medium">{listingStats.totalListings || 0}</span>
+                        <span className="font-medium">
+                          {listingStats.totalListings || 0}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-text-muted">Active Listings:</span>
-                        <span className="font-medium">{listingStats.activeListings || 0}</span>
+                        <span className="text-text-muted">
+                          Active Listings:
+                        </span>
+                        <span className="font-medium">
+                          {listingStats.activeListings || 0}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-text-muted">Featured Listings:</span>
-                        <span className="font-medium">{listingStats.featuredListings || 0}</span>
+                        <span className="text-text-muted">
+                          Featured Listings:
+                        </span>
+                        <span className="font-medium">
+                          {listingStats.featuredListings || 0}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-text-muted">Inactive Listings:</span>
-                        <span className="font-medium">{listingStats.inactiveListings || 0}</span>
+                        <span className="text-text-muted">
+                          Inactive Listings:
+                        </span>
+                        <span className="font-medium">
+                          {listingStats.inactiveListings || 0}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -477,7 +583,8 @@ const VendorDetailsModal = ({
                         </div>
                         <div>
                           <p className="font-medium">
-                            Order from {order.restaurantId?.name || 'Unknown Restaurant'}
+                            Order from{' '}
+                            {order.restaurantId?.name || 'Unknown Restaurant'}
                           </p>
                           <p className="text-sm text-text-muted">
                             {new Date(order.createdAt).toLocaleDateString()}
@@ -485,14 +592,18 @@ const VendorDetailsModal = ({
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">৳{order.totalAmount?.toLocaleString()}</p>
-                        <p className={`text-sm px-2 py-1 rounded-full ${
-                          order.status === 'completed' 
-                            ? 'bg-green-100 text-green-600' 
-                            : order.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-600'
-                              : 'bg-blue-100 text-blue-600'
-                        }`}>
+                        <p className="font-medium">
+                          ৳{order.totalAmount?.toLocaleString()}
+                        </p>
+                        <p
+                          className={`text-sm px-2 py-1 rounded-full ${
+                            order.status === 'completed'
+                              ? 'bg-green-100 text-green-600'
+                              : order.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-600'
+                                : 'bg-blue-100 text-blue-600'
+                          }`}
+                        >
                           {order.status}
                         </p>
                       </div>
@@ -510,14 +621,18 @@ const VendorDetailsModal = ({
             {vendor.verificationStatus === 'pending' && (
               <>
                 <Button
-                  onClick={() => onVerificationStatusChange(vendor._id, 'approved')}
+                  onClick={() =>
+                    onVerificationStatusChange(vendor._id, 'approved')
+                  }
                   className="bg-green-600 text-white hover:bg-green-700"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Approve
                 </Button>
                 <Button
-                  onClick={() => onVerificationStatusChange(vendor._id, 'rejected')}
+                  onClick={() =>
+                    onVerificationStatusChange(vendor._id, 'rejected')
+                  }
                   className="bg-red-600 text-white hover:bg-red-700"
                 >
                   <XCircle className="w-4 h-4 mr-2" />
@@ -525,15 +640,12 @@ const VendorDetailsModal = ({
                 </Button>
               </>
             )}
-            
-            <Button
-              variant="outline"
-              onClick={() => onEdit(vendor)}
-            >
+
+            <Button variant="outline" onClick={() => onEdit(vendor)}>
               <Edit className="w-4 h-4 mr-2" />
               Edit
             </Button>
-            
+
             {vendor.isActive ? (
               <Button
                 variant="outline"

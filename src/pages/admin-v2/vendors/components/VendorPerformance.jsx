@@ -26,16 +26,22 @@ import {
   Calendar,
   MapPin,
   Building2,
-  Eye
+  Eye,
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
+import { Card, Button } from '../../../../components/ui';
 import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import EmptyState from '../../../../components/ui/EmptyState';
 
 // Performance metrics card
-const MetricsCard = ({ title, value, change, icon: Icon, trend, color = 'muted-olive' }) => {
+const MetricsCard = ({
+  title,
+  value,
+  change,
+  icon: Icon,
+  trend,
+  color = 'muted-olive',
+}) => {
   const getTrendColor = () => {
     if (trend === 'up') return 'text-sage-green';
     if (trend === 'down') return 'text-tomato-red';
@@ -58,7 +64,9 @@ const MetricsCard = ({ title, value, change, icon: Icon, trend, color = 'muted-o
       className="glass-card rounded-2xl p-6 border hover:shadow-glow-sage/10 transition-all duration-300"
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 bg-${color}/10 rounded-xl flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 bg-${color}/10 rounded-xl flex items-center justify-center`}
+        >
           <Icon className={`w-6 h-6 text-${color}`} />
         </div>
         {TrendIcon && (
@@ -90,28 +98,43 @@ const RankingCard = ({ vendor, rank, metric, value, change }) => {
       animate={{ opacity: 1, x: 0 }}
       className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 hover:border-muted-olive/30 transition-all duration-200"
     >
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${getRankColor(rank)}`}>
+      <div
+        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${getRankColor(rank)}`}
+      >
         #{rank}
       </div>
-      
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
-                      flex items-center justify-center shadow-lg text-white font-medium">
+
+      <div
+        className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
+                      flex items-center justify-center shadow-lg text-white font-medium"
+      >
         <Building2 className="w-5 h-5" />
       </div>
-      
+
       <div className="flex-1 min-w-0">
-        <h4 className="font-medium text-text-dark truncate">{vendor.businessName}</h4>
+        <h4 className="font-medium text-text-dark truncate">
+          {vendor.businessName}
+        </h4>
         <p className="text-sm text-text-muted">{vendor.businessType}</p>
       </div>
-      
+
       <div className="text-right">
         <p className="font-semibold text-text-dark">{value}</p>
-        <div className={`text-xs flex items-center gap-1 ${
-          change > 0 ? 'text-sage-green' : change < 0 ? 'text-tomato-red' : 'text-text-muted'
-        }`}>
+        <div
+          className={`text-xs flex items-center gap-1 ${
+            change > 0
+              ? 'text-sage-green'
+              : change < 0
+                ? 'text-tomato-red'
+                : 'text-text-muted'
+          }`}
+        >
           {change > 0 && <TrendingUp className="w-3 h-3" />}
           {change < 0 && <TrendingDown className="w-3 h-3" />}
-          <span>{change > 0 ? '+' : ''}{change}%</span>
+          <span>
+            {change > 0 ? '+' : ''}
+            {change}%
+          </span>
         </div>
       </div>
     </motion.div>
@@ -134,10 +157,12 @@ const PerformanceChart = ({ data, type, title }) => {
           </Button>
         </div>
       </div>
-      
+
       {/* Placeholder for chart */}
-      <div className="h-64 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl 
-                      flex items-center justify-center border-2 border-dashed border-gray-300">
+      <div
+        className="h-64 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl 
+                      flex items-center justify-center border-2 border-dashed border-gray-300"
+      >
         <div className="text-center">
           <BarChart3 className="w-12 h-12 text-muted-olive mx-auto mb-2" />
           <p className="text-text-muted font-medium">Performance Chart</p>
@@ -152,7 +177,7 @@ const PerformanceChart = ({ data, type, title }) => {
 const GeographicMap = ({ vendors }) => {
   const locationData = useMemo(() => {
     const locations = {};
-    vendors.forEach(vendor => {
+    vendors.forEach((vendor) => {
       const location = vendor.location || 'Unknown';
       if (!locations[location]) {
         locations[location] = { count: 0, revenue: 0 };
@@ -162,23 +187,28 @@ const GeographicMap = ({ vendors }) => {
     });
     return Object.entries(locations).map(([location, data]) => ({
       location,
-      ...data
+      ...data,
     }));
   }, [vendors]);
 
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-text-dark">Geographic Performance</h3>
+        <h3 className="text-lg font-semibold text-text-dark">
+          Geographic Performance
+        </h3>
         <Button variant="outline" size="sm">
           <Eye className="w-4 h-4 mr-2" />
           View Map
         </Button>
       </div>
-      
+
       <div className="space-y-3">
         {locationData.slice(0, 5).map((item, index) => (
-          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+          <div
+            key={index}
+            className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
+          >
             <div className="flex items-center gap-3">
               <MapPin className="w-4 h-4 text-muted-olive" />
               <div>
@@ -187,7 +217,9 @@ const GeographicMap = ({ vendors }) => {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-semibold text-text-dark">${item.revenue.toLocaleString()}</p>
+              <p className="font-semibold text-text-dark">
+                ${item.revenue.toLocaleString()}
+              </p>
               <p className="text-xs text-text-muted">Total Revenue</p>
             </div>
           </div>
@@ -207,30 +239,43 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
   const performanceMetrics = useMemo(() => {
     if (!vendors.length) return {};
 
-    const totalRevenue = vendors.reduce((sum, v) => sum + (v.businessMetrics?.totalRevenue || 0), 0);
-    const totalOrders = vendors.reduce((sum, v) => sum + (v.businessMetrics?.totalOrders || 0), 0);
-    const avgRating = vendors.reduce((sum, v) => sum + (v.businessMetrics?.rating || 0), 0) / vendors.length;
-    const activeVendors = vendors.filter(v => v.isActive).length;
-    
+    const totalRevenue = vendors.reduce(
+      (sum, v) => sum + (v.businessMetrics?.totalRevenue || 0),
+      0
+    );
+    const totalOrders = vendors.reduce(
+      (sum, v) => sum + (v.businessMetrics?.totalOrders || 0),
+      0
+    );
+    const avgRating =
+      vendors.reduce((sum, v) => sum + (v.businessMetrics?.rating || 0), 0) /
+      vendors.length;
+    const activeVendors = vendors.filter((v) => v.isActive).length;
+
     return {
-      totalRevenue: totalRevenue,
-      totalOrders: totalOrders,
+      totalRevenue,
+      totalOrders,
       averageRating: avgRating,
-      activeVendors: activeVendors,
+      activeVendors,
       totalVendors: vendors.length,
-      conversionRate: totalOrders > 0 ? ((totalOrders / vendors.length) * 100) : 0
+      conversionRate:
+        totalOrders > 0 ? (totalOrders / vendors.length) * 100 : 0,
     };
   }, [vendors]);
 
   // Generate top performers
   const topPerformers = useMemo(() => {
     return vendors
-      .sort((a, b) => (b.businessMetrics?.totalRevenue || 0) - (a.businessMetrics?.totalRevenue || 0))
+      .sort(
+        (a, b) =>
+          (b.businessMetrics?.totalRevenue || 0) -
+          (a.businessMetrics?.totalRevenue || 0)
+      )
       .slice(0, 10)
       .map((vendor, index) => ({
         ...vendor,
         rank: index + 1,
-        change: Math.floor(Math.random() * 30) - 10 // Mock change percentage
+        change: Math.floor(Math.random() * 30) - 10, // Mock change percentage
       }));
   }, [vendors]);
 
@@ -259,13 +304,17 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
       {/* Header Controls */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-text-dark">Performance Analytics</h2>
-          <p className="text-text-muted">Comprehensive vendor performance insights and trends</p>
+          <h2 className="text-2xl font-bold text-text-dark">
+            Performance Analytics
+          </h2>
+          <p className="text-text-muted">
+            Comprehensive vendor performance insights and trends
+          </p>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-xl">
-            {['weekly', 'monthly', 'quarterly'].map(period => (
+            {['weekly', 'monthly', 'quarterly'].map((period) => (
               <button
                 key={period}
                 onClick={() => setSelectedPeriod(period)}
@@ -279,7 +328,7 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
               </button>
             ))}
           </div>
-          
+
           <Button variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
             Export
@@ -341,16 +390,8 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PerformanceChart
-          data={data}
-          type="line"
-          title="Revenue Trends"
-        />
-        <PerformanceChart
-          data={data}
-          type="bar"
-          title="Order Volume"
-        />
+        <PerformanceChart data={data} type="line" title="Revenue Trends" />
+        <PerformanceChart data={data} type="bar" title="Order Volume" />
       </div>
 
       {/* Performance Analysis */}
@@ -358,7 +399,9 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
         {/* Top Performers */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-text-dark">Top Performers</h3>
+            <h3 className="text-lg font-semibold text-text-dark">
+              Top Performers
+            </h3>
             <div className="flex items-center gap-2">
               <select
                 value={selectedMetric}
@@ -374,7 +417,7 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
               </Button>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             {topPerformers.slice(0, 5).map((vendor) => (
               <RankingCard
@@ -382,11 +425,12 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
                 vendor={vendor}
                 rank={vendor.rank}
                 metric={selectedMetric}
-                value={selectedMetric === 'revenue' 
-                  ? `$${(vendor.businessMetrics?.totalRevenue || 0).toLocaleString()}`
-                  : selectedMetric === 'orders'
-                  ? (vendor.businessMetrics?.totalOrders || 0).toString()
-                  : (vendor.businessMetrics?.rating || 0).toFixed(1)
+                value={
+                  selectedMetric === 'revenue'
+                    ? `$${(vendor.businessMetrics?.totalRevenue || 0).toLocaleString()}`
+                    : selectedMetric === 'orders'
+                      ? (vendor.businessMetrics?.totalOrders || 0).toString()
+                      : (vendor.businessMetrics?.rating || 0).toFixed(1)
                 }
                 change={vendor.change}
               />
@@ -432,16 +476,16 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
           </div>
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2 text-text-dark">
-              <div className="w-2 h-2 bg-tomato-red rounded-full" />
-              5 vendors need verification
+              <div className="w-2 h-2 bg-tomato-red rounded-full" />5 vendors
+              need verification
             </li>
             <li className="flex items-center gap-2 text-text-dark">
-              <div className="w-2 h-2 bg-earthy-yellow rounded-full" />
-              3 vendors have low ratings
+              <div className="w-2 h-2 bg-earthy-yellow rounded-full" />3 vendors
+              have low ratings
             </li>
             <li className="flex items-center gap-2 text-text-dark">
-              <div className="w-2 h-2 bg-sage-green rounded-full" />
-              2 performance reviews due
+              <div className="w-2 h-2 bg-sage-green rounded-full" />2
+              performance reviews due
             </li>
           </ul>
         </Card>
@@ -483,11 +527,7 @@ const VendorPerformance = ({ data, loading, vendors = [] }) => {
             type="comparison"
             title="Vendor Comparison"
           />
-          <PerformanceChart
-            data={data}
-            type="growth"
-            title="Growth Analysis"
-          />
+          <PerformanceChart data={data} type="growth" title="Growth Analysis" />
         </motion.div>
       )}
 

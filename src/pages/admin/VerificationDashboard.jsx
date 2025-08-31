@@ -75,22 +75,29 @@ const VerificationDashboard = () => {
     // Business totals from API stats
     totalVendors: vendorStats.totalVendors || 0,
     totalRestaurants: restaurantStats.totalRestaurants || 0,
-    totalBusinesses: (vendorStats.totalVendors || 0) + (restaurantStats.totalRestaurants || 0),
-    
+    totalBusinesses:
+      (vendorStats.totalVendors || 0) + (restaurantStats.totalRestaurants || 0),
+
     // Verification status breakdowns
     pendingVendors: vendorStats.pendingVendors || 0,
     approvedVendors: vendorStats.approvedVendors || 0,
     rejectedVendors: vendorStats.rejectedVendors || 0,
-    
+
     pendingRestaurants: restaurantStats.pendingRestaurants || 0,
     approvedRestaurants: restaurantStats.approvedRestaurants || 0,
     rejectedRestaurants: restaurantStats.rejectedRestaurants || 0,
-    
+
     // Combined pending approvals
-    totalPending: (vendorStats.pendingVendors || 0) + (restaurantStats.pendingRestaurants || 0),
-    totalApproved: (vendorStats.approvedVendors || 0) + (restaurantStats.approvedRestaurants || 0),
-    totalRejected: (vendorStats.rejectedVendors || 0) + (restaurantStats.rejectedRestaurants || 0),
-    
+    totalPending:
+      (vendorStats.pendingVendors || 0) +
+      (restaurantStats.pendingRestaurants || 0),
+    totalApproved:
+      (vendorStats.approvedVendors || 0) +
+      (restaurantStats.approvedRestaurants || 0),
+    totalRejected:
+      (vendorStats.rejectedVendors || 0) +
+      (restaurantStats.rejectedRestaurants || 0),
+
     // Dashboard overview data
     activeUsers: overview.users?.activeUsers || 0,
     newUsersToday: overview.users?.newUsersToday || 0,
@@ -102,17 +109,27 @@ const VerificationDashboard = () => {
   };
 
   // Calculate verification rates
-  const vendorVerificationRate = combinedStats.totalVendors > 0 
-    ? Math.round((combinedStats.approvedVendors / combinedStats.totalVendors) * 100)
-    : 0;
-    
-  const restaurantVerificationRate = combinedStats.totalRestaurants > 0
-    ? Math.round((combinedStats.approvedRestaurants / combinedStats.totalRestaurants) * 100)
-    : 0;
-    
-  const overallVerificationRate = combinedStats.totalBusinesses > 0
-    ? Math.round((combinedStats.totalApproved / combinedStats.totalBusinesses) * 100)
-    : 0;
+  const vendorVerificationRate =
+    combinedStats.totalVendors > 0
+      ? Math.round(
+          (combinedStats.approvedVendors / combinedStats.totalVendors) * 100
+        )
+      : 0;
+
+  const restaurantVerificationRate =
+    combinedStats.totalRestaurants > 0
+      ? Math.round(
+          (combinedStats.approvedRestaurants / combinedStats.totalRestaurants) *
+            100
+        )
+      : 0;
+
+  const overallVerificationRate =
+    combinedStats.totalBusinesses > 0
+      ? Math.round(
+          (combinedStats.totalApproved / combinedStats.totalBusinesses) * 100
+        )
+      : 0;
 
   // Recent activity from dashboard
   const recentActivities = overview.recentActivity || [];
@@ -123,15 +140,15 @@ const VerificationDashboard = () => {
       const date = new Date(timestamp);
       const now = new Date();
       const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-      
+
       if (diffInHours === 0) return 'Just now';
       if (diffInHours === 1) return '1 hour ago';
       if (diffInHours < 24) return `${diffInHours} hours ago`;
-      
+
       const diffInDays = Math.floor(diffInHours / 24);
       if (diffInDays === 1) return '1 day ago';
       if (diffInDays < 7) return `${diffInDays} days ago`;
-      
+
       return date.toLocaleDateString();
     } catch (error) {
       return 'Recently';
@@ -155,7 +172,8 @@ const VerificationDashboard = () => {
             Failed to load dashboard
           </h2>
           <p className="text-text-muted mb-4">
-            Unable to fetch verification data. Please check your connection and try again.
+            Unable to fetch verification data. Please check your connection and
+            try again.
           </p>
           <Button
             onClick={handleRefreshAll}
@@ -234,7 +252,8 @@ const VerificationDashboard = () => {
               Verification Dashboard
             </h1>
             <p className="text-text-muted">
-              Real-time overview of business verification status and platform metrics
+              Real-time overview of business verification status and platform
+              metrics
             </p>
           </div>
           <Button
@@ -258,7 +277,9 @@ const VerificationDashboard = () => {
                 }`}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}
+                  >
                     <Icon className={`w-6 h-6 ${stat.color}`} />
                   </div>
                   {stat.urgent && (
@@ -267,7 +288,7 @@ const VerificationDashboard = () => {
                     </span>
                   )}
                 </div>
-                
+
                 <div className="mb-3">
                   <h3 className="text-sm font-medium text-text-muted mb-1">
                     {stat.title}
@@ -288,7 +309,7 @@ const VerificationDashboard = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <p className="text-sm text-text-muted">{stat.description}</p>
               </Card>
             );
@@ -345,10 +366,11 @@ const VerificationDashboard = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <p className="text-text-muted">
-                  {combinedStats.totalApproved} of {combinedStats.totalBusinesses} businesses verified
+                  {combinedStats.totalApproved} of{' '}
+                  {combinedStats.totalBusinesses} businesses verified
                 </p>
                 <div className="flex justify-center gap-4 text-sm">
                   <span className="text-green-600 font-medium">
@@ -386,7 +408,7 @@ const VerificationDashboard = () => {
                 </div>
                 <TrendingUp className="w-8 h-8 text-green-600" />
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
                 <div>
                   <p className="text-sm text-text-muted">Today's Revenue</p>
@@ -396,7 +418,7 @@ const VerificationDashboard = () => {
                 </div>
                 <Calendar className="w-6 h-6 text-blue-600" />
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl">
                 <div>
                   <p className="text-sm text-text-muted">Today's Orders</p>
@@ -420,7 +442,9 @@ const VerificationDashboard = () => {
               <h2 className="text-xl font-semibold text-text-dark">
                 Recent Activity
               </h2>
-              <p className="text-text-muted">Latest system activities and verification updates</p>
+              <p className="text-text-muted">
+                Latest system activities and verification updates
+              </p>
             </div>
           </div>
 
@@ -445,7 +469,9 @@ const VerificationDashboard = () => {
                       {activity.type && (
                         <>
                           <span>•</span>
-                          <span className="capitalize">{activity.type.replace('_', ' ')}</span>
+                          <span className="capitalize">
+                            {activity.type.replace('_', ' ')}
+                          </span>
                         </>
                       )}
                     </div>
@@ -521,9 +547,7 @@ const VerificationDashboard = () => {
               </div>
               <div className="text-center">
                 <div className="font-medium">View Analytics</div>
-                <div className="text-sm text-text-muted">
-                  Detailed insights
-                </div>
+                <div className="text-sm text-text-muted">Detailed insights</div>
               </div>
             </Button>
           </div>

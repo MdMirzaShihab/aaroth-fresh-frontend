@@ -103,14 +103,14 @@ const RestaurantsManagementPage = () => {
     setActiveTab(tabId);
     // Reset tab-specific filters
     if (tabId === 'verification') {
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
         verificationStatus: 'pending',
         sortBy: 'createdAt',
         sortOrder: 'asc',
       }));
     } else {
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
         verificationStatus: 'all',
       }));
@@ -144,7 +144,8 @@ const RestaurantsManagementPage = () => {
               Restaurant Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
-              Comprehensive restaurant directory with location mapping, verification workflows, and relationship management
+              Comprehensive restaurant directory with location mapping,
+              verification workflows, and relationship management
             </p>
           </div>
 
@@ -156,7 +157,9 @@ const RestaurantsManagementPage = () => {
               disabled={isLoadingRestaurants || isLoadingStats}
               className="flex items-center gap-2"
             >
-              <RefreshCw className={`w-4 h-4 ${(isLoadingRestaurants || isLoadingStats) ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isLoadingRestaurants || isLoadingStats ? 'animate-spin' : ''}`}
+              />
               Refresh
             </Button>
           </div>
@@ -172,8 +175,12 @@ const RestaurantsManagementPage = () => {
           <Card className="p-4 glass glow-green">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Total Restaurants</p>
-                <p className="text-2xl font-bold text-muted-olive">{stats.totalRestaurants}</p>
+                <p className="text-text-muted text-sm font-medium">
+                  Total Restaurants
+                </p>
+                <p className="text-2xl font-bold text-muted-olive">
+                  {stats.totalRestaurants}
+                </p>
                 <p className="text-xs text-sage-green mt-1">
                   +{stats.monthlyGrowth || 0}% this month
                 </p>
@@ -187,18 +194,30 @@ const RestaurantsManagementPage = () => {
           <Card className="p-4 glass">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Pending Verification</p>
-                <p className="text-2xl font-bold text-earthy-yellow">{stats.pendingVerification}</p>
+                <p className="text-text-muted text-sm font-medium">
+                  Pending Verification
+                </p>
+                <p className="text-2xl font-bold text-earthy-yellow">
+                  {stats.pendingVerification}
+                </p>
                 <p className="text-xs text-text-muted mt-1">
                   Requires attention
                 </p>
               </div>
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                stats.pendingVerification > 0 ? 'bg-earthy-yellow/10' : 'bg-gray-100'
-              }`}>
-                <Shield className={`w-6 h-6 ${
-                  stats.pendingVerification > 0 ? 'text-earthy-yellow' : 'text-gray-400'
-                }`} />
+              <div
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  stats.pendingVerification > 0
+                    ? 'bg-earthy-yellow/10'
+                    : 'bg-gray-100'
+                }`}
+              >
+                <Shield
+                  className={`w-6 h-6 ${
+                    stats.pendingVerification > 0
+                      ? 'text-earthy-yellow'
+                      : 'text-gray-400'
+                  }`}
+                />
               </div>
             </div>
           </Card>
@@ -206,11 +225,19 @@ const RestaurantsManagementPage = () => {
           <Card className="p-4 glass">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Active Restaurants</p>
-                <p className="text-2xl font-bold text-text-dark">{stats.activeRestaurants}</p>
+                <p className="text-text-muted text-sm font-medium">
+                  Active Restaurants
+                </p>
+                <p className="text-2xl font-bold text-text-dark">
+                  {stats.activeRestaurants}
+                </p>
                 <p className="text-xs text-sage-green mt-1">
-                  {stats.totalRestaurants > 0 ? 
-                    Math.round((stats.activeRestaurants / stats.totalRestaurants) * 100) : 0}% active rate
+                  {stats.totalRestaurants > 0
+                    ? Math.round(
+                        (stats.activeRestaurants / stats.totalRestaurants) * 100
+                      )
+                    : 0}
+                  % active rate
                 </p>
               </div>
               <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
@@ -222,8 +249,12 @@ const RestaurantsManagementPage = () => {
           <Card className="p-4 glass">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Total Managers</p>
-                <p className="text-2xl font-bold text-text-dark">{stats.totalManagers}</p>
+                <p className="text-text-muted text-sm font-medium">
+                  Total Managers
+                </p>
+                <p className="text-2xl font-bold text-text-dark">
+                  {stats.totalManagers}
+                </p>
                 <p className="text-xs text-text-muted mt-1">
                   Across all restaurants
                 </p>
@@ -245,7 +276,9 @@ const RestaurantsManagementPage = () => {
             <Card className="p-4 glass">
               <div className="flex items-center gap-2 mb-4">
                 <MapPin className="w-5 h-5 text-muted-olive" />
-                <h3 className="text-lg font-semibold text-text-dark">Top Locations</h3>
+                <h3 className="text-lg font-semibold text-text-dark">
+                  Top Locations
+                </h3>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {stats.topCities.slice(0, 6).map((city, index) => (
@@ -254,8 +287,12 @@ const RestaurantsManagementPage = () => {
                     className="text-center p-3 rounded-2xl bg-earthy-beige/20 hover:bg-earthy-beige/30 transition-colors cursor-pointer"
                     onClick={() => setLocationFilter(city.name)}
                   >
-                    <p className="font-semibold text-text-dark text-sm">{city.name}</p>
-                    <p className="text-xs text-text-muted">{city.count} restaurants</p>
+                    <p className="font-semibold text-text-dark text-sm">
+                      {city.name}
+                    </p>
+                    <p className="text-xs text-text-muted">
+                      {city.count} restaurants
+                    </p>
                   </div>
                 ))}
               </div>
@@ -283,18 +320,30 @@ const RestaurantsManagementPage = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <tab.icon className={`w-5 h-5 ${
-                        activeTab === tab.id ? 'text-white' : 'text-muted-olive'
-                      }`} />
+                      <tab.icon
+                        className={`w-5 h-5 ${
+                          activeTab === tab.id
+                            ? 'text-white'
+                            : 'text-muted-olive'
+                        }`}
+                      />
                       <div>
-                        <h3 className={`font-semibold ${
-                          activeTab === tab.id ? 'text-white' : 'text-text-dark'
-                        }`}>
+                        <h3
+                          className={`font-semibold ${
+                            activeTab === tab.id
+                              ? 'text-white'
+                              : 'text-text-dark'
+                          }`}
+                        >
                           {tab.label}
                         </h3>
-                        <p className={`text-sm ${
-                          activeTab === tab.id ? 'text-white/80' : 'text-text-muted'
-                        }`}>
+                        <p
+                          className={`text-sm ${
+                            activeTab === tab.id
+                              ? 'text-white/80'
+                              : 'text-text-muted'
+                          }`}
+                        >
                           {tab.description}
                         </p>
                       </div>
@@ -303,13 +352,15 @@ const RestaurantsManagementPage = () => {
                       {tab.urgent && (
                         <AlertCircle className="w-4 h-4 text-earthy-yellow animate-pulse" />
                       )}
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        activeTab === tab.id
-                          ? 'bg-white/20 text-white'
-                          : tab.urgent
-                            ? 'bg-earthy-yellow/20 text-earthy-yellow'
-                            : 'bg-muted-olive/10 text-muted-olive'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          activeTab === tab.id
+                            ? 'bg-white/20 text-white'
+                            : tab.urgent
+                              ? 'bg-earthy-yellow/20 text-earthy-yellow'
+                              : 'bg-muted-olive/10 text-muted-olive'
+                        }`}
+                      >
                         {tab.badge}
                       </span>
                     </div>
@@ -344,7 +395,9 @@ const RestaurantsManagementPage = () => {
 
             {activeTab === 'verification' && (
               <RestaurantVerification
-                restaurants={restaurants.filter(r => r.verificationStatus === 'pending')}
+                restaurants={restaurants.filter(
+                  (r) => r.verificationStatus === 'pending'
+                )}
                 isLoading={isLoadingRestaurants}
                 error={restaurantsError}
                 filters={filters}
@@ -378,10 +431,13 @@ const RestaurantsManagementPage = () => {
               <div className="flex items-center gap-3">
                 <AlertCircle className="w-6 h-6 text-tomato-red" />
                 <div>
-                  <h3 className="font-semibold text-tomato-red">Error Loading Data</h3>
+                  <h3 className="font-semibold text-tomato-red">
+                    Error Loading Data
+                  </h3>
                   <p className="text-sm text-tomato-red/80 mt-1">
-                    {restaurantsError?.data?.message || statsError?.data?.message || 
-                     'Failed to load restaurant data. Please try refreshing the page.'}
+                    {restaurantsError?.data?.message ||
+                      statsError?.data?.message ||
+                      'Failed to load restaurant data. Please try refreshing the page.'}
                   </p>
                   <Button
                     variant="outline"

@@ -14,16 +14,17 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
+import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 import {
-  useGetAdminDashboardV2Query,
   useGetDashboardOverviewQuery,
+  useGetAnalyticsOverviewQuery,
+  useGetPerformanceDashboardQuery,
 } from '../../../store/slices/admin-v2/adminApiSlice';
 import { Button, LoadingSpinner, EmptyState } from '../../../components/ui';
 import { dashboardService } from '../../../services/admin-v2';
-import { format } from 'date-fns';
-import toast from 'react-hot-toast';
 import { useTheme } from '../../../hooks/useTheme';
-import useRealtimeDashboard from '../../../hooks/admin-v2/useRealtimeDashboard';
+// Real-time dashboard hook removed for MVP
 
 // Enhanced Dashboard Components
 import HeroKPICards from './components/HeroKPICards';
@@ -38,7 +39,7 @@ import './dashboard.css';
 
 const DashboardPage = () => {
   const { isDarkMode } = useTheme();
-  const [timeFilter, setTimeFilter] = useState('30d');
+  const [timeFilter, setTimeFilter] = useState('month');
   const [chartType, setChartType] = useState('line');
   const [widgetVisibility, setWidgetVisibility] = useState({
     kpis: true,
@@ -48,21 +49,9 @@ const DashboardPage = () => {
     systemHealth: true,
     verification: true,
   });
-  const [realtimeData, setRealtimeData] = useState({
-    kpis: [],
-    activities: [],
-    systemHealth: {},
-    verifications: [],
-  });
+  // Real-time data state removed for MVP - using API data only
 
-  // API queries with real-time polling
-  const {
-    data: dashboardData,
-    isLoading: isDashboardLoading,
-    error: dashboardError,
-    refetch: refetchDashboard,
-  } = useGetAdminDashboardV2Query();
-
+  // API queries - static loading only
   const {
     data: overviewData,
     isLoading: isOverviewLoading,
@@ -70,72 +59,62 @@ const DashboardPage = () => {
     refetch: refetchOverview,
   } = useGetDashboardOverviewQuery({ period: timeFilter });
 
-  const isLoading = isDashboardLoading || isOverviewLoading;
-  const error = dashboardError || overviewError;
-
-  // Real-time dashboard hook
   const {
-    connectionStatus,
-    isConnected,
-    lastUpdate,
-    metrics: realtimeMetrics,
-    reconnect,
-    getConnectionIndicator,
-  } = useRealtimeDashboard({
-    enabled: true,
-    onKPIUpdate: useCallback((kpis) => {
-      setRealtimeData((prev) => ({ ...prev, kpis }));
-    }, []),
-    onActivityUpdate: useCallback((activities) => {
-      setRealtimeData((prev) => ({ ...prev, activities }));
-    }, []),
-    onSystemHealthUpdate: useCallback((systemHealth) => {
-      setRealtimeData((prev) => ({ ...prev, systemHealth }));
-    }, []),
-    onVerificationUpdate: useCallback((verifications) => {
-      setRealtimeData((prev) => ({ ...prev, verifications }));
-    }, []),
-    onNotification: useCallback((notification) => {
-      // Handle dashboard-specific notifications
-      if (notification.type === 'dashboard_alert') {
-        toast(notification.message, {
-          icon: notification.icon || '📊',
-          duration: notification.duration || 4000,
-        });
-      }
-    }, []),
-  });
+    data: analyticsData,
+    isLoading: isAnalyticsLoading,
+    error: analyticsError,
+    refetch: refetchAnalytics,
+  } = useGetAnalyticsOverviewQuery({ period: timeFilter });
 
-  // Transform data using service layer with real-time updates
+  const {
+    data: performanceData,
+    isLoading: isPerformanceLoading,
+    error: performanceError,
+    refetch: refetchPerformance,
+  } = useGetPerformanceDashboardQuery({ period: timeFilter });
+
+  const isLoading = isOverviewLoading || isAnalyticsLoading || isPerformanceLoading;
+  const error = overviewError || analyticsError || performanceError;
+
+  // Real-time dashboard hook removed for MVP
+
+  // Transform data using service layer
   const transformedData = useMemo(() => {
-    if (!dashboardData && !overviewData && !realtimeData.kpis.length)
+    // Allow partial data loading - show what we have
+    if (!overviewData && !analyticsData && !performanceData) {
       return null;
+    }
 
     const combinedData = {
-      ...dashboardData,
-      ...overviewData,
+      overview: overviewData,
+      analytics: analyticsData,
+      performance: performanceData,
+      // Use overview as primary data source since it has the most complete structure
+      data: overviewData?.data,
     };
 
-    const transformed =
-      dashboardService.transformDashboardMetrics(combinedData);
-
-    // Merge with real-time data if available
-    if (realtimeData.kpis.length > 0) {
-      transformed.kpis = realtimeData.kpis;
-    }
-    if (realtimeData.activities.length > 0) {
-      transformed.recentActivity = realtimeData.activities;
-    }
-
-    return transformed;
-  }, [dashboardData, overviewData, realtimeData]);
+    return dashboardService.transformDashboardMetrics(combinedData);
+  }, [overviewData, analyticsData, performanceData]);
 
   // Handle refresh
   const handleRefresh = useCallback(() => {
-    refetchDashboard();
-    refetchOverview();
-    toast.success('Dashboard refreshed');
-  }, [refetchDashboard, refetchOverview]);
+    const refreshPromises = [
+      refetchOverview(),
+      refetchAnalytics(),
+      refetchPerformance(),
+    ];
+
+    Promise.allSettled(refreshPromises).then((results) => {
+      const failed = results.filter(r => r.status === 'rejected').length;
+      if (failed === 0) {
+        toast.success('Dashboard refreshed');
+      } else if (failed < results.length) {
+        toast.success('Dashboard partially refreshed');
+      } else {
+        toast.error('Failed to refresh dashboard');
+      }
+    });
+  }, [refetchOverview, refetchAnalytics, refetchPerformance]);
 
   // Handle export
   const handleExport = useCallback(() => {
@@ -188,7 +167,7 @@ const DashboardPage = () => {
           break;
         case 'cache_clear':
           toast.success(`${action.cacheType} cache cleared`);
-          refetchDashboard();
+          handleRefresh();
           break;
         case 'generate_reports':
           toast.success('System reports generated');
@@ -200,25 +179,25 @@ const DashboardPage = () => {
           console.log('Unknown quick action:', action);
       }
     },
-    [refetchDashboard]
+    [handleRefresh]
   );
 
   // Handle verification actions
   const handleVerificationAction = useCallback(
     (item, action) => {
       toast.success(`${item.businessName} ${action}d successfully`);
-      refetchDashboard();
+      handleRefresh();
     },
-    [refetchDashboard]
+    [handleRefresh]
   );
 
   // Handle batch verification actions
   const handleBatchVerificationAction = useCallback(
     (items, action) => {
       toast.success(`${items.length} items ${action}d successfully`);
-      refetchDashboard();
+      handleRefresh();
     },
-    [refetchDashboard]
+    [handleRefresh]
   );
 
   // Handle metric chart interactions
@@ -292,20 +271,16 @@ const DashboardPage = () => {
 
   const sampleSystemHealth = useMemo(
     () => ({
-      healthy:
-        realtimeData.systemHealth.healthy !== undefined
-          ? realtimeData.systemHealth.healthy
-          : true,
-      apiResponseTime: realtimeData.systemHealth.apiResponseTime || 120,
-      databaseResponseTime:
-        realtimeData.systemHealth.databaseResponseTime || 45,
-      activeConnections: realtimeData.systemHealth.activeConnections || 156,
-      errorRate: realtimeData.systemHealth.errorRate || 0.8,
-      cpuUsage: realtimeData.systemHealth.cpuUsage || 45,
-      memoryUsage: realtimeData.systemHealth.memoryUsage || 62,
-      diskUsage: realtimeData.systemHealth.diskUsage || 78,
+      healthy: true,
+      apiResponseTime: 120,
+      databaseResponseTime: 45,
+      activeConnections: 156,
+      errorRate: 0.8,
+      cpuUsage: 45,
+      memoryUsage: 62,
+      diskUsage: 78,
     }),
-    [realtimeData.systemHealth]
+    []
   );
 
   const sampleSLAMetrics = useMemo(
@@ -327,8 +302,6 @@ const DashboardPage = () => {
     }),
     [transformedData]
   );
-
-  const connectionIndicator = getConnectionIndicator();
 
   if (isLoading) {
     return (
@@ -365,45 +338,8 @@ const DashboardPage = () => {
             <p
               className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
             >
-              Real-time overview of your B2B marketplace
+              Overview of your B2B marketplace
             </p>
-          </div>
-
-          {/* Real-time Connection Indicator */}
-          <div
-            className={`
-            flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-medium
-            ${
-              connectionIndicator.color === 'green'
-                ? isDarkMode
-                  ? 'bg-sage-green/20 text-sage-green'
-                  : 'bg-sage-green/10 text-muted-olive'
-                : connectionIndicator.color === 'yellow'
-                  ? isDarkMode
-                    ? 'bg-earthy-yellow/20 text-earthy-yellow'
-                    : 'bg-earthy-yellow/10 text-earthy-brown'
-                  : connectionIndicator.color === 'blue'
-                    ? isDarkMode
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : 'bg-blue-100 text-blue-600'
-                    : 'bg-tomato-red/20 text-tomato-red'
-            }
-          `}
-          >
-            <div
-              className={`w-2 h-2 rounded-full ${
-                connectionIndicator.status === 'connected'
-                  ? isDarkMode
-                    ? 'bg-sage-green'
-                    : 'bg-muted-olive'
-                  : connectionIndicator.status === 'connecting'
-                    ? 'bg-earthy-yellow animate-pulse'
-                    : connectionIndicator.status === 'fallback'
-                      ? 'bg-blue-500'
-                      : 'bg-tomato-red'
-              }`}
-            />
-            {connectionIndicator.label}
           </div>
         </div>
 
@@ -433,9 +369,7 @@ const DashboardPage = () => {
                 ) : (
                   <EyeOff className="w-3 h-3" />
                 )}
-                <span className="hidden sm:inline">
-                  {widgetLabels[widget]}
-                </span>
+                <span className="hidden sm:inline">{widgetLabels[widget]}</span>
               </button>
             ))}
           </div>
@@ -483,16 +417,7 @@ const DashboardPage = () => {
             Export
           </Button>
 
-          {/* Reconnect Button (when needed) */}
-          {connectionStatus === 'disconnected' && (
-            <Button
-              variant="outline"
-              onClick={reconnect}
-              className="rounded-xl border-tomato-red/30 text-tomato-red hover:bg-tomato-red/10"
-            >
-              Reconnect
-            </Button>
-          )}
+          {/* Real-time reconnect button removed for MVP */}
         </div>
       </div>
 
@@ -507,7 +432,6 @@ const DashboardPage = () => {
             kpis={transformedData?.kpis || []}
             isLoading={isLoading}
             onCardClick={(kpi) => console.log('KPI clicked:', kpi)}
-            realTimeEnabled={isConnected}
           />
         </motion.div>
       )}
@@ -529,8 +453,8 @@ const DashboardPage = () => {
             onDataPointClick={handleChartDataPoint}
             onExport={handleExport}
             isLoading={isLoading}
-            enableDrillDown={true}
-            enableExport={true}
+            enableDrillDown
+            enableExport
           />
         </motion.div>
       )}
@@ -552,7 +476,6 @@ const DashboardPage = () => {
                 hasMore={false}
                 onActivityClick={handleActivityClick}
                 onRefresh={handleRefresh}
-                realTimeEnabled={isConnected}
                 maxHeight={400}
               />
             </motion.div>
@@ -566,7 +489,7 @@ const DashboardPage = () => {
               transition={{ delay: 0.4 }}
             >
               <VerificationPipeline
-                verificationQueue={realtimeData.verifications}
+                verificationQueue={[]}
                 onVerificationAction={handleVerificationAction}
                 onBatchAction={handleBatchVerificationAction}
                 onViewDetails={(item) =>
@@ -633,33 +556,18 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Last Update Indicator */}
-      {lastUpdate && (
-        <div className="flex items-center justify-center pt-4">
-          <div
-            className={`
+      {/* Manual refresh indicator */}
+      <div className="flex items-center justify-center pt-4">
+        <div
+          className={`
             flex items-center gap-2 text-xs px-4 py-2 rounded-xl
             ${isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-600'}
           `}
-          >
-            <div
-              className={`w-1.5 h-1.5 rounded-full ${
-                isConnected
-                  ? isDarkMode
-                    ? 'bg-sage-green'
-                    : 'bg-muted-olive'
-                  : 'bg-gray-400'
-              } animate-pulse`}
-            />
-            Last updated: {format(lastUpdate, 'HH:mm:ss')}
-            {realtimeMetrics.isRealTime && (
-              <span className="ml-2 px-2 py-0.5 bg-sage-green/20 text-sage-green rounded-full text-xs font-medium">
-                Real-time
-              </span>
-            )}
-          </div>
+        >
+          <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+          Static dashboard - use refresh button for latest data
         </div>
-      )}
+      </div>
     </div>
   );
 };

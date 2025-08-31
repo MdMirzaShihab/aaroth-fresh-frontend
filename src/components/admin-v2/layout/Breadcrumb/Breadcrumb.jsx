@@ -7,8 +7,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  ChevronRight, 
+import {
+  ChevronRight,
   Home,
   LayoutDashboard,
   Users,
@@ -21,7 +21,7 @@ import {
   Activity,
   Settings,
   Shield,
-  Database
+  Database,
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
 
@@ -31,116 +31,118 @@ const Breadcrumb = () => {
 
   // Route configuration for breadcrumb generation
   const routeConfig = {
-    'admin-v2': { 
-      label: 'Admin', 
+    'admin-v2': {
+      label: 'Admin',
       icon: Home,
-      description: 'Administration Portal'
+      description: 'Administration Portal',
     },
-    'dashboard': { 
-      label: 'Dashboard', 
+    dashboard: {
+      label: 'Dashboard',
       icon: LayoutDashboard,
-      description: 'Overview & Analytics'
+      description: 'Overview & Analytics',
     },
-    'users': { 
-      label: 'Users Management', 
+    users: {
+      label: 'Users Management',
       icon: Users,
-      description: 'User Administration'
+      description: 'User Administration',
     },
-    'vendors': { 
-      label: 'Vendors Management', 
+    vendors: {
+      label: 'Vendors Management',
       icon: Store,
-      description: 'Vendor Operations'
+      description: 'Vendor Operations',
     },
-    'restaurants': { 
-      label: 'Restaurants Management', 
+    restaurants: {
+      label: 'Restaurants Management',
       icon: UtensilsCrossed,
-      description: 'Restaurant Operations'
+      description: 'Restaurant Operations',
     },
-    'catalog': { 
-      label: 'Catalog Management', 
+    catalog: {
+      label: 'Catalog Management',
       icon: Package,
-      description: 'Product & Category Management'
+      description: 'Product & Category Management',
     },
-    'products': { 
-      label: 'Products', 
+    products: {
+      label: 'Products',
       icon: Package,
-      description: 'Product Library'
+      description: 'Product Library',
     },
-    'categories': { 
-      label: 'Categories', 
+    categories: {
+      label: 'Categories',
       icon: FolderOpen,
-      description: 'Category Structure'
+      description: 'Category Structure',
     },
-    'listings': { 
-      label: 'Listings', 
+    listings: {
+      label: 'Listings',
       icon: Database,
-      description: 'Active Listings'
+      description: 'Active Listings',
     },
-    'analytics': { 
-      label: 'Analytics & Insights', 
+    analytics: {
+      label: 'Analytics & Insights',
       icon: BarChart3,
-      description: 'Business Intelligence'
+      description: 'Business Intelligence',
     },
-    'business': { 
-      label: 'Business Analytics', 
+    business: {
+      label: 'Business Analytics',
       icon: TrendingUp,
-      description: 'Performance Metrics'
+      description: 'Performance Metrics',
     },
-    'performance': { 
-      label: 'Performance Monitoring', 
+    performance: {
+      label: 'Performance Monitoring',
       icon: BarChart3,
-      description: 'SLA & Team Performance'
+      description: 'SLA & Team Performance',
     },
-    'activity': { 
-      label: 'Activity Monitoring', 
+    activity: {
+      label: 'Activity Monitoring',
       icon: Activity,
-      description: 'System Audit Trail'
+      description: 'System Audit Trail',
     },
-    'settings': { 
-      label: 'Settings', 
+    settings: {
+      label: 'Settings',
       icon: Settings,
-      description: 'System Configuration'
+      description: 'System Configuration',
     },
-    'system': { 
-      label: 'System Monitoring', 
+    system: {
+      label: 'System Monitoring',
       icon: Shield,
-      description: 'Health & Performance'
+      description: 'Health & Performance',
     },
-    'general': { 
-      label: 'General Settings', 
+    general: {
+      label: 'General Settings',
       icon: Settings,
-      description: 'Basic Configuration'
+      description: 'Basic Configuration',
     },
-    'security': { 
-      label: 'Security Policies', 
+    security: {
+      label: 'Security Policies',
       icon: Shield,
-      description: 'Security Configuration'
+      description: 'Security Configuration',
     },
-    'sales': { 
-      label: 'Sales Performance', 
+    sales: {
+      label: 'Sales Performance',
       icon: TrendingUp,
-      description: 'Sales Analytics'
-    }
+      description: 'Sales Analytics',
+    },
   };
 
   // Generate breadcrumb items from current path
   const generateBreadcrumbs = () => {
-    const pathSegments = location.pathname.split('/').filter(segment => segment);
+    const pathSegments = location.pathname
+      .split('/')
+      .filter((segment) => segment);
     const breadcrumbs = [];
-    
+
     // Build breadcrumb items
     let currentPath = '';
     pathSegments.forEach((segment, index) => {
       currentPath += `/${segment}`;
       const routeInfo = routeConfig[segment];
-      
+
       if (routeInfo) {
         breadcrumbs.push({
           label: routeInfo.label,
           icon: routeInfo.icon,
           description: routeInfo.description,
           path: currentPath,
-          isLast: index === pathSegments.length - 1
+          isLast: index === pathSegments.length - 1,
         });
       }
     });
@@ -162,18 +164,18 @@ const Breadcrumb = () => {
       y: 0,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -192,45 +194,53 @@ const Breadcrumb = () => {
       <ol className="flex items-center space-x-2">
         {breadcrumbs.map((crumb, index) => {
           const IconComponent = crumb.icon;
-          
+
           return (
-            <motion.li 
-              key={crumb.path} 
+            <motion.li
+              key={crumb.path}
               variants={itemVariants}
               className="flex items-center"
             >
               {index > 0 && (
-                <ChevronRight 
+                <ChevronRight
                   className={`
                     w-4 h-4 mx-2 flex-shrink-0
                     ${isDarkMode ? 'text-dark-text-muted/60' : 'text-text-muted/60'}
-                  `} 
+                  `}
                   aria-hidden="true"
                 />
               )}
-              
+
               {crumb.isLast ? (
                 <div className="flex items-center gap-2">
-                  <div className={`
+                  <div
+                    className={`
                     p-2 rounded-xl
                     ${isDarkMode ? 'bg-dark-sage-accent/10' : 'bg-sage-green/10'}
-                  `}>
-                    <IconComponent className={`
+                  `}
+                  >
+                    <IconComponent
+                      className={`
                       w-4 h-4
                       ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}
-                    `} />
+                    `}
+                    />
                   </div>
                   <div>
-                    <div className={`
+                    <div
+                      className={`
                       text-sm font-semibold
                       ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}
-                    `}>
+                    `}
+                    >
                       {crumb.label}
                     </div>
-                    <div className={`
+                    <div
+                      className={`
                       text-xs
                       ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}
-                    `}>
+                    `}
+                    >
                       {crumb.description}
                     </div>
                   </div>
@@ -240,18 +250,17 @@ const Breadcrumb = () => {
                   to={crumb.path}
                   className={`
                     flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200
-                    ${isDarkMode 
-                      ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5' 
-                      : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'
+                    ${
+                      isDarkMode
+                        ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5'
+                        : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'
                     }
                     hover:scale-105 hover:shadow-glow-olive/10
                   `}
                   title={crumb.description}
                 >
                   <IconComponent className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm font-medium">
-                    {crumb.label}
-                  </span>
+                  <span className="text-sm font-medium">{crumb.label}</span>
                 </Link>
               )}
             </motion.li>

@@ -12,7 +12,7 @@ export const ARIA_ROLES = {
   main: 'main',
   complementary: 'complementary',
   contentinfo: 'contentinfo',
-  
+
   // Interactive elements
   button: 'button',
   link: 'link',
@@ -22,7 +22,7 @@ export const ARIA_ROLES = {
   menuitem: 'menuitem',
   menu: 'menu',
   menubar: 'menubar',
-  
+
   // Form elements
   form: 'form',
   group: 'group',
@@ -32,7 +32,7 @@ export const ARIA_ROLES = {
   combobox: 'combobox',
   listbox: 'listbox',
   option: 'option',
-  
+
   // Content
   heading: 'heading',
   article: 'article',
@@ -44,7 +44,7 @@ export const ARIA_ROLES = {
   cell: 'cell',
   columnheader: 'columnheader',
   rowheader: 'rowheader',
-  
+
   // Status and alerts
   alert: 'alert',
   alertdialog: 'alertdialog',
@@ -52,7 +52,7 @@ export const ARIA_ROLES = {
   log: 'log',
   marquee: 'marquee',
   timer: 'timer',
-  
+
   // Interactive widgets
   dialog: 'dialog',
   tooltip: 'tooltip',
@@ -60,7 +60,7 @@ export const ARIA_ROLES = {
   slider: 'slider',
   spinbutton: 'spinbutton',
   searchbox: 'searchbox',
-  
+
   // Landmarks
   search: 'search',
   application: 'application',
@@ -82,18 +82,18 @@ export const ARIA_PROPERTIES = {
   live: 'aria-live',
   atomic: 'aria-atomic',
   relevant: 'aria-relevant',
-  
+
   // Labeling properties
   label: 'aria-label',
   labelledby: 'aria-labelledby',
   describedby: 'aria-describedby',
-  
+
   // Relationship properties
   owns: 'aria-owns',
   controls: 'aria-controls',
   activedescendant: 'aria-activedescendant',
   flowto: 'aria-flowto',
-  
+
   // Widget properties
   autocomplete: 'aria-autocomplete',
   hasPopup: 'aria-haspopup',
@@ -104,12 +104,12 @@ export const ARIA_PROPERTIES = {
   placeholder: 'aria-placeholder',
   readonly: 'aria-readonly',
   required: 'aria-required',
-  
+
   // Live region properties
   polite: 'polite',
   assertive: 'assertive',
   off: 'off',
-  
+
   // Grid properties
   colcount: 'aria-colcount',
   colindex: 'aria-colindex',
@@ -117,7 +117,7 @@ export const ARIA_PROPERTIES = {
   rowcount: 'aria-rowcount',
   rowindex: 'aria-rowindex',
   rowspan: 'aria-rowspan',
-  
+
   // Level and position
   level: 'aria-level',
   posinset: 'aria-posinset',
@@ -131,12 +131,12 @@ export const ARIA_PROPERTIES = {
  */
 export const createAriaAttributes = (config = {}) => {
   const attributes = {};
-  
+
   // Role
   if (config.role) {
     attributes.role = config.role;
   }
-  
+
   // Labels
   if (config.label) {
     attributes['aria-label'] = config.label;
@@ -147,7 +147,7 @@ export const createAriaAttributes = (config = {}) => {
   if (config.describedby) {
     attributes['aria-describedby'] = config.describedby;
   }
-  
+
   // States
   if (config.expanded !== undefined) {
     attributes['aria-expanded'] = config.expanded;
@@ -170,7 +170,7 @@ export const createAriaAttributes = (config = {}) => {
   if (config.current !== undefined) {
     attributes['aria-current'] = config.current;
   }
-  
+
   // Widget properties
   if (config.hasPopup) {
     attributes['aria-haspopup'] = config.hasPopup;
@@ -184,7 +184,7 @@ export const createAriaAttributes = (config = {}) => {
   if (config.activedescendant) {
     attributes['aria-activedescendant'] = config.activedescendant;
   }
-  
+
   // Form validation
   if (config.invalid !== undefined) {
     attributes['aria-invalid'] = config.invalid;
@@ -195,7 +195,7 @@ export const createAriaAttributes = (config = {}) => {
   if (config.readonly !== undefined) {
     attributes['aria-readonly'] = config.readonly;
   }
-  
+
   // Live regions
   if (config.live) {
     attributes['aria-live'] = config.live;
@@ -206,7 +206,7 @@ export const createAriaAttributes = (config = {}) => {
   if (config.relevant) {
     attributes['aria-relevant'] = config.relevant;
   }
-  
+
   // Grid and table
   if (config.colcount) {
     attributes['aria-colcount'] = config.colcount;
@@ -220,7 +220,7 @@ export const createAriaAttributes = (config = {}) => {
   if (config.rowindex) {
     attributes['aria-rowindex'] = config.rowindex;
   }
-  
+
   // Hierarchy
   if (config.level) {
     attributes['aria-level'] = config.level;
@@ -231,7 +231,7 @@ export const createAriaAttributes = (config = {}) => {
   if (config.setsize) {
     attributes['aria-setsize'] = config.setsize;
   }
-  
+
   return attributes;
 };
 
@@ -246,42 +246,40 @@ export const focusManagement = {
    */
   trapFocus(container) {
     if (!container) return () => {};
-    
+
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), [contenteditable]'
     );
-    
+
     if (focusableElements.length === 0) return () => {};
-    
+
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
-    
+
     const handleTabKey = (e) => {
       if (e.key !== 'Tab') return;
-      
+
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
           e.preventDefault();
           lastElement.focus();
         }
-      } else {
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement.focus();
-        }
+      } else if (document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
       }
     };
-    
+
     // Focus first element
     firstElement.focus();
-    
+
     container.addEventListener('keydown', handleTabKey);
-    
+
     return () => {
       container.removeEventListener('keydown', handleTabKey);
     };
   },
-  
+
   /**
    * Manages focus restoration after modal/drawer closes
    * @param {HTMLElement} triggerElement - Element that opened the modal
@@ -294,7 +292,7 @@ export const focusManagement = {
       }, 0);
     }
   },
-  
+
   /**
    * Creates a focus-visible ring with modern styling
    * @param {string} color - Color for the focus ring
@@ -303,24 +301,28 @@ export const focusManagement = {
   getFocusClasses(color = 'muted-olive') {
     return `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-${color}/40 focus-visible:ring-offset-2 focus-visible:rounded-lg`;
   },
-  
+
   /**
    * Skip links for keyboard navigation
    * @param {Array} links - Array of skip link objects {href, text}
    * @returns {JSX} Skip link component
    */
   createSkipLinks(links) {
-    return links.map((link, index) => 
-      React.createElement('a', {
-        key: index,
-        href: link.href,
-        className: `
+    return links.map((link, index) =>
+      React.createElement(
+        'a',
+        {
+          key: index,
+          href: link.href,
+          className: `
           sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
           bg-muted-olive text-white px-4 py-2 rounded-lg font-medium z-50
           transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 
           focus-visible:ring-sage-green focus-visible:ring-offset-2
-        `
-      }, link.text)
+        `,
+        },
+        link.text
+      )
     );
   },
 };
@@ -342,28 +344,30 @@ export const screenReader = {
     document.body.appendChild(liveRegion);
     return liveRegion;
   },
-  
+
   /**
    * Announces message to screen readers
    * @param {string} message - Message to announce
    * @param {string} politeness - 'polite' or 'assertive'
    */
   announce(message, politeness = 'polite') {
-    const existingRegion = document.querySelector(`[aria-live="${politeness}"]`);
+    const existingRegion = document.querySelector(
+      `[aria-live="${politeness}"]`
+    );
     let liveRegion = existingRegion;
-    
+
     if (!liveRegion) {
       liveRegion = this.createLiveRegion(politeness);
     }
-    
+
     liveRegion.textContent = message;
-    
+
     // Clear after announcement to avoid repetition
     setTimeout(() => {
       liveRegion.textContent = '';
     }, 1000);
   },
-  
+
   /**
    * Creates comprehensive ARIA description for complex UI elements
    * @param {Object} config - Description configuration
@@ -371,7 +375,7 @@ export const screenReader = {
    */
   createDescription(config) {
     const parts = [];
-    
+
     if (config.type) {
       parts.push(`${config.type}`);
     }
@@ -390,21 +394,17 @@ export const screenReader = {
     if (config.shortcuts && config.shortcuts.length > 0) {
       parts.push(`Keyboard shortcuts: ${config.shortcuts.join(', ')}`);
     }
-    
+
     return parts.join('. ');
   },
-  
+
   /**
    * Screen reader only text utility
    * @param {string} text - Text for screen readers only
    * @returns {JSX} Screen reader only span
    */
   only(text) {
-    return (
-      <span className="sr-only">
-        {text}
-      </span>
-    );
+    return <span className="sr-only">{text}</span>;
   },
 };
 
@@ -434,7 +434,7 @@ export const keyboardNavigation = {
     F4: 'F4',
     F5: 'F5',
   },
-  
+
   /**
    * Creates keyboard event handler for button-like elements
    * @param {Function} onClick - Click handler
@@ -448,7 +448,7 @@ export const keyboardNavigation = {
       }
     };
   },
-  
+
   /**
    * Creates arrow key navigation for lists
    * @param {Array} items - List of item references
@@ -456,13 +456,15 @@ export const keyboardNavigation = {
    */
   createListNavigation(items, options = {}) {
     const { loop = true, orientation = 'vertical' } = options;
-    
+
     return (event) => {
-      const currentIndex = items.findIndex(item => item === document.activeElement);
+      const currentIndex = items.findIndex(
+        (item) => item === document.activeElement
+      );
       if (currentIndex === -1) return;
-      
+
       let nextIndex = currentIndex;
-      
+
       if (orientation === 'vertical') {
         if (event.key === this.KEYS.ARROW_UP) {
           nextIndex = currentIndex - 1;
@@ -471,29 +473,27 @@ export const keyboardNavigation = {
           nextIndex = currentIndex + 1;
           if (nextIndex >= items.length && loop) nextIndex = 0;
         }
-      } else {
-        if (event.key === this.KEYS.ARROW_LEFT) {
-          nextIndex = currentIndex - 1;
-          if (nextIndex < 0 && loop) nextIndex = items.length - 1;
-        } else if (event.key === this.KEYS.ARROW_RIGHT) {
-          nextIndex = currentIndex + 1;
-          if (nextIndex >= items.length && loop) nextIndex = 0;
-        }
+      } else if (event.key === this.KEYS.ARROW_LEFT) {
+        nextIndex = currentIndex - 1;
+        if (nextIndex < 0 && loop) nextIndex = items.length - 1;
+      } else if (event.key === this.KEYS.ARROW_RIGHT) {
+        nextIndex = currentIndex + 1;
+        if (nextIndex >= items.length && loop) nextIndex = 0;
       }
-      
+
       if (event.key === this.KEYS.HOME) {
         nextIndex = 0;
       } else if (event.key === this.KEYS.END) {
         nextIndex = items.length - 1;
       }
-      
+
       if (nextIndex !== currentIndex && items[nextIndex]) {
         event.preventDefault();
         items[nextIndex].focus();
       }
     };
   },
-  
+
   /**
    * Creates tab navigation for tab interfaces
    * @param {Array} tabs - Tab elements
@@ -502,11 +502,13 @@ export const keyboardNavigation = {
    */
   createTabNavigation(tabs, panels, onTabSelect) {
     return (event) => {
-      const currentIndex = tabs.findIndex(tab => tab === document.activeElement);
+      const currentIndex = tabs.findIndex(
+        (tab) => tab === document.activeElement
+      );
       if (currentIndex === -1) return;
-      
+
       let nextIndex = currentIndex;
-      
+
       if (event.key === this.KEYS.ARROW_LEFT) {
         nextIndex = currentIndex - 1;
         if (nextIndex < 0) nextIndex = tabs.length - 1;
@@ -518,7 +520,7 @@ export const keyboardNavigation = {
       } else if (event.key === this.KEYS.END) {
         nextIndex = tabs.length - 1;
       }
-      
+
       if (nextIndex !== currentIndex) {
         event.preventDefault();
         tabs[nextIndex].focus();
@@ -540,23 +542,23 @@ export const colorContrast = {
   getLuminance(color) {
     // Remove # if present
     color = color.replace('#', '');
-    
+
     // Convert to RGB
     const r = parseInt(color.substring(0, 2), 16) / 255;
     const g = parseInt(color.substring(2, 4), 16) / 255;
     const b = parseInt(color.substring(4, 6), 16) / 255;
-    
+
     // Apply gamma correction
-    const sRGB = [r, g, b].map(component => {
+    const sRGB = [r, g, b].map((component) => {
       return component <= 0.03928
         ? component / 12.92
         : Math.pow((component + 0.055) / 1.055, 2.4);
     });
-    
+
     // Calculate relative luminance
     return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
   },
-  
+
   /**
    * Calculates contrast ratio between two colors
    * @param {string} color1 - First color (hex)
@@ -566,13 +568,13 @@ export const colorContrast = {
   getContrastRatio(color1, color2) {
     const lum1 = this.getLuminance(color1);
     const lum2 = this.getLuminance(color2);
-    
+
     const brightest = Math.max(lum1, lum2);
     const darkest = Math.min(lum1, lum2);
-    
+
     return (brightest + 0.05) / (darkest + 0.05);
   },
-  
+
   /**
    * Validates if contrast ratio meets WCAG guidelines
    * @param {number} ratio - Contrast ratio
@@ -591,10 +593,10 @@ export const colorContrast = {
         large: 4.5,
       },
     };
-    
+
     const threshold = thresholds[level][size];
     const passes = ratio >= threshold;
-    
+
     return {
       passes,
       ratio: Math.round(ratio * 100) / 100,
@@ -604,7 +606,7 @@ export const colorContrast = {
       grade: passes ? (ratio >= thresholds.AAA[size] ? 'AAA' : 'AA') : 'Fail',
     };
   },
-  
+
   /**
    * Pre-validated color combinations for quick use
    */
@@ -640,62 +642,73 @@ export const accessibilityValidation = {
    */
   validateElement(element) {
     if (!element) return { valid: false, issues: ['Element not found'] };
-    
+
     const issues = [];
     const warnings = [];
-    
+
     // Check for accessible name
-    const hasAccessibleName = element.getAttribute('aria-label') ||
-                             element.getAttribute('aria-labelledby') ||
-                             element.textContent.trim() ||
-                             element.getAttribute('alt') ||
-                             element.getAttribute('title');
-    
+    const hasAccessibleName =
+      element.getAttribute('aria-label') ||
+      element.getAttribute('aria-labelledby') ||
+      element.textContent.trim() ||
+      element.getAttribute('alt') ||
+      element.getAttribute('title');
+
     if (!hasAccessibleName) {
       issues.push('Element lacks accessible name');
     }
-    
+
     // Check interactive elements
-    const isInteractive = element.tagName === 'BUTTON' ||
-                         element.tagName === 'A' ||
-                         element.getAttribute('role') === 'button' ||
-                         element.getAttribute('tabindex') === '0';
-    
+    const isInteractive =
+      element.tagName === 'BUTTON' ||
+      element.tagName === 'A' ||
+      element.getAttribute('role') === 'button' ||
+      element.getAttribute('tabindex') === '0';
+
     if (isInteractive) {
       // Check touch target size
       const rect = element.getBoundingClientRect();
       if (rect.width < 44 || rect.height < 44) {
-        warnings.push('Touch target may be too small (recommended minimum: 44px)');
+        warnings.push(
+          'Touch target may be too small (recommended minimum: 44px)'
+        );
       }
-      
+
       // Check keyboard accessibility
-      const hasKeyboardHandler = element.onkeydown || element.onkeyup || element.onkeypress;
+      const hasKeyboardHandler =
+        element.onkeydown || element.onkeyup || element.onkeypress;
       if (!hasKeyboardHandler && element.getAttribute('role') === 'button') {
         warnings.push('Custom button should handle keyboard events');
       }
     }
-    
+
     // Check form elements
     if (['INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName)) {
-      const hasLabel = element.getAttribute('aria-label') ||
-                      element.getAttribute('aria-labelledby') ||
-                      document.querySelector(`label[for="${element.id}"]`);
-      
+      const hasLabel =
+        element.getAttribute('aria-label') ||
+        element.getAttribute('aria-labelledby') ||
+        document.querySelector(`label[for="${element.id}"]`);
+
       if (!hasLabel) {
         issues.push('Form element lacks associated label');
       }
-      
+
       // Check required field indication
-      if (element.hasAttribute('required') && !element.getAttribute('aria-required')) {
+      if (
+        element.hasAttribute('required') &&
+        !element.getAttribute('aria-required')
+      ) {
         warnings.push('Required field should have aria-required="true"');
       }
     }
-    
+
     // Check heading hierarchy
     if (element.tagName.match(/^H[1-6]$/)) {
       const level = parseInt(element.tagName.charAt(1));
-      const prevHeading = element.previousElementSibling?.closest('h1, h2, h3, h4, h5, h6');
-      
+      const prevHeading = element.previousElementSibling?.closest(
+        'h1, h2, h3, h4, h5, h6'
+      );
+
       if (prevHeading) {
         const prevLevel = parseInt(prevHeading.tagName.charAt(1));
         if (level > prevLevel + 1) {
@@ -703,15 +716,15 @@ export const accessibilityValidation = {
         }
       }
     }
-    
+
     return {
       valid: issues.length === 0,
       issues,
       warnings,
-      score: Math.max(0, 100 - (issues.length * 30) - (warnings.length * 10)),
+      score: Math.max(0, 100 - issues.length * 30 - warnings.length * 10),
     };
   },
-  
+
   /**
    * Validates entire page for accessibility
    * @returns {Object} Page validation results
@@ -723,55 +736,62 @@ export const accessibilityValidation = {
       warnings: [],
       elements: [],
     };
-    
+
     // Check page title
     if (!document.title) {
       results.issues.push('Page is missing title');
     }
-    
+
     // Check main landmark
     const mainLandmark = document.querySelector('main, [role="main"]');
     if (!mainLandmark) {
       results.issues.push('Page is missing main landmark');
     }
-    
+
     // Check heading hierarchy
-    const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+    const headings = Array.from(
+      document.querySelectorAll('h1, h2, h3, h4, h5, h6')
+    );
     let expectedLevel = 1;
-    
+
     headings.forEach((heading, index) => {
       const level = parseInt(heading.tagName.charAt(1));
-      
+
       if (index === 0 && level !== 1) {
         results.warnings.push('First heading should be h1');
       }
-      
+
       if (level > expectedLevel + 1) {
-        results.warnings.push(`Heading hierarchy skip detected at ${heading.textContent.substring(0, 30)}`);
+        results.warnings.push(
+          `Heading hierarchy skip detected at ${heading.textContent.substring(0, 30)}`
+        );
       }
-      
+
       expectedLevel = level;
     });
-    
+
     // Validate all interactive elements
     const interactiveElements = document.querySelectorAll(
       'button, a, input, select, textarea, [role="button"], [tabindex="0"]'
     );
-    
-    interactiveElements.forEach(element => {
+
+    interactiveElements.forEach((element) => {
       const validation = this.validateElement(element);
       results.elements.push({
         element: element.tagName.toLowerCase(),
         ...validation,
       });
-      
+
       results.issues.push(...validation.issues);
       results.warnings.push(...validation.warnings);
     });
-    
+
     results.valid = results.issues.length === 0;
-    results.score = Math.max(0, 100 - (results.issues.length * 20) - (results.warnings.length * 5));
-    
+    results.score = Math.max(
+      0,
+      100 - results.issues.length * 20 - results.warnings.length * 5
+    );
+
     return results;
   },
 };
@@ -787,7 +807,7 @@ export const highContrast = {
   isPreferred() {
     return window.matchMedia('(prefers-contrast: high)').matches;
   },
-  
+
   /**
    * Gets high contrast color scheme
    * @returns {Object} High contrast colors
@@ -805,24 +825,24 @@ export const highContrast = {
       warning: '#ff8800',
     };
   },
-  
+
   /**
    * Applies high contrast styles to element
    * @param {HTMLElement} element - Element to apply styles
    */
   applyStyles(element) {
     if (!element) return;
-    
+
     const colors = this.getColors();
-    
+
     element.style.color = colors.text;
     element.style.backgroundColor = colors.background;
     element.style.borderColor = colors.border;
-    
+
     if (element.tagName === 'A') {
       element.style.color = colors.link;
     }
-    
+
     if (element.matches(':focus')) {
       element.style.outline = `2px solid ${colors.focus}`;
     }
@@ -840,7 +860,7 @@ export const motionAccessibility = {
   prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   },
-  
+
   /**
    * Creates animation-safe CSS classes
    * @param {string} animationClasses - Animation classes
@@ -855,7 +875,7 @@ export const motionAccessibility = {
     }
     return animationClasses;
   },
-  
+
   /**
    * Creates reduced motion alternative styles
    * @returns {Object} Motion-safe styles
@@ -880,7 +900,7 @@ export const formAccessibility = {
    */
   getFieldProps(config) {
     const props = {};
-    
+
     // Basic attributes
     if (config.id) {
       props.id = config.id;
@@ -888,7 +908,7 @@ export const formAccessibility = {
     if (config.name) {
       props.name = config.name;
     }
-    
+
     // Labels
     if (config.label) {
       props['aria-label'] = config.label;
@@ -899,7 +919,7 @@ export const formAccessibility = {
     if (config.describedby) {
       props['aria-describedby'] = config.describedby;
     }
-    
+
     // Validation
     if (config.required) {
       props.required = true;
@@ -912,10 +932,10 @@ export const formAccessibility = {
       props.readOnly = true;
       props['aria-readonly'] = 'true';
     }
-    
+
     return props;
   },
-  
+
   /**
    * Creates error message with proper ARIA association
    * @param {string} fieldId - Field ID
@@ -924,7 +944,7 @@ export const formAccessibility = {
    */
   createErrorMessage(fieldId, errorMessage) {
     const errorId = `${fieldId}-error`;
-    
+
     return {
       id: errorId,
       role: 'alert',
@@ -933,16 +953,16 @@ export const formAccessibility = {
       children: errorMessage,
     };
   },
-  
+
   /**
    * Creates field description with proper ARIA association
-   * @param {string} fieldId - Field ID  
+   * @param {string} fieldId - Field ID
    * @param {string} description - Description text
    * @returns {Object} Description props
    */
   createFieldDescription(fieldId, description) {
     const descriptionId = `${fieldId}-description`;
-    
+
     return {
       id: descriptionId,
       className: 'text-text-muted text-sm mt-1',

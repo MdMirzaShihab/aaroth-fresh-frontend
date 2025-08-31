@@ -5,68 +5,69 @@ import { cn } from '../../utils';
 import { useTheme } from '../../hooks/useTheme';
 
 // Dynamic input variants with dark mode support
-const getInputVariants = (isDarkMode) => cva(
-  // Base classes - mobile-first with 44px minimum height
-  cn(
-    'w-full rounded-2xl border-0 px-4 py-3 text-base transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50',
-    isDarkMode 
-      ? 'bg-dark-olive-surface/50 text-dark-text-primary placeholder:text-dark-text-muted/70' 
-      : 'bg-earthy-beige/30 text-text-dark placeholder:text-text-muted/60'
-  ),
-  {
-    variants: {
-      variant: {
-        default: isDarkMode
-          ? 'focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
-          : 'focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
+const getInputVariants = (isDarkMode) =>
+  cva(
+    // Base classes - mobile-first with 44px minimum height
+    cn(
+      'w-full rounded-2xl border-0 px-4 py-3 text-base transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-1 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50',
+      isDarkMode
+        ? 'bg-dark-olive-surface/50 text-dark-text-primary placeholder:text-dark-text-muted/70'
+        : 'bg-earthy-beige/30 text-text-dark placeholder:text-text-muted/60'
+    ),
+    {
+      variants: {
+        variant: {
+          default: isDarkMode
+            ? 'focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
+            : 'focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
 
-        // Outlined variant with olive theme (dark mode optimized)
-        outlined: isDarkMode
-          ? 'bg-transparent border-2 border-dark-olive-border focus:border-dark-sage-accent focus:bg-dark-olive-surface/30 focus:ring-dark-sage-accent/30'
-          : 'bg-transparent border-2 border-gray-200 focus:border-muted-olive focus:bg-white focus:ring-muted-olive/20',
+          // Outlined variant with olive theme (dark mode optimized)
+          outlined: isDarkMode
+            ? 'bg-transparent border-2 border-dark-olive-border focus:border-dark-sage-accent focus:bg-dark-olive-surface/30 focus:ring-dark-sage-accent/30'
+            : 'bg-transparent border-2 border-gray-200 focus:border-muted-olive focus:bg-white focus:ring-muted-olive/20',
 
-        // Glass effect variant with olive theme (dark mode enhanced)
-        glass: isDarkMode
-          ? 'glass-2-dark border border-dark-olive-border/30 focus:glass-3-dark focus:border-dark-sage-accent/40 focus:ring-dark-sage-accent/20'
-          : 'glass-2 border border-white/20 focus:glass-3 focus:border-muted-olive/30 focus:ring-muted-olive/20',
+          // Glass effect variant with olive theme (dark mode enhanced)
+          glass: isDarkMode
+            ? 'glass-2-dark border border-dark-olive-border/30 focus:glass-3-dark focus:border-dark-sage-accent/40 focus:ring-dark-sage-accent/20'
+            : 'glass-2 border border-white/20 focus:glass-3 focus:border-muted-olive/30 focus:ring-muted-olive/20',
 
-        // Glass Olive variant - olive-themed glass (dark mode enhanced)
-        'glass-olive': isDarkMode
-          ? 'glass-card-dark-olive border border-dark-sage-accent/20 focus:glass-3-dark focus:shadow-dark-glow-sage focus:ring-dark-sage-accent/20'
-          : 'glass-card-olive border border-muted-olive/20 focus:glass-3 focus:shadow-glow-sage focus:ring-sage-green/20',
+          // Glass Olive variant - olive-themed glass (dark mode enhanced)
+          'glass-olive': isDarkMode
+            ? 'glass-card-dark-olive border border-dark-sage-accent/20 focus:glass-3-dark focus:shadow-dark-glow-sage focus:ring-dark-sage-accent/20'
+            : 'glass-card-olive border border-muted-olive/20 focus:glass-3 focus:shadow-glow-sage focus:ring-sage-green/20',
 
-        // Search variant with olive theme (dark mode)
-        search: isDarkMode
-          ? 'pl-10 focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
-          : 'pl-10 focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
+          // Search variant with olive theme (dark mode)
+          search: isDarkMode
+            ? 'pl-10 focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
+            : 'pl-10 focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
 
-        // Floating label variant with olive theme (dark mode)
-        floating: isDarkMode
-          ? 'pt-6 pb-2 focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
-          : 'pt-6 pb-2 focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
+          // Floating label variant with olive theme (dark mode)
+          floating: isDarkMode
+            ? 'pt-6 pb-2 focus:bg-dark-olive-surface focus:shadow-dark-depth-2 focus:ring-dark-sage-accent/50'
+            : 'pt-6 pb-2 focus:bg-white focus:shadow-lg focus:ring-muted-olive/40',
+        },
+        size: {
+          sm: 'h-10 px-3 text-sm min-h-[44px]', // Still meets touch target
+          default: 'h-12 px-4 text-base min-h-[44px]',
+          lg: 'h-14 px-6 text-lg min-h-[56px]',
+        },
+        state: {
+          default: '',
+          error:
+            'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-tomato-red/10',
+          success:
+            'border-2 border-success-dark/30 bg-success-light focus:border-muted-olive focus:ring-muted-olive/20',
+          warning:
+            'border-2 border-warning-dark/30 bg-warning-light focus:border-amber-warm focus:ring-amber-warm/20',
+        },
       },
-      size: {
-        sm: 'h-10 px-3 text-sm min-h-[44px]', // Still meets touch target
-        default: 'h-12 px-4 text-base min-h-[44px]',
-        lg: 'h-14 px-6 text-lg min-h-[56px]',
+      defaultVariants: {
+        variant: 'default',
+        size: 'default',
+        state: 'default',
       },
-      state: {
-        default: '',
-        error:
-          'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-tomato-red/10',
-        success:
-          'border-2 border-success-dark/30 bg-success-light focus:border-muted-olive focus:ring-muted-olive/20',
-        warning:
-          'border-2 border-warning-dark/30 bg-warning-light focus:border-amber-warm focus:ring-amber-warm/20',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-      state: 'default',
-    },
-  }
-);
+    }
+  );
 
 // Base Input component with dark mode support
 const Input = forwardRef(
@@ -135,20 +136,24 @@ const Input = forwardRef(
       <div className="relative">
         {/* Left Icon */}
         {leftIcon && (
-          <div className={cn(
-            "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none",
-            isDarkMode ? "text-dark-text-muted" : "text-text-muted"
-          )}>
+          <div
+            className={cn(
+              'absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none',
+              isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+            )}
+          >
             {leftIcon}
           </div>
         )}
 
         {/* Search Icon for search variant */}
         {variant === 'search' && !leftIcon && (
-          <div className={cn(
-            "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none",
-            isDarkMode ? "text-dark-text-muted" : "text-text-muted"
-          )}>
+          <div
+            className={cn(
+              'absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none',
+              isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+            )}
+          >
             <Search className="w-5 h-5" />
           </div>
         )}
@@ -177,10 +182,10 @@ const Input = forwardRef(
               type="button"
               onClick={handleClear}
               className={cn(
-                "transition-colors duration-200 p-1 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center",
-                isDarkMode 
-                  ? "text-dark-text-muted hover:text-dark-text-primary hover:bg-dark-olive-border/30" 
-                  : "text-text-muted hover:text-text-dark hover:bg-gray-100"
+                'transition-colors duration-200 p-1 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center',
+                isDarkMode
+                  ? 'text-dark-text-muted hover:text-dark-text-primary hover:bg-dark-olive-border/30'
+                  : 'text-text-muted hover:text-text-dark hover:bg-gray-100'
               )}
               aria-label="Clear input"
             >
@@ -194,10 +199,10 @@ const Input = forwardRef(
               type="button"
               onClick={togglePasswordVisibility}
               className={cn(
-                "transition-colors duration-200 p-1 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center",
-                isDarkMode 
-                  ? "text-dark-text-muted hover:text-dark-text-primary hover:bg-dark-olive-border/30" 
-                  : "text-text-muted hover:text-text-dark hover:bg-gray-100"
+                'transition-colors duration-200 p-1 rounded-full min-h-[32px] min-w-[32px] flex items-center justify-center',
+                isDarkMode
+                  ? 'text-dark-text-muted hover:text-dark-text-primary hover:bg-dark-olive-border/30'
+                  : 'text-text-muted hover:text-text-dark hover:bg-gray-100'
               )}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -211,10 +216,12 @@ const Input = forwardRef(
 
           {/* Right Icon */}
           {rightIcon && !isPassword && !showClearButton && (
-            <div className={cn(
-              "pointer-events-none",
-              isDarkMode ? "text-dark-text-muted" : "text-text-muted"
-            )}>
+            <div
+              className={cn(
+                'pointer-events-none',
+                isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+              )}
+            >
               {rightIcon}
             </div>
           )}

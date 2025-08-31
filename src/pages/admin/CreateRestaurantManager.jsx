@@ -31,11 +31,11 @@ const CreateRestaurantManager = () => {
 
   // Fetch restaurants list for selection dropdown (only approved restaurants)
   const { data: restaurantsData, isLoading: restaurantsLoading } =
-    useGetAdminRestaurantsUnifiedQuery({ 
-      status: 'approved', 
+    useGetAdminRestaurantsUnifiedQuery({
+      status: 'approved',
       limit: 100,
       sortBy: 'name',
-      sortOrder: 'asc'
+      sortOrder: 'asc',
     });
 
   const restaurants = restaurantsData?.data || [];
@@ -66,7 +66,9 @@ const CreateRestaurantManager = () => {
   // Set restaurant selection when restaurants load and pre-selection exists
   useEffect(() => {
     if (preSelectedRestaurantId && restaurants.length > 0) {
-      const restaurantExists = restaurants.find(r => (r.id || r._id) === preSelectedRestaurantId);
+      const restaurantExists = restaurants.find(
+        (r) => (r.id || r._id) === preSelectedRestaurantId
+      );
       if (restaurantExists) {
         setValue('restaurantId', preSelectedRestaurantId);
       }
@@ -442,11 +444,16 @@ const CreateRestaurantManager = () => {
                   >
                     <option value="">Select a restaurant...</option>
                     {restaurants.map((restaurant) => (
-                      <option key={restaurant.id || restaurant._id} value={restaurant.id || restaurant._id}>
+                      <option
+                        key={restaurant.id || restaurant._id}
+                        value={restaurant.id || restaurant._id}
+                      >
                         {restaurant.name} -{' '}
-                        {typeof restaurant.address === 'string' 
-                          ? restaurant.address.split(',').pop()?.trim() || 'Location not specified'
-                          : restaurant.address?.city || 'Location not specified'}
+                        {typeof restaurant.address === 'string'
+                          ? restaurant.address.split(',').pop()?.trim() ||
+                            'Location not specified'
+                          : restaurant.address?.city ||
+                            'Location not specified'}
                       </option>
                     ))}
                   </select>
@@ -473,14 +480,17 @@ const CreateRestaurantManager = () => {
                     </h3>
                     {selectedRestaurant.address && (
                       <p className="text-sm text-text-muted">
-                        {typeof selectedRestaurant.address === 'string' 
-                          ? selectedRestaurant.address 
+                        {typeof selectedRestaurant.address === 'string'
+                          ? selectedRestaurant.address
                           : `${selectedRestaurant.address.street || ''}, ${selectedRestaurant.address.area || ''}, ${selectedRestaurant.address.city || ''}`}
                       </p>
                     )}
-                    {(selectedRestaurant.ownerName || selectedRestaurant.createdBy?.name) && (
+                    {(selectedRestaurant.ownerName ||
+                      selectedRestaurant.createdBy?.name) && (
                       <p className="text-sm text-text-muted">
-                        Owner: {selectedRestaurant.ownerName || selectedRestaurant.createdBy?.name}
+                        Owner:{' '}
+                        {selectedRestaurant.ownerName ||
+                          selectedRestaurant.createdBy?.name}
                       </p>
                     )}
                   </div>

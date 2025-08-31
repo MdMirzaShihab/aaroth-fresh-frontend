@@ -23,7 +23,9 @@ import {
  */
 export const useMobileDetection = () => {
   const [deviceInfo, setDeviceInfo] = useState(() => detectMobileDevice());
-  const [viewportCategory, setViewportCategory] = useState(() => getViewportCategory());
+  const [viewportCategory, setViewportCategory] = useState(() =>
+    getViewportCategory()
+  );
 
   useEffect(() => {
     const handleResize = mobilePerformance.throttle(() => {
@@ -83,33 +85,38 @@ export const useTouchTargets = (options = {}) => {
       elements = [elements];
     }
 
-    return elements.map(element => {
-      if (typeof element === 'string') {
-        element = document.querySelector(element);
-      }
-      return element ? validateTouchTarget(element) : null;
-    }).filter(Boolean);
+    return elements
+      .map((element) => {
+        if (typeof element === 'string') {
+          element = document.querySelector(element);
+        }
+        return element ? validateTouchTarget(element) : null;
+      })
+      .filter(Boolean);
   }, []);
 
   // Optimize elements for touch
-  const optimizeTouchTargets = useCallback((elements, customOptions = {}) => {
-    if (!Array.isArray(elements)) {
-      elements = [elements];
-    }
-
-    const finalOptions = { ...options, ...customOptions };
-
-    elements.forEach(element => {
-      if (typeof element === 'string') {
-        element = document.querySelector(element);
+  const optimizeTouchTargets = useCallback(
+    (elements, customOptions = {}) => {
+      if (!Array.isArray(elements)) {
+        elements = [elements];
       }
 
-      if (element && !optimizedElements.current.has(element)) {
-        optimizeForMobile(element, finalOptions);
-        optimizedElements.current.add(element);
-      }
-    });
-  }, [options]);
+      const finalOptions = { ...options, ...customOptions };
+
+      elements.forEach((element) => {
+        if (typeof element === 'string') {
+          element = document.querySelector(element);
+        }
+
+        if (element && !optimizedElements.current.has(element)) {
+          optimizeForMobile(element, finalOptions);
+          optimizedElements.current.add(element);
+        }
+      });
+    },
+    [options]
+  );
 
   // Auto-optimize all interactive elements on mount
   useEffect(() => {
@@ -151,16 +158,19 @@ export const useGestures = (callbacks = {}) => {
   const cleanupRef = useRef(null);
 
   // Attach gesture handlers to element
-  const attachToElement = useCallback((element) => {
-    if (cleanupRef.current) {
-      cleanupRef.current();
-    }
+  const attachToElement = useCallback(
+    (element) => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
 
-    if (element) {
-      elementRef.current = element;
-      cleanupRef.current = attachGestureHandlers(element, callbacks);
-    }
-  }, [callbacks]);
+      if (element) {
+        elementRef.current = element;
+        cleanupRef.current = attachGestureHandlers(element, callbacks);
+      }
+    },
+    [callbacks]
+  );
 
   // Cleanup on unmount
   useEffect(() => {
@@ -241,15 +251,18 @@ export const useResponsiveTable = (data = [], columns = []) => {
   }, [isMobile, viewMode]);
 
   // Get priority columns for mobile view
-  const getPriorityColumns = useCallback((maxColumns = 2) => {
-    return columns
-      .filter(col => col.priority || col.required)
-      .slice(0, maxColumns);
-  }, [columns]);
+  const getPriorityColumns = useCallback(
+    (maxColumns = 2) => {
+      return columns
+        .filter((col) => col.priority || col.required)
+        .slice(0, maxColumns);
+    },
+    [columns]
+  );
 
   // Transform data for card view
   const getCardData = useCallback(() => {
-    return data.map(item => {
+    return data.map((item) => {
       const cardItem = { ...item };
       cardItem._priorityColumns = getPriorityColumns();
       cardItem._allColumns = columns;
@@ -286,7 +299,7 @@ export const useMobileForm = (options = {}) => {
     if (!formRef.current) return;
 
     const inputs = formRef.current.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
+    inputs.forEach((input) => {
       // Add mobile-specific attributes
       if (input.type === 'email') {
         input.setAttribute('inputmode', 'email');
@@ -346,17 +359,20 @@ export const useMobilePerformance = () => {
   }, []);
 
   // Optimize element rendering
-  const optimizeRendering = useCallback((element) => {
-    if (!element) return;
+  const optimizeRendering = useCallback(
+    (element) => {
+      if (!element) return;
 
-    // Add performance optimizations
-    element.style.willChange = 'auto';
-    element.style.backfaceVisibility = 'hidden';
-    element.style.perspective = '1000px';
-    
-    // Respect motion preferences
-    respectMotionPreferences(element);
-  }, [respectMotionPreferences]);
+      // Add performance optimizations
+      element.style.willChange = 'auto';
+      element.style.backfaceVisibility = 'hidden';
+      element.style.perspective = '1000px';
+
+      // Respect motion preferences
+      respectMotionPreferences(element);
+    },
+    [respectMotionPreferences]
+  );
 
   return {
     debounce,
@@ -381,19 +397,19 @@ export const useMobileOptimization = (options = {}) => {
   return {
     // Device detection
     ...device,
-    
+
     // Touch targets
     ...touchTargets,
-    
+
     // Gestures
     ...gestures,
-    
+
     // Virtual keyboard
     ...keyboard,
-    
+
     // Performance
     ...performance,
-    
+
     // Utilities
     isMobileOptimized: true,
     optimizationEnabled: device.isMobile || device.isTablet,

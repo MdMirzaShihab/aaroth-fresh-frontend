@@ -40,6 +40,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../hooks/useTheme';
 import { Card, Button, LoadingSpinner } from '../../../components/ui';
 import useAccessibility from '../../../hooks/useAccessibility';
@@ -51,7 +52,6 @@ import {
   useResetSystemSettingsMutation,
   useGetSettingHistoryQuery,
 } from '../../../store/slices/admin-v2/adminApiSlice';
-import toast from 'react-hot-toast';
 import SettingsCategories from './components/SettingsCategories';
 import SettingEditor from './components/SettingEditor';
 import SettingsHistory from './components/SettingsHistory';
@@ -82,7 +82,8 @@ const SETTINGS_CATEGORIES = [
         category: 'general',
         description: 'Brief description shown in search results and metadata',
         validation: { maxLength: 200 },
-        defaultValue: 'Fresh produce marketplace connecting local vendors with restaurants',
+        defaultValue:
+          'Fresh produce marketplace connecting local vendors with restaurants',
       },
       {
         key: 'supportEmail',
@@ -133,7 +134,8 @@ const SETTINGS_CATEGORIES = [
     label: 'Business Rules',
     icon: DollarSign,
     color: 'sage-green',
-    description: 'Commission rates, order limits, processing fees, business logic',
+    description:
+      'Commission rates, order limits, processing fees, business logic',
     settings: [
       {
         key: 'platformCommission',
@@ -151,7 +153,7 @@ const SETTINGS_CATEGORIES = [
         category: 'business',
         description: 'Minimum order value required for checkout',
         validation: { min: 0, step: 0.01 },
-        defaultValue: 25.00,
+        defaultValue: 25.0,
       },
       {
         key: 'maxOrderAmount',
@@ -160,7 +162,7 @@ const SETTINGS_CATEGORIES = [
         category: 'business',
         description: 'Maximum single order value allowed',
         validation: { min: 0, step: 0.01 },
-        defaultValue: 5000.00,
+        defaultValue: 5000.0,
       },
       {
         key: 'processingFee',
@@ -169,7 +171,7 @@ const SETTINGS_CATEGORIES = [
         category: 'business',
         description: 'Fixed processing fee per transaction',
         validation: { min: 0, step: 0.01 },
-        defaultValue: 2.50,
+        defaultValue: 2.5,
       },
       {
         key: 'deliveryRadius',
@@ -187,7 +189,7 @@ const SETTINGS_CATEGORIES = [
         category: 'business',
         description: 'Orders below this amount are auto-approved',
         validation: { min: 0, step: 0.01 },
-        defaultValue: 100.00,
+        defaultValue: 100.0,
       },
     ],
   },
@@ -424,7 +426,7 @@ const SystemSettings = () => {
   const [showBulkOperations, setShowBulkOperations] = useState(false);
   const [editingSettings, setEditingSettings] = useState({});
   const [lastSaved, setLastSaved] = useState(null);
-  
+
   // Accessibility and mobile optimization hooks
   const {
     containerRef,
@@ -444,7 +446,7 @@ const SystemSettings = () => {
       },
     },
   });
-  
+
   const { isMobile, optimizeTouchTargets } = useMobileOptimization();
 
   // API hooks
@@ -455,9 +457,12 @@ const SystemSettings = () => {
     refetch: refetchSettings,
   } = useGetSystemSettingsQuery();
 
-  const [updateSetting, { isLoading: isUpdatingSetting }] = useUpdateSystemSettingMutation();
-  const [bulkUpdateSettings, { isLoading: isBulkUpdating }] = useBulkUpdateSettingsMutation();
-  const [resetSetting, { isLoading: isResetting }] = useResetSystemSettingsMutation();
+  const [updateSetting, { isLoading: isUpdatingSetting }] =
+    useUpdateSystemSettingMutation();
+  const [bulkUpdateSettings, { isLoading: isBulkUpdating }] =
+    useBulkUpdateSettingsMutation();
+  const [resetSetting, { isLoading: isResetting }] =
+    useResetSystemSettingsMutation();
 
   // Process settings data
   const currentSettings = useMemo(() => {
@@ -466,57 +471,72 @@ const SystemSettings = () => {
 
   // Get current category configuration
   const currentCategory = useMemo(() => {
-    return SETTINGS_CATEGORIES.find(cat => cat.key === activeCategory);
+    return SETTINGS_CATEGORIES.find((cat) => cat.key === activeCategory);
   }, [activeCategory]);
 
   // Get category settings with current values
   const categorySettings = useMemo(() => {
     if (!currentCategory) return [];
-    
-    return currentCategory.settings.map(setting => ({
+
+    return currentCategory.settings.map((setting) => ({
       ...setting,
       currentValue: currentSettings[setting.key] ?? setting.defaultValue,
       editedValue: editingSettings[setting.key],
-      isDirty: editingSettings[setting.key] !== undefined && 
-               editingSettings[setting.key] !== (currentSettings[setting.key] ?? setting.defaultValue),
+      isDirty:
+        editingSettings[setting.key] !== undefined &&
+        editingSettings[setting.key] !==
+          (currentSettings[setting.key] ?? setting.defaultValue),
     }));
   }, [currentCategory, currentSettings, editingSettings]);
 
   // Handle setting value changes
   const handleSettingChange = useCallback((key, value) => {
-    setEditingSettings(prev => ({
+    setEditingSettings((prev) => ({
       ...prev,
       [key]: value,
     }));
   }, []);
 
   // Save individual setting
-  const handleSaveSetting = useCallback(async (key, value) => {
-    try {
-      announceLoading(`Saving ${key} setting`);
-      
-      await updateSetting({
-        key,
-        value,
-        changeReason: `Updated ${key} from admin settings panel`,
-      }).unwrap();
-      
-      setEditingSettings(prev => {
-        const updated = { ...prev };
-        delete updated[key];
-        return updated;
-      });
-      
-      setLastSaved(new Date());
-      announceSuccess(`${key} setting updated successfully`);
-      toast.success(`${key} updated successfully`);
-      refetchSettings();
-    } catch (error) {
-      console.error('Failed to save setting:', error);
-      announceError(`Failed to update ${key}: ${error.message || 'Unknown error'}`);
-      toast.error(`Failed to update ${key}: ${error.message || 'Unknown error'}`);
-    }
-  }, [updateSetting, refetchSettings, announceLoading, announceSuccess, announceError]);
+  const handleSaveSetting = useCallback(
+    async (key, value) => {
+      try {
+        announceLoading(`Saving ${key} setting`);
+
+        await updateSetting({
+          key,
+          value,
+          changeReason: `Updated ${key} from admin settings panel`,
+        }).unwrap();
+
+        setEditingSettings((prev) => {
+          const updated = { ...prev };
+          delete updated[key];
+          return updated;
+        });
+
+        setLastSaved(new Date());
+        announceSuccess(`${key} setting updated successfully`);
+        toast.success(`${key} updated successfully`);
+        refetchSettings();
+      } catch (error) {
+        console.error('Failed to save setting:', error);
+        announceError(
+          `Failed to update ${key}: ${error.message || 'Unknown error'}`
+        );
+        toast.error(
+          `Failed to update ${key}: ${error.message || 'Unknown error'}`
+        );
+      }
+    },
+    [
+      updateSetting,
+      refetchSettings,
+      announceLoading,
+      announceSuccess,
+      announceError,
+    ]
+  );
 
   // Save all edited settings
   const handleSaveAllSettings = useCallback(async () => {
@@ -528,46 +548,67 @@ const SystemSettings = () => {
 
     try {
       announceLoading(`Saving ${Object.keys(editingSettings).length} settings`);
-      
+
       await bulkUpdateSettings({
         settings: editingSettings,
         changeReason: `Bulk update from admin settings panel - ${activeCategory} category`,
       }).unwrap();
-      
+
       setEditingSettings({});
       setLastSaved(new Date());
-      announceSuccess(`${Object.keys(editingSettings).length} settings updated successfully`);
-      toast.success(`${Object.keys(editingSettings).length} settings updated successfully`);
+      announceSuccess(
+        `${Object.keys(editingSettings).length} settings updated successfully`
+      );
+      toast.success(
+        `${Object.keys(editingSettings).length} settings updated successfully`
+      );
       refetchSettings();
     } catch (error) {
       console.error('Failed to bulk save settings:', error);
-      announceError(`Failed to save settings: ${error.message || 'Unknown error'}`);
-      toast.error(`Failed to save settings: ${error.message || 'Unknown error'}`);
+      announceError(
+        `Failed to save settings: ${error.message || 'Unknown error'}`
+      );
+      toast.error(
+        `Failed to save settings: ${error.message || 'Unknown error'}`
+      );
     }
-  }, [editingSettings, bulkUpdateSettings, refetchSettings, activeCategory, announceLoading, announceSuccess, announceError]);
+  }, [
+    editingSettings,
+    bulkUpdateSettings,
+    refetchSettings,
+    activeCategory,
+    announceLoading,
+    announceSuccess,
+    announceError,
+  ]);
 
   // Reset setting to default
-  const handleResetSetting = useCallback(async (key) => {
-    try {
-      await resetSetting({
-        keys: [key],
-        reason: `Reset ${key} to default value from admin panel`,
-      }).unwrap();
-      
-      setEditingSettings(prev => {
-        const updated = { ...prev };
-        delete updated[key];
-        return updated;
-      });
-      
-      setLastSaved(new Date());
-      toast.success(`${key} reset to default value`);
-      refetchSettings();
-    } catch (error) {
-      console.error('Failed to reset setting:', error);
-      toast.error(`Failed to reset ${key}: ${error.message || 'Unknown error'}`);
-    }
-  }, [resetSetting, refetchSettings]);
+  const handleResetSetting = useCallback(
+    async (key) => {
+      try {
+        await resetSetting({
+          keys: [key],
+          reason: `Reset ${key} to default value from admin panel`,
+        }).unwrap();
+
+        setEditingSettings((prev) => {
+          const updated = { ...prev };
+          delete updated[key];
+          return updated;
+        });
+
+        setLastSaved(new Date());
+        toast.success(`${key} reset to default value`);
+        refetchSettings();
+      } catch (error) {
+        console.error('Failed to reset setting:', error);
+        toast.error(
+          `Failed to reset ${key}: ${error.message || 'Unknown error'}`
+        );
+      }
+    },
+    [resetSetting, refetchSettings]
+  );
 
   // Discard changes
   const handleDiscardChanges = useCallback(() => {
@@ -586,7 +627,9 @@ const SystemSettings = () => {
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
           <LoadingSpinner size="large" />
-          <p className={`mt-4 text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+          <p
+            className={`mt-4 text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+          >
             Loading system settings...
           </p>
         </div>
@@ -600,10 +643,14 @@ const SystemSettings = () => {
       <div className="flex items-center justify-center min-h-[50vh]">
         <Card className="p-8 max-w-md mx-auto text-center">
           <AlertTriangle className="w-12 h-12 text-tomato-red mx-auto mb-4" />
-          <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+          <h3
+            className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             Failed to Load Settings
           </h3>
-          <p className={`text-sm mb-4 ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+          <p
+            className={`text-sm mb-4 ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+          >
             There was an error loading system settings. Please try again.
           </p>
           <Button onClick={refetchSettings} className="w-full">
@@ -616,7 +663,7 @@ const SystemSettings = () => {
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="space-y-6"
       {...getAriaProps({
@@ -626,25 +673,25 @@ const SystemSettings = () => {
       })}
     >
       {/* Skip Links for Accessibility */}
-      <a 
-        href="#settings-content" 
+      <a
+        href="#settings-content"
         className="skip-link"
         onFocus={() => announce('Skip to settings content link focused')}
       >
         Skip to Settings Content
       </a>
-      
+
       {/* Header with enhanced accessibility */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 
+          <h1
             id="settings-heading"
             className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'} focus-visible-ring`}
             tabIndex={-1}
           >
             System Settings
           </h1>
-          <p 
+          <p
             id="settings-description"
             className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
           >
@@ -658,7 +705,11 @@ const SystemSettings = () => {
             size="sm"
             onClick={() => {
               setShowHistory(!showHistory);
-              announce(showHistory ? 'Settings history closed' : 'Settings history opened');
+              announce(
+                showHistory
+                  ? 'Settings history closed'
+                  : 'Settings history opened'
+              );
             }}
             className={`button-accessible ${getFocusClasses()}`}
             {...getAriaProps({
@@ -670,13 +721,17 @@ const SystemSettings = () => {
             <History className="w-4 h-4 mr-2" />
             History
           </Button>
-          
+
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
               setShowBulkOperations(!showBulkOperations);
-              announce(showBulkOperations ? 'Bulk operations panel closed' : 'Bulk operations panel opened');
+              announce(
+                showBulkOperations
+                  ? 'Bulk operations panel closed'
+                  : 'Bulk operations panel opened'
+              );
             }}
             className={`button-accessible ${getFocusClasses()}`}
             {...getAriaProps({
@@ -706,11 +761,15 @@ const SystemSettings = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className={`flex items-center gap-2 p-3 rounded-xl ${
-            isDarkMode ? 'bg-sage-green/10 border border-sage-green/20' : 'bg-sage-green/5 border border-sage-green/20'
+            isDarkMode
+              ? 'bg-sage-green/10 border border-sage-green/20'
+              : 'bg-sage-green/5 border border-sage-green/20'
           }`}
         >
           <CheckCircle className="w-4 h-4 text-sage-green" />
-          <span className={`text-sm ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}>
+          <span
+            className={`text-sm ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+          >
             Settings saved at {lastSaved.toLocaleTimeString()}
           </span>
         </motion.div>
@@ -729,7 +788,7 @@ const SystemSettings = () => {
         </div>
 
         {/* Settings Content */}
-        <div 
+        <div
           id="settings-content"
           className="lg:col-span-3 space-y-6"
           {...getAriaProps({
@@ -740,24 +799,30 @@ const SystemSettings = () => {
         >
           {/* Category Header */}
           {currentCategory && (
-            <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+            <Card
+              className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+            >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`
+                  <div
+                    className={`
                     w-12 h-12 rounded-xl flex items-center justify-center
                     ${isDarkMode ? `bg-${currentCategory.color}/20` : `bg-${currentCategory.color}/10`}
-                  `}>
-                    <currentCategory.icon className={`w-6 h-6 text-${currentCategory.color}`} />
+                  `}
+                  >
+                    <currentCategory.icon
+                      className={`w-6 h-6 text-${currentCategory.color}`}
+                    />
                   </div>
                   <div>
-                    <h2 
+                    <h2
                       id="category-heading"
                       className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'} focus-visible-ring`}
                       tabIndex={-1}
                     >
                       {currentCategory.label}
                     </h2>
-                    <p 
+                    <p
                       id="category-description"
                       className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
                     >
@@ -773,7 +838,9 @@ const SystemSettings = () => {
                       size="sm"
                       onClick={() => {
                         handleDiscardChanges();
-                        announce(`Discarded ${dirtySettingsCount} unsaved changes`);
+                        announce(
+                          `Discarded ${dirtySettingsCount} unsaved changes`
+                        );
                       }}
                       disabled={isBulkUpdating}
                       className={`button-danger-accessible text-tomato-red border-tomato-red/30 hover:bg-tomato-red/10 ${getFocusClasses()}`}
@@ -788,7 +855,9 @@ const SystemSettings = () => {
                       disabled={isBulkUpdating}
                       className={`button-primary-accessible bg-gradient-to-r from-muted-olive to-sage-green hover:from-muted-olive/90 hover:to-sage-green/90 ${getFocusClasses()}`}
                       {...getAriaProps({
-                        label: isBulkUpdating ? 'Saving changes' : `Save ${dirtySettingsCount} changes`,
+                        label: isBulkUpdating
+                          ? 'Saving changes'
+                          : `Save ${dirtySettingsCount} changes`,
                         busy: isBulkUpdating,
                       })}
                     >
@@ -797,7 +866,9 @@ const SystemSettings = () => {
                       ) : (
                         <Save className="w-4 h-4 mr-2" />
                       )}
-                      {isBulkUpdating ? 'Saving...' : `Save ${dirtySettingsCount} Changes`}
+                      {isBulkUpdating
+                        ? 'Saving...'
+                        : `Save ${dirtySettingsCount} Changes`}
                     </Button>
                   </div>
                 )}
@@ -806,13 +877,19 @@ const SystemSettings = () => {
           )}
 
           {/* Settings List */}
-          <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+          <Card
+            className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+          >
             <div className="space-y-6">
               {categorySettings.map((setting) => (
                 <SettingEditor
                   key={setting.key}
                   setting={setting}
-                  value={setting.editedValue !== undefined ? setting.editedValue : setting.currentValue}
+                  value={
+                    setting.editedValue !== undefined
+                      ? setting.editedValue
+                      : setting.currentValue
+                  }
                   onChange={(value) => handleSettingChange(setting.key, value)}
                   onSave={(value) => handleSaveSetting(setting.key, value)}
                   onReset={() => handleResetSetting(setting.key)}

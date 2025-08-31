@@ -45,33 +45,33 @@ const CreateVendor = () => {
       email: '',
       phone: '',
       password: '',
-      
+
       // Vendor business fields
       businessName: '',
       ownerName: '',
       tradeLicenseNo: '',
       specialties: [],
-      
+
       // Address fields
       'address.street': '',
       'address.city': '',
       'address.area': '',
       'address.postalCode': '',
-      
+
       // Business license
       'businessLicense.number': '',
       'businessLicense.expiryDate': '',
-      
+
       // Bank details
       'bankDetails.accountName': '',
       'bankDetails.accountNumber': '',
       'bankDetails.routingNumber': '',
       'bankDetails.bankName': '',
-      
+
       // Operational settings
       deliveryRadius: 10,
       minimumOrderValue: 0,
-      
+
       // Operating hours (simplified for now)
       operatingHours: {
         monday: { open: '09:00', close: '18:00', closed: false },
@@ -125,7 +125,7 @@ const CreateVendor = () => {
     'Seafood',
     'Grains & Cereals',
     'Local Farm Produce',
-    'Imported Goods'
+    'Imported Goods',
   ];
 
   // Form validation rules
@@ -146,7 +146,8 @@ const CreateVendor = () => {
       required: 'Phone number is required',
       pattern: {
         value: /^\+880\d{10}$|^\+\d{1,3}\d{10}$/,
-        message: 'Please enter a valid phone number with country code (e.g., +8801234567890)',
+        message:
+          'Please enter a valid phone number with country code (e.g., +8801234567890)',
       },
     },
     password: {
@@ -158,25 +159,46 @@ const CreateVendor = () => {
     },
     businessName: {
       required: 'Business name is required',
-      minLength: { value: 2, message: 'Business name must be at least 2 characters' },
-      maxLength: { value: 100, message: 'Business name must be less than 100 characters' },
+      minLength: {
+        value: 2,
+        message: 'Business name must be at least 2 characters',
+      },
+      maxLength: {
+        value: 100,
+        message: 'Business name must be less than 100 characters',
+      },
     },
     ownerName: {
       required: 'Owner name is required',
-      minLength: { value: 2, message: 'Owner name must be at least 2 characters' },
-      maxLength: { value: 50, message: 'Owner name must be less than 50 characters' },
+      minLength: {
+        value: 2,
+        message: 'Owner name must be at least 2 characters',
+      },
+      maxLength: {
+        value: 50,
+        message: 'Owner name must be less than 50 characters',
+      },
     },
     tradeLicenseNo: {
       required: 'Trade license number is required',
-      minLength: { value: 4, message: 'Trade license must be at least 4 characters' },
-      maxLength: { value: 30, message: 'Trade license cannot exceed 30 characters' },
+      minLength: {
+        value: 4,
+        message: 'Trade license must be at least 4 characters',
+      },
+      maxLength: {
+        value: 30,
+        message: 'Trade license cannot exceed 30 characters',
+      },
     },
     'address.street': { required: 'Street address is required' },
     'address.city': { required: 'City is required' },
     'address.area': { required: 'Area is required' },
     'address.postalCode': {
       required: 'Postal code is required',
-      pattern: { value: /^\d{4}$/, message: 'Please enter a valid 4-digit postal code' },
+      pattern: {
+        value: /^\d{4}$/,
+        message: 'Please enter a valid 4-digit postal code',
+      },
     },
     deliveryRadius: {
       required: 'Delivery radius is required',
@@ -235,7 +257,7 @@ const CreateVendor = () => {
         // Operational settings
         deliveryRadius: parseInt(data.deliveryRadius, 10),
         minimumOrderValue: parseInt(data.minimumOrderValue, 10),
-        
+
         // Operating hours
         operatingHours: data.operatingHours,
 
@@ -290,7 +312,8 @@ const CreateVendor = () => {
               Create New Vendor
             </h1>
             <p className="text-text-muted">
-              Add a new vendor business to the platform with comprehensive business information
+              Add a new vendor business to the platform with comprehensive
+              business information
             </p>
           </div>
         </div>
@@ -304,15 +327,22 @@ const CreateVendor = () => {
               <User className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-text-dark">Account Information</h2>
-              <p className="text-text-muted text-sm">Login credentials and contact details</p>
+              <h2 className="text-xl font-semibold text-text-dark">
+                Account Information
+              </h2>
+              <p className="text-text-muted text-sm">
+                Login credentials and contact details
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name */}
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-text-dark"
+              >
                 Full Name <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -339,7 +369,10 @@ const CreateVendor = () => {
 
             {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-text-dark"
+              >
                 Email Address <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -366,7 +399,10 @@ const CreateVendor = () => {
 
             {/* Phone */}
             <div className="space-y-2">
-              <label htmlFor="phone" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="phone"
+                className="text-sm font-medium text-text-dark"
+              >
                 Phone Number <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -393,7 +429,10 @@ const CreateVendor = () => {
 
             {/* Password */}
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-text-dark"
+              >
                 Password <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -415,7 +454,11 @@ const CreateVendor = () => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted hover:text-text-dark transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
 
@@ -436,10 +479,14 @@ const CreateVendor = () => {
                                   ? 'bg-blue-500'
                                   : 'bg-muted-olive'
                         }`}
-                        style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                        style={{
+                          width: `${(passwordStrength.score / 5) * 100}%`,
+                        }}
                       />
                     </div>
-                    <span className={`text-xs font-medium ${passwordStrength.color}`}>
+                    <span
+                      className={`text-xs font-medium ${passwordStrength.color}`}
+                    >
                       {passwordStrength.text}
                     </span>
                   </div>
@@ -463,15 +510,22 @@ const CreateVendor = () => {
               <Building2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-text-dark">Business Information</h2>
-              <p className="text-text-muted text-sm">Business details and licensing information</p>
+              <h2 className="text-xl font-semibold text-text-dark">
+                Business Information
+              </h2>
+              <p className="text-text-muted text-sm">
+                Business details and licensing information
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Business Name */}
             <div className="space-y-2 md:col-span-2">
-              <label htmlFor="businessName" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="businessName"
+                className="text-sm font-medium text-text-dark"
+              >
                 Business Name <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -498,7 +552,10 @@ const CreateVendor = () => {
 
             {/* Owner Name */}
             <div className="space-y-2">
-              <label htmlFor="ownerName" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="ownerName"
+                className="text-sm font-medium text-text-dark"
+              >
                 Owner Name <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -525,7 +582,10 @@ const CreateVendor = () => {
 
             {/* Trade License */}
             <div className="space-y-2">
-              <label htmlFor="tradeLicenseNo" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="tradeLicenseNo"
+                className="text-sm font-medium text-text-dark"
+              >
                 Trade License Number <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -533,7 +593,10 @@ const CreateVendor = () => {
                 <input
                   id="tradeLicenseNo"
                   type="text"
-                  {...register('tradeLicenseNo', validationRules.tradeLicenseNo)}
+                  {...register(
+                    'tradeLicenseNo',
+                    validationRules.tradeLicenseNo
+                  )}
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.tradeLicenseNo
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
@@ -582,21 +645,31 @@ const CreateVendor = () => {
               <MapPin className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-text-dark">Address & Location</h2>
-              <p className="text-text-muted text-sm">Business address and delivery settings</p>
+              <h2 className="text-xl font-semibold text-text-dark">
+                Address & Location
+              </h2>
+              <p className="text-text-muted text-sm">
+                Business address and delivery settings
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Street Address */}
             <div className="space-y-2 md:col-span-2">
-              <label htmlFor="address.street" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="address.street"
+                className="text-sm font-medium text-text-dark"
+              >
                 Street Address <span className="text-tomato-red">*</span>
               </label>
               <input
                 id="address.street"
                 type="text"
-                {...register('address.street', validationRules['address.street'])}
+                {...register(
+                  'address.street',
+                  validationRules['address.street']
+                )}
                 className={`w-full px-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                   errors.address?.street
                     ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
@@ -614,7 +687,10 @@ const CreateVendor = () => {
 
             {/* City */}
             <div className="space-y-2">
-              <label htmlFor="address.city" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="address.city"
+                className="text-sm font-medium text-text-dark"
+              >
                 City <span className="text-tomato-red">*</span>
               </label>
               <input
@@ -638,7 +714,10 @@ const CreateVendor = () => {
 
             {/* Area */}
             <div className="space-y-2">
-              <label htmlFor="address.area" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="address.area"
+                className="text-sm font-medium text-text-dark"
+              >
                 Area <span className="text-tomato-red">*</span>
               </label>
               <input
@@ -662,13 +741,19 @@ const CreateVendor = () => {
 
             {/* Postal Code */}
             <div className="space-y-2">
-              <label htmlFor="address.postalCode" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="address.postalCode"
+                className="text-sm font-medium text-text-dark"
+              >
                 Postal Code <span className="text-tomato-red">*</span>
               </label>
               <input
                 id="address.postalCode"
                 type="text"
-                {...register('address.postalCode', validationRules['address.postalCode'])}
+                {...register(
+                  'address.postalCode',
+                  validationRules['address.postalCode']
+                )}
                 className={`w-full px-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                   errors.address?.postalCode
                     ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
@@ -686,7 +771,10 @@ const CreateVendor = () => {
 
             {/* Delivery Radius */}
             <div className="space-y-2">
-              <label htmlFor="deliveryRadius" className="text-sm font-medium text-text-dark">
+              <label
+                htmlFor="deliveryRadius"
+                className="text-sm font-medium text-text-dark"
+              >
                 Delivery Radius (km) <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
@@ -694,7 +782,10 @@ const CreateVendor = () => {
                 <input
                   id="deliveryRadius"
                   type="number"
-                  {...register('deliveryRadius', validationRules.deliveryRadius)}
+                  {...register(
+                    'deliveryRadius',
+                    validationRules.deliveryRadius
+                  )}
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.deliveryRadius
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
@@ -713,15 +804,22 @@ const CreateVendor = () => {
 
             {/* Minimum Order Value */}
             <div className="space-y-2">
-              <label htmlFor="minimumOrderValue" className="text-sm font-medium text-text-dark">
-                Minimum Order Value (BDT) <span className="text-tomato-red">*</span>
+              <label
+                htmlFor="minimumOrderValue"
+                className="text-sm font-medium text-text-dark"
+              >
+                Minimum Order Value (BDT){' '}
+                <span className="text-tomato-red">*</span>
               </label>
               <div className="relative">
                 <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
                   id="minimumOrderValue"
                   type="number"
-                  {...register('minimumOrderValue', validationRules.minimumOrderValue)}
+                  {...register(
+                    'minimumOrderValue',
+                    validationRules.minimumOrderValue
+                  )}
                   className={`w-full pl-10 pr-4 py-3 rounded-2xl border transition-colors min-h-[44px] ${
                     errors.minimumOrderValue
                       ? 'border-tomato-red/50 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
@@ -746,9 +844,12 @@ const CreateVendor = () => {
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-tomato-red flex-shrink-0" />
               <div>
-                <p className="text-tomato-red font-medium">Failed to create vendor</p>
+                <p className="text-tomato-red font-medium">
+                  Failed to create vendor
+                </p>
                 <p className="text-tomato-red/80 text-sm">
-                  {error?.data?.message || 'Something went wrong. Please try again.'}
+                  {error?.data?.message ||
+                    'Something went wrong. Please try again.'}
                 </p>
               </div>
             </div>

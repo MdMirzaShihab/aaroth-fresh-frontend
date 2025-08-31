@@ -27,17 +27,22 @@ import {
   Star,
   ShoppingCart,
 } from 'lucide-react';
+import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../hooks/useTheme';
-import { Card, Button, LoadingSpinner, EmptyState } from '../../../components/ui';
+import {
+  Card,
+  Button,
+  LoadingSpinner,
+  EmptyState,
+} from '../../../components/ui';
 import {
   useGetAnalyticsOverviewQuery,
   useGetSalesAnalyticsQuery,
   useGetUserAnalyticsQuery,
   useGetProductAnalyticsQuery,
 } from '../../../store/slices/admin-v2/adminApiSlice';
-import { format } from 'date-fns';
-import toast from 'react-hot-toast';
-import useRealtimeDashboard from '../../../hooks/admin-v2/useRealtimeDashboard';
+// Real-time dashboard hook removed for MVP
 
 // Import analytics components
 import SalesPerformance from './components/SalesPerformance';
@@ -45,19 +50,19 @@ import UserAnalytics from './components/UserAnalytics';
 import ProductAnalytics from './components/ProductAnalytics';
 
 // Analytics metric card component with trend indicators
-const AnalyticsMetricCard = ({ 
-  title, 
-  value, 
-  change, 
-  trend, 
-  icon: Icon, 
+const AnalyticsMetricCard = ({
+  title,
+  value,
+  change,
+  trend,
+  icon: Icon,
   color = 'muted-olive',
   subtitle,
   onClick,
-  isLoading = false 
+  isLoading = false,
 }) => {
   const { isDarkMode } = useTheme();
-  
+
   const getTrendIcon = () => {
     if (trend === 'up') return ArrowUpRight;
     if (trend === 'down') return ArrowDownRight;
@@ -65,7 +70,8 @@ const AnalyticsMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
+    if (trend === 'up')
+      return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -85,13 +91,15 @@ const AnalyticsMetricCard = ({
       `}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`
+        <div
+          className={`
           w-12 h-12 rounded-xl flex items-center justify-center
           ${isDarkMode ? `bg-${color}/20` : `bg-${color}/10`}
-        `}>
+        `}
+        >
           <Icon className={`w-6 h-6 text-${color}`} />
         </div>
-        
+
         {change !== undefined && (
           <div className={`flex items-center gap-1 ${getTrendColor()}`}>
             <TrendIcon className="w-4 h-4" />
@@ -99,7 +107,7 @@ const AnalyticsMetricCard = ({
           </div>
         )}
       </div>
-      
+
       <div className="space-y-1">
         {isLoading ? (
           <div className="animate-pulse">
@@ -108,14 +116,20 @@ const AnalyticsMetricCard = ({
           </div>
         ) : (
           <>
-            <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <p
+              className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               {value}
             </p>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               {title}
             </p>
             {subtitle && (
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}
+              >
                 {subtitle}
               </p>
             )}
@@ -131,23 +145,26 @@ const TabNavigation = ({ activeTab, onTabChange, tabs }) => {
   const { isDarkMode } = useTheme();
 
   return (
-    <div className={`
+    <div
+      className={`
       flex items-center gap-1 p-1 rounded-xl
       ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}
-    `}>
+    `}
+    >
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={`
             flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium min-h-[44px]
-            ${activeTab === tab.id
-              ? isDarkMode 
-                ? 'bg-sage-green/20 text-sage-green shadow-sm'
-                : 'bg-white text-muted-olive shadow-sm'
-              : isDarkMode
-                ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
-                : 'text-text-muted hover:text-text-dark hover:bg-white/50'
+            ${
+              activeTab === tab.id
+                ? isDarkMode
+                  ? 'bg-sage-green/20 text-sage-green shadow-sm'
+                  : 'bg-white text-muted-olive shadow-sm'
+                : isDarkMode
+                  ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
+                  : 'text-text-muted hover:text-text-dark hover:bg-white/50'
             }
           `}
         >
@@ -191,24 +208,16 @@ const BusinessAnalytics = () => {
     error: productError,
   } = useGetProductAnalyticsQuery({ timeRange });
 
-  const isLoading = isOverviewLoading || isSalesLoading || isUserLoading || isProductLoading;
+  const isLoading =
+    isOverviewLoading || isSalesLoading || isUserLoading || isProductLoading;
   const error = overviewError || salesError || userError || productError;
 
-  // Real-time analytics hook
-  const {
-    connectionStatus,
-    isConnected,
-    lastUpdate,
-    metrics: realtimeMetrics,
-    reconnect,
-  } = useRealtimeDashboard({
-    enabled: true,
-    type: 'analytics',
-    onMetricUpdate: useCallback((metrics) => {
-      // Handle real-time metric updates
-      console.log('Real-time analytics update:', metrics);
-    }, []),
-  });
+  // Real-time analytics hook removed for MVP
+  const connectionStatus = 'static';
+  const isConnected = false;
+  const lastUpdate = null;
+  const realtimeMetrics = {};
+  const reconnect = () => {};
 
   // Analytics overview metrics
   const overviewMetrics = useMemo(() => {
@@ -312,7 +321,14 @@ const BusinessAnalytics = () => {
       // PDF export logic would go here
       toast.success('PDF report generation started');
     }
-  }, [overviewData, salesData, userAnalyticsData, productData, timeRange, exportFormat]);
+  }, [
+    overviewData,
+    salesData,
+    userAnalyticsData,
+    productData,
+    timeRange,
+    exportFormat,
+  ]);
 
   // Handle refresh
   const handleRefresh = useCallback(() => {
@@ -321,23 +337,26 @@ const BusinessAnalytics = () => {
   }, [refetchOverview]);
 
   // Handle metric card click for drill-down
-  const handleMetricClick = useCallback((metric) => {
-    // Navigate to specific analytics tab based on metric
-    const tabMapping = {
-      'total-revenue': 'sales',
-      'total-orders': 'sales',
-      'active-users': 'users',
-      'avg-order-value': 'sales',
-      'conversion-rate': 'users',
-      'customer-satisfaction': 'overview',
-    };
-    
-    const targetTab = tabMapping[metric.id];
-    if (targetTab && targetTab !== activeTab) {
-      setActiveTab(targetTab);
-      toast.success(`Navigated to ${targetTab} analytics`);
-    }
-  }, [activeTab]);
+  const handleMetricClick = useCallback(
+    (metric) => {
+      // Navigate to specific analytics tab based on metric
+      const tabMapping = {
+        'total-revenue': 'sales',
+        'total-orders': 'sales',
+        'active-users': 'users',
+        'avg-order-value': 'sales',
+        'conversion-rate': 'users',
+        'customer-satisfaction': 'overview',
+      };
+
+      const targetTab = tabMapping[metric.id];
+      if (targetTab && targetTab !== activeTab) {
+        setActiveTab(targetTab);
+        toast.success(`Navigated to ${targetTab} analytics`);
+      }
+    },
+    [activeTab]
+  );
 
   if (isLoading && !overviewData) {
     return (
@@ -364,21 +383,29 @@ const BusinessAnalytics = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <div>
-            <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h1
+              className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Business Analytics
             </h1>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               Comprehensive insights and performance metrics
             </p>
           </div>
 
           {/* Real-time Connection Indicator */}
           {isConnected && (
-            <div className={`
+            <div
+              className={`
               flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-medium
               ${isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'}
-            `}>
-              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'} animate-pulse`} />
+            `}
+            >
+              <div
+                className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'} animate-pulse`}
+              />
               Live Data
             </div>
           )}
@@ -386,10 +413,10 @@ const BusinessAnalytics = () => {
 
         <div className="flex items-center gap-3 flex-wrap">
           {/* Tab Navigation */}
-          <TabNavigation 
-            activeTab={activeTab} 
-            onTabChange={setActiveTab} 
-            tabs={tabs} 
+          <TabNavigation
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            tabs={tabs}
           />
 
           {/* Time Range Filter */}
@@ -398,9 +425,10 @@ const BusinessAnalytics = () => {
             onChange={(e) => setTimeRange(e.target.value)}
             className={`
               px-4 py-2 border rounded-xl text-sm min-h-[44px]
-              ${isDarkMode
-                ? 'bg-gray-800 border-gray-700 text-white'
-                : 'bg-white border-gray-200 text-gray-900'
+              ${
+                isDarkMode
+                  ? 'bg-gray-800 border-gray-700 text-white'
+                  : 'bg-white border-gray-200 text-gray-900'
               }
             `}
           >
@@ -418,9 +446,10 @@ const BusinessAnalytics = () => {
               onChange={(e) => setExportFormat(e.target.value)}
               className={`
                 px-3 py-2 border rounded-lg text-sm
-                ${isDarkMode
-                  ? 'bg-gray-800 border-gray-700 text-white'
-                  : 'bg-white border-gray-200 text-gray-900'
+                ${
+                  isDarkMode
+                    ? 'bg-gray-800 border-gray-700 text-white'
+                    : 'bg-white border-gray-200 text-gray-900'
                 }
               `}
             >
@@ -445,7 +474,9 @@ const BusinessAnalytics = () => {
             className="rounded-xl min-h-[44px]"
             disabled={isLoading}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
+            />
             Refresh
           </Button>
         </div>
@@ -481,13 +512,19 @@ const BusinessAnalytics = () => {
           <div className="space-y-6">
             {/* Business Overview Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+              <Card
+                className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+              >
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                    <h3
+                      className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                    >
                       Revenue vs Orders
                     </h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                    >
                       Performance correlation analysis
                     </p>
                   </div>
@@ -495,77 +532,107 @@ const BusinessAnalytics = () => {
                     <Eye className="w-4 h-4" />
                   </Button>
                 </div>
-                <div className="h-64 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl 
-                               flex items-center justify-center border-2 border-dashed border-gray-300">
+                <div
+                  className="h-64 bg-gradient-to-br from-earthy-beige/20 to-sage-green/10 rounded-xl 
+                               flex items-center justify-center border-2 border-dashed border-gray-300"
+                >
                   <div className="text-center">
                     <BarChart3 className="w-12 h-12 text-muted-olive mx-auto mb-2" />
-                    <p className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                    <p
+                      className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                    >
                       Revenue & Orders Chart
                     </p>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}
+                    >
                       Chart.js integration
                     </p>
                   </div>
                 </div>
               </Card>
 
-              <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+              <Card
+                className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+              >
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                    <h3
+                      className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                    >
                       Business Health Score
                     </h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                    >
                       Overall platform performance
                     </p>
                   </div>
-                  <div className={`
+                  <div
+                    className={`
                     px-3 py-1 rounded-xl text-sm font-medium
                     ${isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'}
-                  `}>
+                  `}
+                  >
                     Excellent
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="flex items-center justify-center">
                     <div className="relative w-32 h-32">
-                      <div className={`
+                      <div
+                        className={`
                         absolute inset-0 rounded-full border-8 
                         ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}
-                      `}></div>
-                      <div className={`
+                      `}
+                      ></div>
+                      <div
+                        className={`
                         absolute inset-0 rounded-full border-8 border-sage-green border-t-transparent
                         transform rotate-[${(overviewData?.data?.healthScore || 87) * 3.6}deg]
                         transition-transform duration-1000 ease-out
-                      `}></div>
+                      `}
+                      ></div>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                          <p
+                            className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                          >
                             {overviewData?.data?.healthScore || 87}
                           </p>
-                          <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}>
+                          <p
+                            className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}
+                          >
                             Score
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
-                      <p className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                      <p
+                        className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                      >
                         {overviewData?.data?.uptime || '99.8%'}
                       </p>
-                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}>
+                      <p
+                        className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}
+                      >
                         Uptime
                       </p>
                     </div>
                     <div>
-                      <p className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                      <p
+                        className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                      >
                         {overviewData?.data?.responseTime || '120ms'}
                       </p>
-                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}>
+                      <p
+                        className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}
+                      >
                         Response Time
                       </p>
                     </div>
@@ -575,54 +642,79 @@ const BusinessAnalytics = () => {
             </div>
 
             {/* Key Insights */}
-            <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
-              <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <Card
+              className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+            >
+              <h3
+                className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 Key Business Insights
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className={`
+                <div
+                  className={`
                   p-4 rounded-xl border
                   ${isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'}
-                `}>
+                `}
+                >
                   <div className="flex items-center gap-3 mb-2">
                     <TrendingUp className="w-5 h-5 text-sage-green" />
-                    <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                    <span
+                      className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                    >
                       Growth Acceleration
                     </span>
                   </div>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-                    Revenue growth increased 18.5% this period, driven by higher order frequency and new user acquisition.
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
+                    Revenue growth increased 18.5% this period, driven by higher
+                    order frequency and new user acquisition.
                   </p>
                 </div>
 
-                <div className={`
+                <div
+                  className={`
                   p-4 rounded-xl border
                   ${isDarkMode ? 'bg-earthy-yellow/5 border-earthy-yellow/20' : 'bg-earthy-yellow/5 border-earthy-yellow/20'}
-                `}>
+                `}
+                >
                   <div className="flex items-center gap-3 mb-2">
                     <Users className="w-5 h-5 text-earthy-yellow" />
-                    <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                    <span
+                      className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                    >
                       User Engagement
                     </span>
                   </div>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-                    Daily active users increased 24.7%, with improved retention rates and session duration.
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
+                    Daily active users increased 24.7%, with improved retention
+                    rates and session duration.
                   </p>
                 </div>
 
-                <div className={`
+                <div
+                  className={`
                   p-4 rounded-xl border
                   ${isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'}
-                `}>
+                `}
+                >
                   <div className="flex items-center gap-3 mb-2">
                     <Package className="w-5 h-5 text-sage-green" />
-                    <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                    <span
+                      className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                    >
                       Product Performance
                     </span>
                   </div>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-                    Top-performing categories show strong seasonal trends with vegetables leading at 45% market share.
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
+                    Top-performing categories show strong seasonal trends with
+                    vegetables leading at 45% market share.
                   </p>
                 </div>
               </div>
@@ -631,7 +723,7 @@ const BusinessAnalytics = () => {
         )}
 
         {activeTab === 'sales' && (
-          <SalesPerformance 
+          <SalesPerformance
             data={salesData?.data}
             isLoading={isSalesLoading}
             timeRange={timeRange}
@@ -640,7 +732,7 @@ const BusinessAnalytics = () => {
         )}
 
         {activeTab === 'users' && (
-          <UserAnalytics 
+          <UserAnalytics
             data={userAnalyticsData?.data}
             isLoading={isUserLoading}
             timeRange={timeRange}
@@ -649,7 +741,7 @@ const BusinessAnalytics = () => {
         )}
 
         {activeTab === 'products' && (
-          <ProductAnalytics 
+          <ProductAnalytics
             data={productData?.data}
             isLoading={isProductLoading}
             timeRange={timeRange}
@@ -661,15 +753,21 @@ const BusinessAnalytics = () => {
       {/* Last Update Indicator */}
       {lastUpdate && (
         <div className="flex items-center justify-center pt-4">
-          <div className={`
+          <div
+            className={`
             flex items-center gap-2 text-xs px-4 py-2 rounded-xl
             ${isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-600'}
-          `}>
-            <div className={`w-1.5 h-1.5 rounded-full ${
-              isConnected 
-                ? isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'
-                : 'bg-gray-400'
-            } animate-pulse`} />
+          `}
+          >
+            <div
+              className={`w-1.5 h-1.5 rounded-full ${
+                isConnected
+                  ? isDarkMode
+                    ? 'bg-sage-green'
+                    : 'bg-muted-olive'
+                  : 'bg-gray-400'
+              } animate-pulse`}
+            />
             Last updated: {format(lastUpdate, 'HH:mm:ss')}
             {isConnected && (
               <span className="ml-2 px-2 py-0.5 bg-sage-green/20 text-sage-green rounded-full text-xs font-medium">

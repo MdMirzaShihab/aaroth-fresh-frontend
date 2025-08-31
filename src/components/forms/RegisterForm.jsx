@@ -125,7 +125,7 @@ const RegisterForm = () => {
           postalCode: data.address.postalCode.trim(),
         };
         registerData.tradeLicenseNo = data.tradeLicenseNo.trim();
-        
+
         // Map field names based on role
         if (data.role === 'vendor') {
           registerData.businessName = data.businessName.trim();
@@ -565,7 +565,7 @@ const RegisterForm = () => {
                     </p>
                   )}
                 </div>
-                
+
                 {/* Trade License Number */}
                 <div className="space-y-3">
                   <label

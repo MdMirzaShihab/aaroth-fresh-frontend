@@ -413,35 +413,37 @@ export const networkOptimization = {
    */
   optimizedFetch(url, options = {}) {
     const { retries = 3, timeout = 10000, ...fetchOptions } = options;
-    
+
     const fetchWithTimeout = (fetchUrl, fetchOptions, timeoutMs) => {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           reject(new Error('Request timeout'));
         }, timeoutMs);
-        
+
         fetch(fetchUrl, fetchOptions)
-          .then(response => {
+          .then((response) => {
             clearTimeout(timeoutId);
             resolve(response);
           })
-          .catch(error => {
+          .catch((error) => {
             clearTimeout(timeoutId);
             reject(error);
           });
       });
     };
-    
+
     const attemptFetch = (retryCount) => {
-      return fetchWithTimeout(url, fetchOptions, timeout)
-        .catch(error => {
-          if (retryCount > 0 && (error.name === 'TypeError' || error.message === 'Request timeout')) {
-            return attemptFetch(retryCount - 1);
-          }
-          throw error;
-        });
+      return fetchWithTimeout(url, fetchOptions, timeout).catch((error) => {
+        if (
+          retryCount > 0 &&
+          (error.name === 'TypeError' || error.message === 'Request timeout')
+        ) {
+          return attemptFetch(retryCount - 1);
+        }
+        throw error;
+      });
     };
-    
+
     return attemptFetch(retries);
   },
 
@@ -453,19 +455,19 @@ export const networkOptimization = {
    */
   async batchRequests(requests, batchSize = 5) {
     const results = [];
-    
+
     for (let i = 0; i < requests.length; i += batchSize) {
       const batch = requests.slice(i, i + batchSize);
-      const batchPromises = batch.map(request => 
+      const batchPromises = batch.map((request) =>
         this.optimizedFetch(request.url, request.options)
-          .then(response => ({ status: 'fulfilled', value: response }))
-          .catch(error => ({ status: 'rejected', reason: error }))
+          .then((response) => ({ status: 'fulfilled', value: response }))
+          .catch((error) => ({ status: 'rejected', reason: error }))
       );
-      
+
       const batchResults = await Promise.allSettled(batchPromises);
       results.push(...batchResults);
     }
-    
+
     return results;
   },
 
@@ -478,19 +480,22 @@ export const networkOptimization = {
   throttle(func, delay) {
     let timeoutId;
     let lastExecTime = 0;
-    
+
     return function (...args) {
       const currentTime = Date.now();
-      
+
       if (currentTime - lastExecTime > delay) {
         func.apply(this, args);
         lastExecTime = currentTime;
       } else {
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          func.apply(this, args);
-          lastExecTime = Date.now();
-        }, delay - (currentTime - lastExecTime));
+        timeoutId = setTimeout(
+          () => {
+            func.apply(this, args);
+            lastExecTime = Date.now();
+          },
+          delay - (currentTime - lastExecTime)
+        );
       }
     };
   },
@@ -503,7 +508,7 @@ export const networkOptimization = {
    */
   debounce(func, delay) {
     let timeoutId;
-    
+
     return function (...args) {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => func.apply(this, args), delay);
@@ -514,32 +519,32 @@ export const networkOptimization = {
 // Performance monitor with additional methods
 export const performanceMonitor = {
   ...perfMonitor,
-  
+
   /**
    * Throttle function (alias for networkOptimization.throttle)
    */
   throttle: networkOptimization.throttle,
-  
+
   /**
    * Debounce function (alias for networkOptimization.debounce)
    */
   debounce: networkOptimization.debounce,
-  
+
   /**
    * Track component re-renders
    */
   trackReRenders(componentName, config = {}) {
     if (process.env.NODE_ENV !== 'development') return;
-    
+
     console.log(`[Re-render] ${componentName}`, config);
   },
-  
+
   /**
    * Measure render time
    */
   measureRenderTime(componentName) {
     const startTime = performance.now();
-    
+
     return () => {
       const endTime = performance.now();
       return endTime - startTime;
@@ -578,11 +583,13 @@ export const virtualScrolling = {
     const startIndex = Math.max(0, visibleStart - overscan);
     const endIndex = Math.min(items.length, visibleEnd + overscan);
 
-    const visibleItems = items.slice(startIndex, endIndex).map((item, index) => ({
-      ...item,
-      index: startIndex + index,
-      key: item.id || item._id || startIndex + index,
-    }));
+    const visibleItems = items
+      .slice(startIndex, endIndex)
+      .map((item, index) => ({
+        ...item,
+        index: startIndex + index,
+        key: item.id || item._id || startIndex + index,
+      }));
 
     return {
       visibleItems,
@@ -600,14 +607,14 @@ export const virtualScrolling = {
    */
   createContainerProps(config) {
     const { height, onScroll } = config;
-    
+
     return {
       style: {
         height,
         overflow: 'auto',
         position: 'relative',
       },
-      onScroll: onScroll,
+      onScroll,
     };
   },
 
@@ -618,7 +625,7 @@ export const virtualScrolling = {
    */
   createItemWrapperProps(config) {
     const { totalHeight, offsetY } = config;
-    
+
     return {
       style: {
         height: totalHeight,
@@ -651,13 +658,13 @@ export const memoization = {
       return false;
     }
 
-    return prevKeys.every(key => prevProps[key] === nextProps[key]);
+    return prevKeys.every((key) => prevProps[key] === nextProps[key]);
   },
 
   /**
    * Creates deep comparison for props (expensive, use sparingly)
    * @param {Object} prevProps - Previous props
-   * @param {Object} nextProps - Next props  
+   * @param {Object} nextProps - Next props
    * @returns {boolean} True if props are equal
    */
   deepEqual(prevProps, nextProps) {
@@ -678,11 +685,13 @@ export const memoization = {
         perfMonitor.mark(`${name}-compute`);
         const result = computation();
         const computeTime = perfMonitor.measure(`${name}-compute`);
-        
+
         if (computeTime > 10) {
-          console.warn(`Expensive computation: ${name} took ${computeTime.toFixed(2)}ms`);
+          console.warn(
+            `Expensive computation: ${name} took ${computeTime.toFixed(2)}ms`
+          );
         }
-        
+
         return result;
       }
       return computation();
@@ -709,7 +718,7 @@ export const componentOptimization = {
     // Calculate virtual scrolling for table rows
     const getVirtualizedRows = (scrollTop) => {
       if (!enableVirtualScrolling) return data;
-      
+
       return virtualScrolling.calculateVisibleItems({
         items: data,
         containerHeight,
@@ -733,7 +742,7 @@ export const componentOptimization = {
    */
   createLazyLoadObserver(callback, options = {}) {
     const { threshold = 0.1, rootMargin = '50px' } = options;
-    
+
     return new IntersectionObserver(callback, {
       threshold,
       rootMargin,
@@ -751,12 +760,13 @@ export const memoryManagement = {
     if (process.env.NODE_ENV !== 'development') return () => {};
 
     const initialMemory = getMemoryUsage();
-    
+
     return () => {
       const finalMemory = getMemoryUsage();
       if (initialMemory.supported && finalMemory.supported) {
         const memoryDiff = finalMemory.used - initialMemory.used;
-        if (memoryDiff > 1) { // More than 1MB increase
+        if (memoryDiff > 1) {
+          // More than 1MB increase
           console.warn(
             `Memory increase: ${componentName} used +${memoryDiff.toFixed(2)}MB`
           );
@@ -796,11 +806,11 @@ export const memoryManagement = {
 
     cleanup() {
       // Clear timers
-      this.timers.forEach(timerId => clearTimeout(timerId));
+      this.timers.forEach((timerId) => clearTimeout(timerId));
       this.timers = [];
 
       // Disconnect observers
-      this.observers.forEach(observer => {
+      this.observers.forEach((observer) => {
         if (observer.disconnect) observer.disconnect();
         if (observer.unobserve) observer.unobserve();
       });
@@ -813,7 +823,7 @@ export const memoryManagement = {
       this.listeners = [];
 
       // Call unsubscribe functions
-      this.subscriptions.forEach(unsubscribe => {
+      this.subscriptions.forEach((unsubscribe) => {
         try {
           unsubscribe();
         } catch (error) {

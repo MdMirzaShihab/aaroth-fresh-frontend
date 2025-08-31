@@ -120,8 +120,12 @@ const ApprovalManagementNew = () => {
         entity.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entity.ownerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entity.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entity.createdBy?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entity.createdBy?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        entity.createdBy?.name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        entity.createdBy?.email
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
       const matchesFilter =
         filterStatus === 'all' ||
@@ -152,9 +156,14 @@ const ApprovalManagementNew = () => {
 
     return {
       total: allItems.length,
-      pending: allItems.filter((item) => item.verificationStatus === 'pending').length,
-      verified: allItems.filter((item) => item.verificationStatus === 'approved').length,
-      rejected: allItems.filter((item) => item.verificationStatus === 'rejected').length,
+      pending: allItems.filter((item) => item.verificationStatus === 'pending')
+        .length,
+      verified: allItems.filter(
+        (item) => item.verificationStatus === 'approved'
+      ).length,
+      rejected: allItems.filter(
+        (item) => item.verificationStatus === 'rejected'
+      ).length,
       vendors: vendors.length,
       restaurants: restaurants.length,
     };
@@ -195,8 +204,7 @@ const ApprovalManagementNew = () => {
         }
 
         // Show error message with more context
-        const errorMsg =
-          error?.data?.message || `Failed to ${status} vendor`;
+        const errorMsg = error?.data?.message || `Failed to ${status} vendor`;
         showVerificationErrorToast('vendor', status, {
           ...error,
           data: {

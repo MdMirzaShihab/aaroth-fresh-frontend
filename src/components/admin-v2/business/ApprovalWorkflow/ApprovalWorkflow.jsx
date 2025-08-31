@@ -6,11 +6,20 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, XCircle, Clock, FileText, AlertTriangle } from 'lucide-react';
-import { Button, Modal, FormField } from '../../../../components/ui';
-import StatusBadge from '../../ui/StatusBadge/StatusBadge';
-import { useUpdateVendorVerificationV2Mutation, useUpdateRestaurantVerificationV2Mutation } from '../../../../store/slices/admin-v2/adminApiSlice';
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  FileText,
+  AlertTriangle,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Button, Modal, FormField } from '../../../ui';
+import StatusBadge from '../../ui/StatusBadge/StatusBadge';
+import {
+  useUpdateVendorVerificationV2Mutation,
+  useUpdateRestaurantVerificationV2Mutation,
+} from '../../../../store/slices/admin-v2/adminApiSlice';
 
 const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
   const [showApprovalModal, setShowApprovalModal] = useState(false);
@@ -19,22 +28,29 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
   const [rejectionReason, setRejectionReason] = useState('');
 
   // RTK Query mutations
-  const [updateVendorVerification, { isLoading: isUpdatingVendor }] = useUpdateVendorVerificationV2Mutation();
-  const [updateRestaurantVerification, { isLoading: isUpdatingRestaurant }] = useUpdateRestaurantVerificationV2Mutation();
+  const [updateVendorVerification, { isLoading: isUpdatingVendor }] =
+    useUpdateVendorVerificationV2Mutation();
+  const [updateRestaurantVerification, { isLoading: isUpdatingRestaurant }] =
+    useUpdateRestaurantVerificationV2Mutation();
 
   const isLoading = isUpdatingVendor || isUpdatingRestaurant;
 
   const handleApprove = async () => {
     try {
-      const updateMutation = entityType === 'vendor' ? updateVendorVerification : updateRestaurantVerification;
-      
+      const updateMutation =
+        entityType === 'vendor'
+          ? updateVendorVerification
+          : updateRestaurantVerification;
+
       await updateMutation({
         id: entity.id,
         status: 'approved',
-        reason: approvalNotes || 'Approved by admin'
+        reason: approvalNotes || 'Approved by admin',
       }).unwrap();
 
-      toast.success(`${entityType === 'vendor' ? 'Vendor' : 'Restaurant'} approved successfully`);
+      toast.success(
+        `${entityType === 'vendor' ? 'Vendor' : 'Restaurant'} approved successfully`
+      );
       setShowApprovalModal(false);
       setApprovalNotes('');
       onUpdate?.();
@@ -50,15 +66,20 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
     }
 
     try {
-      const updateMutation = entityType === 'vendor' ? updateVendorVerification : updateRestaurantVerification;
-      
+      const updateMutation =
+        entityType === 'vendor'
+          ? updateVendorVerification
+          : updateRestaurantVerification;
+
       await updateMutation({
         id: entity.id,
         status: 'rejected',
-        reason: rejectionReason
+        reason: rejectionReason,
       }).unwrap();
 
-      toast.success(`${entityType === 'vendor' ? 'Vendor' : 'Restaurant'} rejected`);
+      toast.success(
+        `${entityType === 'vendor' ? 'Vendor' : 'Restaurant'} rejected`
+      );
       setShowRejectionModal(false);
       setRejectionReason('');
       onUpdate?.();
@@ -72,7 +93,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       low: 'text-sage-green',
       medium: 'text-amber-500',
       high: 'text-orange-500',
-      critical: 'text-tomato-red'
+      critical: 'text-tomato-red',
     };
     return colors[urgencyLevel] || 'text-gray-500';
   };
@@ -90,13 +111,13 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
             {entity.businessName || entity.name}
           </h3>
           <div className="flex items-center gap-3 mb-3">
-            <StatusBadge 
-              status={entity.verificationStatus} 
-              type="verification" 
+            <StatusBadge
+              status={entity.verificationStatus}
+              type="verification"
             />
-            <StatusBadge 
-              status={entity.urgencyLevel} 
-              type="urgency" 
+            <StatusBadge
+              status={entity.urgencyLevel}
+              type="urgency"
               size="sm"
             />
           </div>
@@ -107,7 +128,9 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
           </div>
         </div>
 
-        <div className={`text-2xl font-bold ${getUrgencyColor(entity.urgencyLevel)}`}>
+        <div
+          className={`text-2xl font-bold ${getUrgencyColor(entity.urgencyLevel)}`}
+        >
           {entity.waitingDays}d
         </div>
       </div>
@@ -116,13 +139,15 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {Object.entries(entity.documents || {}).map(([key, doc]) => (
           <div key={key} className="text-center">
-            <div className={`w-12 h-12 rounded-2xl mx-auto mb-2 flex items-center justify-center ${
-              doc.verified 
-                ? 'bg-sage-green/10 text-muted-olive' 
-                : doc.provided 
-                  ? 'bg-amber-100 text-amber-700'
-                  : 'bg-gray-100 text-gray-500'
-            }`}>
+            <div
+              className={`w-12 h-12 rounded-2xl mx-auto mb-2 flex items-center justify-center ${
+                doc.verified
+                  ? 'bg-sage-green/10 text-muted-olive'
+                  : doc.provided
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-gray-100 text-gray-500'
+              }`}
+            >
               {doc.verified ? (
                 <CheckCircle className="w-6 h-6" />
               ) : doc.provided ? (
@@ -143,19 +168,29 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
 
       {/* Business Info */}
       <div className="bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl p-4 mb-6">
-        <h4 className="font-medium text-text-dark dark:text-white mb-3">Business Information</h4>
+        <h4 className="font-medium text-text-dark dark:text-white mb-3">
+          Business Information
+        </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-text-muted dark:text-gray-400">Type:</span>
-            <span className="ml-2 text-text-dark dark:text-white">{entity.businessInfo?.type}</span>
+            <span className="ml-2 text-text-dark dark:text-white">
+              {entity.businessInfo?.type}
+            </span>
           </div>
           <div>
-            <span className="text-text-muted dark:text-gray-400">Completeness:</span>
-            <span className="ml-2 text-text-dark dark:text-white">{entity.businessInfo?.completeness}%</span>
+            <span className="text-text-muted dark:text-gray-400">
+              Completeness:
+            </span>
+            <span className="ml-2 text-text-dark dark:text-white">
+              {entity.businessInfo?.completeness}%
+            </span>
           </div>
           <div className="md:col-span-2">
             <span className="text-text-muted dark:text-gray-400">Address:</span>
-            <span className="ml-2 text-text-dark dark:text-white">{entity.businessInfo?.address}</span>
+            <span className="ml-2 text-text-dark dark:text-white">
+              {entity.businessInfo?.address}
+            </span>
           </div>
         </div>
       </div>
@@ -163,11 +198,21 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       {/* Risk Assessment */}
       {entity.riskAssessment && (
         <div className="bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl p-4 mb-6">
-          <h4 className="font-medium text-text-dark dark:text-white mb-3">Risk Assessment</h4>
+          <h4 className="font-medium text-text-dark dark:text-white mb-3">
+            Risk Assessment
+          </h4>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-text-muted dark:text-gray-400">Risk Score:</span>
-            <StatusBadge 
-              status={entity.riskAssessment.score > 70 ? 'high' : entity.riskAssessment.score > 40 ? 'medium' : 'low'}
+            <span className="text-sm text-text-muted dark:text-gray-400">
+              Risk Score:
+            </span>
+            <StatusBadge
+              status={
+                entity.riskAssessment.score > 70
+                  ? 'high'
+                  : entity.riskAssessment.score > 40
+                    ? 'medium'
+                    : 'low'
+              }
               type="risk"
               size="sm"
             />
@@ -177,7 +222,9 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
               {entity.riskAssessment.factors.map((factor, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">
                   <AlertTriangle className="w-4 h-4 text-amber-500" />
-                  <span className="text-text-dark dark:text-white">{factor}</span>
+                  <span className="text-text-dark dark:text-white">
+                    {factor}
+                  </span>
                 </div>
               ))}
             </div>
@@ -217,9 +264,10 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       >
         <div className="space-y-4">
           <p className="text-text-muted dark:text-gray-400">
-            Are you sure you want to approve {entity.businessName || entity.name}?
+            Are you sure you want to approve{' '}
+            {entity.businessName || entity.name}?
           </p>
-          
+
           <FormField
             label="Approval Notes (Optional)"
             type="textarea"
@@ -257,9 +305,10 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       >
         <div className="space-y-4">
           <p className="text-text-muted dark:text-gray-400">
-            Please provide a reason for rejecting {entity.businessName || entity.name}.
+            Please provide a reason for rejecting{' '}
+            {entity.businessName || entity.name}.
           </p>
-          
+
           <FormField
             label="Rejection Reason *"
             type="textarea"

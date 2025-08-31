@@ -25,27 +25,32 @@ import {
   ArrowDownRight,
   Minus,
 } from 'lucide-react';
-import { useTheme } from '../../../../hooks/useTheme';
-import { Card, Button } from '../../../../components/ui';
-import { LineChart, BarChart, PieChart, DoughnutChart } from '../../../../components/ui/charts/ChartJS';
 import { format, subDays, startOfDay } from 'date-fns';
 import toast from 'react-hot-toast';
+import { useTheme } from '../../../../hooks/useTheme';
+import { Card, Button } from '../../../../components/ui';
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  DoughnutChart,
+} from '../../../../components/ui/charts/ChartJS';
 
 // Sales metric card component
-const SalesMetricCard = ({ 
-  title, 
-  value, 
-  change, 
-  trend, 
-  icon: Icon, 
+const SalesMetricCard = ({
+  title,
+  value,
+  change,
+  trend,
+  icon: Icon,
   color = 'sage-green',
   subtitle,
   onClick,
   isLoading = false,
-  comparison 
+  comparison,
 }) => {
   const { isDarkMode } = useTheme();
-  
+
   const getTrendIcon = () => {
     if (trend === 'up') return ArrowUpRight;
     if (trend === 'down') return ArrowDownRight;
@@ -53,7 +58,8 @@ const SalesMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
+    if (trend === 'up')
+      return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -73,13 +79,15 @@ const SalesMetricCard = ({
       `}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`
+        <div
+          className={`
           w-10 h-10 rounded-xl flex items-center justify-center
           ${isDarkMode ? `bg-${color}/20` : `bg-${color}/10`}
-        `}>
+        `}
+        >
           <Icon className={`w-5 h-5 text-${color}`} />
         </div>
-        
+
         {change !== undefined && (
           <div className={`flex items-center gap-1 ${getTrendColor()}`}>
             <TrendIcon className="w-3 h-3" />
@@ -87,7 +95,7 @@ const SalesMetricCard = ({
           </div>
         )}
       </div>
-      
+
       <div className="space-y-1">
         {isLoading ? (
           <div className="animate-pulse">
@@ -96,19 +104,27 @@ const SalesMetricCard = ({
           </div>
         ) : (
           <>
-            <p className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <p
+              className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               {value}
             </p>
-            <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               {title}
             </p>
             {subtitle && (
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}
+              >
                 {subtitle}
               </p>
             )}
             {comparison && (
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}`}
+              >
                 vs {comparison}
               </p>
             )}
@@ -119,11 +135,11 @@ const SalesMetricCard = ({
   );
 };
 
-const SalesPerformance = ({ 
-  data = {}, 
-  isLoading = false, 
+const SalesPerformance = ({
+  data = {},
+  isLoading = false,
   timeRange = '30d',
-  onTimeRangeChange 
+  onTimeRangeChange,
 }) => {
   const { isDarkMode } = useTheme();
   const [chartView, setChartView] = useState('revenue'); // revenue, orders, conversion
@@ -139,7 +155,8 @@ const SalesPerformance = ({
         result.push({
           date: format(date, 'MMM dd'),
           fullDate: date,
-          revenue: Math.floor(Math.random() * 5000) + 2000 + (i % 7 === 0 ? 1000 : 0),
+          revenue:
+            Math.floor(Math.random() * 5000) + 2000 + (i % 7 === 0 ? 1000 : 0),
           orders: Math.floor(Math.random() * 50) + 20 + (i % 7 === 0 ? 20 : 0),
           customers: Math.floor(Math.random() * 30) + 15,
           avgOrderValue: Math.floor(Math.random() * 50) + 80,
@@ -148,29 +165,46 @@ const SalesPerformance = ({
       return result;
     };
 
-    return data.dailySales || generateData(timeRange === '7d' ? 7 : timeRange === '90d' ? 90 : 30);
+    return (
+      data.dailySales ||
+      generateData(timeRange === '7d' ? 7 : timeRange === '90d' ? 90 : 30)
+    );
   }, [data, timeRange]);
 
   // Sales metrics calculation
   const salesMetrics = useMemo(() => {
     const totalRevenue = salesData.reduce((sum, day) => sum + day.revenue, 0);
     const totalOrders = salesData.reduce((sum, day) => sum + day.orders, 0);
-    const totalCustomers = salesData.reduce((sum, day) => sum + day.customers, 0);
+    const totalCustomers = salesData.reduce(
+      (sum, day) => sum + day.customers,
+      0
+    );
     const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-    const avgDailyRevenue = salesData.length > 0 ? totalRevenue / salesData.length : 0;
-    
+    const avgDailyRevenue =
+      salesData.length > 0 ? totalRevenue / salesData.length : 0;
+
     // Calculate trends (compare first half vs second half)
     const midPoint = Math.floor(salesData.length / 2);
     const firstHalf = salesData.slice(0, midPoint);
     const secondHalf = salesData.slice(midPoint);
-    
-    const firstHalfRevenue = firstHalf.reduce((sum, day) => sum + day.revenue, 0) / firstHalf.length;
-    const secondHalfRevenue = secondHalf.reduce((sum, day) => sum + day.revenue, 0) / secondHalf.length;
-    const revenueGrowth = firstHalfRevenue > 0 ? ((secondHalfRevenue - firstHalfRevenue) / firstHalfRevenue) * 100 : 0;
 
-    const firstHalfOrders = firstHalf.reduce((sum, day) => sum + day.orders, 0) / firstHalf.length;
-    const secondHalfOrders = secondHalf.reduce((sum, day) => sum + day.orders, 0) / secondHalf.length;
-    const orderGrowth = firstHalfOrders > 0 ? ((secondHalfOrders - firstHalfOrders) / firstHalfOrders) * 100 : 0;
+    const firstHalfRevenue =
+      firstHalf.reduce((sum, day) => sum + day.revenue, 0) / firstHalf.length;
+    const secondHalfRevenue =
+      secondHalf.reduce((sum, day) => sum + day.revenue, 0) / secondHalf.length;
+    const revenueGrowth =
+      firstHalfRevenue > 0
+        ? ((secondHalfRevenue - firstHalfRevenue) / firstHalfRevenue) * 100
+        : 0;
+
+    const firstHalfOrders =
+      firstHalf.reduce((sum, day) => sum + day.orders, 0) / firstHalf.length;
+    const secondHalfOrders =
+      secondHalf.reduce((sum, day) => sum + day.orders, 0) / secondHalf.length;
+    const orderGrowth =
+      firstHalfOrders > 0
+        ? ((secondHalfOrders - firstHalfOrders) / firstHalfOrders) * 100
+        : 0;
 
     return {
       totalRevenue,
@@ -186,48 +220,52 @@ const SalesPerformance = ({
 
   // Chart data transformations
   const chartData = useMemo(() => {
-    const labels = salesData.map(item => item.date);
-    
+    const labels = salesData.map((item) => item.date);
+
     if (chartView === 'revenue') {
       return {
         labels,
-        datasets: [{
-          label: 'Revenue',
-          data: salesData.map(item => item.revenue),
-          color: '#10B981',
-          borderColor: '#10B981',
-          backgroundColor: '#10B98120',
-        }],
+        datasets: [
+          {
+            label: 'Revenue',
+            data: salesData.map((item) => item.revenue),
+            color: '#10B981',
+            borderColor: '#10B981',
+            backgroundColor: '#10B98120',
+          },
+        ],
       };
     }
-    
+
     if (chartView === 'orders') {
       return {
         labels,
-        datasets: [{
-          label: 'Orders',
-          data: salesData.map(item => item.orders),
-          color: '#3B82F6',
-          borderColor: '#3B82F6',
-          backgroundColor: '#3B82F620',
-        }],
+        datasets: [
+          {
+            label: 'Orders',
+            data: salesData.map((item) => item.orders),
+            color: '#3B82F6',
+            borderColor: '#3B82F6',
+            backgroundColor: '#3B82F620',
+          },
+        ],
       };
     }
-    
+
     // Conversion view - multiple metrics
     return {
       labels,
       datasets: [
         {
           label: 'Orders',
-          data: salesData.map(item => item.orders),
+          data: salesData.map((item) => item.orders),
           color: '#3B82F6',
           borderColor: '#3B82F6',
           backgroundColor: '#3B82F620',
         },
         {
           label: 'Customers',
-          data: salesData.map(item => item.customers),
+          data: salesData.map((item) => item.customers),
           color: '#F59E0B',
           borderColor: '#F59E0B',
           backgroundColor: '#F59E0B20',
@@ -245,18 +283,23 @@ const SalesPerformance = ({
   }, [salesData]);
 
   // Sales channel breakdown (sample data)
-  const salesChannelData = useMemo(() => [
-    { label: 'Mobile App', value: 45, color: '#10B981' },
-    { label: 'Web Platform', value: 35, color: '#3B82F6' },
-    { label: 'Direct Orders', value: 15, color: '#F59E0B' },
-    { label: 'Partner API', value: 5, color: '#EF4444' },
-  ], []);
+  const salesChannelData = useMemo(
+    () => [
+      { label: 'Mobile App', value: 45, color: '#10B981' },
+      { label: 'Web Platform', value: 35, color: '#3B82F6' },
+      { label: 'Direct Orders', value: 15, color: '#F59E0B' },
+      { label: 'Partner API', value: 5, color: '#EF4444' },
+    ],
+    []
+  );
 
   // Handle chart data point click for drill-down
   const handleChartClick = useCallback((dataPoint, context) => {
     const { label, value, datasetLabel } = dataPoint;
-    toast.success(`Analyzing ${datasetLabel}: ${label} (${typeof value === 'number' ? value.toLocaleString() : value})`);
-    
+    toast.success(
+      `Analyzing ${datasetLabel}: ${label} (${typeof value === 'number' ? value.toLocaleString() : value})`
+    );
+
     // Here you could navigate to detailed view or show drill-down modal
     console.log('Sales drill-down:', { dataPoint, context });
   }, []);
@@ -271,18 +314,20 @@ const SalesPerformance = ({
       exportDate: new Date().toISOString(),
       timeRange,
     };
-    
+
     // Convert to CSV
     const csv = [
       ['Date', 'Revenue', 'Orders', 'Customers', 'Avg Order Value'],
-      ...salesData.map(day => [
+      ...salesData.map((day) => [
         day.date,
         day.revenue,
         day.orders,
         day.customers,
         day.avgOrderValue,
-      ])
-    ].map(row => row.join(',')).join('\n');
+      ]),
+    ]
+      .map((row) => row.join(','))
+      .join('\n');
 
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -293,45 +338,58 @@ const SalesPerformance = ({
     a.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-    
+
     toast.success('Sales data exported to CSV');
-  }, [salesMetrics, salesData, topPerformingPeriods, salesChannelData, timeRange]);
+  }, [
+    salesMetrics,
+    salesData,
+    topPerformingPeriods,
+    salesChannelData,
+    timeRange,
+  ]);
 
   return (
     <div className="space-y-6">
       {/* Sales Performance Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+          <h2
+            className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             Sales Performance
           </h2>
-          <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+          <p
+            className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+          >
             Comprehensive sales analytics and revenue insights
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Chart View Toggle */}
-          <div className={`flex items-center gap-1 p-1 rounded-lg ${
-            isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
-          }`}>
+          <div
+            className={`flex items-center gap-1 p-1 rounded-lg ${
+              isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+            }`}
+          >
             {[
               { id: 'revenue', label: 'Revenue', icon: DollarSign },
               { id: 'orders', label: 'Orders', icon: ShoppingCart },
               { id: 'conversion', label: 'Conversion', icon: Target },
-            ].map(view => (
+            ].map((view) => (
               <button
                 key={view.id}
                 onClick={() => setChartView(view.id)}
                 className={`
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
-                  ${chartView === view.id
-                    ? isDarkMode 
-                      ? 'bg-sage-green/20 text-sage-green'
-                      : 'bg-white text-muted-olive shadow-sm'
-                    : isDarkMode
-                      ? 'text-gray-400 hover:text-gray-300'
-                      : 'text-text-muted hover:text-text-dark'
+                  ${
+                    chartView === view.id
+                      ? isDarkMode
+                        ? 'bg-sage-green/20 text-sage-green'
+                        : 'bg-white text-muted-olive shadow-sm'
+                      : isDarkMode
+                        ? 'text-gray-400 hover:text-gray-300'
+                        : 'text-text-muted hover:text-text-dark'
                   }
                 `}
               >
@@ -342,25 +400,28 @@ const SalesPerformance = ({
           </div>
 
           {/* Chart Type Toggle */}
-          <div className={`flex items-center gap-1 p-1 rounded-lg ${
-            isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
-          }`}>
+          <div
+            className={`flex items-center gap-1 p-1 rounded-lg ${
+              isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+            }`}
+          >
             {[
               { type: 'line', icon: LineChartIcon },
               { type: 'bar', icon: BarChart3 },
-            ].map(option => (
+            ].map((option) => (
               <button
                 key={option.type}
                 onClick={() => setChartType(option.type)}
                 className={`
                   p-2 rounded-lg transition-all duration-200
-                  ${chartType === option.type
-                    ? isDarkMode 
-                      ? 'bg-sage-green/20 text-sage-green'
-                      : 'bg-white text-muted-olive shadow-sm'
-                    : isDarkMode
-                      ? 'text-gray-400 hover:text-gray-300'
-                      : 'text-text-muted hover:text-text-dark'
+                  ${
+                    chartType === option.type
+                      ? isDarkMode
+                        ? 'bg-sage-green/20 text-sage-green'
+                        : 'bg-white text-muted-olive shadow-sm'
+                      : isDarkMode
+                        ? 'text-gray-400 hover:text-gray-300'
+                        : 'text-text-muted hover:text-text-dark'
                   }
                 `}
               >
@@ -449,13 +510,24 @@ const SalesPerformance = ({
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
-              Sales {chartView === 'revenue' ? 'Revenue' : chartView === 'orders' ? 'Orders' : 'Performance'} Trend
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
+              Sales{' '}
+              {chartView === 'revenue'
+                ? 'Revenue'
+                : chartView === 'orders'
+                  ? 'Orders'
+                  : 'Performance'}{' '}
+              Trend
             </h3>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               {chartView === 'revenue' && 'Daily revenue performance over time'}
               {chartView === 'orders' && 'Order volume and frequency analysis'}
-              {chartView === 'conversion' && 'Orders vs customers conversion analysis'}
+              {chartView === 'conversion' &&
+                'Orders vs customers conversion analysis'}
             </p>
           </div>
 
@@ -463,7 +535,11 @@ const SalesPerformance = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setSelectedPeriod(selectedPeriod === 'daily' ? 'weekly' : 'daily')}
+              onClick={() =>
+                setSelectedPeriod(
+                  selectedPeriod === 'daily' ? 'weekly' : 'daily'
+                )
+              }
             >
               <Calendar className="w-4 h-4 mr-2" />
               {selectedPeriod}
@@ -480,7 +556,7 @@ const SalesPerformance = ({
               data={chartData}
               height={320}
               fillArea={chartView === 'revenue'}
-              enableDrillDown={true}
+              enableDrillDown
               onDataPointClick={handleChartClick}
               formatTooltip={(context) => {
                 const value = context.parsed.y;
@@ -498,7 +574,7 @@ const SalesPerformance = ({
             <BarChart
               data={chartData}
               height={320}
-              enableDrillDown={true}
+              enableDrillDown
               onDataPointClick={handleChartClick}
               formatTooltip={(context) => {
                 const value = context.parsed.y;
@@ -520,16 +596,20 @@ const SalesPerformance = ({
       {/* Sales Analysis Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Performing Periods */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Top Performing Days
             </h3>
             <Button variant="outline" size="sm">
               <Filter className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="space-y-3">
             {topPerformingPeriods.map((period, index) => (
               <motion.div
@@ -544,29 +624,42 @@ const SalesPerformance = ({
                 `}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`
+                  <div
+                    className={`
                     w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm
-                    ${index === 0 
-                      ? 'bg-gradient-to-r from-earthy-yellow to-earthy-yellow/80 text-white'
-                      : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-text-muted'
+                    ${
+                      index === 0
+                        ? 'bg-gradient-to-r from-earthy-yellow to-earthy-yellow/80 text-white'
+                        : isDarkMode
+                          ? 'bg-gray-600 text-gray-300'
+                          : 'bg-gray-200 text-text-muted'
                     }
-                  `}>
+                  `}
+                  >
                     #{index + 1}
                   </div>
                   <div>
-                    <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                    <p
+                      className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                    >
                       {period.date}
                     </p>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                    >
                       {period.orders} orders • {period.customers} customers
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                  <p
+                    className={`font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                  >
                     ${period.revenue.toLocaleString()}
                   </p>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     ${period.avgOrderValue.toFixed(2)} AOV
                   </p>
                 </div>
@@ -576,16 +669,20 @@ const SalesPerformance = ({
         </Card>
 
         {/* Sales Channel Breakdown */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Sales Channels
             </h3>
             <Button variant="outline" size="sm">
               <PieChartIcon className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="h-64">
             <DoughnutChart
               data={salesChannelData}
@@ -596,29 +693,37 @@ const SalesPerformance = ({
               }}
               centerContent={(centerData) => (
                 <div className="text-center">
-                  <p className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                  <p
+                    className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                  >
                     {centerData.count}
                   </p>
-                  <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     Channels
                   </p>
                 </div>
               )}
             />
           </div>
-          
+
           {/* Channel Legend */}
           <div className="grid grid-cols-2 gap-2 mt-4">
             {salesChannelData.map((channel, index) => (
               <div key={index} className="flex items-center gap-2">
-                <div 
+                <div
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: channel.color }}
                 />
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <span
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   {channel.label}
                 </span>
-                <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                <span
+                  className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {channel.value}%
                 </span>
               </div>
@@ -629,65 +734,107 @@ const SalesPerformance = ({
 
       {/* Sales Insights */}
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+        >
           Sales Insights & Trends
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
-            ${salesMetrics.revenueGrowth > 0
-              ? isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
-              : isDarkMode ? 'bg-tomato-red/5 border-tomato-red/20' : 'bg-tomato-red/5 border-tomato-red/20'
+            ${
+              salesMetrics.revenueGrowth > 0
+                ? isDarkMode
+                  ? 'bg-sage-green/5 border-sage-green/20'
+                  : 'bg-sage-green/5 border-sage-green/20'
+                : isDarkMode
+                  ? 'bg-tomato-red/5 border-tomato-red/20'
+                  : 'bg-tomato-red/5 border-tomato-red/20'
             }
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
-              <TrendingUp className={`w-5 h-5 ${
-                salesMetrics.revenueGrowth > 0 ? 'text-sage-green' : 'text-tomato-red'
-              }`} />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <TrendingUp
+                className={`w-5 h-5 ${
+                  salesMetrics.revenueGrowth > 0
+                    ? 'text-sage-green'
+                    : 'text-tomato-red'
+                }`}
+              />
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 Revenue Growth
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              Revenue {salesMetrics.revenueGrowth > 0 ? 'increased' : 'decreased'} by{' '}
-              {Math.abs(salesMetrics.revenueGrowth).toFixed(1)}% compared to previous period.
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              Revenue{' '}
+              {salesMetrics.revenueGrowth > 0 ? 'increased' : 'decreased'} by{' '}
+              {Math.abs(salesMetrics.revenueGrowth).toFixed(1)}% compared to
+              previous period.
             </p>
           </div>
 
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
-            ${salesMetrics.orderGrowth > 0
-              ? isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
-              : isDarkMode ? 'bg-earthy-yellow/5 border-earthy-yellow/20' : 'bg-earthy-yellow/5 border-earthy-yellow/20'
+            ${
+              salesMetrics.orderGrowth > 0
+                ? isDarkMode
+                  ? 'bg-sage-green/5 border-sage-green/20'
+                  : 'bg-sage-green/5 border-sage-green/20'
+                : isDarkMode
+                  ? 'bg-earthy-yellow/5 border-earthy-yellow/20'
+                  : 'bg-earthy-yellow/5 border-earthy-yellow/20'
             }
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
-              <ShoppingCart className={`w-5 h-5 ${
-                salesMetrics.orderGrowth > 0 ? 'text-sage-green' : 'text-earthy-yellow'
-              }`} />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <ShoppingCart
+                className={`w-5 h-5 ${
+                  salesMetrics.orderGrowth > 0
+                    ? 'text-sage-green'
+                    : 'text-earthy-yellow'
+                }`}
+              />
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 Order Volume
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              Order volume {salesMetrics.orderGrowth > 0 ? 'grew' : 'declined'} by{' '}
-              {Math.abs(salesMetrics.orderGrowth).toFixed(1)}% with strong customer engagement.
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              Order volume {salesMetrics.orderGrowth > 0 ? 'grew' : 'declined'}{' '}
+              by {Math.abs(salesMetrics.orderGrowth).toFixed(1)}% with strong
+              customer engagement.
             </p>
           </div>
 
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
             ${isDarkMode ? 'bg-muted-olive/5 border-muted-olive/20' : 'bg-muted-olive/5 border-muted-olive/20'}
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
               <Target className="w-5 h-5 text-muted-olive" />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 Performance Health
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              Average order value of ${salesMetrics.avgOrderValue.toFixed(2)} indicates healthy transaction patterns.
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              Average order value of ${salesMetrics.avgOrderValue.toFixed(2)}{' '}
+              indicates healthy transaction patterns.
             </p>
           </div>
         </div>
@@ -696,46 +843,58 @@ const SalesPerformance = ({
       {/* Peak Performance Analysis */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue by Time of Day (Sample) */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Revenue by Hour
             </h3>
             <Button variant="outline" size="sm">
               <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="h-64">
             <BarChart
               data={{
                 labels: ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
-                datasets: [{
-                  label: 'Revenue',
-                  data: [2400, 4800, 8200, 6100, 9200, 3400],
-                  color: '#10B981',
-                }],
+                datasets: [
+                  {
+                    label: 'Revenue',
+                    data: [2400, 4800, 8200, 6100, 9200, 3400],
+                    color: '#10B981',
+                  },
+                ],
               }}
               height={240}
               orientation="vertical"
               borderRadius={6}
               maxBarThickness={40}
-              formatTooltip={(context) => `$${context.parsed.y.toLocaleString()} at ${context.label}`}
+              formatTooltip={(context) =>
+                `$${context.parsed.y.toLocaleString()} at ${context.label}`
+              }
             />
           </div>
         </Card>
 
         {/* Order Size Distribution */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Order Size Distribution
             </h3>
             <Button variant="outline" size="sm">
               <PieChartIcon className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="h-64">
             <PieChart
               data={[
@@ -751,22 +910,30 @@ const SalesPerformance = ({
               }}
             />
           </div>
-          
+
           {/* Distribution Stats */}
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div className="text-center">
-              <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <p
+                className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 ${salesMetrics.avgOrderValue.toFixed(2)}
               </p>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+              <p
+                className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+              >
                 Average Order
               </p>
             </div>
             <div className="text-center">
-              <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <p
+                className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 45%
               </p>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+              <p
+                className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+              >
                 Medium Orders
               </p>
             </div>

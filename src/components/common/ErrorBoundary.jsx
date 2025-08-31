@@ -42,7 +42,7 @@ class ErrorBoundary extends React.Component {
   }
 
   handleRetry = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       hasError: false,
       error: null,
       errorInfo: null,
@@ -61,32 +61,40 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      const { 
+      const {
         title = 'Something went wrong',
         fallbackMessage,
         showHomeButton = false,
         supportEmail,
         maxRetries = 3,
-        variant = 'default' // 'default' | 'admin' | 'vendor' | 'restaurant'
+        variant = 'default', // 'default' | 'admin' | 'vendor' | 'restaurant'
       } = this.props;
 
       const getVariantTitle = () => {
         switch (variant) {
-          case 'admin': return 'Admin Panel Error';
-          case 'vendor': return 'Vendor Dashboard Error';
-          case 'restaurant': return 'Restaurant Dashboard Error';
-          default: return title;
+          case 'admin':
+            return 'Admin Panel Error';
+          case 'vendor':
+            return 'Vendor Dashboard Error';
+          case 'restaurant':
+            return 'Restaurant Dashboard Error';
+          default:
+            return title;
         }
       };
 
       const getVariantMessage = () => {
         if (fallbackMessage) return fallbackMessage;
-        
+
         switch (variant) {
-          case 'admin': return 'Something went wrong in the admin interface. This error has been logged and our team will investigate the issue.';
-          case 'vendor': return 'We encountered an issue with your vendor dashboard. Please try again or contact support if the problem persists.';
-          case 'restaurant': return 'There was a problem with your restaurant dashboard. Please refresh or contact support for assistance.';
-          default: return 'We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.';
+          case 'admin':
+            return 'Something went wrong in the admin interface. This error has been logged and our team will investigate the issue.';
+          case 'vendor':
+            return 'We encountered an issue with your vendor dashboard. Please try again or contact support if the problem persists.';
+          case 'restaurant':
+            return 'There was a problem with your restaurant dashboard. Please refresh or contact support for assistance.';
+          default:
+            return 'We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.';
         }
       };
 
@@ -149,7 +157,9 @@ class ErrorBoundary extends React.Component {
                 `}
               >
                 <RefreshCcw className="w-4 h-4" />
-                {this.state.retryCount >= maxRetries ? 'Max Retries Reached' : 'Try Again'}
+                {this.state.retryCount >= maxRetries
+                  ? 'Max Retries Reached'
+                  : 'Try Again'}
               </button>
 
               <button
@@ -174,11 +184,14 @@ class ErrorBoundary extends React.Component {
             {/* Support Info */}
             <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
               <p className="text-sm text-text-muted dark:text-gray-400 mb-3">
-                If this problem persists, please contact the system administrator.
+                If this problem persists, please contact the system
+                administrator.
               </p>
               {supportEmail && (
                 <button
-                  onClick={() => window.location.href = `mailto:${supportEmail}`}
+                  onClick={() =>
+                    (window.location.href = `mailto:${supportEmail}`)
+                  }
                   className="text-sm bg-transparent border border-gray-300 text-text-muted px-6 py-2 rounded-xl font-medium transition-all duration-300 hover:bg-gray-50 hover:border-gray-400 hover:text-text-dark flex items-center justify-center gap-2 mx-auto"
                 >
                   <Mail className="w-4 h-4" />
@@ -201,7 +214,7 @@ export const useErrorHandler = () => {
 
   const handleError = React.useCallback((error, errorInfo = {}) => {
     setError({ error, errorInfo });
-    
+
     // Log error in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Error Handler:', error, errorInfo);
@@ -217,9 +230,9 @@ export const useErrorHandler = () => {
 
 // Predefined error boundaries for common use cases
 export const AdminErrorBoundary = ({ children, ...props }) => (
-  <ErrorBoundary 
-    variant="admin" 
-    showHomeButton={true}
+  <ErrorBoundary
+    variant="admin"
+    showHomeButton
     homeUrl="/admin-v2/dashboard"
     {...props}
   >
@@ -228,9 +241,9 @@ export const AdminErrorBoundary = ({ children, ...props }) => (
 );
 
 export const VendorErrorBoundary = ({ children, ...props }) => (
-  <ErrorBoundary 
-    variant="vendor" 
-    showHomeButton={true}
+  <ErrorBoundary
+    variant="vendor"
+    showHomeButton
     homeUrl="/vendor/dashboard"
     {...props}
   >
@@ -239,9 +252,9 @@ export const VendorErrorBoundary = ({ children, ...props }) => (
 );
 
 export const RestaurantErrorBoundary = ({ children, ...props }) => (
-  <ErrorBoundary 
-    variant="restaurant" 
-    showHomeButton={true}
+  <ErrorBoundary
+    variant="restaurant"
+    showHomeButton
     homeUrl="/restaurant/dashboard"
     {...props}
   >

@@ -26,39 +26,41 @@ import {
   Star,
   TrendingUp,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { format } from 'date-fns';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
-import { Input } from '../../../../components/ui';
-import { StatusBadge } from '../../../../components/ui';
+import { Card, Button, Input, StatusBadge } from '../../../../components/ui';
 import { Modal } from '../../../../components/ui/Modal';
 import { Tabs } from '../../../../components/ui/Tabs';
 import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
-import toast from 'react-hot-toast';
-import { format } from 'date-fns';
 
 // User avatar component
 const UserProfileAvatar = ({ user, size = 'lg' }) => {
   const sizeClasses = {
     md: 'w-16 h-16 text-xl',
     lg: 'w-24 h-24 text-3xl',
-    xl: 'w-32 h-32 text-4xl'
+    xl: 'w-32 h-32 text-4xl',
   };
 
   const getRoleGradient = (role) => {
     const gradients = {
-      admin: 'bg-gradient-to-br from-tomato-red via-earthy-yellow to-earthy-brown',
+      admin:
+        'bg-gradient-to-br from-tomato-red via-earthy-yellow to-earthy-brown',
       vendor: 'bg-gradient-to-br from-muted-olive via-sage-green to-sage-green',
-      restaurantOwner: 'bg-gradient-to-br from-earthy-brown via-dusty-cedar to-earthy-tan',
-      restaurantManager: 'bg-gradient-to-br from-muted-olive via-sage-green to-dusty-cedar'
+      restaurantOwner:
+        'bg-gradient-to-br from-earthy-brown via-dusty-cedar to-earthy-tan',
+      restaurantManager:
+        'bg-gradient-to-br from-muted-olive via-sage-green to-dusty-cedar',
     };
     return gradients[role] || 'bg-gradient-to-br from-gray-400 to-gray-600';
   };
 
   return (
-    <div className={`${sizeClasses[size]} rounded-3xl ${getRoleGradient(user.role)} flex items-center justify-center shadow-xl text-white font-bold relative`}>
+    <div
+      className={`${sizeClasses[size]} rounded-3xl ${getRoleGradient(user.role)} flex items-center justify-center shadow-xl text-white font-bold relative`}
+    >
       {user.name?.charAt(0)?.toUpperCase() || 'U'}
       {user.verificationStatus === 'approved' && (
         <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-sage-green rounded-full flex items-center justify-center border-2 border-white">
@@ -84,17 +86,27 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
         <UserProfileAvatar user={user} size="lg" />
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <h2
+              className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               {user.name}
             </h2>
             <StatusBadge status={user.status} variant="glass" />
           </div>
-          <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'} mb-1`}>
-            {user.role === 'restaurantOwner' ? 'Restaurant Owner' : 
-             user.role === 'restaurantManager' ? 'Restaurant Manager' :
-             user.role === 'vendor' ? 'Vendor' : 'Administrator'}
+          <p
+            className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'} mb-1`}
+          >
+            {user.role === 'restaurantOwner'
+              ? 'Restaurant Owner'
+              : user.role === 'restaurantManager'
+                ? 'Restaurant Manager'
+                : user.role === 'vendor'
+                  ? 'Vendor'
+                  : 'Administrator'}
           </p>
-          <p className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+          <p
+            className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+          >
             Member since {format(new Date(user.createdAt), 'MMMM yyyy')}
           </p>
         </div>
@@ -102,12 +114,16 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
 
       {/* Contact Information */}
       <Card className="p-6">
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           Contact Information
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <label
+              className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Full Name
             </label>
             {isEditing ? (
@@ -119,7 +135,11 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
             ) : (
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-gray-400" />
-                <span className={isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}>
+                <span
+                  className={
+                    isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'
+                  }
+                >
                   {user.name}
                 </span>
               </div>
@@ -127,7 +147,9 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <label
+              className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Email Address
             </label>
             {isEditing ? (
@@ -140,7 +162,11 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
             ) : (
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-gray-400" />
-                <span className={isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}>
+                <span
+                  className={
+                    isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'
+                  }
+                >
                   {user.email}
                 </span>
               </div>
@@ -148,7 +174,9 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <label
+              className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Phone Number
             </label>
             {isEditing ? (
@@ -161,7 +189,11 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
             ) : (
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gray-400" />
-                <span className={isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}>
+                <span
+                  className={
+                    isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'
+                  }
+                >
                   {user.phone || 'Not provided'}
                 </span>
               </div>
@@ -169,7 +201,9 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <label
+              className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Location
             </label>
             {isEditing ? (
@@ -181,7 +215,11 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
             ) : (
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gray-400" />
-                <span className={isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}>
+                <span
+                  className={
+                    isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'
+                  }
+                >
                   {user.location || 'Not provided'}
                 </span>
               </div>
@@ -192,13 +230,21 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
 
       {/* Account Status */}
       <Card className="p-6">
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           Account Status
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.isActive ? 'text-sage-green' : 'text-gray-400'}`}>
-              {user.isActive ? <CheckCircle className="w-6 h-6 mx-auto mb-1" /> : <XCircle className="w-6 h-6 mx-auto mb-1" />}
+            <div
+              className={`text-lg font-bold ${user.isActive ? 'text-sage-green' : 'text-gray-400'}`}
+            >
+              {user.isActive ? (
+                <CheckCircle className="w-6 h-6 mx-auto mb-1" />
+              ) : (
+                <XCircle className="w-6 h-6 mx-auto mb-1" />
+              )}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
               {user.isActive ? 'Active' : 'Inactive'}
@@ -206,8 +252,14 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.isApproved ? 'text-sage-green' : 'text-earthy-yellow'}`}>
-              {user.isApproved ? <CheckCircle className="w-6 h-6 mx-auto mb-1" /> : <Clock className="w-6 h-6 mx-auto mb-1" />}
+            <div
+              className={`text-lg font-bold ${user.isApproved ? 'text-sage-green' : 'text-earthy-yellow'}`}
+            >
+              {user.isApproved ? (
+                <CheckCircle className="w-6 h-6 mx-auto mb-1" />
+              ) : (
+                <Clock className="w-6 h-6 mx-auto mb-1" />
+              )}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
               {user.isApproved ? 'Approved' : 'Pending'}
@@ -215,10 +267,16 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.verificationStatus === 'approved' ? 'text-sage-green' : user.verificationStatus === 'pending' ? 'text-earthy-yellow' : 'text-tomato-red'}`}>
-              {user.verificationStatus === 'approved' ? <CheckCircle className="w-6 h-6 mx-auto mb-1" /> : 
-               user.verificationStatus === 'pending' ? <Clock className="w-6 h-6 mx-auto mb-1" /> : 
-               <XCircle className="w-6 h-6 mx-auto mb-1" />}
+            <div
+              className={`text-lg font-bold ${user.verificationStatus === 'approved' ? 'text-sage-green' : user.verificationStatus === 'pending' ? 'text-earthy-yellow' : 'text-tomato-red'}`}
+            >
+              {user.verificationStatus === 'approved' ? (
+                <CheckCircle className="w-6 h-6 mx-auto mb-1" />
+              ) : user.verificationStatus === 'pending' ? (
+                <Clock className="w-6 h-6 mx-auto mb-1" />
+              ) : (
+                <XCircle className="w-6 h-6 mx-auto mb-1" />
+              )}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400 capitalize">
               {user.verificationStatus}
@@ -226,7 +284,9 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           </div>
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div className={`text-lg font-bold ${user.riskScore <= 30 ? 'text-sage-green' : user.riskScore <= 60 ? 'text-earthy-yellow' : 'text-tomato-red'}`}>
+            <div
+              className={`text-lg font-bold ${user.riskScore <= 30 ? 'text-sage-green' : user.riskScore <= 60 ? 'text-earthy-yellow' : 'text-tomato-red'}`}
+            >
               <span>{user.riskScore || 0}</span>
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -242,7 +302,7 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
 // Activity timeline tab
 const ActivityTab = ({ user }) => {
   const { isDarkMode } = useTheme();
-  
+
   // Mock activity data - replace with real data from API
   const activities = [
     {
@@ -251,7 +311,7 @@ const ActivityTab = ({ user }) => {
       description: 'User logged in',
       timestamp: new Date(Date.now() - 1000 * 60 * 30),
       icon: Eye,
-      color: 'sage-green'
+      color: 'sage-green',
     },
     {
       id: 2,
@@ -259,7 +319,7 @@ const ActivityTab = ({ user }) => {
       description: 'Updated profile information',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
       icon: Edit3,
-      color: 'sage-green'
+      color: 'sage-green',
     },
     {
       id: 3,
@@ -267,14 +327,16 @@ const ActivityTab = ({ user }) => {
       description: 'Verification documents submitted',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
       icon: FileText,
-      color: 'earthy-yellow'
-    }
+      color: 'earthy-yellow',
+    },
   ];
 
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           Recent Activity
         </h3>
         <div className="space-y-4">
@@ -282,14 +344,20 @@ const ActivityTab = ({ user }) => {
             const IconComponent = activity.icon;
             return (
               <div key={activity.id} className="flex items-start gap-4">
-                <div className={`w-8 h-8 rounded-lg bg-${activity.color}/10 flex items-center justify-center`}>
+                <div
+                  className={`w-8 h-8 rounded-lg bg-${activity.color}/10 flex items-center justify-center`}
+                >
                   <IconComponent className={`w-4 h-4 text-${activity.color}`} />
                 </div>
                 <div className="flex-1">
-                  <p className={`text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                  <p
+                    className={`text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                  >
                     {activity.description}
                   </p>
-                  <p className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                  >
                     {format(activity.timestamp, 'PPp')}
                   </p>
                 </div>
@@ -301,13 +369,19 @@ const ActivityTab = ({ user }) => {
 
       {/* Login History */}
       <Card className="p-6">
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           Login History
         </h3>
         <div className="text-sm text-text-muted">
           <div className="flex justify-between py-2">
             <span>Last Login:</span>
-            <span>{user.lastLogin ? format(new Date(user.lastLogin), 'PPp') : 'Never'}</span>
+            <span>
+              {user.lastLogin
+                ? format(new Date(user.lastLogin), 'PPp')
+                : 'Never'}
+            </span>
           </div>
           <div className="flex justify-between py-2">
             <span>Account Created:</span>
@@ -328,10 +402,14 @@ const BusinessTab = ({ user }) => {
     return (
       <div className="text-center py-12">
         <Building className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className={`text-lg font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           No Business Association
         </h3>
-        <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+        <p
+          className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+        >
           This user is not associated with any business
         </p>
       </div>
@@ -341,25 +419,39 @@ const BusinessTab = ({ user }) => {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           Business Information
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <label
+              className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Business Name
             </label>
-            <p className={isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}>
+            <p
+              className={
+                isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+              }
+            >
               {businessInfo.businessName}
             </p>
           </div>
-          
+
           {businessInfo.businessType && (
             <div>
-              <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+              <label
+                className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+              >
                 Business Type
               </label>
-              <p className={isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}>
+              <p
+                className={
+                  isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+                }
+              >
                 {businessInfo.businessType}
               </p>
             </div>
@@ -367,10 +459,16 @@ const BusinessTab = ({ user }) => {
 
           {businessInfo.location && (
             <div>
-              <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+              <label
+                className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+              >
                 Location
               </label>
-              <p className={isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}>
+              <p
+                className={
+                  isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+                }
+              >
                 {businessInfo.location}
               </p>
             </div>
@@ -378,10 +476,16 @@ const BusinessTab = ({ user }) => {
 
           {businessInfo.totalOrders !== undefined && (
             <div>
-              <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+              <label
+                className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+              >
                 Total Orders
               </label>
-              <p className={isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}>
+              <p
+                className={
+                  isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+                }
+              >
                 {businessInfo.totalOrders.toLocaleString()}
               </p>
             </div>
@@ -392,12 +496,7 @@ const BusinessTab = ({ user }) => {
   );
 };
 
-const UserProfileModal = ({ 
-  user, 
-  isOpen, 
-  onClose, 
-  onUserUpdate 
-}) => {
+const UserProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('basic');
   const [isEditing, setIsEditing] = useState(false);
@@ -409,8 +508,8 @@ const UserProfileModal = ({
     setIsLoading(true);
     try {
       // API call to update user
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock API call
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock API call
+
       toast.success('User updated successfully');
       setIsEditing(false);
       if (onUserUpdate) {
@@ -433,7 +532,7 @@ const UserProfileModal = ({
     { id: 'basic', label: 'Basic Info', icon: User },
     { id: 'activity', label: 'Activity', icon: Activity },
     { id: 'business', label: 'Business', icon: Building },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   if (!user) return null;
@@ -444,14 +543,18 @@ const UserProfileModal = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-dark-border">
           <div>
-            <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <h2
+              className={`text-xl font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               User Profile
             </h2>
-            <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+            <p
+              className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+            >
               Manage user information and settings
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {isEditing ? (
               <>
@@ -530,7 +633,9 @@ const UserProfileModal = ({
               {activeTab === 'settings' && (
                 <div className="text-center py-12">
                   <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                  >
                     Settings panel coming soon
                   </p>
                 </div>

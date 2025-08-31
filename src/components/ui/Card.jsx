@@ -4,73 +4,74 @@ import { cn } from '../../utils';
 import { useTheme } from '../../hooks/useTheme';
 
 // Dynamic card variants with dark mode support
-const getCardVariants = (isDarkMode) => cva(
-  // Base card classes with organic curves and glassmorphism
-  'rounded-3xl border transition-all duration-500 group',
-  {
-    variants: {
-      variant: {
-        // Default - Subtle elevation (dark mode enhanced)
-        default: isDarkMode
-          ? 'bg-dark-olive-surface/80 backdrop-blur-sm shadow-dark-depth-1 hover:shadow-dark-depth-3 border-dark-olive-border/50 hover:-translate-y-1'
-          : 'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-shadow-soft border-white/50 hover:-translate-y-1',
+const getCardVariants = (isDarkMode) =>
+  cva(
+    // Base card classes with organic curves and glassmorphism
+    'rounded-3xl border transition-all duration-500 group',
+    {
+      variants: {
+        variant: {
+          // Default - Subtle elevation (dark mode enhanced)
+          default: isDarkMode
+            ? 'bg-dark-olive-surface/80 backdrop-blur-sm shadow-dark-depth-1 hover:shadow-dark-depth-3 border-dark-olive-border/50 hover:-translate-y-1'
+            : 'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-shadow-soft border-white/50 hover:-translate-y-1',
 
-        // Elevated - More prominent shadow (dark mode optimized)
-        elevated: isDarkMode
-          ? 'bg-dark-olive-surface shadow-dark-depth-2 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/20 border-dark-olive-border hover:-translate-y-2'
-          : 'bg-white shadow-lg hover:shadow-2xl hover:shadow-shadow-soft border-gray-100 hover:-translate-y-2',
+          // Elevated - More prominent shadow (dark mode optimized)
+          elevated: isDarkMode
+            ? 'bg-dark-olive-surface shadow-dark-depth-2 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/20 border-dark-olive-border hover:-translate-y-2'
+            : 'bg-white shadow-lg hover:shadow-2xl hover:shadow-shadow-soft border-gray-100 hover:-translate-y-2',
 
-        // Glass - Full glassmorphism effect (dark mode enhanced)
-        glass: isDarkMode
-          ? 'glass-3-dark border-dark-olive-border/30 hover:glass-4-dark hover:border-dark-sage-accent/40 hover:shadow-dark-glow-olive/15'
-          : 'glass-3 border-white/20 hover:glass-4 hover:border-muted-olive/30 hover:shadow-glow-olive/10',
+          // Glass - Full glassmorphism effect (dark mode enhanced)
+          glass: isDarkMode
+            ? 'glass-3-dark border-dark-olive-border/30 hover:glass-4-dark hover:border-dark-sage-accent/40 hover:shadow-dark-glow-olive/15'
+            : 'glass-3 border-white/20 hover:glass-4 hover:border-muted-olive/30 hover:shadow-glow-olive/10',
 
-        // Glass Olive - Olive-themed glassmorphism (dark mode enhanced)
-        'glass-olive': isDarkMode
-          ? 'glass-card-dark-olive border-dark-sage-accent/20 hover:glass-3-dark hover:shadow-dark-glow-sage'
-          : 'glass-card-olive border-muted-olive/20 hover:glass-3 hover:shadow-glow-sage',
+          // Glass Olive - Olive-themed glassmorphism (dark mode enhanced)
+          'glass-olive': isDarkMode
+            ? 'glass-card-dark-olive border-dark-sage-accent/20 hover:glass-3-dark hover:shadow-dark-glow-sage'
+            : 'glass-card-olive border-muted-olive/20 hover:glass-3 hover:shadow-glow-sage',
 
-        // Outlined - Subtle border focus with olive theme (dark mode)
-        outlined: isDarkMode
-          ? 'bg-dark-olive-bg border-2 border-dark-olive-border hover:border-dark-sage-accent hover:shadow-dark-depth-2'
-          : 'bg-white border-2 border-gray-200 hover:border-muted-olive hover:shadow-lg',
+          // Outlined - Subtle border focus with olive theme (dark mode)
+          outlined: isDarkMode
+            ? 'bg-dark-olive-bg border-2 border-dark-olive-border hover:border-dark-sage-accent hover:shadow-dark-depth-2'
+            : 'bg-white border-2 border-gray-200 hover:border-muted-olive hover:shadow-lg',
 
-        // Gradient - Earth-tone gradient (dark mode adaptation)
-        gradient: isDarkMode
-          ? 'bg-gradient-to-br from-dark-olive-surface via-dark-olive-bg to-dark-sage-accent/10 border-dark-olive-border/50 shadow-dark-depth-1 hover:shadow-dark-depth-3'
-          : 'bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 border-white/50 shadow-sm hover:shadow-xl',
+          // Gradient - Earth-tone gradient (dark mode adaptation)
+          gradient: isDarkMode
+            ? 'bg-gradient-to-br from-dark-olive-surface via-dark-olive-bg to-dark-sage-accent/10 border-dark-olive-border/50 shadow-dark-depth-1 hover:shadow-dark-depth-3'
+            : 'bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 border-white/50 shadow-sm hover:shadow-xl',
 
-        // Interactive - For clickable cards with olive theme (dark mode)
-        interactive: isDarkMode
-          ? 'bg-dark-olive-surface/80 backdrop-blur-sm shadow-dark-depth-1 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/15 border-dark-olive-border/50 hover:-translate-y-2 cursor-pointer hover:bg-dark-olive-surface/90'
-          : 'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-glow-olive/10 border-white/50 hover:-translate-y-2 cursor-pointer hover:bg-white/90',
+          // Interactive - For clickable cards with olive theme (dark mode)
+          interactive: isDarkMode
+            ? 'bg-dark-olive-surface/80 backdrop-blur-sm shadow-dark-depth-1 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/15 border-dark-olive-border/50 hover:-translate-y-2 cursor-pointer hover:bg-dark-olive-surface/90'
+            : 'bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:shadow-glow-olive/10 border-white/50 hover:-translate-y-2 cursor-pointer hover:bg-white/90',
 
-        // Featured - For highlighted content (dark mode enhanced)
-        featured: isDarkMode
-          ? 'bg-gradient-secondary text-white shadow-dark-depth-2 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/25 border-0 hover:-translate-y-1'
-          : 'bg-gradient-secondary text-white shadow-lg hover:shadow-2xl border-0 hover:-translate-y-1',
+          // Featured - For highlighted content (dark mode enhanced)
+          featured: isDarkMode
+            ? 'bg-gradient-secondary text-white shadow-dark-depth-2 hover:shadow-dark-depth-3 hover:shadow-dark-glow-olive/25 border-0 hover:-translate-y-1'
+            : 'bg-gradient-secondary text-white shadow-lg hover:shadow-2xl border-0 hover:-translate-y-1',
+        },
+        padding: {
+          none: 'p-0',
+          sm: 'p-4',
+          default: 'p-6',
+          lg: 'p-8',
+          xl: 'p-10',
+        },
+        rounded: {
+          sm: 'rounded-xl',
+          default: 'rounded-3xl',
+          lg: 'rounded-[2rem]',
+          full: 'rounded-full',
+        },
       },
-      padding: {
-        none: 'p-0',
-        sm: 'p-4',
-        default: 'p-6',
-        lg: 'p-8',
-        xl: 'p-10',
+      defaultVariants: {
+        variant: 'default',
+        padding: 'default',
+        rounded: 'default',
       },
-      rounded: {
-        sm: 'rounded-xl',
-        default: 'rounded-3xl',
-        lg: 'rounded-[2rem]',
-        full: 'rounded-full',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      padding: 'default',
-      rounded: 'default',
-    },
-  }
-);
+    }
+  );
 
 // Main Card component with dark mode support
 const Card = forwardRef(
@@ -79,10 +80,10 @@ const Card = forwardRef(
     ref
   ) => {
     const { isDarkMode } = useTheme();
-    
+
     // Get theme-aware card variants
     const cardVariants = getCardVariants(isDarkMode);
-    
+
     return (
       <div
         ref={ref}
@@ -127,7 +128,7 @@ CardHeader.displayName = 'CardHeader';
 const CardTitle = forwardRef(
   ({ className, children, as: Component = 'h3', ...props }, ref) => {
     const { isDarkMode } = useTheme();
-    
+
     return (
       <Component
         ref={ref}
@@ -149,7 +150,7 @@ CardTitle.displayName = 'CardTitle';
 // Card Description component with dark mode support
 const CardDescription = forwardRef(({ className, children, ...props }, ref) => {
   const { isDarkMode } = useTheme();
-  
+
   return (
     <p
       ref={ref}

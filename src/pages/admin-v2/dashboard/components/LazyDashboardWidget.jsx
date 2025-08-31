@@ -4,14 +4,14 @@
  * Provides efficient loading and rendering for dashboard components
  */
 
-import React, { 
-  Suspense, 
-  lazy, 
-  useEffect, 
-  useState, 
-  useRef, 
+import React, {
+  Suspense,
+  lazy,
+  useEffect,
+  useState,
+  useRef,
   useCallback,
-  memo 
+  memo,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Loader } from 'lucide-react';
@@ -36,14 +36,20 @@ class WidgetErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       const { isDarkMode, onRetry, widgetName } = this.props;
-      
+
       return (
         <Card className="p-6 text-center">
-          <AlertTriangle className={`w-8 h-8 mx-auto mb-3 ${isDarkMode ? 'text-tomato-red' : 'text-tomato-red'}`} />
-          <h3 className={`text-lg font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+          <AlertTriangle
+            className={`w-8 h-8 mx-auto mb-3 ${isDarkMode ? 'text-tomato-red' : 'text-tomato-red'}`}
+          />
+          <h3
+            className={`text-lg font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+          >
             Widget Error
           </h3>
-          <p className={`text-sm mb-4 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+          <p
+            className={`text-sm mb-4 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+          >
             Failed to load {widgetName || 'dashboard widget'}
           </p>
           {onRetry && (
@@ -54,9 +60,10 @@ class WidgetErrorBoundary extends React.Component {
               }}
               className={`
                 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200
-                ${isDarkMode 
-                  ? 'bg-sage-green/20 text-sage-green hover:bg-sage-green/30' 
-                  : 'bg-muted-olive/10 text-muted-olive hover:bg-muted-olive/20'
+                ${
+                  isDarkMode
+                    ? 'bg-sage-green/20 text-sage-green hover:bg-sage-green/30'
+                    : 'bg-muted-olive/10 text-muted-olive hover:bg-muted-olive/20'
                 }
               `}
             >
@@ -72,31 +79,41 @@ class WidgetErrorBoundary extends React.Component {
 }
 
 // Loading skeleton component
-const WidgetSkeleton = memo(({ height = 200, className = "" }) => {
+const WidgetSkeleton = memo(({ height = 200, className = '' }) => {
   const { isDarkMode } = useTheme();
-  
+
   return (
     <Card className={`p-6 ${className}`}>
       <div className="animate-pulse space-y-4">
         {/* Header skeleton */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className={`w-5 h-5 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
-            <div className={`h-5 w-32 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+            <div
+              className={`w-5 h-5 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}
+            />
+            <div
+              className={`h-5 w-32 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}
+            />
           </div>
-          <div className={`h-4 w-16 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+          <div
+            className={`h-4 w-16 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}
+          />
         </div>
-        
+
         {/* Content skeleton */}
-        <div 
+        <div
           className={`w-full rounded-xl ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}
           style={{ height: `${height}px` }}
         />
-        
+
         {/* Footer skeleton */}
         <div className="flex items-center justify-between">
-          <div className={`h-3 w-24 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
-          <div className={`h-3 w-16 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+          <div
+            className={`h-3 w-24 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}
+          />
+          <div
+            className={`h-3 w-16 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}
+          />
         </div>
       </div>
     </Card>
@@ -125,7 +142,7 @@ const useIntersectionObserver = (options = {}) => {
       {
         threshold: 0.1,
         rootMargin: '50px',
-        ...options
+        ...options,
       }
     );
 
@@ -148,18 +165,18 @@ const LazyDashboardWidget = ({
   onError,
   onLoad,
   height = 200,
-  className = "",
+  className = '',
   ...props
 }) => {
   const { isDarkMode } = useTheme();
   const [loadAttempts, setLoadAttempts] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(false);
-  
+
   // Intersection observer for viewport-based loading
   const [elementRef, isIntersecting, hasIntersected] = useIntersectionObserver({
     threshold: 0.1,
-    rootMargin: priority === 'high' ? '200px' : '50px'
+    rootMargin: priority === 'high' ? '200px' : '50px',
   });
 
   // Determine when to load the widget
@@ -182,23 +199,26 @@ const LazyDashboardWidget = ({
   // Handle retry
   const handleRetry = useCallback(() => {
     if (loadAttempts < retryCount) {
-      setLoadAttempts(prev => prev + 1);
+      setLoadAttempts((prev) => prev + 1);
       setShouldLoad(true);
     }
   }, [loadAttempts, retryCount]);
 
   // Handle errors
-  const handleError = useCallback((error) => {
-    console.error(`Widget ${widgetName} failed to load:`, error);
-    onError?.(error, widgetName);
-  }, [onError, widgetName]);
+  const handleError = useCallback(
+    (error) => {
+      console.error(`Widget ${widgetName} failed to load:`, error);
+      onError?.(error, widgetName);
+    },
+    [onError, widgetName]
+  );
 
   // Render loading fallback
   const renderFallback = () => {
     if (fallback) {
       return typeof fallback === 'function' ? fallback() : fallback;
     }
-    
+
     return <WidgetSkeleton height={height} className={className} />;
   };
 
@@ -214,7 +234,7 @@ const LazyDashboardWidget = ({
 
     return (
       <div ref={elementRef} className={className}>
-        <WidgetErrorBoundary 
+        <WidgetErrorBoundary
           isDarkMode={isDarkMode}
           onRetry={handleRetry}
           widgetName={widgetName}
@@ -240,13 +260,9 @@ const LazyDashboardWidget = ({
 // Higher-order component for creating lazy widgets
 export const createLazyWidget = (importFn, options = {}) => {
   const LazyComponent = lazy(importFn);
-  
+
   return memo((props) => (
-    <LazyDashboardWidget
-      component={LazyComponent}
-      {...options}
-      {...props}
-    />
+    <LazyDashboardWidget component={LazyComponent} {...options} {...props} />
   ));
 };
 
@@ -278,7 +294,12 @@ export const LazySystemHealthWidget = createLazyWidget(
 
 export const LazyVerificationPipeline = createLazyWidget(
   () => import('./VerificationPipeline'),
-  { widgetName: 'Verification Pipeline', priority: 'normal', defer: true, height: 400 }
+  {
+    widgetName: 'Verification Pipeline',
+    priority: 'normal',
+    defer: true,
+    height: 400,
+  }
 );
 
 // Performance monitor component
@@ -287,26 +308,31 @@ export const DashboardPerformanceMonitor = memo(({ onMetric }) => {
     loadTimes: [],
     renderTimes: [],
     memoryUsage: [],
-    widgetCount: 0
+    widgetCount: 0,
   });
 
-  const recordMetric = useCallback((type, value, widgetName) => {
-    const timestamp = performance.now();
-    const metric = { type, value, widgetName, timestamp };
-    
-    performanceRef.current[`${type}s`]?.push(metric);
-    performanceRef.current.widgetCount += type === 'load' ? 1 : 0;
-    
-    onMetric?.(metric);
-    
-    // Clean up old metrics (keep last 50)
-    Object.keys(performanceRef.current).forEach(key => {
-      if (Array.isArray(performanceRef.current[key]) && 
-          performanceRef.current[key].length > 50) {
-        performanceRef.current[key] = performanceRef.current[key].slice(-50);
-      }
-    });
-  }, [onMetric]);
+  const recordMetric = useCallback(
+    (type, value, widgetName) => {
+      const timestamp = performance.now();
+      const metric = { type, value, widgetName, timestamp };
+
+      performanceRef.current[`${type}s`]?.push(metric);
+      performanceRef.current.widgetCount += type === 'load' ? 1 : 0;
+
+      onMetric?.(metric);
+
+      // Clean up old metrics (keep last 50)
+      Object.keys(performanceRef.current).forEach((key) => {
+        if (
+          Array.isArray(performanceRef.current[key]) &&
+          performanceRef.current[key].length > 50
+        ) {
+          performanceRef.current[key] = performanceRef.current[key].slice(-50);
+        }
+      });
+    },
+    [onMetric]
+  );
 
   // Monitor memory usage
   useEffect(() => {
@@ -315,13 +341,13 @@ export const DashboardPerformanceMonitor = memo(({ onMetric }) => {
         recordMetric('memory', {
           used: performance.memory.usedJSHeapSize,
           total: performance.memory.totalJSHeapSize,
-          limit: performance.memory.jsHeapSizeLimit
+          limit: performance.memory.jsHeapSizeLimit,
         });
       }
     };
 
-    const interval = setInterval(monitorMemory, 10000); // Every 10 seconds
-    return () => clearInterval(interval);
+    // Memory monitoring interval removed for MVP
+    // For production, consider monitoring on user actions instead
   }, [recordMetric]);
 
   return null; // This is a monitoring component, no UI

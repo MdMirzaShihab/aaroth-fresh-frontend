@@ -25,7 +25,11 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat(apiSlice.middleware, adminApiV2Slice.middleware, authMiddlewareWithRetry),
+    }).concat(
+      apiSlice.middleware,
+      adminApiV2Slice.middleware,
+      authMiddlewareWithRetry
+    ),
   devTools: process.env.NODE_ENV !== 'production',
 });
 

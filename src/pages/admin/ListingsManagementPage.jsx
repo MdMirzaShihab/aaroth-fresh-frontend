@@ -74,7 +74,7 @@ const ListingsManagementPage = () => {
   const [moderationType, setModerationAction] = useState(''); // 'approve', 'reject', 'flag'
   const [bulkActionModalOpen, setBulkActionModalOpen] = useState(false);
   const [bulkActionType, setBulkActionType] = useState('');
-  
+
   const [filters, setFilters] = useState({
     search: '',
     status: 'all', // 'pending', 'approved', 'rejected', 'flagged', 'all'
@@ -132,7 +132,9 @@ const ListingsManagementPage = () => {
   // Process listings for moderation queue
   const moderationQueue = useMemo(() => {
     return listings
-      .filter(listing => listing.moderationStatus === 'pending' || listing.isFlagged)
+      .filter(
+        (listing) => listing.moderationStatus === 'pending' || listing.isFlagged
+      )
       .sort((a, b) => {
         // Sort by priority: flagged first, then by creation date
         if (a.isFlagged && !b.isFlagged) return -1;
@@ -143,7 +145,7 @@ const ListingsManagementPage = () => {
 
   // CSV export data
   const csvData = useMemo(() => {
-    return listings.map(listing => ({
+    return listings.map((listing) => ({
       ID: listing.id,
       Title: listing.title,
       'Vendor Name': listing.vendorName,
@@ -159,7 +161,7 @@ const ListingsManagementPage = () => {
   }, [listings]);
 
   const handleListingSelect = (listingId, selected) => {
-    setSelectedListings(prev => {
+    setSelectedListings((prev) => {
       const newSet = new Set(prev);
       if (selected) {
         newSet.add(listingId);
@@ -174,7 +176,7 @@ const ListingsManagementPage = () => {
     if (selectedListings.size === listings.length) {
       setSelectedListings(new Set());
     } else {
-      setSelectedListings(new Set(listings.map(l => l.id)));
+      setSelectedListings(new Set(listings.map((l) => l.id)));
     }
   };
 
@@ -243,7 +245,7 @@ const ListingsManagementPage = () => {
         action: bulkActionType,
         ...actionData,
       }).unwrap();
-      
+
       setSelectedListings(new Set());
       setBulkActionModalOpen(false);
       refetchListings();
@@ -254,13 +256,29 @@ const ListingsManagementPage = () => {
 
   const getModerationBadge = (status, isFlagged) => {
     if (isFlagged) {
-      return { color: 'bg-tomato-red/10 text-tomato-red', label: 'Flagged', urgent: true };
+      return {
+        color: 'bg-tomato-red/10 text-tomato-red',
+        label: 'Flagged',
+        urgent: true,
+      };
     }
-    
+
     const badges = {
-      pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending Review', urgent: true },
-      approved: { color: 'bg-sage-green/10 text-sage-green', label: 'Approved', urgent: false },
-      rejected: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Rejected', urgent: false },
+      pending: {
+        color: 'bg-amber-100 text-amber-800',
+        label: 'Pending Review',
+        urgent: true,
+      },
+      approved: {
+        color: 'bg-sage-green/10 text-sage-green',
+        label: 'Approved',
+        urgent: false,
+      },
+      rejected: {
+        color: 'bg-tomato-red/10 text-tomato-red',
+        label: 'Rejected',
+        urgent: false,
+      },
     };
     return badges[status] || badges.pending;
   };
@@ -274,9 +292,12 @@ const ListingsManagementPage = () => {
   };
 
   const getPriorityLevel = (listing) => {
-    if (listing.isFlagged) return { level: 'high', color: 'text-tomato-red', label: 'High' };
-    if (listing.qualityScore < 30) return { level: 'high', color: 'text-tomato-red', label: 'High' };
-    if (listing.qualityScore < 50) return { level: 'medium', color: 'text-amber-600', label: 'Medium' };
+    if (listing.isFlagged)
+      return { level: 'high', color: 'text-tomato-red', label: 'High' };
+    if (listing.qualityScore < 30)
+      return { level: 'high', color: 'text-tomato-red', label: 'High' };
+    if (listing.qualityScore < 50)
+      return { level: 'medium', color: 'text-amber-600', label: 'Medium' };
     return { level: 'low', color: 'text-sage-green', label: 'Low' };
   };
 
@@ -306,7 +327,8 @@ const ListingsManagementPage = () => {
               Listings Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
-              Content moderation queue with quality scoring, bulk operations, and comprehensive listing oversight
+              Content moderation queue with quality scoring, bulk operations,
+              and comprehensive listing oversight
             </p>
           </div>
 
@@ -325,7 +347,9 @@ const ListingsManagementPage = () => {
               onClick={refetchListings}
               disabled={isLoadingListings}
             >
-              <RefreshCw className={`w-4 h-4 ${isLoadingListings ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isLoadingListings ? 'animate-spin' : ''}`}
+              />
             </Button>
           </div>
         </motion.div>
@@ -340,8 +364,12 @@ const ListingsManagementPage = () => {
           <Card className="p-4 glass glow-green">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Total Listings</p>
-                <p className="text-2xl font-bold text-muted-olive">{stats.totalListings}</p>
+                <p className="text-text-muted text-sm font-medium">
+                  Total Listings
+                </p>
+                <p className="text-2xl font-bold text-muted-olive">
+                  {stats.totalListings}
+                </p>
                 <p className="text-xs text-sage-green mt-1">
                   {stats.approvedListings} approved
                 </p>
@@ -352,21 +380,31 @@ const ListingsManagementPage = () => {
             </div>
           </Card>
 
-          <Card className={`p-4 glass ${stats.pendingModeration > 0 ? 'border-amber-500/30' : ''}`}>
+          <Card
+            className={`p-4 glass ${stats.pendingModeration > 0 ? 'border-amber-500/30' : ''}`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Pending Review</p>
-                <p className={`text-2xl font-bold ${stats.pendingModeration > 0 ? 'text-amber-600' : 'text-text-dark'}`}>
+                <p className="text-text-muted text-sm font-medium">
+                  Pending Review
+                </p>
+                <p
+                  className={`text-2xl font-bold ${stats.pendingModeration > 0 ? 'text-amber-600' : 'text-text-dark'}`}
+                >
                   {stats.pendingModeration}
                 </p>
-                <p className="text-xs text-text-muted mt-1">
-                  Need attention
-                </p>
+                <p className="text-xs text-text-muted mt-1">Need attention</p>
               </div>
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                stats.pendingModeration > 0 ? 'bg-amber-500/10' : 'bg-gray-100'
-              }`}>
-                <Clock className={`w-6 h-6 ${stats.pendingModeration > 0 ? 'text-amber-600' : 'text-gray-400'}`} />
+              <div
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  stats.pendingModeration > 0
+                    ? 'bg-amber-500/10'
+                    : 'bg-gray-100'
+                }`}
+              >
+                <Clock
+                  className={`w-6 h-6 ${stats.pendingModeration > 0 ? 'text-amber-600' : 'text-gray-400'}`}
+                />
                 {stats.pendingModeration > 0 && (
                   <div className="absolute w-3 h-3 bg-amber-500 rounded-full animate-pulse -top-1 -right-1" />
                 )}
@@ -374,21 +412,29 @@ const ListingsManagementPage = () => {
             </div>
           </Card>
 
-          <Card className={`p-4 glass ${stats.flaggedListings > 0 ? 'border-tomato-red/30' : ''}`}>
+          <Card
+            className={`p-4 glass ${stats.flaggedListings > 0 ? 'border-tomato-red/30' : ''}`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Flagged Items</p>
-                <p className={`text-2xl font-bold ${stats.flaggedListings > 0 ? 'text-tomato-red' : 'text-text-dark'}`}>
+                <p className="text-text-muted text-sm font-medium">
+                  Flagged Items
+                </p>
+                <p
+                  className={`text-2xl font-bold ${stats.flaggedListings > 0 ? 'text-tomato-red' : 'text-text-dark'}`}
+                >
                   {stats.flaggedListings}
                 </p>
-                <p className="text-xs text-text-muted mt-1">
-                  Require review
-                </p>
+                <p className="text-xs text-text-muted mt-1">Require review</p>
               </div>
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                stats.flaggedListings > 0 ? 'bg-tomato-red/10' : 'bg-gray-100'
-              }`}>
-                <Flag className={`w-6 h-6 ${stats.flaggedListings > 0 ? 'text-tomato-red animate-pulse' : 'text-gray-400'}`} />
+              <div
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  stats.flaggedListings > 0 ? 'bg-tomato-red/10' : 'bg-gray-100'
+                }`}
+              >
+                <Flag
+                  className={`w-6 h-6 ${stats.flaggedListings > 0 ? 'text-tomato-red animate-pulse' : 'text-gray-400'}`}
+                />
               </div>
             </div>
           </Card>
@@ -396,13 +442,15 @@ const ListingsManagementPage = () => {
           <Card className="p-4 glass">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Avg Quality</p>
-                <p className={`text-2xl font-bold ${getQualityColor(stats.avgQualityScore)}`}>
+                <p className="text-text-muted text-sm font-medium">
+                  Avg Quality
+                </p>
+                <p
+                  className={`text-2xl font-bold ${getQualityColor(stats.avgQualityScore)}`}
+                >
                   {stats.avgQualityScore || 0}%
                 </p>
-                <p className="text-xs text-text-muted mt-1">
-                  Overall score
-                </p>
+                <p className="text-xs text-text-muted mt-1">Overall score</p>
               </div>
               <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
                 <Star className="w-6 h-6 text-sage-green" />
@@ -414,10 +462,10 @@ const ListingsManagementPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-text-muted text-sm font-medium">Rejected</p>
-                <p className="text-2xl font-bold text-text-dark">{stats.rejectedListings}</p>
-                <p className="text-xs text-text-muted mt-1">
-                  Total rejected
+                <p className="text-2xl font-bold text-text-dark">
+                  {stats.rejectedListings}
                 </p>
+                <p className="text-xs text-text-muted mt-1">Total rejected</p>
               </div>
               <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center">
                 <XCircle className="w-6 h-6 text-gray-400" />
@@ -435,10 +483,20 @@ const ListingsManagementPage = () => {
           <Card className="p-2 glass">
             <div className="flex flex-col lg:flex-row gap-2">
               {[
-                { id: 'moderation', label: 'Moderation Queue', icon: Shield, urgent: stats.pendingModeration + stats.flaggedListings },
+                {
+                  id: 'moderation',
+                  label: 'Moderation Queue',
+                  icon: Shield,
+                  urgent: stats.pendingModeration + stats.flaggedListings,
+                },
                 { id: 'cards', label: 'Card View', icon: Grid, urgent: 0 },
                 { id: 'list', label: 'List View', icon: List, urgent: 0 },
-                { id: 'analytics', label: 'Analytics', icon: BarChart3, urgent: 0 },
+                {
+                  id: 'analytics',
+                  label: 'Analytics',
+                  icon: BarChart3,
+                  urgent: 0,
+                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -451,19 +509,25 @@ const ListingsManagementPage = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <tab.icon className={`w-5 h-5 ${
-                        viewMode === tab.id ? 'text-white' : 'text-muted-olive'
-                      }`} />
+                      <tab.icon
+                        className={`w-5 h-5 ${
+                          viewMode === tab.id
+                            ? 'text-white'
+                            : 'text-muted-olive'
+                        }`}
+                      />
                       <span className="font-medium">{tab.label}</span>
                     </div>
                     {tab.urgent > 0 && (
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-earthy-yellow animate-pulse" />
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          viewMode === tab.id
-                            ? 'bg-white/20 text-white'
-                            : 'bg-tomato-red/20 text-tomato-red'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                            viewMode === tab.id
+                              ? 'bg-white/20 text-white'
+                              : 'bg-tomato-red/20 text-tomato-red'
+                          }`}
+                        >
                           {tab.urgent}
                         </span>
                       </div>
@@ -537,14 +601,16 @@ const ListingsManagementPage = () => {
                     title="No listings found"
                     description="No listings match your current filters."
                     actionLabel="Clear Filters"
-                    onAction={() => setFilters({
-                      ...filters,
-                      search: '',
-                      status: 'all',
-                      category: 'all',
-                      vendor: '',
-                      page: 1,
-                    })}
+                    onAction={() =>
+                      setFilters({
+                        ...filters,
+                        search: '',
+                        status: 'all',
+                        category: 'all',
+                        vendor: '',
+                        page: 1,
+                      })
+                    }
                   />
                 ) : (
                   <>
@@ -572,7 +638,10 @@ const ListingsManagementPage = () => {
                             <label className="flex items-center gap-2">
                               <input
                                 type="checkbox"
-                                checked={selectedListings.size === listings.length && listings.length > 0}
+                                checked={
+                                  selectedListings.size === listings.length &&
+                                  listings.length > 0
+                                }
                                 onChange={handleSelectAll}
                                 className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                               />
@@ -581,7 +650,8 @@ const ListingsManagementPage = () => {
                               </span>
                             </label>
                             <span className="text-sm text-text-muted">
-                              {selectedListings.size} of {listings.length} selected
+                              {selectedListings.size} of {listings.length}{' '}
+                              selected
                             </span>
                           </div>
                         </div>
@@ -610,8 +680,8 @@ const ListingsManagementPage = () => {
                         <div className="flex items-center justify-between">
                           <div className="text-sm text-text-muted">
                             Showing {(currentPage - 1) * filters.limit + 1} to{' '}
-                            {Math.min(currentPage * filters.limit, totalCount)} of{' '}
-                            {totalCount} listings
+                            {Math.min(currentPage * filters.limit, totalCount)}{' '}
+                            of {totalCount} listings
                           </div>
 
                           <div className="flex items-center gap-2">
@@ -619,7 +689,12 @@ const ListingsManagementPage = () => {
                               variant="outline"
                               size="sm"
                               disabled={currentPage === 1 || isLoadingListings}
-                              onClick={() => setFilters({ ...filters, page: currentPage - 1 })}
+                              onClick={() =>
+                                setFilters({
+                                  ...filters,
+                                  page: currentPage - 1,
+                                })
+                              }
                             >
                               Previous
                             </Button>
@@ -631,8 +706,15 @@ const ListingsManagementPage = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              disabled={currentPage === totalPages || isLoadingListings}
-                              onClick={() => setFilters({ ...filters, page: currentPage + 1 })}
+                              disabled={
+                                currentPage === totalPages || isLoadingListings
+                              }
+                              onClick={() =>
+                                setFilters({
+                                  ...filters,
+                                  page: currentPage + 1,
+                                })
+                              }
                             >
                               Next
                             </Button>
@@ -690,7 +772,13 @@ const ListingsManagementPage = () => {
 };
 
 // Moderation Action Modal Component
-const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => {
+const ModerationActionModal = ({
+  isOpen,
+  onClose,
+  type,
+  listing,
+  onSubmit,
+}) => {
   const [actionData, setActionData] = useState({});
 
   if (!isOpen || !listing) return null;
@@ -700,7 +788,8 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
       title: 'Approve Listing',
       color: 'sage-green',
       icon: CheckCircle,
-      description: 'This listing will be made public and available to customers.',
+      description:
+        'This listing will be made public and available to customers.',
     },
     reject: {
       title: 'Reject Listing',
@@ -747,29 +836,45 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
             )}
           </div>
           <div className="flex-1">
-            <h4 className="font-semibold text-text-dark truncate">{listing.title}</h4>
+            <h4 className="font-semibold text-text-dark truncate">
+              {listing.title}
+            </h4>
             <p className="text-sm text-text-muted">{listing.vendorName}</p>
-            <p className="text-sm font-medium text-muted-olive">${listing.price}/{listing.unit}</p>
+            <p className="text-sm font-medium text-muted-olive">
+              ${listing.price}/{listing.unit}
+            </p>
           </div>
         </div>
 
         {/* Action Description */}
-        <div className={`p-4 rounded-2xl border ${
-          config.color === 'tomato-red' ? 'bg-tomato-red/5 border-tomato-red/20' :
-          config.color === 'amber-500' ? 'bg-amber-50 border-amber-200' :
-          'bg-sage-green/5 border-sage-green/20'
-        }`}>
+        <div
+          className={`p-4 rounded-2xl border ${
+            config.color === 'tomato-red'
+              ? 'bg-tomato-red/5 border-tomato-red/20'
+              : config.color === 'amber-500'
+                ? 'bg-amber-50 border-amber-200'
+                : 'bg-sage-green/5 border-sage-green/20'
+          }`}
+        >
           <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-              config.color === 'tomato-red' ? 'bg-tomato-red/10' :
-              config.color === 'amber-500' ? 'bg-amber-100' :
-              'bg-sage-green/10'
-            }`}>
-              <config.icon className={`w-4 h-4 ${
-                config.color === 'tomato-red' ? 'text-tomato-red' :
-                config.color === 'amber-500' ? 'text-amber-600' :
-                'text-sage-green'
-              }`} />
+            <div
+              className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                config.color === 'tomato-red'
+                  ? 'bg-tomato-red/10'
+                  : config.color === 'amber-500'
+                    ? 'bg-amber-100'
+                    : 'bg-sage-green/10'
+              }`}
+            >
+              <config.icon
+                className={`w-4 h-4 ${
+                  config.color === 'tomato-red'
+                    ? 'text-tomato-red'
+                    : config.color === 'amber-500'
+                      ? 'text-amber-600'
+                      : 'text-sage-green'
+                }`}
+              />
             </div>
             <p className="text-sm text-text-dark">{config.description}</p>
           </div>
@@ -780,14 +885,22 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
           <FormField label="Rejection Reason">
             <select
               value={actionData.reason || ''}
-              onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
+              onChange={(e) =>
+                setActionData({ ...actionData, reason: e.target.value })
+              }
               className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               required
             >
               <option value="">Select a reason</option>
-              <option value="poor_quality">Poor Quality Images/Description</option>
-              <option value="inappropriate_content">Inappropriate Content</option>
-              <option value="incorrect_information">Incorrect Information</option>
+              <option value="poor_quality">
+                Poor Quality Images/Description
+              </option>
+              <option value="inappropriate_content">
+                Inappropriate Content
+              </option>
+              <option value="incorrect_information">
+                Incorrect Information
+              </option>
               <option value="duplicate_listing">Duplicate Listing</option>
               <option value="policy_violation">Policy Violation</option>
               <option value="fake_product">Fake/Misleading Product</option>
@@ -801,7 +914,9 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
             <FormField label="Flag Reason">
               <select
                 value={actionData.reason || ''}
-                onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
+                onChange={(e) =>
+                  setActionData({ ...actionData, reason: e.target.value })
+                }
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
                 required
               >
@@ -819,7 +934,9 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
             <FormField label="Severity Level">
               <select
                 value={actionData.severity || 'medium'}
-                onChange={(e) => setActionData({ ...actionData, severity: e.target.value })}
+                onChange={(e) =>
+                  setActionData({ ...actionData, severity: e.target.value })
+                }
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               >
                 <option value="low">Low - Minor concerns</option>
@@ -831,15 +948,26 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
           </>
         )}
 
-        <FormField label={type === 'approve' ? 'Approval Notes (Optional)' : 'Additional Notes'}>
+        <FormField
+          label={
+            type === 'approve'
+              ? 'Approval Notes (Optional)'
+              : 'Additional Notes'
+          }
+        >
           <textarea
             value={actionData.notes || ''}
-            onChange={(e) => setActionData({ ...actionData, notes: e.target.value })}
+            onChange={(e) =>
+              setActionData({ ...actionData, notes: e.target.value })
+            }
             placeholder={
-              type === 'approve' ? 'Any notes about the approval...' :
-              type === 'reject' ? 'Explain the reasons for rejection...' :
-              type === 'flag' ? 'Describe the specific concerns...' :
-              'Any additional notes...'
+              type === 'approve'
+                ? 'Any notes about the approval...'
+                : type === 'reject'
+                  ? 'Explain the reasons for rejection...'
+                  : type === 'flag'
+                    ? 'Describe the specific concerns...'
+                    : 'Any additional notes...'
             }
             rows={4}
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
@@ -854,9 +982,11 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
           <Button
             onClick={handleSubmit}
             className={`${
-              config.color === 'tomato-red' ? 'bg-tomato-red hover:bg-tomato-red/90' :
-              config.color === 'amber-500' ? 'bg-amber-500 hover:bg-amber-500/90' :
-              'bg-sage-green hover:bg-sage-green/90'
+              config.color === 'tomato-red'
+                ? 'bg-tomato-red hover:bg-tomato-red/90'
+                : config.color === 'amber-500'
+                  ? 'bg-amber-500 hover:bg-amber-500/90'
+                  : 'bg-sage-green hover:bg-sage-green/90'
             } text-white flex items-center gap-2`}
           >
             <config.icon className="w-4 h-4" />
@@ -869,7 +999,13 @@ const ModerationActionModal = ({ isOpen, onClose, type, listing, onSubmit }) => 
 };
 
 // Bulk Moderation Modal Component
-const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit }) => {
+const BulkModerationModal = ({
+  isOpen,
+  onClose,
+  actionType,
+  selectedCount,
+  onSubmit,
+}) => {
   const [actionData, setActionData] = useState({});
 
   if (!isOpen) return null;
@@ -913,12 +1049,18 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={config.title} size="md">
       <div className="space-y-4">
-        <div className={`p-4 rounded-2xl ${config.dangerous ? 'bg-tomato-red/5 border border-tomato-red/20' : 'bg-gray-50'}`}>
+        <div
+          className={`p-4 rounded-2xl ${config.dangerous ? 'bg-tomato-red/5 border border-tomato-red/20' : 'bg-gray-50'}`}
+        >
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
-              config.dangerous ? 'bg-tomato-red/10' : 'bg-muted-olive/10'
-            }`}>
-              <config.icon className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-muted-olive'}`} />
+            <div
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                config.dangerous ? 'bg-tomato-red/10' : 'bg-muted-olive/10'
+              }`}
+            >
+              <config.icon
+                className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-muted-olive'}`}
+              />
             </div>
             <div>
               <h4 className="font-semibold text-text-dark">{config.title}</h4>
@@ -928,17 +1070,23 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
         </div>
 
         {config.requiresReason && (
-          <FormField label={`${actionType === 'flag' ? 'Flag' : 'Rejection'} Reason`}>
+          <FormField
+            label={`${actionType === 'flag' ? 'Flag' : 'Rejection'} Reason`}
+          >
             <select
               value={actionData.reason || ''}
-              onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
+              onChange={(e) =>
+                setActionData({ ...actionData, reason: e.target.value })
+              }
               className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               required
             >
               <option value="">Select a reason</option>
               <option value="quality_issues">Quality Issues</option>
               <option value="policy_violation">Policy Violation</option>
-              <option value="inappropriate_content">Inappropriate Content</option>
+              <option value="inappropriate_content">
+                Inappropriate Content
+              </option>
               <option value="duplicate_listings">Duplicate Listings</option>
               <option value="other">Other</option>
             </select>
@@ -948,7 +1096,9 @@ const BulkModerationModal = ({ isOpen, onClose, actionType, selectedCount, onSub
         <FormField label="Bulk Action Notes">
           <textarea
             value={actionData.notes || ''}
-            onChange={(e) => setActionData({ ...actionData, notes: e.target.value })}
+            onChange={(e) =>
+              setActionData({ ...actionData, notes: e.target.value })
+            }
             placeholder="Add notes for this bulk action..."
             rows={3}
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"

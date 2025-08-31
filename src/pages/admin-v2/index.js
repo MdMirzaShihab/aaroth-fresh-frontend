@@ -11,7 +11,7 @@ export { default as UsersManagementPage } from './users/UsersManagementPage';
 export { default as CreateRestaurantOwner } from './users/CreateRestaurantOwner';
 export { default as CreateRestaurantManager } from './users/CreateRestaurantManager';
 
-// Vendor Management  
+// Vendor Management
 export { default as VendorsManagementPage } from './vendors/VendorsManagementPage';
 export { default as VerificationQueue } from './vendors/VerificationQueue';
 

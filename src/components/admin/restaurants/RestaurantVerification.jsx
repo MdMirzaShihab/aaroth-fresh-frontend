@@ -64,11 +64,11 @@ const RestaurantVerification = ({
 
   // Process and sort restaurants for verification queue
   const verificationQueue = useMemo(() => {
-    let queue = restaurants.filter(r => r.verificationStatus === 'pending');
+    let queue = restaurants.filter((r) => r.verificationStatus === 'pending');
 
     // Apply urgency filter
     if (filterUrgency !== 'all') {
-      queue = queue.filter(r => r.urgencyLevel === filterUrgency);
+      queue = queue.filter((r) => r.urgencyLevel === filterUrgency);
     }
 
     // Sort by selected criteria
@@ -76,7 +76,10 @@ const RestaurantVerification = ({
       switch (sortBy) {
         case 'urgency':
           const urgencyOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-          return (urgencyOrder[b.urgencyLevel] || 0) - (urgencyOrder[a.urgencyLevel] || 0);
+          return (
+            (urgencyOrder[b.urgencyLevel] || 0) -
+            (urgencyOrder[a.urgencyLevel] || 0)
+          );
         case 'date':
           return new Date(a.createdAt) - new Date(b.createdAt);
         case 'name':
@@ -124,7 +127,7 @@ const RestaurantVerification = ({
   };
 
   const handleCardExpand = (restaurantId) => {
-    setExpandedCards(prev => {
+    setExpandedCards((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(restaurantId)) {
         newSet.delete(restaurantId);
@@ -199,7 +202,9 @@ const RestaurantVerification = ({
           <div className="flex-1">
             <SearchBar
               value={filters.search}
-              onChange={(value) => onFiltersChange({ ...filters, search: value, page: 1 })}
+              onChange={(value) =>
+                onFiltersChange({ ...filters, search: value, page: 1 })
+              }
               placeholder="Search restaurants pending verification..."
               className="w-full"
             />
@@ -237,7 +242,9 @@ const RestaurantVerification = ({
               onClick={onRefresh}
               disabled={isLoading}
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}
+              />
             </Button>
           </div>
         </div>
@@ -246,14 +253,39 @@ const RestaurantVerification = ({
       {/* Queue Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Critical', count: stats.urgencyCounts?.critical || 0, color: 'tomato-red', urgent: true },
-          { label: 'High', count: stats.urgencyCounts?.high || 0, color: 'amber-500', urgent: false },
-          { label: 'Medium', count: stats.urgencyCounts?.medium || 0, color: 'blue-500', urgent: false },
-          { label: 'Low', count: stats.urgencyCounts?.low || 0, color: 'gray-500', urgent: false },
+          {
+            label: 'Critical',
+            count: stats.urgencyCounts?.critical || 0,
+            color: 'tomato-red',
+            urgent: true,
+          },
+          {
+            label: 'High',
+            count: stats.urgencyCounts?.high || 0,
+            color: 'amber-500',
+            urgent: false,
+          },
+          {
+            label: 'Medium',
+            count: stats.urgencyCounts?.medium || 0,
+            color: 'blue-500',
+            urgent: false,
+          },
+          {
+            label: 'Low',
+            count: stats.urgencyCounts?.low || 0,
+            color: 'gray-500',
+            urgent: false,
+          },
         ].map((stat) => (
-          <Card key={stat.label} className={`p-4 glass ${stat.urgent ? 'border-tomato-red/30' : ''}`}>
+          <Card
+            key={stat.label}
+            className={`p-4 glass ${stat.urgent ? 'border-tomato-red/30' : ''}`}
+          >
             <div className="text-center">
-              <p className={`text-2xl font-bold ${stat.urgent ? 'text-tomato-red' : 'text-text-dark'}`}>
+              <p
+                className={`text-2xl font-bold ${stat.urgent ? 'text-tomato-red' : 'text-text-dark'}`}
+              >
                 {stat.count}
               </p>
               <p className="text-sm text-text-muted">{stat.label} Priority</p>
@@ -276,7 +308,9 @@ const RestaurantVerification = ({
           title="No pending verifications"
           description="All restaurants are verified or there are no pending verification requests."
           actionLabel="View All Restaurants"
-          onAction={() => onFiltersChange({ ...filters, verificationStatus: 'all' })}
+          onAction={() =>
+            onFiltersChange({ ...filters, verificationStatus: 'all' })
+          }
         />
       ) : (
         <motion.div className="space-y-4">
@@ -312,20 +346,40 @@ const RestaurantVerification = ({
 };
 
 // Verification Card Component
-const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index }) => {
+const VerificationCard = ({
+  restaurant,
+  isExpanded,
+  onExpand,
+  onAction,
+  index,
+}) => {
   const urgencyConfig = getUrgencyConfig(restaurant.urgencyLevel);
   const UrgencyIcon = urgencyConfig.icon;
 
   const documentsSubmitted = [
-    { name: 'Business License', submitted: !!restaurant.businessLicense, required: true },
+    {
+      name: 'Business License',
+      submitted: !!restaurant.businessLicense,
+      required: true,
+    },
     { name: 'Tax ID', submitted: !!restaurant.taxId, required: true },
-    { name: 'Operating Permit', submitted: !!restaurant.operatingPermit, required: true },
+    {
+      name: 'Operating Permit',
+      submitted: !!restaurant.operatingPermit,
+      required: true,
+    },
     { name: 'Menu', submitted: !!restaurant.menuDocument, required: false },
-    { name: 'Photos', submitted: !!restaurant.restaurantPhotos?.length, required: false },
+    {
+      name: 'Photos',
+      submitted: !!restaurant.restaurantPhotos?.length,
+      required: false,
+    },
   ];
 
   const completionRate = Math.round(
-    (documentsSubmitted.filter(doc => doc.submitted).length / documentsSubmitted.length) * 100
+    (documentsSubmitted.filter((doc) => doc.submitted).length /
+      documentsSubmitted.length) *
+      100
   );
 
   return (
@@ -334,7 +388,9 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
     >
-      <Card className={`glass ${urgencyConfig.pulse ? 'animate-pulse' : ''} border-l-4 border-l-${urgencyConfig.color.includes('tomato-red') ? 'tomato-red' : urgencyConfig.color.includes('amber') ? 'amber-500' : urgencyConfig.color.includes('blue') ? 'blue-500' : 'gray-500'}`}>
+      <Card
+        className={`glass ${urgencyConfig.pulse ? 'animate-pulse' : ''} border-l-4 border-l-${urgencyConfig.color.includes('tomato-red') ? 'tomato-red' : urgencyConfig.color.includes('amber') ? 'amber-500' : urgencyConfig.color.includes('blue') ? 'blue-500' : 'gray-500'}`}
+      >
         {/* Header */}
         <div className="p-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
@@ -342,13 +398,15 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
               <div className="w-12 h-12 bg-gradient-secondary rounded-2xl flex items-center justify-center text-white font-bold text-lg">
                 {restaurant.businessName?.[0]?.toUpperCase() || 'R'}
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-semibold text-text-dark text-lg truncate">
                     {restaurant.businessName}
                   </h3>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${urgencyConfig.color} ${urgencyConfig.pulse ? 'animate-pulse' : ''}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${urgencyConfig.color} ${urgencyConfig.pulse ? 'animate-pulse' : ''}`}
+                  >
                     <UrgencyIcon className="w-3 h-3 inline mr-1" />
                     {restaurant.urgencyLevel?.toUpperCase()} PRIORITY
                   </span>
@@ -356,11 +414,16 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
                 <div className="flex items-center gap-4 text-sm text-text-muted">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    Submitted {format(new Date(restaurant.createdAt), 'MMM dd, yyyy')}
+                    Submitted{' '}
+                    {format(new Date(restaurant.createdAt), 'MMM dd, yyyy')}
                   </span>
                   <span className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
-                    {Math.floor((Date.now() - new Date(restaurant.createdAt)) / (1000 * 60 * 60 * 24))} days waiting
+                    {Math.floor(
+                      (Date.now() - new Date(restaurant.createdAt)) /
+                        (1000 * 60 * 60 * 24)
+                    )}{' '}
+                    days waiting
                   </span>
                 </div>
               </div>
@@ -369,7 +432,9 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
             <div className="flex items-center gap-2">
               {/* Completion Progress */}
               <div className="text-center">
-                <div className={`text-lg font-bold ${completionRate === 100 ? 'text-sage-green' : 'text-amber-600'}`}>
+                <div
+                  className={`text-lg font-bold ${completionRate === 100 ? 'text-sage-green' : 'text-amber-600'}`}
+                >
                   {completionRate}%
                 </div>
                 <div className="text-xs text-text-muted">Complete</div>
@@ -413,9 +478,12 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
           {/* Documents Status */}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-medium text-text-dark">Document Verification</h4>
+              <h4 className="font-medium text-text-dark">
+                Document Verification
+              </h4>
               <span className="text-sm text-text-muted">
-                {documentsSubmitted.filter(doc => doc.submitted).length} of {documentsSubmitted.length} submitted
+                {documentsSubmitted.filter((doc) => doc.submitted).length} of{' '}
+                {documentsSubmitted.length} submitted
               </span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -458,22 +526,39 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
               {/* Additional Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h5 className="font-medium text-text-dark mb-2">Business Information</h5>
+                  <h5 className="font-medium text-text-dark mb-2">
+                    Business Information
+                  </h5>
                   <div className="space-y-2 text-sm text-text-muted">
-                    <div>Cuisine Type: {restaurant.cuisineType || 'Not specified'}</div>
-                    <div>Business Hours: {restaurant.businessHours || 'Not provided'}</div>
-                    <div>Seating Capacity: {restaurant.seatingCapacity || 'Not provided'}</div>
+                    <div>
+                      Cuisine Type: {restaurant.cuisineType || 'Not specified'}
+                    </div>
+                    <div>
+                      Business Hours:{' '}
+                      {restaurant.businessHours || 'Not provided'}
+                    </div>
+                    <div>
+                      Seating Capacity:{' '}
+                      {restaurant.seatingCapacity || 'Not provided'}
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <h5 className="font-medium text-text-dark mb-2">Risk Assessment</h5>
+                  <h5 className="font-medium text-text-dark mb-2">
+                    Risk Assessment
+                  </h5>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between">
                       <span>Risk Score:</span>
-                      <span className={`font-medium ${
-                        restaurant.riskScore >= 70 ? 'text-tomato-red' : 
-                        restaurant.riskScore >= 40 ? 'text-amber-600' : 'text-sage-green'
-                      }`}>
+                      <span
+                        className={`font-medium ${
+                          restaurant.riskScore >= 70
+                            ? 'text-tomato-red'
+                            : restaurant.riskScore >= 40
+                              ? 'text-amber-600'
+                              : 'text-sage-green'
+                        }`}
+                      >
                         {restaurant.riskScore || 0}/100
                       </span>
                     </div>
@@ -486,23 +571,26 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
               </div>
 
               {/* Document Links */}
-              {restaurant.submittedDocuments && restaurant.submittedDocuments.length > 0 && (
-                <div>
-                  <h5 className="font-medium text-text-dark mb-2">Submitted Documents</h5>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {restaurant.submittedDocuments.map((doc, index) => (
-                      <button
-                        key={index}
-                        className="p-2 bg-gray-50 hover:bg-gray-100 rounded-2xl text-sm flex items-center gap-2 transition-colors"
-                      >
-                        <FileText className="w-4 h-4 text-muted-olive" />
-                        <span className="truncate">{doc.name}</span>
-                        <Eye className="w-3 h-3 text-text-muted" />
-                      </button>
-                    ))}
+              {restaurant.submittedDocuments &&
+                restaurant.submittedDocuments.length > 0 && (
+                  <div>
+                    <h5 className="font-medium text-text-dark mb-2">
+                      Submitted Documents
+                    </h5>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {restaurant.submittedDocuments.map((doc, index) => (
+                        <button
+                          key={index}
+                          className="p-2 bg-gray-50 hover:bg-gray-100 rounded-2xl text-sm flex items-center gap-2 transition-colors"
+                        >
+                          <FileText className="w-4 h-4 text-muted-olive" />
+                          <span className="truncate">{doc.name}</span>
+                          <Eye className="w-3 h-3 text-text-muted" />
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           </motion.div>
         )}
@@ -540,9 +628,7 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
               </Button>
             </div>
 
-            <div className="text-xs text-text-muted">
-              ID: {restaurant.id}
-            </div>
+            <div className="text-xs text-text-muted">ID: {restaurant.id}</div>
           </div>
         </div>
       </Card>
@@ -551,7 +637,15 @@ const VerificationCard = ({ restaurant, isExpanded, onExpand, onAction, index })
 };
 
 // Action Modal Component
-const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubmit }) => {
+const ActionModal = ({
+  isOpen,
+  onClose,
+  type,
+  restaurant,
+  data,
+  onChange,
+  onSubmit,
+}) => {
   if (!isOpen || !restaurant) return null;
 
   const modalConfig = {
@@ -582,7 +676,9 @@ const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubm
             {restaurant.businessName?.[0]?.toUpperCase() || 'R'}
           </div>
           <div>
-            <p className="font-medium text-text-dark">{restaurant.businessName}</p>
+            <p className="font-medium text-text-dark">
+              {restaurant.businessName}
+            </p>
             <p className="text-sm text-text-muted">{restaurant.ownerName}</p>
           </div>
         </div>
@@ -627,7 +723,7 @@ const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubm
                         ...data,
                         documents: e.target.checked
                           ? [...docs, doc]
-                          : docs.filter(d => d !== doc)
+                          : docs.filter((d) => d !== doc),
                       });
                     }}
                     className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
@@ -639,17 +735,27 @@ const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubm
           </FormField>
         )}
 
-        <FormField label={type === 'request_docs' ? 'Message to Restaurant' : 'Notes (Optional)'}>
+        <FormField
+          label={
+            type === 'request_docs'
+              ? 'Message to Restaurant'
+              : 'Notes (Optional)'
+          }
+        >
           <textarea
             value={data.notes || data.message || ''}
-            onChange={(e) => onChange({
-              ...data,
-              [type === 'request_docs' ? 'message' : 'notes']: e.target.value
-            })}
+            onChange={(e) =>
+              onChange({
+                ...data,
+                [type === 'request_docs' ? 'message' : 'notes']: e.target.value,
+              })
+            }
             placeholder={
-              type === 'approve' ? 'Add any notes about the approval...' :
-              type === 'reject' ? 'Explain the reasons for rejection...' :
-              'Explain what documents are needed and why...'
+              type === 'approve'
+                ? 'Add any notes about the approval...'
+                : type === 'reject'
+                  ? 'Explain the reasons for rejection...'
+                  : 'Explain what documents are needed and why...'
             }
             rows={4}
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
@@ -666,7 +772,11 @@ const ActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubm
             className={`bg-${config.color} hover:bg-${config.color}/90 text-white flex items-center gap-2`}
           >
             <config.icon className="w-4 h-4" />
-            {type === 'approve' ? 'Approve' : type === 'reject' ? 'Reject' : 'Send Request'}
+            {type === 'approve'
+              ? 'Approve'
+              : type === 'reject'
+                ? 'Reject'
+                : 'Send Request'}
           </Button>
         </div>
       </div>

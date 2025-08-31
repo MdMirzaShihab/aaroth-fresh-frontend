@@ -167,10 +167,10 @@ const CreateRestaurantOwner = () => {
           postalCode: data.address.postalCode,
         }),
       };
-      
+
       // Remove nested address object
       delete transformedData.address;
-      
+
       // Add flattened address
       if (data.address) {
         transformedData.address = `${data.address.street}, ${data.address.city}, ${data.address.area}`;

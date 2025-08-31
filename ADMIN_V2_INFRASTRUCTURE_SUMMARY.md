@@ -29,7 +29,7 @@ Successfully implemented comprehensive admin panel v2 infrastructure with profes
 src/
 ├── pages/admin-v2/
 │   ├── dashboard/
-│   │   └── DashboardPage.jsx (✅ Complete with real-time data)
+│   │   └── DashboardPage.jsx (✅ Complete with manual refresh MVP)
 │   ├── users/, vendors/, restaurants/, catalog/, analytics/, settings/
 │   └── index.js
 ├── components/admin-v2/
@@ -61,7 +61,7 @@ src/
 ## 🚀 API Coverage (44/44 Endpoints)
 
 ### Dashboard & Analytics (7 APIs) ✅
-- Dashboard overview with real-time KPIs
+- Dashboard overview with manual refresh KPIs (MVP)
 - Comprehensive analytics with sales, user, product metrics
 - Cache management and performance optimization
 
@@ -121,7 +121,7 @@ src/
 - **Base Configuration**: Enhanced error handling with 401 retry logic
 - **Optimistic Updates**: Real-time UI feedback for approval workflows
 - **Cache Management**: Strategic tag invalidation for data consistency
-- **Polling**: Real-time updates for dashboard metrics (5min intervals)
+- **Manual Refresh**: MVP architecture with user-initiated data updates
 
 ### Service Layer Pattern
 - **Data Transformation**: Raw API data → UI-ready objects
@@ -159,6 +159,27 @@ src/
 - ✅ Role-based permissions respect backend authorization
 - ✅ Data validation matches backend requirements
 
+## 🎯 MVP Configuration Changes
+
+### Real-Time Features Removed ✅
+- **WebSocket Service**: Completely removed (`websocketService.js` deleted)
+- **Real-Time Hooks**: Removed `useRealTimeFeatures.js` and `useRealtimeDashboard.js`
+- **Polling Disabled**: RTK Query polling intervals disabled across all endpoints
+- **Manual Refresh**: Added refresh buttons to dashboard and key components
+- **Notification System**: Converted from push-based to pull-based notifications
+
+### Performance Optimizations ✅
+- **Faster Page Loads**: No WebSocket connection overhead (127ms dev server startup)
+- **Reduced Bandwidth**: Eliminated continuous polling and background refetching
+- **Better Battery Life**: Mobile-friendly architecture without persistent connections
+- **Simplified Architecture**: Clean REST API-only implementation
+
+### MVP Benefits ✅
+- **Backend Alignment**: Matches simplified MVP backend configuration
+- **Development Speed**: Faster iteration without real-time complexity
+- **Resource Efficiency**: Lower server resource requirements
+- **Reliability**: Eliminates WebSocket connection issues and timeouts
+
 ## 🚦 Next Steps for Full Implementation
 
 ### Immediate Priorities
@@ -170,7 +191,7 @@ src/
 ### Future Enhancements
 1. **Advanced Analytics**: Implement chart.js charts for complex data visualization
 2. **Export System**: Add PDF report generation with html2pdf.js
-3. **Real-time Features**: WebSocket integration for live notifications
+3. **Real-time Features**: WebSocket integration for live notifications (post-MVP)
 4. **Audit Logging**: Track admin actions for compliance
 
 ## 🎯 Success Metrics
@@ -184,7 +205,7 @@ src/
 ### API Coverage ✅
 - All 44 backend endpoints integrated
 - Comprehensive error handling
-- Real-time data updates
+- Manual refresh data updates (MVP)
 - Optimistic UI updates
 
 ### Developer Experience ✅

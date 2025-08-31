@@ -69,10 +69,11 @@ const OwnerManagerRelations = ({
 
   // Process restaurants with manager data
   const restaurantsWithManagers = useMemo(() => {
-    return restaurants.map(restaurant => ({
+    return restaurants.map((restaurant) => ({
       ...restaurant,
       totalManagers: restaurant.managers?.length || 0,
-      activeManagers: restaurant.managers?.filter(m => m.status === 'active').length || 0,
+      activeManagers:
+        restaurant.managers?.filter((m) => m.status === 'active').length || 0,
       ownerInfo: {
         name: restaurant.ownerName,
         phone: restaurant.phone,
@@ -86,9 +87,12 @@ const OwnerManagerRelations = ({
   // Filter restaurants based on search
   const filteredRestaurants = useMemo(() => {
     if (!searchTerm) return restaurantsWithManagers;
-    return restaurantsWithManagers.filter(restaurant =>
-      restaurant.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      restaurant.ownerName.toLowerCase().includes(searchTerm.toLowerCase())
+    return restaurantsWithManagers.filter(
+      (restaurant) =>
+        restaurant.businessName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        restaurant.ownerName.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [restaurantsWithManagers, searchTerm]);
 
@@ -139,7 +143,10 @@ const OwnerManagerRelations = ({
     const badges = {
       active: { color: 'bg-sage-green/10 text-sage-green', label: 'Active' },
       pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending' },
-      suspended: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Suspended' },
+      suspended: {
+        color: 'bg-tomato-red/10 text-tomato-red',
+        label: 'Suspended',
+      },
       inactive: { color: 'bg-gray-100 text-gray-600', label: 'Inactive' },
     };
     return badges[status] || badges.pending;
@@ -210,8 +217,12 @@ const OwnerManagerRelations = ({
         <Card className="p-4 glass">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-text-muted text-sm font-medium">Total Restaurants</p>
-              <p className="text-2xl font-bold text-text-dark">{stats.totalRestaurants}</p>
+              <p className="text-text-muted text-sm font-medium">
+                Total Restaurants
+              </p>
+              <p className="text-2xl font-bold text-text-dark">
+                {stats.totalRestaurants}
+              </p>
             </div>
             <Building2 className="w-8 h-8 text-muted-olive" />
           </div>
@@ -220,8 +231,12 @@ const OwnerManagerRelations = ({
         <Card className="p-4 glass">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-text-muted text-sm font-medium">Total Managers</p>
-              <p className="text-2xl font-bold text-text-dark">{stats.totalManagers}</p>
+              <p className="text-text-muted text-sm font-medium">
+                Total Managers
+              </p>
+              <p className="text-2xl font-bold text-text-dark">
+                {stats.totalManagers}
+              </p>
             </div>
             <Shield className="w-8 h-8 text-earthy-brown" />
           </div>
@@ -230,9 +245,11 @@ const OwnerManagerRelations = ({
         <Card className="p-4 glass">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-text-muted text-sm font-medium">Multi-Manager Restaurants</p>
+              <p className="text-text-muted text-sm font-medium">
+                Multi-Manager Restaurants
+              </p>
               <p className="text-2xl font-bold text-text-dark">
-                {restaurants.filter(r => r.managersCount > 1).length}
+                {restaurants.filter((r) => r.managersCount > 1).length}
               </p>
             </div>
             <Users className="w-8 h-8 text-sage-green" />
@@ -242,9 +259,13 @@ const OwnerManagerRelations = ({
         <Card className="p-4 glass">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-text-muted text-sm font-medium">Avg Managers/Restaurant</p>
+              <p className="text-text-muted text-sm font-medium">
+                Avg Managers/Restaurant
+              </p>
               <p className="text-2xl font-bold text-text-dark">
-                {stats.totalRestaurants > 0 ? (stats.totalManagers / stats.totalRestaurants).toFixed(1) : 0}
+                {stats.totalRestaurants > 0
+                  ? (stats.totalManagers / stats.totalRestaurants).toFixed(1)
+                  : 0}
               </p>
             </div>
             <TrendingUp className="w-8 h-8 text-earthy-yellow" />
@@ -258,8 +279,12 @@ const OwnerManagerRelations = ({
         <div className="lg:col-span-1">
           <Card className="p-4 glass h-fit max-h-[600px] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-text-dark">Restaurants</h3>
-              <span className="text-sm text-text-muted">{filteredRestaurants.length} total</span>
+              <h3 className="text-lg font-semibold text-text-dark">
+                Restaurants
+              </h3>
+              <span className="text-sm text-text-muted">
+                {filteredRestaurants.length} total
+              </span>
             </div>
 
             {isLoading ? (
@@ -300,9 +325,12 @@ const OwnerManagerRelations = ({
           ) : (
             <Card className="p-8 glass text-center">
               <Building2 className="w-12 h-12 text-text-muted mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-text-dark mb-2">Select a Restaurant</h3>
+              <h3 className="text-lg font-semibold text-text-dark mb-2">
+                Select a Restaurant
+              </h3>
               <p className="text-text-muted">
-                Choose a restaurant from the list to view its owner-manager relationships.
+                Choose a restaurant from the list to view its owner-manager
+                relationships.
               </p>
             </Card>
           )}
@@ -329,10 +357,7 @@ const OwnerManagerRelations = ({
 // Restaurant Relation Card Component
 const RestaurantRelationCard = ({ restaurant, isSelected, onClick }) => {
   return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
+    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
       <Card
         className={`p-3 cursor-pointer transition-all duration-200 ${
           isSelected
@@ -358,11 +383,13 @@ const RestaurantRelationCard = ({ restaurant, isSelected, onClick }) => {
               <Users className="w-3 h-3" />
               <span>{restaurant.totalManagers}</span>
             </div>
-            <div className={`text-xs px-2 py-1 rounded-full mt-1 ${
-              restaurant.activeManagers === restaurant.totalManagers
-                ? 'bg-sage-green/10 text-sage-green'
-                : 'bg-amber-100 text-amber-600'
-            }`}>
+            <div
+              className={`text-xs px-2 py-1 rounded-full mt-1 ${
+                restaurant.activeManagers === restaurant.totalManagers
+                  ? 'bg-sage-green/10 text-sage-green'
+                  : 'bg-amber-100 text-amber-600'
+              }`}
+            >
               {restaurant.activeManagers}/{restaurant.totalManagers} active
             </div>
           </div>
@@ -410,7 +437,10 @@ const RestaurantDetailPanel = ({
       {/* Content based on view mode */}
       <div className="p-6">
         {viewMode === 'hierarchy' && (
-          <HierarchyView restaurant={restaurant} onManagerAction={onManagerAction} />
+          <HierarchyView
+            restaurant={restaurant}
+            onManagerAction={onManagerAction}
+          />
         )}
         {viewMode === 'managers' && (
           <ManagersView
@@ -421,7 +451,10 @@ const RestaurantDetailPanel = ({
           />
         )}
         {viewMode === 'permissions' && (
-          <PermissionsView restaurant={restaurant} onManagerAction={onManagerAction} />
+          <PermissionsView
+            restaurant={restaurant}
+            onManagerAction={onManagerAction}
+          />
         )}
       </div>
     </Card>
@@ -440,8 +473,12 @@ const HierarchyView = ({ restaurant, onManagerAction }) => {
               <Crown className="w-8 h-8" />
             </div>
           </div>
-          <h4 className="text-lg font-semibold text-text-dark mb-2">Restaurant Owner</h4>
-          <p className="font-medium text-text-dark">{restaurant.ownerInfo.name}</p>
+          <h4 className="text-lg font-semibold text-text-dark mb-2">
+            Restaurant Owner
+          </h4>
+          <p className="font-medium text-text-dark">
+            {restaurant.ownerInfo.name}
+          </p>
           <div className="flex items-center justify-center gap-4 mt-3 text-sm text-text-muted">
             <span className="flex items-center gap-1">
               <Phone className="w-3 h-3" />
@@ -453,7 +490,8 @@ const HierarchyView = ({ restaurant, onManagerAction }) => {
             </span>
           </div>
           <p className="text-xs text-text-muted mt-2">
-            Owner since {format(new Date(restaurant.ownerInfo.joinDate), 'MMM yyyy')}
+            Owner since{' '}
+            {format(new Date(restaurant.ownerInfo.joinDate), 'MMM yyyy')}
           </p>
           <div className="mt-4">
             <Button
@@ -471,7 +509,9 @@ const HierarchyView = ({ restaurant, onManagerAction }) => {
       {/* Managers Hierarchy */}
       {restaurant.managers && restaurant.managers.length > 0 && (
         <div>
-          <h5 className="font-semibold text-text-dark mb-4 text-center">Management Team</h5>
+          <h5 className="font-semibold text-text-dark mb-4 text-center">
+            Management Team
+          </h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {restaurant.managers.map((manager) => (
               <ManagerHierarchyCard
@@ -487,7 +527,9 @@ const HierarchyView = ({ restaurant, onManagerAction }) => {
       {(!restaurant.managers || restaurant.managers.length === 0) && (
         <div className="text-center py-8">
           <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
-          <h5 className="font-medium text-text-dark mb-2">No Managers Assigned</h5>
+          <h5 className="font-medium text-text-dark mb-2">
+            No Managers Assigned
+          </h5>
           <p className="text-text-muted mb-4">
             This restaurant doesn't have any managers yet.
           </p>
@@ -510,7 +552,9 @@ const ManagerHierarchyCard = ({ manager, onManagerAction }) => {
   const RoleIcon = getRoleIcon(manager.role);
 
   return (
-    <Card className={`p-4 ${manager.status === 'active' ? 'border-sage-green/30' : 'border-gray-200'}`}>
+    <Card
+      className={`p-4 ${manager.status === 'active' ? 'border-sage-green/30' : 'border-gray-200'}`}
+    >
       <div className="text-center">
         <div className="w-12 h-12 bg-gradient-to-r from-muted-olive to-sage-green rounded-2xl flex items-center justify-center text-white mx-auto mb-3">
           <RoleIcon className="w-6 h-6" />
@@ -519,7 +563,9 @@ const ManagerHierarchyCard = ({ manager, onManagerAction }) => {
         <p className="text-sm text-text-muted capitalize mb-2">
           {manager.role.replace('_', ' ')}
         </p>
-        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${statusBadge.color}`}>
+        <span
+          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${statusBadge.color}`}
+        >
           {statusBadge.label}
         </span>
         <div className="mt-3 space-y-1 text-xs text-text-muted">
@@ -548,12 +594,19 @@ const ManagerHierarchyCard = ({ manager, onManagerAction }) => {
   );
 };
 
-// Managers View Component  
-const ManagersView = ({ restaurant, onManagerAction, actionMenuOpen, setActionMenuOpen }) => {
+// Managers View Component
+const ManagersView = ({
+  restaurant,
+  onManagerAction,
+  actionMenuOpen,
+  setActionMenuOpen,
+}) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-lg font-semibold text-text-dark">Management Team</h4>
+        <h4 className="text-lg font-semibold text-text-dark">
+          Management Team
+        </h4>
         <Button
           size="sm"
           onClick={() => onManagerAction('add_manager')}
@@ -590,7 +643,12 @@ const ManagersView = ({ restaurant, onManagerAction, actionMenuOpen, setActionMe
 };
 
 // Manager Detail Card Component
-const ManagerDetailCard = ({ manager, onManagerAction, actionMenuOpen, setActionMenuOpen }) => {
+const ManagerDetailCard = ({
+  manager,
+  onManagerAction,
+  actionMenuOpen,
+  setActionMenuOpen,
+}) => {
   const statusBadge = getManagerStatusBadge(manager.status);
   const RoleIcon = getRoleIcon(manager.role);
 
@@ -604,7 +662,9 @@ const ManagerDetailCard = ({ manager, onManagerAction, actionMenuOpen, setAction
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h6 className="font-medium text-text-dark">{manager.name}</h6>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusBadge.color}`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${statusBadge.color}`}
+              >
                 {statusBadge.label}
               </span>
             </div>
@@ -632,7 +692,11 @@ const ManagerDetailCard = ({ manager, onManagerAction, actionMenuOpen, setAction
 
         <div className="relative">
           <button
-            onClick={() => setActionMenuOpen(actionMenuOpen === manager.id ? null : manager.id)}
+            onClick={() =>
+              setActionMenuOpen(
+                actionMenuOpen === manager.id ? null : manager.id
+              )
+            }
             className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <MoreVertical className="w-4 h-4 text-text-muted" />
@@ -697,20 +761,54 @@ const ManagerDetailCard = ({ manager, onManagerAction, actionMenuOpen, setAction
 // Permissions View Component
 const PermissionsView = ({ restaurant, onManagerAction }) => {
   const permissions = [
-    { id: 'manage_menu', label: 'Manage Menu', description: 'Add, edit, and remove menu items' },
-    { id: 'manage_orders', label: 'Manage Orders', description: 'View and process customer orders' },
-    { id: 'manage_inventory', label: 'Manage Inventory', description: 'Update stock levels and availability' },
-    { id: 'view_analytics', label: 'View Analytics', description: 'Access sales and performance reports' },
-    { id: 'manage_staff', label: 'Manage Staff', description: 'Add and manage restaurant staff' },
-    { id: 'manage_promotions', label: 'Manage Promotions', description: 'Create and manage promotional offers' },
-    { id: 'financial_access', label: 'Financial Access', description: 'View financial data and reports' },
-    { id: 'customer_service', label: 'Customer Service', description: 'Handle customer inquiries and complaints' },
+    {
+      id: 'manage_menu',
+      label: 'Manage Menu',
+      description: 'Add, edit, and remove menu items',
+    },
+    {
+      id: 'manage_orders',
+      label: 'Manage Orders',
+      description: 'View and process customer orders',
+    },
+    {
+      id: 'manage_inventory',
+      label: 'Manage Inventory',
+      description: 'Update stock levels and availability',
+    },
+    {
+      id: 'view_analytics',
+      label: 'View Analytics',
+      description: 'Access sales and performance reports',
+    },
+    {
+      id: 'manage_staff',
+      label: 'Manage Staff',
+      description: 'Add and manage restaurant staff',
+    },
+    {
+      id: 'manage_promotions',
+      label: 'Manage Promotions',
+      description: 'Create and manage promotional offers',
+    },
+    {
+      id: 'financial_access',
+      label: 'Financial Access',
+      description: 'View financial data and reports',
+    },
+    {
+      id: 'customer_service',
+      label: 'Customer Service',
+      description: 'Handle customer inquiries and complaints',
+    },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h4 className="text-lg font-semibold text-text-dark mb-2">Permission Management</h4>
+        <h4 className="text-lg font-semibold text-text-dark mb-2">
+          Permission Management
+        </h4>
         <p className="text-text-muted">
           Manage what each manager can access and control in the restaurant.
         </p>
@@ -723,10 +821,14 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-muted-olive to-sage-green rounded-2xl flex items-center justify-center text-white">
-                    {React.createElement(getRoleIcon(manager.role), { className: "w-5 h-5" })}
+                    {React.createElement(getRoleIcon(manager.role), {
+                      className: 'w-5 h-5',
+                    })}
                   </div>
                   <div>
-                    <h6 className="font-medium text-text-dark">{manager.name}</h6>
+                    <h6 className="font-medium text-text-dark">
+                      {manager.name}
+                    </h6>
                     <p className="text-sm text-text-muted capitalize">
                       {manager.role.replace('_', ' ')}
                     </p>
@@ -735,7 +837,9 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => onManagerAction('edit_permissions', { manager })}
+                  onClick={() =>
+                    onManagerAction('edit_permissions', { manager })
+                  }
                 >
                   Edit Permissions
                 </Button>
@@ -743,7 +847,9 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {permissions.map((permission) => {
-                  const hasPermission = manager.permissions?.includes(permission.id);
+                  const hasPermission = manager.permissions?.includes(
+                    permission.id
+                  );
                   return (
                     <div
                       key={permission.id}
@@ -754,9 +860,13 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded flex items-center justify-center ${
-                          hasPermission ? 'bg-sage-green text-white' : 'bg-gray-300'
-                        }`}>
+                        <div
+                          className={`w-4 h-4 rounded flex items-center justify-center ${
+                            hasPermission
+                              ? 'bg-sage-green text-white'
+                              : 'bg-gray-300'
+                          }`}
+                        >
                           {hasPermission && <CheckCircle className="w-3 h-3" />}
                         </div>
                         <div>
@@ -789,7 +899,15 @@ const PermissionsView = ({ restaurant, onManagerAction }) => {
 };
 
 // Manager Action Modal Component
-const ManagerActionModal = ({ isOpen, onClose, type, restaurant, data, onChange, onSubmit }) => {
+const ManagerActionModal = ({
+  isOpen,
+  onClose,
+  type,
+  restaurant,
+  data,
+  onChange,
+  onSubmit,
+}) => {
   if (!isOpen || !restaurant) return null;
 
   const modalConfig = {
@@ -817,7 +935,9 @@ const ManagerActionModal = ({ isOpen, onClose, type, restaurant, data, onChange,
             {restaurant.businessName?.[0]?.toUpperCase() || 'R'}
           </div>
           <div>
-            <p className="font-medium text-text-dark">{restaurant.businessName}</p>
+            <p className="font-medium text-text-dark">
+              {restaurant.businessName}
+            </p>
             <p className="text-sm text-text-muted">{restaurant.ownerName}</p>
           </div>
         </div>
@@ -840,9 +960,11 @@ const ManagerActionModal = ({ isOpen, onClose, type, restaurant, data, onChange,
           </Button>
           <Button onClick={onSubmit} className="flex items-center gap-2">
             <config.icon className="w-4 h-4" />
-            {type === 'add_manager' ? 'Add Manager' : 
-             type === 'edit_permissions' ? 'Update Permissions' : 
-             'Transfer Ownership'}
+            {type === 'add_manager'
+              ? 'Add Manager'
+              : type === 'edit_permissions'
+                ? 'Update Permissions'
+                : 'Transfer Ownership'}
           </Button>
         </div>
       </div>
@@ -862,7 +984,7 @@ const AddManagerForm = ({ data, onChange }) => (
           required
         />
       </FormField>
-      
+
       <FormField label="Phone Number">
         <Input
           value={data.phone || ''}
@@ -912,7 +1034,7 @@ const EditPermissionsForm = ({ data, onChange }) => {
     const currentPermissions = data.permissions || [];
     const newPermissions = checked
       ? [...currentPermissions, permissionId]
-      : currentPermissions.filter(p => p !== permissionId);
+      : currentPermissions.filter((p) => p !== permissionId);
     onChange({ ...data, permissions: newPermissions });
   };
 
@@ -929,11 +1051,16 @@ const EditPermissionsForm = ({ data, onChange }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {permissions.map((permission) => (
-          <label key={permission.id} className="flex items-center gap-3 p-3 border border-gray-200 rounded-2xl hover:bg-gray-50 cursor-pointer">
+          <label
+            key={permission.id}
+            className="flex items-center gap-3 p-3 border border-gray-200 rounded-2xl hover:bg-gray-50 cursor-pointer"
+          >
             <input
               type="checkbox"
               checked={(data.permissions || []).includes(permission.id)}
-              onChange={(e) => handlePermissionChange(permission.id, e.target.checked)}
+              onChange={(e) =>
+                handlePermissionChange(permission.id, e.target.checked)
+              }
               className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
             />
             <span className="text-sm font-medium text-text-dark">
@@ -954,7 +1081,8 @@ const TransferOwnershipForm = ({ data, onChange }) => (
         <h5 className="font-medium">Warning: Ownership Transfer</h5>
       </div>
       <p className="text-sm text-amber-700">
-        This action will permanently transfer ownership of the restaurant. The current owner will lose all admin privileges.
+        This action will permanently transfer ownership of the restaurant. The
+        current owner will lose all admin privileges.
       </p>
     </div>
 
@@ -985,7 +1113,10 @@ const getManagerStatusBadge = (status) => {
   const badges = {
     active: { color: 'bg-sage-green/10 text-sage-green', label: 'Active' },
     pending: { color: 'bg-amber-100 text-amber-800', label: 'Pending' },
-    suspended: { color: 'bg-tomato-red/10 text-tomato-red', label: 'Suspended' },
+    suspended: {
+      color: 'bg-tomato-red/10 text-tomato-red',
+      label: 'Suspended',
+    },
     inactive: { color: 'bg-gray-100 text-gray-600', label: 'Inactive' },
   };
   return badges[status] || badges.pending;

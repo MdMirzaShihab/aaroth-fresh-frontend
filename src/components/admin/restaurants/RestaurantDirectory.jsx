@@ -51,8 +51,18 @@ const getVerificationBadge = (status) => {
 };
 
 const getRiskLevel = (score) => {
-  if (score >= 70) return { color: 'text-tomato-red', label: 'High Risk', icon: AlertTriangle };
-  if (score >= 40) return { color: 'text-amber-600', label: 'Medium Risk', icon: AlertTriangle };
+  if (score >= 70)
+    return {
+      color: 'text-tomato-red',
+      label: 'High Risk',
+      icon: AlertTriangle,
+    };
+  if (score >= 40)
+    return {
+      color: 'text-amber-600',
+      label: 'Medium Risk',
+      icon: AlertTriangle,
+    };
   return { color: 'text-sage-green', label: 'Low Risk', icon: CheckCircle };
 };
 
@@ -70,9 +80,12 @@ const RestaurantDirectory = ({
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [actionMenuOpen, setActionMenuOpen] = useState(null);
-  const [flagModalData, setFlagModalData] = useState({ isOpen: false, restaurant: null });
+  const [flagModalData, setFlagModalData] = useState({
+    isOpen: false,
+    restaurant: null,
+  });
   const [chainGrouping, setChainGrouping] = useState(false);
-  
+
   // RTK Mutations
   const [updateRestaurantStatus] = useUpdateRestaurantStatusMutation();
   const [flagRestaurant] = useFlagRestaurantMutation();
@@ -95,8 +108,13 @@ const RestaurantDirectory = ({
       chainName,
       restaurants: chainRestaurants,
       totalLocations: chainRestaurants.length,
-      totalOrders: chainRestaurants.reduce((sum, r) => sum + (r.totalOrders || 0), 0),
-      averageRating: chainRestaurants.reduce((sum, r) => sum + (r.rating || 0), 0) / chainRestaurants.length,
+      totalOrders: chainRestaurants.reduce(
+        (sum, r) => sum + (r.totalOrders || 0),
+        0
+      ),
+      averageRating:
+        chainRestaurants.reduce((sum, r) => sum + (r.rating || 0), 0) /
+        chainRestaurants.length,
     }));
   }, [restaurants, chainGrouping]);
 
@@ -107,7 +125,10 @@ const RestaurantDirectory = ({
 
   const handleStatusUpdate = async (restaurantId, newStatus) => {
     try {
-      await updateRestaurantStatus({ id: restaurantId, status: newStatus }).unwrap();
+      await updateRestaurantStatus({
+        id: restaurantId,
+        status: newStatus,
+      }).unwrap();
       setActionMenuOpen(null);
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -154,7 +175,9 @@ const RestaurantDirectory = ({
             <div className="flex-1">
               <SearchBar
                 value={filters.search}
-                onChange={(value) => onFiltersChange({ ...filters, search: value, page: 1 })}
+                onChange={(value) =>
+                  onFiltersChange({ ...filters, search: value, page: 1 })
+                }
                 placeholder="Search restaurants by name, cuisine, or location..."
                 className="w-full"
               />
@@ -253,15 +276,17 @@ const RestaurantDirectory = ({
                   title="No restaurants found"
                   description="No restaurants match your current filters."
                   actionLabel="Clear Filters"
-                  onAction={() => onFiltersChange({
-                    ...filters,
-                    search: '',
-                    verificationStatus: 'all',
-                    cuisineType: 'all',
-                    activityLevel: 'all',
-                    location: '',
-                    page: 1,
-                  })}
+                  onAction={() =>
+                    onFiltersChange({
+                      ...filters,
+                      search: '',
+                      verificationStatus: 'all',
+                      cuisineType: 'all',
+                      activityLevel: 'all',
+                      location: '',
+                      page: 1,
+                    })
+                  }
                 />
               ) : (
                 <motion.div
@@ -295,8 +320,11 @@ const RestaurantDirectory = ({
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-text-muted">
                       Showing {(filters.page - 1) * filters.limit + 1} to{' '}
-                      {Math.min(filters.page * filters.limit, stats.totalRestaurants)} of{' '}
-                      {stats.totalRestaurants} restaurants
+                      {Math.min(
+                        filters.page * filters.limit,
+                        stats.totalRestaurants
+                      )}{' '}
+                      of {stats.totalRestaurants} restaurants
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -304,7 +332,12 @@ const RestaurantDirectory = ({
                         variant="outline"
                         size="sm"
                         disabled={filters.page === 1 || isLoading}
-                        onClick={() => onFiltersChange({ ...filters, page: filters.page - 1 })}
+                        onClick={() =>
+                          onFiltersChange({
+                            ...filters,
+                            page: filters.page - 1,
+                          })
+                        }
                       >
                         Previous
                       </Button>
@@ -316,8 +349,15 @@ const RestaurantDirectory = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={restaurants.length < filters.limit || isLoading}
-                        onClick={() => onFiltersChange({ ...filters, page: filters.page + 1 })}
+                        disabled={
+                          restaurants.length < filters.limit || isLoading
+                        }
+                        onClick={() =>
+                          onFiltersChange({
+                            ...filters,
+                            page: filters.page + 1,
+                          })
+                        }
                       >
                         Next
                       </Button>
@@ -411,7 +451,11 @@ const RestaurantCard = ({
         {/* Action Menu */}
         <div className="relative">
           <button
-            onClick={() => setActionMenuOpen(actionMenuOpen === restaurant.id ? null : restaurant.id)}
+            onClick={() =>
+              setActionMenuOpen(
+                actionMenuOpen === restaurant.id ? null : restaurant.id
+              )
+            }
             className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <MoreVertical className="w-4 h-4 text-text-muted" />
@@ -467,7 +511,9 @@ const RestaurantCard = ({
 
       {/* Status Badges */}
       <div className="flex items-center gap-2 mb-4">
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${verificationBadge.color}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium ${verificationBadge.color}`}
+        >
           {verificationBadge.label}
         </span>
         {restaurant.isActive ? (
@@ -479,7 +525,9 @@ const RestaurantCard = ({
             Inactive
           </span>
         )}
-        <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gray-100 ${riskLevel.color}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium bg-gray-100 ${riskLevel.color}`}
+        >
           <riskLevel.icon className="w-3 h-3 inline mr-1" />
           {riskLevel.label}
         </span>
@@ -506,11 +554,15 @@ const RestaurantCard = ({
       {/* Performance Metrics */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="text-center">
-          <p className="text-lg font-bold text-text-dark">{restaurant.totalOrders || 0}</p>
+          <p className="text-lg font-bold text-text-dark">
+            {restaurant.totalOrders || 0}
+          </p>
           <p className="text-xs text-text-muted">Total Orders</p>
         </div>
         <div className="text-center">
-          <p className="text-lg font-bold text-text-dark">${restaurant.averageOrderValue || 0}</p>
+          <p className="text-lg font-bold text-text-dark">
+            ${restaurant.averageOrderValue || 0}
+          </p>
           <p className="text-xs text-text-muted">Avg Order Value</p>
         </div>
       </div>
@@ -519,7 +571,10 @@ const RestaurantCard = ({
       {restaurant.managersCount > 0 && (
         <div className="flex items-center gap-2 text-sm text-text-muted">
           <Users className="w-4 h-4" />
-          <span>{restaurant.managersCount} manager{restaurant.managersCount !== 1 ? 's' : ''}</span>
+          <span>
+            {restaurant.managersCount} manager
+            {restaurant.managersCount !== 1 ? 's' : ''}
+          </span>
         </div>
       )}
     </>
@@ -532,8 +587,10 @@ const RestaurantCard = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.1 }}
       >
-        <Card className="p-4 hover:shadow-md transition-all duration-300 cursor-pointer glass"
-              onClick={() => onRestaurantClick(restaurant)}>
+        <Card
+          className="p-4 hover:shadow-md transition-all duration-300 cursor-pointer glass"
+          onClick={() => onRestaurantClick(restaurant)}
+        >
           <div className="flex items-center justify-between">
             <div className="flex-1">{cardContent}</div>
           </div>
@@ -548,8 +605,10 @@ const RestaurantCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
     >
-      <Card className="p-6 hover:shadow-md transition-all duration-300 cursor-pointer glass glow-green"
-            onClick={() => onRestaurantClick(restaurant)}>
+      <Card
+        className="p-6 hover:shadow-md transition-all duration-300 cursor-pointer glass glow-green"
+        onClick={() => onRestaurantClick(restaurant)}
+      >
         {cardContent}
       </Card>
     </motion.div>
@@ -573,7 +632,9 @@ const ChainCard = ({ chain, viewMode, onRestaurantClick, index }) => {
               <Building2 className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-text-dark text-lg">{chain.chainName}</h3>
+              <h3 className="font-semibold text-text-dark text-lg">
+                {chain.chainName}
+              </h3>
               <p className="text-text-muted text-sm">Chain Network</p>
             </div>
           </div>
@@ -587,15 +648,21 @@ const ChainCard = ({ chain, viewMode, onRestaurantClick, index }) => {
 
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div className="text-center">
-            <p className="text-lg font-bold text-muted-olive">{chain.totalLocations}</p>
+            <p className="text-lg font-bold text-muted-olive">
+              {chain.totalLocations}
+            </p>
             <p className="text-xs text-text-muted">Locations</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-text-dark">{chain.totalOrders}</p>
+            <p className="text-lg font-bold text-text-dark">
+              {chain.totalOrders}
+            </p>
             <p className="text-xs text-text-muted">Total Orders</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-text-dark">{chain.averageRating.toFixed(1)}</p>
+            <p className="text-lg font-bold text-text-dark">
+              {chain.averageRating.toFixed(1)}
+            </p>
             <p className="text-xs text-text-muted">Avg Rating</p>
           </div>
         </div>
@@ -614,12 +681,20 @@ const ChainCard = ({ chain, viewMode, onRestaurantClick, index }) => {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-text-dark">{restaurant.businessName}</p>
-                    <p className="text-sm text-text-muted">{restaurant.location}</p>
+                    <p className="font-medium text-text-dark">
+                      {restaurant.businessName}
+                    </p>
+                    <p className="text-sm text-text-muted">
+                      {restaurant.location}
+                    </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">{restaurant.totalOrders} orders</p>
-                    <p className="text-xs text-text-muted">${restaurant.averageOrderValue}</p>
+                    <p className="text-sm font-medium">
+                      {restaurant.totalOrders} orders
+                    </p>
+                    <p className="text-xs text-text-muted">
+                      ${restaurant.averageOrderValue}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -652,7 +727,9 @@ const FlagRestaurantModal = ({ isOpen, onClose, restaurant, onSubmit }) => {
         <FormField label="Reason for flagging">
           <select
             value={flagData.reason}
-            onChange={(e) => setFlagData({ ...flagData, reason: e.target.value })}
+            onChange={(e) =>
+              setFlagData({ ...flagData, reason: e.target.value })
+            }
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-tomato-red/20"
             required
           >
@@ -668,20 +745,26 @@ const FlagRestaurantModal = ({ isOpen, onClose, restaurant, onSubmit }) => {
         <FormField label="Severity Level">
           <select
             value={flagData.severity}
-            onChange={(e) => setFlagData({ ...flagData, severity: e.target.value })}
+            onChange={(e) =>
+              setFlagData({ ...flagData, severity: e.target.value })
+            }
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-tomato-red/20"
           >
             <option value="low">Low - Minor issues</option>
             <option value="medium">Medium - Moderate concerns</option>
             <option value="high">High - Serious violations</option>
-            <option value="critical">Critical - Immediate action required</option>
+            <option value="critical">
+              Critical - Immediate action required
+            </option>
           </select>
         </FormField>
 
         <FormField label="Additional Details">
           <textarea
             value={flagData.details}
-            onChange={(e) => setFlagData({ ...flagData, details: e.target.value })}
+            onChange={(e) =>
+              setFlagData({ ...flagData, details: e.target.value })
+            }
             placeholder="Provide additional details about the issue..."
             rows={4}
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-tomato-red/20 resize-none"

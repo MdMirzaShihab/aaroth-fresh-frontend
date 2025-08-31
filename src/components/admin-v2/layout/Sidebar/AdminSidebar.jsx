@@ -1,15 +1,15 @@
 /**
- * AdminSidebar - Admin V2  
+ * AdminSidebar - Admin V2
  * Professional glassmorphic navigation with hierarchical structure
  * Enhanced with real-time badges and Organic Futurism design
  */
 
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Store, 
+import {
+  LayoutDashboard,
+  Users,
+  Store,
   UtensilsCrossed,
   Package,
   FolderOpen,
@@ -20,7 +20,7 @@ import {
   Activity,
   TrendingUp,
   Shield,
-  Database
+  Database,
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
 
@@ -38,9 +38,9 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           label: 'Dashboard',
           icon: LayoutDashboard,
           path: '/admin-v2/dashboard',
-          description: 'Overview & Analytics'
-        }
-      ]
+          description: 'Overview & Analytics',
+        },
+      ],
     },
     {
       section: 'Business Entities',
@@ -50,23 +50,23 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           icon: Users,
           path: '/admin-v2/users',
           description: 'User Management',
-          badge: { type: 'pending', count: 12 }
+          badge: { type: 'pending', count: 12 },
         },
         {
           label: 'Vendors Management',
           icon: Store,
-          path: '/admin-v2/vendors', 
+          path: '/admin-v2/vendors',
           description: 'Vendor Operations',
-          badge: { type: 'urgent', count: 3 }
+          badge: { type: 'urgent', count: 3 },
         },
         {
           label: 'Restaurants Management',
           icon: UtensilsCrossed,
           path: '/admin-v2/restaurants',
           description: 'Restaurant Operations',
-          badge: { type: 'info', count: 7 }
-        }
-      ]
+          badge: { type: 'info', count: 7 },
+        },
+      ],
     },
     {
       section: 'Catalog Management',
@@ -75,21 +75,21 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           label: 'Products',
           icon: Package,
           path: '/admin-v2/catalog/products',
-          description: 'Product Library'
+          description: 'Product Library',
         },
         {
           label: 'Categories',
           icon: FolderOpen,
           path: '/admin-v2/catalog/categories',
-          description: 'Category Structure'
+          description: 'Category Structure',
         },
         {
           label: 'Listings',
           icon: Database,
           path: '/admin-v2/catalog/listings',
-          description: 'Active Listings'
-        }
-      ]
+          description: 'Active Listings',
+        },
+      ],
     },
     {
       section: 'Analytics & Insights',
@@ -100,24 +100,33 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           path: '/admin-v2/analytics/business',
           description: 'Performance Metrics',
           children: [
-            { label: 'Sales Performance', path: '/admin-v2/analytics/business/sales' },
-            { label: 'User Growth', path: '/admin-v2/analytics/business/users' },
-            { label: 'Product Performance', path: '/admin-v2/analytics/business/products' }
-          ]
+            {
+              label: 'Sales Performance',
+              path: '/admin-v2/analytics/business/sales',
+            },
+            {
+              label: 'User Growth',
+              path: '/admin-v2/analytics/business/users',
+            },
+            {
+              label: 'Product Performance',
+              path: '/admin-v2/analytics/business/products',
+            },
+          ],
         },
         {
           label: 'Performance Monitoring',
           icon: BarChart3,
           path: '/admin-v2/analytics/performance',
-          description: 'SLA & Team Performance'
+          description: 'SLA & Team Performance',
         },
         {
           label: 'Activity Monitoring',
           icon: Activity,
           path: '/admin-v2/analytics/activity',
-          description: 'System Audit Trail'
-        }
-      ]
+          description: 'System Audit Trail',
+        },
+      ],
     },
     {
       section: 'System Management',
@@ -130,17 +139,17 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           children: [
             { label: 'General Settings', path: '/admin-v2/settings/general' },
             { label: 'Business Rules', path: '/admin-v2/settings/business' },
-            { label: 'Security Policies', path: '/admin-v2/settings/security' }
-          ]
+            { label: 'Security Policies', path: '/admin-v2/settings/security' },
+          ],
         },
         {
           label: 'System Monitoring',
           icon: Shield,
           path: '/admin-v2/system',
-          description: 'Health & Performance'
-        }
-      ]
-    }
+          description: 'Health & Performance',
+        },
+      ],
+    },
   ];
 
   const isActiveRoute = (path) => {
@@ -148,18 +157,19 @@ const AdminSidebar = ({ isOpen, onClose }) => {
   };
 
   const toggleSection = (sectionKey) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [sectionKey]: !prev[sectionKey]
+      [sectionKey]: !prev[sectionKey],
     }));
   };
 
   const getBadgeStyles = (badgeType) => {
     const styles = {
       pending: 'bg-earthy-yellow/20 text-earthy-brown border-earthy-yellow/30',
-      urgent: 'bg-tomato-red/10 text-tomato-red border-tomato-red/20 animate-pulse',
+      urgent:
+        'bg-tomato-red/10 text-tomato-red border-tomato-red/20 animate-pulse',
       info: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
-      success: 'bg-sage-green/10 text-muted-olive border-sage-green/20'
+      success: 'bg-sage-green/10 text-muted-olive border-sage-green/20',
     };
     return styles[badgeType] || styles.info;
   };
@@ -170,8 +180,10 @@ const AdminSidebar = ({ isOpen, onClose }) => {
       <div
         className={`
           fixed top-0 left-0 z-50 h-full w-80 
-          ${isDarkMode ? 'glass-2-dark' : 'glass-2'} backdrop-blur-xl
-          border-r ${isDarkMode ? 'border-dark-olive-border' : 'border-sage-green/20'}
+          ${isDarkMode 
+            ? 'bg-dark-olive-surface border-dark-olive-border text-dark-text-primary' 
+            : 'bg-white/95 border-sage-green/20 text-text-dark'
+          } backdrop-blur-xl border-r
           shadow-depth-3 ${isDarkMode ? 'shadow-dark-depth-3' : ''}
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
@@ -179,33 +191,43 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         `}
       >
         {/* Professional Header */}
-        <div className={`
+        <div
+          className={`
           flex items-center justify-between p-6 
           border-b ${isDarkMode ? 'border-dark-olive-border' : 'border-sage-green/20'}
-          ${isDarkMode ? 'glass-1-dark' : 'glass-1'}
-        `}>
+          ${isDarkMode 
+            ? 'bg-dark-olive-bg/50' 
+            : 'bg-white/50'
+          }
+        `}
+        >
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-glow-olive">
               <span className="text-white font-bold text-lg">A</span>
             </div>
             <div>
-              <h1 className={`font-bold text-lg ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+              <h1
+                className={`font-bold text-lg ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+              >
                 Admin Portal
               </h1>
-              <p className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+              >
                 Aaroth Fresh • B2B Platform
               </p>
             </div>
           </div>
-          
+
           {/* Enhanced Close Button */}
           <button
             onClick={onClose}
             className={`
               lg:hidden p-2 rounded-2xl transition-all duration-200
-              ${isDarkMode 
-                ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' 
-                : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'
+              ${
+                isDarkMode
+                  ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent'
+                  : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'
               }
             `}
           >
@@ -218,12 +240,16 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           {navigationStructure.map((section, sectionIndex) => (
             <div key={section.section} className="space-y-2">
               {/* Section Header */}
-              <div className={`
+              <div
+                className={`
                 text-xs font-semibold uppercase tracking-wider px-4 py-2
                 ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}
                 flex items-center gap-2
-              `}>
-                <div className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-dark-sage-accent' : 'bg-sage-green'}`} />
+              `}
+              >
+                <div
+                  className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-dark-sage-accent' : 'bg-sage-green'}`}
+                />
                 {section.section}
               </div>
 
@@ -248,44 +274,55 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                           className={`
                             flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200
                             hover:shadow-glow-olive/20 hover:-translate-y-0.5
-                            ${isActive
-                              ? `${isDarkMode 
-                                  ? 'glass-3-dark text-dark-sage-accent border border-dark-sage-accent/30 shadow-dark-glow-olive/20' 
-                                  : 'glass-3 text-muted-olive border border-sage-green/30 shadow-glow-olive/20'
-                                }`
-                              : `${isDarkMode
-                                  ? 'text-dark-text-muted hover:text-dark-sage-accent hover:glass-1-dark'
-                                  : 'text-text-muted hover:text-muted-olive hover:glass-1'
-                                }`
+                            ${
+                              isActive
+                                ? `${
+                                    isDarkMode
+                                      ? 'bg-dark-sage-accent/20 text-dark-sage-accent border border-dark-sage-accent/30'
+                                      : 'bg-sage-green/10 text-muted-olive border border-sage-green/30'
+                                  }`
+                                : `${
+                                    isDarkMode
+                                      ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-olive-surface/70'
+                                      : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'
+                                  }`
                             }
                           `}
                         >
                           <item.icon className="w-5 h-5 flex-shrink-0" />
-                          
+
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">{item.label}</div>
-                            <div className="text-xs opacity-70 truncate">{item.description}</div>
+                            <div className="font-medium truncate">
+                              {item.label}
+                            </div>
+                            <div className="text-xs opacity-70 truncate">
+                              {item.description}
+                            </div>
                           </div>
-                          
+
                           {/* Enhanced Badge System */}
                           {item.badge && (
-                            <div className={`
+                            <div
+                              className={`
                               px-2 py-1 rounded-lg text-xs font-medium border
                               ${getBadgeStyles(item.badge.type)}
-                            `}>
+                            `}
+                            >
                               {item.badge.count}
                             </div>
                           )}
-                          
+
                           {/* Expand/Collapse Icon */}
                           {hasChildren && (
-                            <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
+                            <div
+                              className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                            >
                               <ChevronRight className="w-4 h-4 opacity-60" />
                             </div>
                           )}
                         </NavLink>
                       </div>
-                      
+
                       {/* Sub-navigation */}
                       {hasChildren && isExpanded && (
                         <div className="overflow-hidden transition-all duration-200">
@@ -296,9 +333,10 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                                 to={child.path}
                                 className={({ isActive: childActive }) => `
                                   block px-4 py-2 rounded-xl text-sm transition-all duration-200
-                                  ${childActive
-                                    ? `${isDarkMode ? 'text-dark-sage-accent bg-dark-sage-accent/10' : 'text-muted-olive bg-sage-green/10'}`
-                                    : `${isDarkMode ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5' : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'}`
+                                  ${
+                                    childActive
+                                      ? `${isDarkMode ? 'text-dark-sage-accent bg-dark-sage-accent/10' : 'text-muted-olive bg-sage-green/10'}`
+                                      : `${isDarkMode ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5' : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'}`
                                   }
                                 `}
                                 onClick={() => {
@@ -306,7 +344,9 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                                 }}
                               >
                                 <div className="flex items-center gap-2">
-                                  <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-dark-sage-accent/60' : 'bg-sage-green/60'}`} />
+                                  <div
+                                    className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-dark-sage-accent/60' : 'bg-sage-green/60'}`}
+                                  />
                                   {child.label}
                                 </div>
                               </NavLink>
@@ -328,10 +368,11 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             to="/admin/dashboard"
             className={`
               flex items-center gap-3 px-4 py-3 text-sm transition-all duration-200
-              rounded-2xl border ${isDarkMode ? 'glass-1-dark border-dark-olive-border' : 'glass-1 border-sage-green/20'}
-              ${isDarkMode 
-                ? 'text-dark-text-muted hover:text-dark-sage-accent hover:glass-2-dark' 
-                : 'text-text-muted hover:text-muted-olive hover:glass-2'
+              rounded-2xl border ${isDarkMode ? 'bg-dark-olive-surface/50 border-dark-olive-border' : 'bg-white/80 border-sage-green/20'}
+              ${
+                isDarkMode
+                  ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-olive-surface/70'
+                  : 'text-text-muted hover:text-muted-olive hover:bg-white/90'
               }
             `}
             onClick={() => {
@@ -344,16 +385,23 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         </div>
 
         {/* Enhanced Footer */}
-        <div className={`
+        <div
+          className={`
           absolute bottom-4 left-4 right-4 p-4 rounded-2xl border
-          ${isDarkMode 
-            ? 'glass-card-dark-olive border-dark-sage-accent/20' 
-            : 'glass-card-olive border-sage-green/20'
+          ${
+            isDarkMode
+              ? 'bg-dark-olive-surface/60 border-dark-sage-accent/20'
+              : 'bg-white/70 border-sage-green/20'
           }
-        `}>
-          <div className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+        `}
+        >
+          <div
+            className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+          >
             <div className="font-semibold mb-1">Admin Portal v2.0</div>
-            <div className="opacity-80">Organic Futurism • Professional B2B</div>
+            <div className="opacity-80">
+              Organic Futurism • Professional B2B
+            </div>
           </div>
         </div>
       </div>

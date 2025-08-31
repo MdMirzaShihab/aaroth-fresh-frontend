@@ -20,32 +20,30 @@ import {
   ChevronDown,
   Bookmark,
   RotateCcw,
-  SlidersHorizontal
+  SlidersHorizontal,
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
-import { Input } from '../../../../components/ui';
+import { Card, Button, Input } from '../../../../components/ui';
 
 // Filter preset configurations
 const FILTER_PRESETS = {
   all: { label: 'All Vendors', filters: {} },
-  pending_verification: { 
-    label: 'Pending Verification', 
-    filters: { verificationStatus: 'pending' } 
+  pending_verification: {
+    label: 'Pending Verification',
+    filters: { verificationStatus: 'pending' },
   },
-  high_performers: { 
-    label: 'High Performers', 
-    filters: { minRating: 4.5, minOrders: 100 } 
+  high_performers: {
+    label: 'High Performers',
+    filters: { minRating: 4.5, minOrders: 100 },
   },
-  new_vendors: { 
-    label: 'New Vendors', 
-    filters: { dateRange: 'last_30_days' } 
+  new_vendors: {
+    label: 'New Vendors',
+    filters: { dateRange: 'last_30_days' },
   },
-  at_risk: { 
-    label: 'At Risk', 
-    filters: { minRiskScore: 70 } 
-  }
+  at_risk: {
+    label: 'At Risk',
+    filters: { minRiskScore: 70 },
+  },
 };
 
 // Business type options
@@ -55,7 +53,7 @@ const BUSINESS_TYPES = [
   { value: 'distributor', label: 'Distributor' },
   { value: 'co-op', label: 'Cooperative' },
   { value: 'processor', label: 'Food Processor' },
-  { value: 'supplier', label: 'Supplier' }
+  { value: 'supplier', label: 'Supplier' },
 ];
 
 // Status options
@@ -63,14 +61,14 @@ const STATUS_OPTIONS = [
   { value: 'active', label: 'Active', color: 'text-sage-green' },
   { value: 'inactive', label: 'Inactive', color: 'text-gray-500' },
   { value: 'suspended', label: 'Suspended', color: 'text-earthy-yellow' },
-  { value: 'pending', label: 'Pending', color: 'text-sage-green' }
+  { value: 'pending', label: 'Pending', color: 'text-sage-green' },
 ];
 
 // Verification status options
 const VERIFICATION_STATUS_OPTIONS = [
   { value: 'approved', label: 'Verified', color: 'text-sage-green' },
   { value: 'pending', label: 'Pending Review', color: 'text-earthy-yellow' },
-  { value: 'rejected', label: 'Rejected', color: 'text-tomato-red' }
+  { value: 'rejected', label: 'Rejected', color: 'text-tomato-red' },
 ];
 
 // Advanced filter section component
@@ -82,9 +80,11 @@ const FilterSection = ({ title, children, isOpen, onToggle }) => {
         className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50 transition-colors"
       >
         <span className="font-medium text-text-dark">{title}</span>
-        <ChevronDown className={`w-4 h-4 text-text-muted transition-transform ${
-          isOpen ? 'rotate-180' : ''
-        }`} />
+        <ChevronDown
+          className={`w-4 h-4 text-text-muted transition-transform ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
       </button>
       {isOpen && (
         <motion.div
@@ -105,7 +105,10 @@ const CheckboxGroup = ({ options, values, onChange, colorField }) => {
   return (
     <div className="space-y-2">
       {options.map((option) => (
-        <label key={option.value} className="flex items-center gap-3 cursor-pointer">
+        <label
+          key={option.value}
+          className="flex items-center gap-3 cursor-pointer"
+        >
           <input
             type="checkbox"
             checked={values.includes(option.value)}
@@ -113,12 +116,14 @@ const CheckboxGroup = ({ options, values, onChange, colorField }) => {
               if (e.target.checked) {
                 onChange([...values, option.value]);
               } else {
-                onChange(values.filter(v => v !== option.value));
+                onChange(values.filter((v) => v !== option.value));
               }
             }}
             className="w-4 h-4 rounded border-2 border-muted-olive/30 text-muted-olive focus:ring-muted-olive/20"
           />
-          <span className={`text-sm ${colorField ? option[colorField] : 'text-text-dark'}`}>
+          <span
+            className={`text-sm ${colorField ? option[colorField] : 'text-text-dark'}`}
+          >
             {option.label}
           </span>
         </label>
@@ -127,13 +132,13 @@ const CheckboxGroup = ({ options, values, onChange, colorField }) => {
   );
 };
 
-const VendorFilters = ({ 
-  filters = {}, 
-  onFiltersChange, 
+const VendorFilters = ({
+  filters = {},
+  onFiltersChange,
   onReset,
   totalResults = 0,
   isCollapsed = false,
-  onToggleCollapse
+  onToggleCollapse,
 }) => {
   const { isDarkMode } = useTheme();
   const [localFilters, setLocalFilters] = useState(filters);
@@ -143,9 +148,9 @@ const VendorFilters = ({
     business: false,
     location: false,
     performance: false,
-    dates: false
+    dates: false,
   });
-  
+
   // Update local filters when prop changes
   useEffect(() => {
     setLocalFilters(filters);
@@ -177,9 +182,13 @@ const VendorFilters = ({
 
   // Update filter value
   const updateFilter = (key, value) => {
-    setLocalFilters(prev => {
-      if (value === null || value === undefined || value === '' || 
-          (Array.isArray(value) && value.length === 0)) {
+    setLocalFilters((prev) => {
+      if (
+        value === null ||
+        value === undefined ||
+        value === '' ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
         const { [key]: removed, ...rest } = prev;
         return rest;
       }
@@ -190,9 +199,9 @@ const VendorFilters = ({
 
   // Toggle filter section
   const toggleSection = (section) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -211,7 +220,7 @@ const VendorFilters = ({
           <SlidersHorizontal className="w-4 h-4" />
           Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
         </Button>
-        
+
         {activeFilterCount > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-text-muted">
@@ -245,16 +254,12 @@ const VendorFilters = ({
             </span>
           )}
         </div>
-        
+
         <div className="flex items-center gap-2">
           <span className="text-sm text-text-muted">
             {totalResults.toLocaleString()} results
           </span>
-          <Button
-            onClick={onToggleCollapse}
-            variant="outline"
-            size="sm"
-          >
+          <Button onClick={onToggleCollapse} variant="outline" size="sm">
             <ChevronDown className="w-4 h-4" />
           </Button>
         </div>
@@ -278,7 +283,9 @@ const VendorFilters = ({
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-2 mb-3">
           <Bookmark className="w-4 h-4 text-muted-olive" />
-          <span className="text-sm font-medium text-text-dark">Quick Filters</span>
+          <span className="text-sm font-medium text-text-dark">
+            Quick Filters
+          </span>
         </div>
         <div className="flex flex-wrap gap-2">
           {Object.entries(FILTER_PRESETS).map(([key, preset]) => (
@@ -307,7 +314,9 @@ const VendorFilters = ({
         >
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-text-dark mb-2 block">Account Status</label>
+              <label className="text-sm font-medium text-text-dark mb-2 block">
+                Account Status
+              </label>
               <CheckboxGroup
                 options={STATUS_OPTIONS}
                 values={localFilters.status || []}
@@ -315,13 +324,17 @@ const VendorFilters = ({
                 colorField="color"
               />
             </div>
-            
+
             <div>
-              <label className="text-sm font-medium text-text-dark mb-2 block">Verification Status</label>
+              <label className="text-sm font-medium text-text-dark mb-2 block">
+                Verification Status
+              </label>
               <CheckboxGroup
                 options={VERIFICATION_STATUS_OPTIONS}
                 values={localFilters.verificationStatus || []}
-                onChange={(values) => updateFilter('verificationStatus', values)}
+                onChange={(values) =>
+                  updateFilter('verificationStatus', values)
+                }
                 colorField="color"
               />
             </div>
@@ -336,7 +349,9 @@ const VendorFilters = ({
         >
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-text-dark mb-2 block">Business Type</label>
+              <label className="text-sm font-medium text-text-dark mb-2 block">
+                Business Type
+              </label>
               <CheckboxGroup
                 options={BUSINESS_TYPES}
                 values={localFilters.businessType || []}
@@ -354,7 +369,9 @@ const VendorFilters = ({
         >
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-text-dark mb-2 block">Location</label>
+              <label className="text-sm font-medium text-text-dark mb-2 block">
+                Location
+              </label>
               <Input
                 type="text"
                 placeholder="City, state, or region..."
@@ -375,10 +392,17 @@ const VendorFilters = ({
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-text-dark mb-2 block">Min Rating</label>
+                <label className="text-sm font-medium text-text-dark mb-2 block">
+                  Min Rating
+                </label>
                 <select
                   value={localFilters.minRating || ''}
-                  onChange={(e) => updateFilter('minRating', e.target.value ? Number(e.target.value) : null)}
+                  onChange={(e) =>
+                    updateFilter(
+                      'minRating',
+                      e.target.value ? Number(e.target.value) : null
+                    )
+                  }
                   className="w-full px-3 py-2 rounded-xl bg-earthy-beige/30 border-0 text-text-dark focus:outline-none"
                 >
                   <option value="">Any rating</option>
@@ -388,12 +412,19 @@ const VendorFilters = ({
                   <option value="3.0">3.0+ stars</option>
                 </select>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium text-text-dark mb-2 block">Min Orders</label>
+                <label className="text-sm font-medium text-text-dark mb-2 block">
+                  Min Orders
+                </label>
                 <select
                   value={localFilters.minOrders || ''}
-                  onChange={(e) => updateFilter('minOrders', e.target.value ? Number(e.target.value) : null)}
+                  onChange={(e) =>
+                    updateFilter(
+                      'minOrders',
+                      e.target.value ? Number(e.target.value) : null
+                    )
+                  }
                   className="w-full px-3 py-2 rounded-xl bg-earthy-beige/30 border-0 text-text-dark focus:outline-none"
                 >
                   <option value="">Any orders</option>
@@ -404,12 +435,16 @@ const VendorFilters = ({
                 </select>
               </div>
             </div>
-            
+
             <div>
-              <label className="text-sm font-medium text-text-dark mb-2 block">Risk Level</label>
+              <label className="text-sm font-medium text-text-dark mb-2 block">
+                Risk Level
+              </label>
               <select
                 value={localFilters.riskLevel || ''}
-                onChange={(e) => updateFilter('riskLevel', e.target.value || null)}
+                onChange={(e) =>
+                  updateFilter('riskLevel', e.target.value || null)
+                }
                 className="w-full px-3 py-2 rounded-xl bg-earthy-beige/30 border-0 text-text-dark focus:outline-none"
               >
                 <option value="">All risk levels</option>
@@ -429,10 +464,14 @@ const VendorFilters = ({
         >
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-text-dark mb-2 block">Registration Date</label>
+              <label className="text-sm font-medium text-text-dark mb-2 block">
+                Registration Date
+              </label>
               <select
                 value={localFilters.dateRange || ''}
-                onChange={(e) => updateFilter('dateRange', e.target.value || null)}
+                onChange={(e) =>
+                  updateFilter('dateRange', e.target.value || null)
+                }
                 className="w-full px-3 py-2 rounded-xl bg-earthy-beige/30 border-0 text-text-dark focus:outline-none"
               >
                 <option value="">All time</option>
@@ -459,9 +498,10 @@ const VendorFilters = ({
             <RotateCcw className="w-4 h-4" />
             Reset Filters
           </Button>
-          
+
           <div className="text-sm text-text-muted">
-            {totalResults.toLocaleString()} vendor{totalResults !== 1 ? 's' : ''} found
+            {totalResults.toLocaleString()} vendor
+            {totalResults !== 1 ? 's' : ''} found
           </div>
         </div>
       </div>

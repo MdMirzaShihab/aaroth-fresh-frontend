@@ -31,21 +31,23 @@ import {
   CheckCircle,
   XCircle,
   Camera,
-  Trash2
+  Trash2,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Modal } from '../../../../components/ui';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
-import { Input } from '../../../../components/ui';
-import { StatusBadge } from '../../../../components/ui';
+import {
+  Modal,
+  Card,
+  Button,
+  Input,
+  StatusBadge,
+} from '../../../../components/ui';
 import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
-import { 
+import {
   useUpdateVendorMutation,
   useGetVendorPerformanceQuery,
-  useLazyGetVendorDetailsQuery
+  useLazyGetVendorDetailsQuery,
 } from '../../../../services/admin-v2/vendorsService';
-import toast from 'react-hot-toast';
 
 // Profile sections tabs
 const PROFILE_SECTIONS = [
@@ -53,7 +55,7 @@ const PROFILE_SECTIONS = [
   { id: 'contact', label: 'Contact', icon: Phone },
   { id: 'documents', label: 'Documents', icon: FileText },
   { id: 'performance', label: 'Performance', icon: TrendingUp },
-  { id: 'activity', label: 'Activity', icon: Clock }
+  { id: 'activity', label: 'Activity', icon: Clock },
 ];
 
 // Business information form
@@ -64,7 +66,7 @@ const BusinessInfoForm = ({ vendor, register, errors, watch, setValue }) => {
     { value: 'distributor', label: 'Distributor' },
     { value: 'co-op', label: 'Cooperative' },
     { value: 'processor', label: 'Food Processor' },
-    { value: 'supplier', label: 'Supplier' }
+    { value: 'supplier', label: 'Supplier' },
   ];
 
   return (
@@ -73,39 +75,55 @@ const BusinessInfoForm = ({ vendor, register, errors, watch, setValue }) => {
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <Building2 className="w-5 h-5 text-muted-olive" />
-          <h3 className="text-lg font-semibold text-text-dark">Business Identity</h3>
+          <h3 className="text-lg font-semibold text-text-dark">
+            Business Identity
+          </h3>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Business Name *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Business Name *
+            </label>
             <Input
-              {...register('businessName', { required: 'Business name is required' })}
+              {...register('businessName', {
+                required: 'Business name is required',
+              })}
               placeholder="Enter business name"
               error={errors.businessName?.message}
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Business Type *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Business Type *
+            </label>
             <select
-              {...register('businessType', { required: 'Business type is required' })}
+              {...register('businessType', {
+                required: 'Business type is required',
+              })}
               className="w-full px-4 py-3 rounded-2xl bg-earthy-beige/30 border-0 focus:glass-3 
                          focus:shadow-glow-olive transition-all duration-300 text-text-dark focus:outline-none"
             >
               <option value="">Select business type</option>
-              {businessTypes.map(type => (
-                <option key={type.value} value={type.value}>{type.label}</option>
+              {businessTypes.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
               ))}
             </select>
             {errors.businessType && (
-              <p className="text-tomato-red text-sm">{errors.businessType.message}</p>
+              <p className="text-tomato-red text-sm">
+                {errors.businessType.message}
+              </p>
             )}
           </div>
         </div>
 
         <div className="mt-4 space-y-2">
-          <label className="text-sm font-medium text-text-dark">Business Description</label>
+          <label className="text-sm font-medium text-text-dark">
+            Business Description
+          </label>
           <textarea
             {...register('businessDescription')}
             placeholder="Describe your business operations, products, and services..."
@@ -118,13 +136,15 @@ const BusinessInfoForm = ({ vendor, register, errors, watch, setValue }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Registration Number</label>
+            <label className="text-sm font-medium text-text-dark">
+              Registration Number
+            </label>
             <Input
               {...register('registrationNumber')}
               placeholder="Business registration number"
             />
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium text-text-dark">Tax ID</label>
             <Input
@@ -139,39 +159,51 @@ const BusinessInfoForm = ({ vendor, register, errors, watch, setValue }) => {
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <MapPin className="w-5 h-5 text-muted-olive" />
-          <h3 className="text-lg font-semibold text-text-dark">Business Address</h3>
+          <h3 className="text-lg font-semibold text-text-dark">
+            Business Address
+          </h3>
         </div>
-        
+
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Street Address *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Street Address *
+            </label>
             <Input
-              {...register('address.street', { required: 'Street address is required' })}
+              {...register('address.street', {
+                required: 'Street address is required',
+              })}
               placeholder="Street address"
               error={errors.address?.street?.message}
             />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-text-dark">City *</label>
+              <label className="text-sm font-medium text-text-dark">
+                City *
+              </label>
               <Input
                 {...register('address.city', { required: 'City is required' })}
                 placeholder="City"
                 error={errors.address?.city?.message}
               />
             </div>
-            
+
             <div className="space-y-2">
-              <label className="text-sm font-medium text-text-dark">State/Province</label>
+              <label className="text-sm font-medium text-text-dark">
+                State/Province
+              </label>
               <Input
                 {...register('address.state')}
                 placeholder="State or Province"
               />
             </div>
-            
+
             <div className="space-y-2">
-              <label className="text-sm font-medium text-text-dark">Postal Code</label>
+              <label className="text-sm font-medium text-text-dark">
+                Postal Code
+              </label>
               <Input
                 {...register('address.zipCode')}
                 placeholder="Postal code"
@@ -192,21 +224,27 @@ const ContactInfoForm = ({ vendor, register, errors }) => {
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <User className="w-5 h-5 text-muted-olive" />
-          <h3 className="text-lg font-semibold text-text-dark">Owner Information</h3>
+          <h3 className="text-lg font-semibold text-text-dark">
+            Owner Information
+          </h3>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Owner Name *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Owner Name *
+            </label>
             <Input
               {...register('ownerName', { required: 'Owner name is required' })}
               placeholder="Full name of business owner"
               error={errors.ownerName?.message}
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Owner Title</label>
+            <label className="text-sm font-medium text-text-dark">
+              Owner Title
+            </label>
             <Input
               {...register('ownerTitle')}
               placeholder="e.g., CEO, Founder, Manager"
@@ -219,21 +257,27 @@ const ContactInfoForm = ({ vendor, register, errors }) => {
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <Phone className="w-5 h-5 text-muted-olive" />
-          <h3 className="text-lg font-semibold text-text-dark">Contact Details</h3>
+          <h3 className="text-lg font-semibold text-text-dark">
+            Contact Details
+          </h3>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Primary Phone *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Primary Phone *
+            </label>
             <Input
               {...register('phone', { required: 'Phone number is required' })}
               placeholder="+1234567890"
               error={errors.phone?.message}
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Secondary Phone</label>
+            <label className="text-sm font-medium text-text-dark">
+              Secondary Phone
+            </label>
             <Input
               {...register('alternatePhone')}
               placeholder="Alternative contact number"
@@ -243,22 +287,26 @@ const ContactInfoForm = ({ vendor, register, errors }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Email Address *</label>
+            <label className="text-sm font-medium text-text-dark">
+              Email Address *
+            </label>
             <Input
-              {...register('email', { 
+              {...register('email', {
                 required: 'Email is required',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address'
-                }
+                  message: 'Invalid email address',
+                },
               })}
               placeholder="business@example.com"
               error={errors.email?.message}
             />
           </div>
-          
+
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-dark">Website</label>
+            <label className="text-sm font-medium text-text-dark">
+              Website
+            </label>
             <Input
               {...register('website')}
               placeholder="https://www.business.com"
@@ -316,19 +364,19 @@ const ContactInfoForm = ({ vendor, register, errors }) => {
 // Document management section
 const DocumentsSection = ({ vendor }) => {
   const [documents, setDocuments] = useState(vendor.documents || {});
-  
+
   const documentTypes = [
     { key: 'businessLicense', label: 'Business License', required: true },
     { key: 'taxId', label: 'Tax ID Document', required: true },
     { key: 'ownerIdentification', label: 'Owner ID', required: true },
     { key: 'bankAccount', label: 'Bank Verification', required: true },
     { key: 'insurance', label: 'Business Insurance', required: false },
-    { key: 'foodSafety', label: 'Food Safety Certificate', required: false }
+    { key: 'foodSafety', label: 'Food Safety Certificate', required: false },
   ];
 
   return (
     <div className="space-y-6">
-      {documentTypes.map(docType => (
+      {documentTypes.map((docType) => (
         <Card key={docType.key} className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -340,7 +388,7 @@ const DocumentsSection = ({ vendor }) => {
                 </span>
               )}
             </div>
-            
+
             {documents[docType.key]?.verified ? (
               <CheckCircle className="w-5 h-5 text-sage-green" />
             ) : documents[docType.key]?.provided ? (
@@ -357,9 +405,14 @@ const DocumentsSection = ({ vendor }) => {
                   <FileText className="w-5 h-5 text-muted-olive" />
                 </div>
                 <div>
-                  <p className="font-medium text-text-dark">Document uploaded</p>
+                  <p className="font-medium text-text-dark">
+                    Document uploaded
+                  </p>
                   <p className="text-sm text-text-muted">
-                    Status: {documents[docType.key].verified ? 'Verified' : 'Under Review'}
+                    Status:{' '}
+                    {documents[docType.key].verified
+                      ? 'Verified'
+                      : 'Under Review'}
                   </p>
                 </div>
               </div>
@@ -394,7 +447,7 @@ const DocumentsSection = ({ vendor }) => {
 const PerformanceSection = ({ vendor }) => {
   const { data: performanceData, isLoading } = useGetVendorPerformanceQuery({
     vendorId: vendor.id,
-    period: 'monthly'
+    period: 'monthly',
   });
 
   if (isLoading) {
@@ -425,7 +478,9 @@ const PerformanceSection = ({ vendor }) => {
           <div className="w-12 h-12 bg-sage-green/10 rounded-xl flex items-center justify-center mx-auto mb-2">
             <Package className="w-6 h-6 text-sage-green" />
           </div>
-          <p className="text-2xl font-bold text-text-dark">{metrics.totalOrders || 0}</p>
+          <p className="text-2xl font-bold text-text-dark">
+            {metrics.totalOrders || 0}
+          </p>
           <p className="text-sm text-text-muted">Total Orders</p>
         </Card>
 
@@ -443,20 +498,24 @@ const PerformanceSection = ({ vendor }) => {
           <div className="w-12 h-12 bg-dusty-cedar/10 rounded-xl flex items-center justify-center mx-auto mb-2">
             <TrendingUp className="w-6 h-6 text-dusty-cedar" />
           </div>
-          <p className="text-2xl font-bold text-text-dark">{metrics.totalListings || 0}</p>
+          <p className="text-2xl font-bold text-text-dark">
+            {metrics.totalListings || 0}
+          </p>
           <p className="text-sm text-text-muted">Active Listings</p>
         </Card>
       </div>
 
       {/* Performance Indicators */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-text-dark mb-4">Performance Indicators</h3>
+        <h3 className="text-lg font-semibold text-text-dark mb-4">
+          Performance Indicators
+        </h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-text-muted">Customer Satisfaction</span>
             <div className="flex items-center gap-2">
               <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-sage-green rounded-full"
                   style={{ width: `${(metrics.rating || 0) * 20}%` }}
                 />
@@ -471,9 +530,11 @@ const PerformanceSection = ({ vendor }) => {
             <span className="text-text-muted">Order Fulfillment Rate</span>
             <div className="flex items-center gap-2">
               <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-sage-green rounded-full"
-                  style={{ width: `${(metrics.fulfillmentRate || 0.85) * 100}%` }}
+                  style={{
+                    width: `${(metrics.fulfillmentRate || 0.85) * 100}%`,
+                  }}
                 />
               </div>
               <span className="text-sm font-medium text-text-dark">
@@ -503,7 +564,7 @@ const ActivitySection = ({ vendor }) => {
       message: 'Verification approved',
       timestamp: vendor.verificationDate || '2024-01-15T10:30:00Z',
       icon: CheckCircle,
-      color: 'text-sage-green'
+      color: 'text-sage-green',
     },
     {
       id: 2,
@@ -511,7 +572,7 @@ const ActivitySection = ({ vendor }) => {
       message: 'Profile updated',
       timestamp: '2024-01-10T14:20:00Z',
       icon: Edit3,
-      color: 'text-sage-green'
+      color: 'text-sage-green',
     },
     {
       id: 3,
@@ -519,25 +580,32 @@ const ActivitySection = ({ vendor }) => {
       message: 'Account created',
       timestamp: vendor.createdAt,
       icon: User,
-      color: 'text-muted-olive'
-    }
+      color: 'text-muted-olive',
+    },
   ];
 
   return (
     <Card className="p-6">
-      <h3 className="text-lg font-semibold text-text-dark mb-4">Recent Activity</h3>
+      <h3 className="text-lg font-semibold text-text-dark mb-4">
+        Recent Activity
+      </h3>
       <div className="space-y-4">
         {activities.map((activity) => {
           const IconComponent = activity.icon;
           return (
             <div key={activity.id} className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center ${activity.color}`}>
+              <div
+                className={`w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center ${activity.color}`}
+              >
                 <IconComponent className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-text-dark">{activity.message}</p>
+                <p className="text-sm font-medium text-text-dark">
+                  {activity.message}
+                </p>
                 <p className="text-xs text-text-muted">
-                  {new Date(activity.timestamp).toLocaleDateString()} at {new Date(activity.timestamp).toLocaleTimeString()}
+                  {new Date(activity.timestamp).toLocaleDateString()} at{' '}
+                  {new Date(activity.timestamp).toLocaleTimeString()}
                 </p>
               </div>
             </div>
@@ -552,16 +620,16 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
   const { isDarkMode } = useTheme();
   const [activeSection, setActiveSection] = useState('business');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const [updateVendor] = useUpdateVendorMutation();
-  
+
   const {
     register,
     handleSubmit,
     reset,
     watch,
     setValue,
-    formState: { errors, isDirty }
+    formState: { errors, isDirty },
   } = useForm({
     defaultValues: {
       businessName: vendor?.businessName || '',
@@ -574,9 +642,9 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
         street: vendor?.address?.street || '',
         city: vendor?.address?.city || '',
         state: vendor?.address?.state || '',
-        zipCode: vendor?.address?.zipCode || ''
-      }
-    }
+        zipCode: vendor?.address?.zipCode || '',
+      },
+    },
   });
 
   useEffect(() => {
@@ -592,8 +660,8 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
           street: vendor.address?.street || '',
           city: vendor.address?.city || '',
           state: vendor.address?.state || '',
-          zipCode: vendor.address?.zipCode || ''
-        }
+          zipCode: vendor.address?.zipCode || '',
+        },
       });
     }
   }, [vendor, isOpen, reset]);
@@ -603,9 +671,9 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
     try {
       await updateVendor({
         vendorId: vendor.id,
-        updates: data
+        updates: data,
       }).unwrap();
-      
+
       toast.success('Vendor profile updated successfully');
       onVendorUpdate?.();
       onClose();
@@ -617,7 +685,12 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
   };
 
   const handleClose = () => {
-    if (isDirty && !window.confirm('You have unsaved changes. Are you sure you want to close?')) {
+    if (
+      isDirty &&
+      !window.confirm(
+        'You have unsaved changes. Are you sure you want to close?'
+      )
+    ) {
       return;
     }
     onClose();
@@ -626,9 +699,23 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
   const renderSectionContent = () => {
     switch (activeSection) {
       case 'business':
-        return <BusinessInfoForm vendor={vendor} register={register} errors={errors} watch={watch} setValue={setValue} />;
+        return (
+          <BusinessInfoForm
+            vendor={vendor}
+            register={register}
+            errors={errors}
+            watch={watch}
+            setValue={setValue}
+          />
+        );
       case 'contact':
-        return <ContactInfoForm vendor={vendor} register={register} errors={errors} />;
+        return (
+          <ContactInfoForm
+            vendor={vendor}
+            register={register}
+            errors={errors}
+          />
+        );
       case 'documents':
         return <DocumentsSection vendor={vendor} />;
       case 'performance':
@@ -645,19 +732,23 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/30 backdrop-blur-md"
         onClick={handleClose}
       />
-      
+
       {/* Modal */}
-      <div className="relative glass-5 rounded-3xl shadow-depth-5 w-full max-w-6xl max-h-[90vh] 
-                      border animate-scale-in flex flex-col">
+      <div
+        className="relative glass-5 rounded-3xl shadow-depth-5 w-full max-w-6xl max-h-[90vh] 
+                      border animate-scale-in flex flex-col"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
-                            flex items-center justify-center shadow-lg text-white">
+            <div
+              className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
+                            flex items-center justify-center shadow-lg text-white"
+            >
               <Building2 className="w-5 h-5" />
             </div>
             <div>
@@ -669,10 +760,10 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <StatusBadge status={vendor.verificationStatus} variant="glass" />
-            <button 
+            <button
               onClick={handleClose}
               className="glass-2 p-2 rounded-xl hover:glass-3 transition-all duration-200 
                          focus:outline-none focus:ring-2 focus:ring-muted-olive/30"
@@ -687,7 +778,7 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
           {/* Section Navigation */}
           <div className="w-64 p-6 border-r border-white/10 flex-shrink-0 overflow-y-auto">
             <nav className="space-y-2">
-              {PROFILE_SECTIONS.map(section => {
+              {PROFILE_SECTIONS.map((section) => {
                 const IconComponent = section.icon;
                 return (
                   <button
@@ -712,16 +803,15 @@ const VendorProfileModal = ({ vendor, isOpen, onClose, onVendorUpdate }) => {
           <div className="flex-1 overflow-y-auto">
             <form onSubmit={handleSubmit(onSubmit)} className="p-6">
               {renderSectionContent()}
-              
+
               {/* Form Actions */}
-              {(activeSection === 'business' || activeSection === 'contact') && (
-                <div className="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-white/10 sticky bottom-0 
-                               bg-white/80 dark:bg-dark-bg/80 backdrop-blur-sm">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleClose}
-                  >
+              {(activeSection === 'business' ||
+                activeSection === 'contact') && (
+                <div
+                  className="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-white/10 sticky bottom-0 
+                               bg-white/80 dark:bg-dark-bg/80 backdrop-blur-sm"
+                >
+                  <Button type="button" variant="outline" onClick={handleClose}>
                     Cancel
                   </Button>
                   <Button

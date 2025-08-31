@@ -111,7 +111,7 @@ const ProductsManagementPage = () => {
 
   // CSV export data
   const csvData = useMemo(() => {
-    return products.map(product => ({
+    return products.map((product) => ({
       ID: product.id,
       Name: product.name,
       Category: product.category,
@@ -126,7 +126,7 @@ const ProductsManagementPage = () => {
   }, [products]);
 
   const handleProductSelect = (productId, selected) => {
-    setSelectedProducts(prev => {
+    setSelectedProducts((prev) => {
       const newSet = new Set(prev);
       if (selected) {
         newSet.add(productId);
@@ -141,7 +141,7 @@ const ProductsManagementPage = () => {
     if (selectedProducts.size === products.length) {
       setSelectedProducts(new Set());
     } else {
-      setSelectedProducts(new Set(products.map(p => p.id)));
+      setSelectedProducts(new Set(products.map((p) => p.id)));
     }
   };
 
@@ -178,7 +178,7 @@ const ProductsManagementPage = () => {
         action: bulkActionType,
         ...actionData,
       }).unwrap();
-      
+
       setSelectedProducts(new Set());
       setBulkActionModalOpen(false);
       refetchProducts();
@@ -230,7 +230,8 @@ const ProductsManagementPage = () => {
               Products Management
             </h1>
             <p className="text-text-muted mt-2 max-w-2xl">
-              Comprehensive product catalog management with performance analytics and bulk operations
+              Comprehensive product catalog management with performance
+              analytics and bulk operations
             </p>
           </div>
 
@@ -249,7 +250,9 @@ const ProductsManagementPage = () => {
               onClick={refetchProducts}
               disabled={isLoadingProducts}
             >
-              <RefreshCw className={`w-4 h-4 ${isLoadingProducts ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isLoadingProducts ? 'animate-spin' : ''}`}
+              />
             </Button>
             <Button
               onClick={handleCreateProduct}
@@ -271,8 +274,12 @@ const ProductsManagementPage = () => {
           <Card className="p-4 glass glow-green">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Total Products</p>
-                <p className="text-2xl font-bold text-muted-olive">{stats.totalProducts}</p>
+                <p className="text-text-muted text-sm font-medium">
+                  Total Products
+                </p>
+                <p className="text-2xl font-bold text-muted-olive">
+                  {stats.totalProducts}
+                </p>
                 <p className="text-xs text-sage-green mt-1">
                   {stats.activeProducts} active
                 </p>
@@ -286,8 +293,12 @@ const ProductsManagementPage = () => {
           <Card className="p-4 glass">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Total Listings</p>
-                <p className="text-2xl font-bold text-text-dark">{stats.totalListings}</p>
+                <p className="text-text-muted text-sm font-medium">
+                  Total Listings
+                </p>
+                <p className="text-2xl font-bold text-text-dark">
+                  {stats.totalListings}
+                </p>
                 <p className="text-xs text-text-muted mt-1">
                   Across all products
                 </p>
@@ -301,13 +312,15 @@ const ProductsManagementPage = () => {
           <Card className="p-4 glass">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Avg Performance</p>
-                <p className={`text-2xl font-bold ${getPerformanceColor(stats.avgPerformanceScore)}`}>
+                <p className="text-text-muted text-sm font-medium">
+                  Avg Performance
+                </p>
+                <p
+                  className={`text-2xl font-bold ${getPerformanceColor(stats.avgPerformanceScore)}`}
+                >
                   {stats.avgPerformanceScore || 0}%
                 </p>
-                <p className="text-xs text-text-muted mt-1">
-                  Overall score
-                </p>
+                <p className="text-xs text-text-muted mt-1">Overall score</p>
               </div>
               <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-sage-green" />
@@ -315,21 +328,29 @@ const ProductsManagementPage = () => {
             </div>
           </Card>
 
-          <Card className={`p-4 glass ${stats.flaggedProducts > 0 ? 'border-tomato-red/30' : ''}`}>
+          <Card
+            className={`p-4 glass ${stats.flaggedProducts > 0 ? 'border-tomato-red/30' : ''}`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-text-muted text-sm font-medium">Flagged Products</p>
-                <p className={`text-2xl font-bold ${stats.flaggedProducts > 0 ? 'text-tomato-red' : 'text-text-dark'}`}>
+                <p className="text-text-muted text-sm font-medium">
+                  Flagged Products
+                </p>
+                <p
+                  className={`text-2xl font-bold ${stats.flaggedProducts > 0 ? 'text-tomato-red' : 'text-text-dark'}`}
+                >
                   {stats.flaggedProducts}
                 </p>
-                <p className="text-xs text-text-muted mt-1">
-                  Need attention
-                </p>
+                <p className="text-xs text-text-muted mt-1">Need attention</p>
               </div>
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                stats.flaggedProducts > 0 ? 'bg-tomato-red/10' : 'bg-gray-100'
-              }`}>
-                <Flag className={`w-6 h-6 ${stats.flaggedProducts > 0 ? 'text-tomato-red' : 'text-gray-400'}`} />
+              <div
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  stats.flaggedProducts > 0 ? 'bg-tomato-red/10' : 'bg-gray-100'
+                }`}
+              >
+                <Flag
+                  className={`w-6 h-6 ${stats.flaggedProducts > 0 ? 'text-tomato-red' : 'text-gray-400'}`}
+                />
               </div>
             </div>
           </Card>
@@ -346,7 +367,11 @@ const ProductsManagementPage = () => {
               {[
                 { id: 'cards', label: 'Product Cards', icon: Grid },
                 { id: 'list', label: 'List View', icon: List },
-                { id: 'analytics', label: 'Analytics Dashboard', icon: BarChart3 },
+                {
+                  id: 'analytics',
+                  label: 'Analytics Dashboard',
+                  icon: BarChart3,
+                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -357,7 +382,9 @@ const ProductsManagementPage = () => {
                       : 'hover:bg-earthy-beige/20 text-text-dark'
                   }`}
                 >
-                  <tab.icon className={`w-5 h-5 ${viewMode === tab.id ? 'text-white' : 'text-muted-olive'}`} />
+                  <tab.icon
+                    className={`w-5 h-5 ${viewMode === tab.id ? 'text-white' : 'text-muted-olive'}`}
+                  />
                   <span className="font-medium">{tab.label}</span>
                 </button>
               ))}
@@ -431,7 +458,9 @@ const ProductsManagementPage = () => {
                             onSelect={handleProductSelect}
                             onEdit={handleEditProduct}
                             onDelete={handleDeleteProduct}
-                            onFlag={(product) => flagProduct({ id: product.id }).unwrap()}
+                            onFlag={(product) =>
+                              flagProduct({ id: product.id }).unwrap()
+                            }
                             index={index}
                           />
                         ))}
@@ -443,7 +472,10 @@ const ProductsManagementPage = () => {
                             <label className="flex items-center gap-2">
                               <input
                                 type="checkbox"
-                                checked={selectedProducts.size === products.length && products.length > 0}
+                                checked={
+                                  selectedProducts.size === products.length &&
+                                  products.length > 0
+                                }
                                 onChange={handleSelectAll}
                                 className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                               />
@@ -452,7 +484,8 @@ const ProductsManagementPage = () => {
                               </span>
                             </label>
                             <span className="text-sm text-text-muted">
-                              {selectedProducts.size} of {products.length} selected
+                              {selectedProducts.size} of {products.length}{' '}
+                              selected
                             </span>
                           </div>
                         </div>
@@ -465,7 +498,9 @@ const ProductsManagementPage = () => {
                               onSelect={handleProductSelect}
                               onEdit={handleEditProduct}
                               onDelete={handleDeleteProduct}
-                              onFlag={(product) => flagProduct({ id: product.id }).unwrap()}
+                              onFlag={(product) =>
+                                flagProduct({ id: product.id }).unwrap()
+                              }
                               index={index}
                             />
                           ))}
@@ -479,8 +514,8 @@ const ProductsManagementPage = () => {
                         <div className="flex items-center justify-between">
                           <div className="text-sm text-text-muted">
                             Showing {(currentPage - 1) * filters.limit + 1} to{' '}
-                            {Math.min(currentPage * filters.limit, totalCount)} of{' '}
-                            {totalCount} products
+                            {Math.min(currentPage * filters.limit, totalCount)}{' '}
+                            of {totalCount} products
                           </div>
 
                           <div className="flex items-center gap-2">
@@ -488,7 +523,12 @@ const ProductsManagementPage = () => {
                               variant="outline"
                               size="sm"
                               disabled={currentPage === 1 || isLoadingProducts}
-                              onClick={() => setFilters({ ...filters, page: currentPage - 1 })}
+                              onClick={() =>
+                                setFilters({
+                                  ...filters,
+                                  page: currentPage - 1,
+                                })
+                              }
                             >
                               Previous
                             </Button>
@@ -500,8 +540,15 @@ const ProductsManagementPage = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              disabled={currentPage === totalPages || isLoadingProducts}
-                              onClick={() => setFilters({ ...filters, page: currentPage + 1 })}
+                              disabled={
+                                currentPage === totalPages || isLoadingProducts
+                              }
+                              onClick={() =>
+                                setFilters({
+                                  ...filters,
+                                  page: currentPage + 1,
+                                })
+                              }
                             >
                               Next
                             </Button>
@@ -526,13 +573,15 @@ const ProductsManagementPage = () => {
           product={editingProduct}
           onSave={(productData) => {
             const mutation = editingProduct ? updateProduct : createProduct;
-            return mutation(productData).unwrap().then(() => {
-              refetchProducts();
-              setProductModalOpen(false);
-              setEditingProduct(null);
-            });
+            return mutation(productData)
+              .unwrap()
+              .then(() => {
+                refetchProducts();
+                setProductModalOpen(false);
+                setEditingProduct(null);
+              });
           }}
-          categories={stats.categoryDistribution.map(cat => ({
+          categories={stats.categoryDistribution.map((cat) => ({
             id: cat.categoryId,
             name: cat.categoryName,
           }))}
@@ -552,7 +601,13 @@ const ProductsManagementPage = () => {
 };
 
 // Bulk Action Modal Component
-const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit }) => {
+const BulkActionModal = ({
+  isOpen,
+  onClose,
+  actionType,
+  selectedCount,
+  onSubmit,
+}) => {
   const [actionData, setActionData] = useState({});
 
   if (!isOpen) return null;
@@ -601,12 +656,18 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={config.title} size="md">
       <div className="space-y-4">
-        <div className={`p-4 rounded-2xl ${config.dangerous ? 'bg-tomato-red/5 border border-tomato-red/20' : 'bg-gray-50'}`}>
+        <div
+          className={`p-4 rounded-2xl ${config.dangerous ? 'bg-tomato-red/5 border border-tomato-red/20' : 'bg-gray-50'}`}
+        >
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
-              config.dangerous ? 'bg-tomato-red/10' : 'bg-muted-olive/10'
-            }`}>
-              <config.icon className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-muted-olive'}`} />
+            <div
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                config.dangerous ? 'bg-tomato-red/10' : 'bg-muted-olive/10'
+              }`}
+            >
+              <config.icon
+                className={`w-5 h-5 ${config.dangerous ? 'text-tomato-red' : 'text-muted-olive'}`}
+              />
             </div>
             <div>
               <h4 className="font-semibold text-text-dark">{config.title}</h4>
@@ -619,7 +680,9 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
           <FormField label="New Category">
             <select
               value={actionData.categoryId || ''}
-              onChange={(e) => setActionData({ ...actionData, categoryId: e.target.value })}
+              onChange={(e) =>
+                setActionData({ ...actionData, categoryId: e.target.value })
+              }
               className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20"
               required
             >
@@ -637,7 +700,9 @@ const BulkActionModal = ({ isOpen, onClose, actionType, selectedCount, onSubmit 
           <FormField label="Flag Reason">
             <textarea
               value={actionData.reason || ''}
-              onChange={(e) => setActionData({ ...actionData, reason: e.target.value })}
+              onChange={(e) =>
+                setActionData({ ...actionData, reason: e.target.value })
+              }
               placeholder="Explain why these products are being flagged..."
               rows={3}
               className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"

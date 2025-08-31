@@ -52,10 +52,14 @@ export const validateTouchTarget = (element) => {
     minHeight: TOUCH_TARGETS.MINIMUM,
     widthValid: isWidthValid,
     heightValid: isHeightValid,
-    suggestions: !isValid ? [
-      !isWidthValid ? `Increase width to ${TOUCH_TARGETS.MINIMUM}px` : null,
-      !isHeightValid ? `Increase height to ${TOUCH_TARGETS.MINIMUM}px` : null,
-    ].filter(Boolean) : [],
+    suggestions: !isValid
+      ? [
+          !isWidthValid ? `Increase width to ${TOUCH_TARGETS.MINIMUM}px` : null,
+          !isHeightValid
+            ? `Increase height to ${TOUCH_TARGETS.MINIMUM}px`
+            : null,
+        ].filter(Boolean)
+      : [],
   };
 };
 
@@ -65,10 +69,16 @@ export const validateTouchTarget = (element) => {
  */
 export const detectMobileDevice = () => {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-  const isTablet = /(iPad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(userAgent);
-  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent
+    );
+  const isTablet = /(iPad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(
+    userAgent
+  );
+  const isTouchDevice =
+    'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
   return {
     isMobile,
     isTablet,
@@ -86,7 +96,7 @@ export const detectMobileDevice = () => {
  */
 export const getViewportCategory = () => {
   const width = window.innerWidth;
-  
+
   if (width < MOBILE_BREAKPOINTS.sm) return 'xs';
   if (width < MOBILE_BREAKPOINTS.md) return 'sm';
   if (width < MOBILE_BREAKPOINTS.lg) return 'md';
@@ -159,10 +169,19 @@ export const attachGestureHandlers = (element, callbacks = {}) => {
     const SWIPE_THRESHOLD = 50;
     const SWIPE_VELOCITY_THRESHOLD = 0.3;
 
-    if (!isScrolling && distance > SWIPE_THRESHOLD && velocity > SWIPE_VELOCITY_THRESHOLD) {
-      const direction = Math.abs(deltaX) > Math.abs(deltaY)
-        ? (deltaX > 0 ? 'right' : 'left')
-        : (deltaY > 0 ? 'down' : 'up');
+    if (
+      !isScrolling &&
+      distance > SWIPE_THRESHOLD &&
+      velocity > SWIPE_VELOCITY_THRESHOLD
+    ) {
+      const direction =
+        Math.abs(deltaX) > Math.abs(deltaY)
+          ? deltaX > 0
+            ? 'right'
+            : 'left'
+          : deltaY > 0
+            ? 'down'
+            : 'up';
 
       if (callbacks.onSwipe) {
         callbacks.onSwipe({ direction, distance, velocity, deltaX, deltaY });
@@ -189,7 +208,13 @@ export const attachGestureHandlers = (element, callbacks = {}) => {
     }
 
     if (callbacks.onTouchEnd) {
-      callbacks.onTouchEnd(e, { deltaX, deltaY, deltaTime, distance, velocity });
+      callbacks.onTouchEnd(e, {
+        deltaX,
+        deltaY,
+        deltaTime,
+        distance,
+        velocity,
+      });
     }
 
     // Reset
@@ -250,8 +275,9 @@ export const optimizeForMobile = (element, options = {}) => {
 
   // Add touch feedback
   if (enableTouchFeedback) {
-    element.style.transition = element.style.transition || 'transform 0.1s ease, opacity 0.1s ease';
-    
+    element.style.transition =
+      element.style.transition || 'transform 0.1s ease, opacity 0.1s ease';
+
     const handleTouchStart = () => {
       element.style.transform = 'scale(0.98)';
       element.style.opacity = '0.8';
@@ -268,7 +294,10 @@ export const optimizeForMobile = (element, options = {}) => {
   }
 
   // Prevent double-tap zoom on buttons
-  if (preventDoubleZoom && (element.tagName === 'BUTTON' || element.getAttribute('role') === 'button')) {
+  if (
+    preventDoubleZoom &&
+    (element.tagName === 'BUTTON' || element.getAttribute('role') === 'button')
+  ) {
     element.style.touchAction = 'manipulation';
   }
 };
@@ -290,7 +319,7 @@ export const virtualKeyboard = {
     const screenHeight = window.screen.height;
     const reductionThreshold = 150; // pixels
 
-    return (screenHeight - currentHeight) > reductionThreshold;
+    return screenHeight - currentHeight > reductionThreshold;
   },
 
   /**
@@ -344,12 +373,26 @@ export const safeArea = {
    */
   getInsets() {
     const computedStyle = getComputedStyle(document.documentElement);
-    
+
     return {
-      top: parseInt(computedStyle.getPropertyValue('--safe-area-inset-top'), 10) || 0,
-      right: parseInt(computedStyle.getPropertyValue('--safe-area-inset-right'), 10) || 0,
-      bottom: parseInt(computedStyle.getPropertyValue('--safe-area-inset-bottom'), 10) || 0,
-      left: parseInt(computedStyle.getPropertyValue('--safe-area-inset-left'), 10) || 0,
+      top:
+        parseInt(computedStyle.getPropertyValue('--safe-area-inset-top'), 10) ||
+        0,
+      right:
+        parseInt(
+          computedStyle.getPropertyValue('--safe-area-inset-right'),
+          10
+        ) || 0,
+      bottom:
+        parseInt(
+          computedStyle.getPropertyValue('--safe-area-inset-bottom'),
+          10
+        ) || 0,
+      left:
+        parseInt(
+          computedStyle.getPropertyValue('--safe-area-inset-left'),
+          10
+        ) || 0,
     };
   },
 
@@ -361,8 +404,8 @@ export const safeArea = {
   applyPadding(element, sides = ['top', 'bottom']) {
     if (!element) return;
 
-    sides.forEach(side => {
-      element.style[`padding${side.charAt(0).toUpperCase() + side.slice(1)}`] = 
+    sides.forEach((side) => {
+      element.style[`padding${side.charAt(0).toUpperCase() + side.slice(1)}`] =
         `calc(${element.style[`padding${side.charAt(0).toUpperCase() + side.slice(1)}`] || '0px'} + var(--safe-area-inset-${side}))`;
     });
   },
@@ -402,7 +445,7 @@ export const mobilePerformance = {
       if (!inThrottle) {
         func.apply(this, args);
         inThrottle = true;
-        setTimeout(() => inThrottle = false, limit);
+        setTimeout(() => (inThrottle = false), limit);
       }
     };
   },
@@ -414,8 +457,10 @@ export const mobilePerformance = {
   respectMotionPreferences(element) {
     if (!element) return;
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
     if (prefersReducedMotion) {
       element.style.animation = 'none';
       element.style.transition = 'none';

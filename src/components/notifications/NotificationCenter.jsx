@@ -18,6 +18,7 @@ import {
   DollarSign,
   Users,
   Eye,
+  RefreshCw,
 } from 'lucide-react';
 import {
   selectNotifications,
@@ -30,6 +31,7 @@ import {
   updateNotificationSettings,
 } from '../../store/slices/notificationSlice';
 import { formatDate, timeAgo } from '../../utils';
+import { useManualNotificationFetch } from '../../hooks/useNotifications';
 
 /**
  * Advanced Notification Center
@@ -43,6 +45,28 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [showSettings, setShowSettings] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Manual notification fetching
+  const { fetchNotifications } = useManualNotificationFetch();
+
+  // Handle manual refresh
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const result = await fetchNotifications();
+      if (result.success) {
+        // Don't show toast if no new notifications to avoid spam
+        if (result.count > 0) {
+          // Using the existing notification system instead of toast
+        }
+      }
+    } catch (error) {
+      console.error('Failed to refresh notifications:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [fetchNotifications]);
 
   // Filter notifications based on active filter
   const filteredNotifications = notifications.filter((notification) => {
@@ -204,6 +228,16 @@ const NotificationCenter = ({ isOpen, onClose, className = '' }) => {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+              title="Refresh notifications"
+            >
+              <RefreshCw
+                className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`}
+              />
+            </button>
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="p-2 hover:bg-white/10 rounded-lg transition-colors"

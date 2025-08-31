@@ -16,15 +16,14 @@ import {
   Settings,
   BarChart3,
   UserPlus,
-  Store
+  Store,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../hooks/useTheme';
-import { Card } from '../../../components/ui';
-import { Button } from '../../../components/ui';
-import { Input } from '../../../components/ui';
-import { 
+import { Card, Button, Input } from '../../../components/ui';
+import {
   useGetUsersQuery,
-  useGetUserAnalyticsQuery 
+  useGetUserAnalyticsQuery,
 } from '../../../services/admin-v2/usersService';
 import UserDirectoryTable from './components/UserDirectoryTable';
 import UserFilters from './components/UserFilters';
@@ -33,21 +32,23 @@ import UserAnalytics from './components/UserAnalytics';
 import UserProfileModal from './components/UserProfileModal';
 import CreateRestaurantOwner from './CreateRestaurantOwner';
 import CreateRestaurantManager from './CreateRestaurantManager';
-import toast from 'react-hot-toast';
 
 const UsersManagementPage = () => {
   const { isDarkMode } = useTheme();
-  
+
   // Page state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [sortConfig, setSortConfig] = useState({ field: 'createdAt', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({
+    field: 'createdAt',
+    direction: 'desc',
+  });
   const [activeFilters, setActiveFilters] = useState({});
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Modal state
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserProfile, setShowUserProfile] = useState(false);
@@ -59,21 +60,19 @@ const UsersManagementPage = () => {
     data: usersData,
     isLoading: usersLoading,
     error: usersError,
-    refetch: refetchUsers
+    refetch: refetchUsers,
   } = useGetUsersQuery({
     page: currentPage,
     limit: pageSize,
     search: searchQuery,
     sort: `${sortConfig.field}:${sortConfig.direction}`,
-    ...activeFilters
+    ...activeFilters,
   });
 
-  const {
-    data: analyticsData,
-    isLoading: analyticsLoading
-  } = useGetUserAnalyticsQuery({
-    enabled: showAnalytics
-  });
+  const { data: analyticsData, isLoading: analyticsLoading } =
+    useGetUserAnalyticsQuery({
+      enabled: showAnalytics,
+    });
 
   // Memoized data transformations
   const totalUsers = usersData?.total || 0;
@@ -82,20 +81,21 @@ const UsersManagementPage = () => {
 
   // Handle user selection
   const handleUserSelect = useCallback((userId, selected) => {
-    setSelectedUsers(prev => 
-      selected 
-        ? [...prev, userId]
-        : prev.filter(id => id !== userId)
+    setSelectedUsers((prev) =>
+      selected ? [...prev, userId] : prev.filter((id) => id !== userId)
     );
   }, []);
 
-  const handleSelectAll = useCallback((selected) => {
-    if (selected) {
-      setSelectedUsers(users.map(user => user.id));
-    } else {
-      setSelectedUsers([]);
-    }
-  }, [users]);
+  const handleSelectAll = useCallback(
+    (selected) => {
+      if (selected) {
+        setSelectedUsers(users.map((user) => user.id));
+      } else {
+        setSelectedUsers([]);
+      }
+    },
+    [users]
+  );
 
   // Handle search
   const handleSearch = useCallback((query) => {
@@ -105,9 +105,10 @@ const UsersManagementPage = () => {
 
   // Handle sorting
   const handleSort = useCallback((field) => {
-    setSortConfig(prev => ({
+    setSortConfig((prev) => ({
       field,
-      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+      direction:
+        prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
     setCurrentPage(1);
   }, []);
@@ -119,28 +120,33 @@ const UsersManagementPage = () => {
   }, []);
 
   // Handle bulk operations
-  const handleBulkOperation = useCallback(async (operation, options = {}) => {
-    if (selectedUsers.length === 0) {
-      toast.error('Please select users first');
-      return;
-    }
+  const handleBulkOperation = useCallback(
+    async (operation, options = {}) => {
+      if (selectedUsers.length === 0) {
+        toast.error('Please select users first');
+        return;
+      }
 
-    try {
-      toast.loading(`Processing ${operation} for ${selectedUsers.length} users...`);
-      
-      // Bulk operation logic will be implemented in BulkOperations component
-      // This is a placeholder for the actual API calls
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast.dismiss();
-      toast.success(`${operation} completed successfully`);
-      setSelectedUsers([]);
-      refetchUsers();
-    } catch (error) {
-      toast.dismiss();
-      toast.error(`Failed to ${operation}: ${error.message}`);
-    }
-  }, [selectedUsers, refetchUsers]);
+      try {
+        toast.loading(
+          `Processing ${operation} for ${selectedUsers.length} users...`
+        );
+
+        // Bulk operation logic will be implemented in BulkOperations component
+        // This is a placeholder for the actual API calls
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        toast.dismiss();
+        toast.success(`${operation} completed successfully`);
+        setSelectedUsers([]);
+        refetchUsers();
+      } catch (error) {
+        toast.dismiss();
+        toast.error(`Failed to ${operation}: ${error.message}`);
+      }
+    },
+    [selectedUsers, refetchUsers]
+  );
 
   // Handle user actions
   const handleUserAction = useCallback((user, action) => {
@@ -162,10 +168,10 @@ const UsersManagementPage = () => {
   const handleExport = useCallback(async (format = 'csv') => {
     try {
       toast.loading('Preparing export...');
-      
+
       // Export logic will be implemented
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.dismiss();
       toast.success(`Users exported as ${format.toUpperCase()}`);
     } catch (error) {
@@ -177,12 +183,12 @@ const UsersManagementPage = () => {
   // Quick stats for header
   const quickStats = useMemo(() => {
     if (!analyticsData) return null;
-    
+
     return {
       totalUsers,
       activeUsers: analyticsData.activeUsers || 0,
       pendingApproval: analyticsData.pendingApproval || 0,
-      newThisWeek: analyticsData.newThisWeek || 0
+      newThisWeek: analyticsData.newThisWeek || 0,
     };
   }, [analyticsData, totalUsers]);
 
@@ -197,10 +203,14 @@ const UsersManagementPage = () => {
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                <h1
+                  className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                >
                   Users Management
                 </h1>
-                <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                >
                   Comprehensive user directory with advanced B2B workflows
                 </p>
               </div>
@@ -237,7 +247,7 @@ const UsersManagementPage = () => {
                   <UserPlus className="w-4 h-4 mr-2" />
                   Create User
                 </Button>
-                
+
                 {/* Mobile dropdown will be added here */}
                 <Button
                   variant="primary"
@@ -257,24 +267,34 @@ const UsersManagementPage = () => {
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       Total Users
                     </p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                    <p
+                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                    >
                       {quickStats.totalUsers.toLocaleString()}
                     </p>
                   </div>
-                  <Users className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
+                  <Users
+                    className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+                  />
                 </div>
               </Card>
 
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       Active Users
                     </p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}>
+                    <p
+                      className={`text-lg font-bold ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+                    >
                       {quickStats.activeUsers.toLocaleString()}
                     </p>
                   </div>
@@ -285,24 +305,34 @@ const UsersManagementPage = () => {
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       Pending Approval
                     </p>
-                    <p className={`text-lg font-bold ${quickStats.pendingApproval > 0 ? 'text-earthy-yellow' : (isDarkMode ? 'text-dark-text-primary' : 'text-text-dark')}`}>
+                    <p
+                      className={`text-lg font-bold ${quickStats.pendingApproval > 0 ? 'text-earthy-yellow' : isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                    >
                       {quickStats.pendingApproval.toLocaleString()}
                     </p>
                   </div>
-                  <div className={`w-2 h-2 rounded-full ${quickStats.pendingApproval > 0 ? 'bg-earthy-yellow animate-pulse' : 'bg-gray-300'}`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${quickStats.pendingApproval > 0 ? 'bg-earthy-yellow animate-pulse' : 'bg-gray-300'}`}
+                  />
                 </div>
               </Card>
 
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       New This Week
                     </p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                    <p
+                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                    >
                       {quickStats.newThisWeek.toLocaleString()}
                     </p>
                   </div>
@@ -324,10 +354,7 @@ const UsersManagementPage = () => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <UserAnalytics 
-              data={analyticsData}
-              loading={analyticsLoading}
-            />
+            <UserAnalytics data={analyticsData} loading={analyticsLoading} />
           </motion.div>
         )}
 
@@ -339,12 +366,12 @@ const UsersManagementPage = () => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <UserFilters 
+            <UserFilters
               filters={activeFilters}
               onFiltersChange={handleFilterChange}
               userCounts={{
                 total: totalUsers,
-                filtered: users.length
+                filtered: users.length,
               }}
             />
           </motion.div>
@@ -382,7 +409,9 @@ const UsersManagementPage = () => {
                 onClick={refetchUsers}
                 disabled={usersLoading}
               >
-                <RefreshCw className={`w-4 h-4 ${usersLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${usersLoading ? 'animate-spin' : ''}`}
+                />
               </Button>
             </div>
           </div>

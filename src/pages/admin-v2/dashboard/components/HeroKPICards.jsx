@@ -6,26 +6,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Users, 
-  Store, 
-  Clock, 
-  DollarSign, 
-  TrendingUp, 
+import {
+  Users,
+  Store,
+  Clock,
+  DollarSign,
+  TrendingUp,
   TrendingDown,
   AlertTriangle,
   CheckCircle,
   Package,
-  Activity
+  Activity,
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Card } from '../../../../components/ui';
 
-const HeroKPICards = ({ 
-  kpis = [], 
-  isLoading = false, 
-  onCardClick, 
-  realTimeEnabled = true 
+const HeroKPICards = ({
+  kpis = [],
+  isLoading = false,
+  onCardClick,
+  realTimeEnabled = true,
 }) => {
   const { isDarkMode } = useTheme();
   const [animatedValues, setAnimatedValues] = useState({});
@@ -34,11 +34,11 @@ const HeroKPICards = ({
   useEffect(() => {
     if (!kpis.length) return;
 
-    kpis.forEach(kpi => {
+    kpis.forEach((kpi) => {
       if (kpi.value !== animatedValues[kpi.id]) {
-        setAnimatedValues(prev => ({
+        setAnimatedValues((prev) => ({
           ...prev,
-          [kpi.id]: kpi.value
+          [kpi.id]: kpi.value,
         }));
       }
     });
@@ -47,14 +47,14 @@ const HeroKPICards = ({
   // Get appropriate icon for KPI type
   const getKPIIcon = (iconName) => {
     const iconMap = {
-      Users: Users,
-      Store: Store,
-      Clock: Clock,
-      DollarSign: DollarSign,
-      Package: Package,
-      Activity: Activity
+      Users,
+      Store,
+      Clock,
+      DollarSign,
+      Package,
+      Activity,
     };
-    
+
     const IconComponent = iconMap[iconName] || Activity;
     return IconComponent;
   };
@@ -63,39 +63,39 @@ const HeroKPICards = ({
   const getCardColorScheme = (color, urgent = false) => {
     if (urgent) {
       return {
-        iconBg: isDarkMode 
-          ? 'bg-tomato-red/20 border border-tomato-red/30' 
+        iconBg: isDarkMode
+          ? 'bg-tomato-red/20 border border-tomato-red/30'
           : 'bg-tomato-red/10 border border-tomato-red/20',
         iconColor: 'text-tomato-red',
-        pulseColor: 'animate-pulse'
+        pulseColor: 'animate-pulse',
       };
     }
 
     const colorSchemes = {
       blue: {
-        iconBg: isDarkMode 
-          ? 'bg-blue-500/20 border border-blue-500/30' 
+        iconBg: isDarkMode
+          ? 'bg-blue-500/20 border border-blue-500/30'
           : 'bg-blue-100 border border-blue-200',
-        iconColor: isDarkMode ? 'text-blue-400' : 'text-blue-600'
+        iconColor: isDarkMode ? 'text-blue-400' : 'text-blue-600',
       },
       green: {
-        iconBg: isDarkMode 
-          ? 'bg-sage-green/20 border border-sage-green/30' 
+        iconBg: isDarkMode
+          ? 'bg-sage-green/20 border border-sage-green/30'
           : 'bg-sage-green/10 border border-sage-green/20',
-        iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive'
+        iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
       },
       amber: {
-        iconBg: isDarkMode 
-          ? 'bg-earthy-yellow/20 border border-earthy-yellow/30' 
+        iconBg: isDarkMode
+          ? 'bg-earthy-yellow/20 border border-earthy-yellow/30'
           : 'bg-earthy-yellow/10 border border-earthy-yellow/20',
-        iconColor: isDarkMode ? 'text-earthy-yellow' : 'text-earthy-brown'
+        iconColor: isDarkMode ? 'text-earthy-yellow' : 'text-earthy-brown',
       },
       gray: {
-        iconBg: isDarkMode 
-          ? 'bg-gray-600/20 border border-gray-600/30' 
+        iconBg: isDarkMode
+          ? 'bg-gray-600/20 border border-gray-600/30'
           : 'bg-gray-100 border border-gray-200',
-        iconColor: isDarkMode ? 'text-gray-400' : 'text-gray-600'
-      }
+        iconColor: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+      },
     };
 
     return colorSchemes[color] || colorSchemes.gray;
@@ -105,14 +105,16 @@ const HeroKPICards = ({
   const getTrendDisplay = (trend, change) => {
     const isPositive = trend === 'up';
     const TrendIcon = isPositive ? TrendingUp : TrendingDown;
-    
+
     return {
       Icon: TrendIcon,
-      color: isPositive 
-        ? (isDarkMode ? 'text-sage-green' : 'text-muted-olive')
+      color: isPositive
+        ? isDarkMode
+          ? 'text-sage-green'
+          : 'text-muted-olive'
         : 'text-tomato-red',
       prefix: isPositive ? '+' : '',
-      value: Math.abs(change)
+      value: Math.abs(change),
     };
   };
 
@@ -148,18 +150,18 @@ const HeroKPICards = ({
             key={kpi.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ 
+            transition={{
               delay: index * 0.1,
               duration: 0.3,
-              ease: "easeOut"
+              ease: 'easeOut',
             }}
-            whileHover={{ 
+            whileHover={{
               y: -2,
-              transition: { duration: 0.2 }
+              transition: { duration: 0.2 },
             }}
             className="relative"
           >
-            <Card 
+            <Card
               className={`
                 p-6 cursor-pointer transition-all duration-300 group
                 hover:shadow-xl hover:shadow-sage-green/10
@@ -181,19 +183,23 @@ const HeroKPICards = ({
               {/* Real-time Status Indicator */}
               {realTimeEnabled && (
                 <div className="absolute top-4 right-4">
-                  <div className={`w-2 h-2 rounded-full ${
-                    isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'
-                  } animate-pulse`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      isDarkMode ? 'bg-sage-green' : 'bg-muted-olive'
+                    } animate-pulse`}
+                  />
                 </div>
               )}
 
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   {/* KPI Title */}
-                  <p className={`
+                  <p
+                    className={`
                     text-sm font-medium mb-2 truncate
                     ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}
-                  `}>
+                  `}
+                  >
                     {kpi.title}
                   </p>
 
@@ -204,47 +210,60 @@ const HeroKPICards = ({
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <p className={`
+                    <p
+                      className={`
                       text-2xl font-bold mb-2 truncate
                       ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}
-                    `}>
+                    `}
+                    >
                       {kpi.value}
                     </p>
                   </motion.div>
 
                   {/* Trend Indicator */}
                   <div className="flex items-center space-x-1">
-                    <trendDisplay.Icon className={`
+                    <trendDisplay.Icon
+                      className={`
                       w-4 h-4 ${trendDisplay.color}
                       ${kpi.urgent ? 'animate-pulse' : ''}
-                    `} />
-                    <span className={`
+                    `}
+                    />
+                    <span
+                      className={`
                       text-sm font-medium ${trendDisplay.color}
-                    `}>
-                      {trendDisplay.prefix}{trendDisplay.value}%
+                    `}
+                    >
+                      {trendDisplay.prefix}
+                      {trendDisplay.value}%
                     </span>
                   </div>
 
                   {/* Description */}
                   {kpi.description && (
-                    <p className={`
+                    <p
+                      className={`
                       text-xs mt-2 opacity-70 truncate
                       ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}
-                    `}>
+                    `}
+                    >
                       {kpi.description}
                     </p>
                   )}
                 </div>
 
                 {/* Icon Container */}
-                <div className={`
+                <div
+                  className={`
                   flex-shrink-0 ml-4 p-3 rounded-2xl transition-all duration-200
                   ${colorScheme.iconBg} ${colorScheme.pulseColor || ''}
                   group-hover:scale-105
-                `}>
-                  <IconComponent className={`
+                `}
+                >
+                  <IconComponent
+                    className={`
                     w-6 h-6 ${colorScheme.iconColor}
-                  `} />
+                  `}
+                  />
                 </div>
               </div>
 
@@ -257,11 +276,12 @@ const HeroKPICards = ({
                     transition={{ duration: 1, delay: index * 0.1 }}
                     className={`
                       h-full rounded-full
-                      ${kpi.urgent 
-                        ? 'bg-tomato-red' 
-                        : isDarkMode 
-                          ? 'bg-sage-green' 
-                          : 'bg-muted-olive'
+                      ${
+                        kpi.urgent
+                          ? 'bg-tomato-red'
+                          : isDarkMode
+                            ? 'bg-sage-green'
+                            : 'bg-muted-olive'
                       }
                     `}
                   />
@@ -271,9 +291,11 @@ const HeroKPICards = ({
               {/* Last Updated Indicator */}
               {kpi.lastUpdated && (
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                  <span className={`
+                  <span
+                    className={`
                     text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}
-                  `}>
+                  `}
+                  >
                     Updated {kpi.lastUpdated}
                   </span>
                   {kpi.verified && (
@@ -293,7 +315,7 @@ const HeroKPICards = ({
 HeroKPICards.defaultProps = {
   kpis: [],
   isLoading: false,
-  realTimeEnabled: true
+  realTimeEnabled: true,
 };
 
 export default HeroKPICards;

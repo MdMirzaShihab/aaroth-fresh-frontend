@@ -230,7 +230,8 @@ const Toast = forwardRef(
                     'text-tomato-red hover:text-tomato-red/80',
                   variant === 'warning' &&
                     'text-warning-dark hover:text-warning-dark/80',
-                  variant === 'info' && 'text-info-dark hover:text-info-dark/80',
+                  variant === 'info' &&
+                    'text-info-dark hover:text-info-dark/80',
                   variant === 'default' &&
                     'text-text-dark hover:text-text-dark/80'
                 )}

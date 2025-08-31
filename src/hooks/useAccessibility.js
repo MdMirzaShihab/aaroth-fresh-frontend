@@ -59,11 +59,11 @@ export const useFocusManagement = (options = {}) => {
 
   const focusFirst = useCallback(() => {
     if (!containerRef.current) return;
-    
+
     const firstFocusable = containerRef.current.querySelector(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
+
     if (firstFocusable) {
       firstFocusable.focus();
     }
@@ -71,11 +71,11 @@ export const useFocusManagement = (options = {}) => {
 
   const focusLast = useCallback(() => {
     if (!containerRef.current) return;
-    
+
     const focusableElements = containerRef.current.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
+
     const lastFocusable = focusableElements[focusableElements.length - 1];
     if (lastFocusable) {
       lastFocusable.focus();
@@ -102,7 +102,7 @@ export const useScreenReader = () => {
   // Create live region on mount
   useEffect(() => {
     liveRegionRef.current = screenReader.createLiveRegion('polite');
-    
+
     return () => {
       if (liveRegionRef.current) {
         document.body.removeChild(liveRegionRef.current);
@@ -113,9 +113,9 @@ export const useScreenReader = () => {
   // Announce message to screen readers
   const announce = useCallback((message, politeness = 'polite') => {
     screenReader.announce(message, politeness);
-    
+
     // Track announcements for debugging
-    setAnnouncements(prev => [
+    setAnnouncements((prev) => [
       ...prev.slice(-9), // Keep last 10 announcements
       {
         id: Date.now(),
@@ -127,23 +127,35 @@ export const useScreenReader = () => {
   }, []);
 
   // Announce loading states
-  const announceLoading = useCallback((resource) => {
-    announce(`Loading ${resource}`, 'polite');
-  }, [announce]);
+  const announceLoading = useCallback(
+    (resource) => {
+      announce(`Loading ${resource}`, 'polite');
+    },
+    [announce]
+  );
 
-  const announceLoaded = useCallback((resource) => {
-    announce(`${resource} loaded`, 'polite');
-  }, [announce]);
+  const announceLoaded = useCallback(
+    (resource) => {
+      announce(`${resource} loaded`, 'polite');
+    },
+    [announce]
+  );
 
   // Announce errors
-  const announceError = useCallback((error) => {
-    announce(`Error: ${error}`, 'assertive');
-  }, [announce]);
+  const announceError = useCallback(
+    (error) => {
+      announce(`Error: ${error}`, 'assertive');
+    },
+    [announce]
+  );
 
   // Announce success
-  const announceSuccess = useCallback((message) => {
-    announce(`Success: ${message}`, 'polite');
-  }, [announce]);
+  const announceSuccess = useCallback(
+    (message) => {
+      announce(`Success: ${message}`, 'polite');
+    },
+    [announce]
+  );
 
   return {
     announce,
@@ -167,49 +179,52 @@ export const useKeyboardNavigation = (config = {}) => {
   const elementRef = useRef(null);
 
   // Handle keyboard events
-  const handleKeyDown = useCallback((event) => {
-    const { key, shiftKey, ctrlKey, altKey } = event;
+  const handleKeyDown = useCallback(
+    (event) => {
+      const { key, shiftKey, ctrlKey, altKey } = event;
 
-    switch (key) {
-      case keyboardNavigation.KEYS.ESCAPE:
-        if (onEscape) {
-          event.preventDefault();
-          onEscape(event);
-        }
-        break;
+      switch (key) {
+        case keyboardNavigation.KEYS.ESCAPE:
+          if (onEscape) {
+            event.preventDefault();
+            onEscape(event);
+          }
+          break;
 
-      case keyboardNavigation.KEYS.ENTER:
-        if (onEnter) {
-          event.preventDefault();
-          onEnter(event);
-        }
-        break;
+        case keyboardNavigation.KEYS.ENTER:
+          if (onEnter) {
+            event.preventDefault();
+            onEnter(event);
+          }
+          break;
 
-      case keyboardNavigation.KEYS.SPACE:
-        if (onSpace) {
-          event.preventDefault();
-          onSpace(event);
-        }
-        break;
+        case keyboardNavigation.KEYS.SPACE:
+          if (onSpace) {
+            event.preventDefault();
+            onSpace(event);
+          }
+          break;
 
-      case keyboardNavigation.KEYS.ARROW_UP:
-      case keyboardNavigation.KEYS.ARROW_DOWN:
-      case keyboardNavigation.KEYS.ARROW_LEFT:
-      case keyboardNavigation.KEYS.ARROW_RIGHT:
-        if (onArrowKeys) {
-          onArrowKeys(event, key);
-        }
-        break;
+        case keyboardNavigation.KEYS.ARROW_UP:
+        case keyboardNavigation.KEYS.ARROW_DOWN:
+        case keyboardNavigation.KEYS.ARROW_LEFT:
+        case keyboardNavigation.KEYS.ARROW_RIGHT:
+          if (onArrowKeys) {
+            onArrowKeys(event, key);
+          }
+          break;
 
-      case keyboardNavigation.KEYS.HOME:
-      case keyboardNavigation.KEYS.END:
-        if (onHomeEnd) {
-          event.preventDefault();
-          onHomeEnd(event, key);
-        }
-        break;
-    }
-  }, [onEscape, onEnter, onSpace, onArrowKeys, onHomeEnd]);
+        case keyboardNavigation.KEYS.HOME:
+        case keyboardNavigation.KEYS.END:
+          if (onHomeEnd) {
+            event.preventDefault();
+            onHomeEnd(event, key);
+          }
+          break;
+      }
+    },
+    [onEscape, onEnter, onSpace, onArrowKeys, onHomeEnd]
+  );
 
   // Attach event listener
   useEffect(() => {
@@ -240,7 +255,7 @@ export const useAriaState = (initialState = {}) => {
 
   // Update specific ARIA attribute
   const updateAria = useCallback((key, value) => {
-    setAriaState(prev => ({
+    setAriaState((prev) => ({
       ...prev,
       [key]: value,
     }));
@@ -248,23 +263,26 @@ export const useAriaState = (initialState = {}) => {
 
   // Update multiple ARIA attributes
   const updateAriaMultiple = useCallback((updates) => {
-    setAriaState(prev => ({
+    setAriaState((prev) => ({
       ...prev,
       ...updates,
     }));
   }, []);
 
   // Get ARIA attributes for element
-  const getAriaProps = useCallback((additionalProps = {}) => {
-    return createAriaAttributes({
-      ...ariaState,
-      ...additionalProps,
-    });
-  }, [ariaState]);
+  const getAriaProps = useCallback(
+    (additionalProps = {}) => {
+      return createAriaAttributes({
+        ...ariaState,
+        ...additionalProps,
+      });
+    },
+    [ariaState]
+  );
 
   // Toggle boolean ARIA attribute
   const toggleAria = useCallback((key) => {
-    setAriaState(prev => ({
+    setAriaState((prev) => ({
       ...prev,
       [key]: !prev[key],
     }));
@@ -292,20 +310,23 @@ export const useFormAccessibility = (options = {}) => {
   const [fieldErrors, setFieldErrors] = useState({});
 
   // Add error to field
-  const addFieldError = useCallback((fieldId, error) => {
-    setFieldErrors(prev => ({
-      ...prev,
-      [fieldId]: error,
-    }));
+  const addFieldError = useCallback(
+    (fieldId, error) => {
+      setFieldErrors((prev) => ({
+        ...prev,
+        [fieldId]: error,
+      }));
 
-    if (announceValidation) {
-      announce(`Validation error for ${fieldId}: ${error}`, 'assertive');
-    }
-  }, [announce, announceValidation]);
+      if (announceValidation) {
+        announce(`Validation error for ${fieldId}: ${error}`, 'assertive');
+      }
+    },
+    [announce, announceValidation]
+  );
 
   // Remove error from field
   const removeFieldError = useCallback((fieldId) => {
-    setFieldErrors(prev => {
+    setFieldErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors[fieldId];
       return newErrors;
@@ -318,36 +339,45 @@ export const useFormAccessibility = (options = {}) => {
   }, []);
 
   // Get field props with accessibility attributes
-  const getFieldProps = useCallback((fieldConfig) => {
-    const props = formAccessibility.getFieldProps(fieldConfig);
-    
-    // Add error state if field has error
-    if (fieldErrors[fieldConfig.id]) {
-      props['aria-invalid'] = 'true';
-      props['aria-describedby'] = `${fieldConfig.id}-error`;
-    }
-    
-    return props;
-  }, [fieldErrors]);
+  const getFieldProps = useCallback(
+    (fieldConfig) => {
+      const props = formAccessibility.getFieldProps(fieldConfig);
+
+      // Add error state if field has error
+      if (fieldErrors[fieldConfig.id]) {
+        props['aria-invalid'] = 'true';
+        props['aria-describedby'] = `${fieldConfig.id}-error`;
+      }
+
+      return props;
+    },
+    [fieldErrors]
+  );
 
   // Get error message props
-  const getErrorProps = useCallback((fieldId) => {
-    const error = fieldErrors[fieldId];
-    if (!error) return null;
-    
-    return formAccessibility.createErrorMessage(fieldId, error);
-  }, [fieldErrors]);
+  const getErrorProps = useCallback(
+    (fieldId) => {
+      const error = fieldErrors[fieldId];
+      if (!error) return null;
+
+      return formAccessibility.createErrorMessage(fieldId, error);
+    },
+    [fieldErrors]
+  );
 
   // Announce form submission results
-  const announceSubmissionResult = useCallback((result) => {
-    if (!announceSubmission) return;
-    
-    if (result.success) {
-      announce(`Form submitted successfully: ${result.message}`, 'polite');
-    } else {
-      announce(`Form submission failed: ${result.error}`, 'assertive');
-    }
-  }, [announce, announceSubmission]);
+  const announceSubmissionResult = useCallback(
+    (result) => {
+      if (!announceSubmission) return;
+
+      if (result.success) {
+        announce(`Form submitted successfully: ${result.message}`, 'polite');
+      } else {
+        announce(`Form submission failed: ${result.error}`, 'assertive');
+      }
+    },
+    [announce, announceSubmission]
+  );
 
   return {
     formRef,
@@ -367,14 +397,14 @@ export const useFormAccessibility = (options = {}) => {
  * @returns {Object} Color contrast utilities
  */
 export const useColorContrast = () => {
-  const [highContrastMode, setHighContrastMode] = useState(() => 
+  const [highContrastMode, setHighContrastMode] = useState(() =>
     highContrast.isPreferred()
   );
 
   // Listen for contrast preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-contrast: high)');
-    
+
     const handleChange = (e) => {
       setHighContrastMode(e.matches);
     };
@@ -384,14 +414,19 @@ export const useColorContrast = () => {
   }, []);
 
   // Validate color combination
-  const validateColors = useCallback((foreground, background, level = 'AA', size = 'normal') => {
-    const ratio = colorContrast.getContrastRatio(foreground, background);
-    return colorContrast.validateContrast(ratio, level, size);
-  }, []);
+  const validateColors = useCallback(
+    (foreground, background, level = 'AA', size = 'normal') => {
+      const ratio = colorContrast.getContrastRatio(foreground, background);
+      return colorContrast.validateContrast(ratio, level, size);
+    },
+    []
+  );
 
   // Get accessible color combinations
   const getAccessibleColors = useCallback((theme = 'light') => {
-    return colorContrast.WCAG_AA_COMBINATIONS[theme === 'dark' ? 'textOnDark' : 'textOnLight'];
+    return colorContrast.WCAG_AA_COMBINATIONS[
+      theme === 'dark' ? 'textOnDark' : 'textOnLight'
+    ];
   }, []);
 
   return {
@@ -409,14 +444,14 @@ export const useColorContrast = () => {
  * @returns {Object} Motion accessibility utilities
  */
 export const useMotionAccessibility = () => {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => 
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
     motionAccessibility.prefersReducedMotion()
   );
 
   // Listen for motion preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    
+
     const handleChange = (e) => {
       setPrefersReducedMotion(e.matches);
     };
@@ -431,15 +466,18 @@ export const useMotionAccessibility = () => {
   }, []);
 
   // Get motion-safe styles
-  const getMotionSafeStyles = useCallback((styles = {}) => {
-    if (prefersReducedMotion) {
-      return {
-        ...styles,
-        ...motionAccessibility.getReducedMotionStyles(),
-      };
-    }
-    return styles;
-  }, [prefersReducedMotion]);
+  const getMotionSafeStyles = useCallback(
+    (styles = {}) => {
+      if (prefersReducedMotion) {
+        return {
+          ...styles,
+          ...motionAccessibility.getReducedMotionStyles(),
+        };
+      }
+      return styles;
+    },
+    [prefersReducedMotion]
+  );
 
   return {
     prefersReducedMotion,
@@ -545,62 +583,76 @@ export const useTableAccessibility = (tableConfig = {}) => {
  * @returns {Object} Modal accessibility utilities
  */
 export const useModalAccessibility = (options = {}) => {
-  const { trapFocus = true, closeOnEscape = true, announceOpen = true, announceClose = true } = options;
+  const {
+    trapFocus = true,
+    closeOnEscape = true,
+    announceOpen = true,
+    announceClose = true,
+  } = options;
   const modalRef = useRef(null);
   const triggerRef = useRef(null);
   const { announce } = useScreenReader();
 
   // Handle modal open
-  const handleModalOpen = useCallback((title) => {
-    // Store trigger element
-    triggerRef.current = document.activeElement;
-    
-    // Announce to screen readers
-    if (announceOpen) {
-      announce(`Dialog opened: ${title}`, 'polite');
-    }
-    
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    
-    // Focus first element in modal after animation
-    setTimeout(() => {
-      if (modalRef.current) {
-        const firstFocusable = modalRef.current.querySelector(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (firstFocusable) {
-          firstFocusable.focus();
-        }
+  const handleModalOpen = useCallback(
+    (title) => {
+      // Store trigger element
+      triggerRef.current = document.activeElement;
+
+      // Announce to screen readers
+      if (announceOpen) {
+        announce(`Dialog opened: ${title}`, 'polite');
       }
-    }, 100);
-  }, [announce, announceOpen]);
+
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+
+      // Focus first element in modal after animation
+      setTimeout(() => {
+        if (modalRef.current) {
+          const firstFocusable = modalRef.current.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (firstFocusable) {
+            firstFocusable.focus();
+          }
+        }
+      }, 100);
+    },
+    [announce, announceOpen]
+  );
 
   // Handle modal close
-  const handleModalClose = useCallback((title) => {
-    // Restore body scroll
-    document.body.style.overflow = '';
-    
-    // Announce to screen readers
-    if (announceClose) {
-      announce(`Dialog closed: ${title}`, 'polite');
-    }
-    
-    // Restore focus to trigger element
-    if (triggerRef.current) {
-      focusManagement.restoreFocus(triggerRef.current);
-    }
-  }, [announce, announceClose]);
+  const handleModalClose = useCallback(
+    (title) => {
+      // Restore body scroll
+      document.body.style.overflow = '';
+
+      // Announce to screen readers
+      if (announceClose) {
+        announce(`Dialog closed: ${title}`, 'polite');
+      }
+
+      // Restore focus to trigger element
+      if (triggerRef.current) {
+        focusManagement.restoreFocus(triggerRef.current);
+      }
+    },
+    [announce, announceClose]
+  );
 
   // Handle escape key
-  const handleEscape = useCallback((event) => {
-    if (closeOnEscape && event.key === keyboardNavigation.KEYS.ESCAPE) {
-      event.stopPropagation();
-      if (options.onClose) {
-        options.onClose();
+  const handleEscape = useCallback(
+    (event) => {
+      if (closeOnEscape && event.key === keyboardNavigation.KEYS.ESCAPE) {
+        event.stopPropagation();
+        if (options.onClose) {
+          options.onClose();
+        }
       }
-    }
-  }, [closeOnEscape, options.onClose]);
+    },
+    [closeOnEscape, options.onClose]
+  );
 
   // Get modal props
   const getModalProps = useCallback((title, description) => {
@@ -634,50 +686,63 @@ export const useTabAccessibility = (tabs = [], defaultActiveTab = 0) => {
   const panelRefs = useRef([]);
 
   // Handle tab selection
-  const selectTab = useCallback((index) => {
-    if (index >= 0 && index < tabs.length) {
-      setActiveTab(index);
-    }
-  }, [tabs.length]);
+  const selectTab = useCallback(
+    (index) => {
+      if (index >= 0 && index < tabs.length) {
+        setActiveTab(index);
+      }
+    },
+    [tabs.length]
+  );
 
   // Get tab props
-  const getTabProps = useCallback((index, tab) => {
-    const isActive = index === activeTab;
-    
-    return {
-      ...createAriaAttributes({
-        role: 'tab',
-        selected: isActive,
-        controls: `${tab.id}-panel`,
-        labelledby: `${tab.id}-tab`,
-      }),
-      id: `${tab.id}-tab`,
-      tabIndex: isActive ? 0 : -1,
-      ref: (el) => { tabRefs.current[index] = el; },
-      onClick: () => selectTab(index),
-      onKeyDown: keyboardNavigation.createTabNavigation(
-        tabRefs.current,
-        panelRefs.current,
-        selectTab
-      ),
-    };
-  }, [activeTab, selectTab]);
+  const getTabProps = useCallback(
+    (index, tab) => {
+      const isActive = index === activeTab;
+
+      return {
+        ...createAriaAttributes({
+          role: 'tab',
+          selected: isActive,
+          controls: `${tab.id}-panel`,
+          labelledby: `${tab.id}-tab`,
+        }),
+        id: `${tab.id}-tab`,
+        tabIndex: isActive ? 0 : -1,
+        ref: (el) => {
+          tabRefs.current[index] = el;
+        },
+        onClick: () => selectTab(index),
+        onKeyDown: keyboardNavigation.createTabNavigation(
+          tabRefs.current,
+          panelRefs.current,
+          selectTab
+        ),
+      };
+    },
+    [activeTab, selectTab]
+  );
 
   // Get panel props
-  const getPanelProps = useCallback((index, tab) => {
-    const isActive = index === activeTab;
-    
-    return {
-      ...createAriaAttributes({
-        role: 'tabpanel',
-        labelledby: `${tab.id}-tab`,
-        hidden: !isActive,
-      }),
-      id: `${tab.id}-panel`,
-      tabIndex: isActive ? 0 : -1,
-      ref: (el) => { panelRefs.current[index] = el; },
-    };
-  }, [activeTab]);
+  const getPanelProps = useCallback(
+    (index, tab) => {
+      const isActive = index === activeTab;
+
+      return {
+        ...createAriaAttributes({
+          role: 'tabpanel',
+          labelledby: `${tab.id}-tab`,
+          hidden: !isActive,
+        }),
+        id: `${tab.id}-panel`,
+        tabIndex: isActive ? 0 : -1,
+        ref: (el) => {
+          panelRefs.current[index] = el;
+        },
+      };
+    },
+    [activeTab]
+  );
 
   // Get tablist props
   const getTabListProps = useCallback(() => {
@@ -716,28 +781,28 @@ export const useAccessibility = (options = {}) => {
   return {
     // Focus management
     ...focusManagement,
-    
+
     // Screen reader support
     ...screenReader,
-    
+
     // Keyboard navigation
     ...keyboardNav,
-    
+
     // ARIA state
     ...ariaState,
-    
+
     // Form accessibility
     ...formAccessibility,
-    
+
     // Color contrast
     ...colorContrast,
-    
+
     // Motion accessibility
     ...motionAccessibility,
-    
+
     // Validation
     ...validation,
-    
+
     // Utility functions
     isAccessibilityEnabled: true,
     hasAccessibilityFeatures: true,

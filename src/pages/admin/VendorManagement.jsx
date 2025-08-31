@@ -29,6 +29,7 @@ import {
   Building2,
   User,
 } from 'lucide-react';
+import { useDispatch } from 'react-redux';
 import {
   useGetAdminVendorsUnifiedQuery,
   useGetVendorDetailsQuery,
@@ -36,7 +37,6 @@ import {
   useDeactivateVendorMutation,
   useSafeDeleteVendorMutation,
 } from '../../store/slices/apiSlice';
-import { useDispatch } from 'react-redux';
 import { addNotification } from '../../store/slices/notificationSlice';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -76,7 +76,7 @@ const VendorManagement = () => {
 
   // Handle search
   const handleSearch = (searchTerm) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       search: searchTerm,
       page: 1,
@@ -97,7 +97,7 @@ const VendorManagement = () => {
   const handleEditVendor = (vendor) => {
     // Navigate to edit page with vendor data
     navigate(`/admin/edit-vendor/${vendor.id || vendor._id}`, {
-      state: { vendor }
+      state: { vendor },
     });
   };
 
@@ -129,7 +129,9 @@ const VendorManagement = () => {
     return (
       <div className="p-6">
         <div className="text-center">
-          <p className="text-red-500 mb-4">Error loading vendors: {error.message}</p>
+          <p className="text-red-500 mb-4">
+            Error loading vendors: {error.message}
+          </p>
           <Button onClick={() => refetch()}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Retry
@@ -151,7 +153,7 @@ const VendorManagement = () => {
             Manage and oversee all vendor accounts and their business operations
           </p>
         </div>
-        
+
         <div className="flex gap-3">
           <Button
             onClick={() => navigate('/admin/create-vendor')}
@@ -227,10 +229,16 @@ const VendorManagement = () => {
               className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10"
             />
           </div>
-          
+
           <select
             value={filters.status}
-            onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value, page: 1 }))}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                status: e.target.value,
+                page: 1,
+              }))
+            }
             className="px-4 py-3 rounded-2xl border border-gray-200 focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10 min-w-[150px]"
           >
             <option value="">All Status</option>
@@ -239,10 +247,7 @@ const VendorManagement = () => {
             <option value="rejected">Rejected</option>
           </select>
 
-          <Button
-            onClick={() => refetch()}
-            className="px-4 py-3"
-          >
+          <Button onClick={() => refetch()} className="px-4 py-3">
             <RefreshCw className="w-4 h-4" />
           </Button>
         </div>
@@ -283,18 +288,29 @@ const VendorManagement = () => {
                     </div>
                   </div>
 
-                  <div className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
-                    vendor.verificationStatus === 'approved' 
-                      ? 'bg-green-100 text-green-600' 
+                  <div
+                    className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
+                      vendor.verificationStatus === 'approved'
+                        ? 'bg-green-100 text-green-600'
+                        : vendor.verificationStatus === 'rejected'
+                          ? 'bg-red-100 text-red-600'
+                          : 'bg-yellow-100 text-yellow-600'
+                    }`}
+                  >
+                    {vendor.verificationStatus === 'approved' && (
+                      <CheckCircle className="w-3 h-3" />
+                    )}
+                    {vendor.verificationStatus === 'rejected' && (
+                      <XCircle className="w-3 h-3" />
+                    )}
+                    {vendor.verificationStatus === 'pending' && (
+                      <Clock className="w-3 h-3" />
+                    )}
+                    {vendor.verificationStatus === 'approved'
+                      ? 'Verified'
                       : vendor.verificationStatus === 'rejected'
-                        ? 'bg-red-100 text-red-600'
-                        : 'bg-yellow-100 text-yellow-600'
-                  }`}>
-                    {vendor.verificationStatus === 'approved' && <CheckCircle className="w-3 h-3" />}
-                    {vendor.verificationStatus === 'rejected' && <XCircle className="w-3 h-3" />}
-                    {vendor.verificationStatus === 'pending' && <Clock className="w-3 h-3" />}
-                    {vendor.verificationStatus === 'approved' ? 'Verified' : 
-                     vendor.verificationStatus === 'rejected' ? 'Rejected' : 'Pending'}
+                        ? 'Rejected'
+                        : 'Pending'}
                   </div>
                 </div>
 
@@ -312,23 +328,25 @@ const VendorManagement = () => {
                     <div className="flex items-start gap-2 text-sm text-text-muted">
                       <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       <span className="line-clamp-2">
-                        {vendor.fullAddress || 
-                         `${vendor.address.street || ''}, ${vendor.address.area || ''}, ${vendor.address.city || ''}`}
+                        {vendor.fullAddress ||
+                          `${vendor.address.street || ''}, ${vendor.address.area || ''}, ${vendor.address.city || ''}`}
                       </span>
                     </div>
                   )}
-                  
+
                   {/* Specialties */}
                   {vendor.specialties && vendor.specialties.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {vendor.specialties.slice(0, 2).map((specialty, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs rounded-full"
-                        >
-                          {specialty}
-                        </span>
-                      ))}
+                      {vendor.specialties
+                        .slice(0, 2)
+                        .map((specialty, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs rounded-full"
+                          >
+                            {specialty}
+                          </span>
+                        ))}
                       {vendor.specialties.length > 2 && (
                         <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
                           +{vendor.specialties.length - 2} more
@@ -350,7 +368,7 @@ const VendorManagement = () => {
                     View
                   </Button>
                   <Button
-                    variant="outline" 
+                    variant="outline"
                     size="sm"
                     className="flex-1"
                     onClick={() => handleEditVendor(vendor)}

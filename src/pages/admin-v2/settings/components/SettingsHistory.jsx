@@ -30,22 +30,30 @@ import {
   Zap,
 } from 'lucide-react';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Card, Button, LoadingSpinner } from '../../../../components/ui';
 import {
   useGetSettingHistoryQuery,
   useUpdateSystemSettingMutation,
 } from '../../../../store/slices/admin-v2/adminApiSlice';
-import toast from 'react-hot-toast';
 
 // Change impact indicator
 const ChangeImpactIndicator = ({ change }) => {
   const getImpactConfig = (impact) => {
     switch (impact?.level) {
       case 'critical':
-        return { color: 'tomato-red', icon: AlertTriangle, label: 'Critical Impact' };
+        return {
+          color: 'tomato-red',
+          icon: AlertTriangle,
+          label: 'Critical Impact',
+        };
       case 'high':
-        return { color: 'earthy-yellow', icon: AlertTriangle, label: 'High Impact' };
+        return {
+          color: 'earthy-yellow',
+          icon: AlertTriangle,
+          label: 'High Impact',
+        };
       case 'medium':
         return { color: 'sage-green', icon: Info, label: 'Medium Impact' };
       case 'low':
@@ -67,13 +75,13 @@ const ChangeImpactIndicator = ({ change }) => {
 };
 
 // History entry component
-const HistoryEntry = ({ 
-  change, 
-  onRollback, 
-  onViewDetails, 
-  isExpanded, 
+const HistoryEntry = ({
+  change,
+  onRollback,
+  onViewDetails,
+  isExpanded,
   onToggleExpand,
-  canRollback = true 
+  canRollback = true,
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -115,9 +123,10 @@ const HistoryEntry = ({
       animate={{ opacity: 1, y: 0 }}
       className={`
         border rounded-xl transition-all duration-200
-        ${isDarkMode 
-          ? 'bg-gray-800/50 border-gray-700/50' 
-          : 'bg-white/80 border-gray-200/50'
+        ${
+          isDarkMode
+            ? 'bg-gray-800/50 border-gray-700/50'
+            : 'bg-white/80 border-gray-200/50'
         }
         hover:shadow-lg
       `}
@@ -126,32 +135,41 @@ const HistoryEntry = ({
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className={`
+            <div
+              className={`
               w-8 h-8 rounded-lg flex items-center justify-center
-              ${isDarkMode 
-                ? `bg-${typeConfig.color}/20` 
-                : `bg-${typeConfig.color}/10`
+              ${
+                isDarkMode
+                  ? `bg-${typeConfig.color}/20`
+                  : `bg-${typeConfig.color}/10`
               }
-            `}>
+            `}
+            >
               <TypeIcon className={`w-4 h-4 text-${typeConfig.color}`} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h4 className={`font-medium ${
-                  isDarkMode ? 'text-white' : 'text-text-dark'
-                }`}>
+                <h4
+                  className={`font-medium ${
+                    isDarkMode ? 'text-white' : 'text-text-dark'
+                  }`}
+                >
                   {change.settingKey || 'Multiple Settings'}
                 </h4>
-                <span className={`
+                <span
+                  className={`
                   px-2 py-1 rounded text-xs font-medium
                   text-${typeConfig.color} bg-${typeConfig.color}/10
-                `}>
+                `}
+                >
                   {typeConfig.label}
                 </span>
               </div>
-              <p className={`text-xs ${
-                isDarkMode ? 'text-gray-400' : 'text-text-muted'
-              }`}>
+              <p
+                className={`text-xs ${
+                  isDarkMode ? 'text-gray-400' : 'text-text-muted'
+                }`}
+              >
                 {change.changeReason || 'No reason provided'}
               </p>
             </div>
@@ -163,10 +181,7 @@ const HistoryEntry = ({
               onClick={() => onToggleExpand(change.id)}
               className={`
                 p-1 rounded-lg transition-colors touch-target
-                ${isDarkMode 
-                  ? 'hover:bg-gray-700' 
-                  : 'hover:bg-gray-100'
-                }
+                ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}
               `}
               aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
             >
@@ -184,17 +199,21 @@ const HistoryEntry = ({
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <User className="w-3 h-3" />
-              <span className={`${
-                isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
+              <span
+                className={`${
+                  isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                }`}
+              >
                 {change.adminUser || 'System'}
               </span>
             </div>
             <div className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              <span className={`${
-                isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
+              <span
+                className={`${
+                  isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                }`}
+              >
                 {formatTimestamp(change.timestamp)}
               </span>
             </div>
@@ -241,22 +260,26 @@ const HistoryEntry = ({
               {/* Old Value */}
               {change.oldValue !== undefined && (
                 <div>
-                  <label className={`text-xs font-medium ${
-                    isDarkMode ? 'text-gray-300' : 'text-text-muted'
-                  }`}>
+                  <label
+                    className={`text-xs font-medium ${
+                      isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                    }`}
+                  >
                     Previous Value
                   </label>
-                  <div className={`
+                  <div
+                    className={`
                     mt-1 p-3 rounded-lg text-sm font-mono
-                    ${isDarkMode 
-                      ? 'bg-gray-700/50 text-gray-300' 
-                      : 'bg-gray-50 text-text-dark'
+                    ${
+                      isDarkMode
+                        ? 'bg-gray-700/50 text-gray-300'
+                        : 'bg-gray-50 text-text-dark'
                     }
-                  `}>
+                  `}
+                  >
                     {typeof change.oldValue === 'object'
                       ? JSON.stringify(change.oldValue, null, 2)
-                      : String(change.oldValue)
-                    }
+                      : String(change.oldValue)}
                   </div>
                 </div>
               )}
@@ -264,22 +287,26 @@ const HistoryEntry = ({
               {/* New Value */}
               {change.newValue !== undefined && (
                 <div>
-                  <label className={`text-xs font-medium ${
-                    isDarkMode ? 'text-gray-300' : 'text-text-muted'
-                  }`}>
+                  <label
+                    className={`text-xs font-medium ${
+                      isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                    }`}
+                  >
                     New Value
                   </label>
-                  <div className={`
+                  <div
+                    className={`
                     mt-1 p-3 rounded-lg text-sm font-mono
-                    ${isDarkMode 
-                      ? 'bg-gray-700/50 text-gray-300' 
-                      : 'bg-gray-50 text-text-dark'
+                    ${
+                      isDarkMode
+                        ? 'bg-gray-700/50 text-gray-300'
+                        : 'bg-gray-50 text-text-dark'
                     }
-                  `}>
+                  `}
+                  >
                     {typeof change.newValue === 'object'
                       ? JSON.stringify(change.newValue, null, 2)
-                      : String(change.newValue)
-                    }
+                      : String(change.newValue)}
                   </div>
                 </div>
               )}
@@ -288,14 +315,18 @@ const HistoryEntry = ({
             {/* Impact Details */}
             {change.impact?.description && (
               <div className="mt-4">
-                <label className={`text-xs font-medium ${
-                  isDarkMode ? 'text-gray-300' : 'text-text-muted'
-                }`}>
+                <label
+                  className={`text-xs font-medium ${
+                    isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                  }`}
+                >
                   Impact Analysis
                 </label>
-                <p className={`mt-1 text-sm ${
-                  isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                }`}>
+                <p
+                  className={`mt-1 text-sm ${
+                    isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                  }`}
+                >
                   {change.impact.description}
                 </p>
               </div>
@@ -306,28 +337,36 @@ const HistoryEntry = ({
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {change.ipAddress && (
                   <div>
-                    <label className={`text-xs font-medium ${
-                      isDarkMode ? 'text-gray-300' : 'text-text-muted'
-                    }`}>
+                    <label
+                      className={`text-xs font-medium ${
+                        isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                      }`}
+                    >
                       IP Address
                     </label>
-                    <p className={`text-sm font-mono ${
-                      isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                    }`}>
+                    <p
+                      className={`text-sm font-mono ${
+                        isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                      }`}
+                    >
                       {change.ipAddress}
                     </p>
                   </div>
                 )}
                 {change.userAgent && (
                   <div>
-                    <label className={`text-xs font-medium ${
-                      isDarkMode ? 'text-gray-300' : 'text-text-muted'
-                    }`}>
+                    <label
+                      className={`text-xs font-medium ${
+                        isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                      }`}
+                    >
                       User Agent
                     </label>
-                    <p className={`text-sm font-mono truncate ${
-                      isDarkMode ? 'text-gray-300' : 'text-text-dark'
-                    }`}>
+                    <p
+                      className={`text-sm font-mono truncate ${
+                        isDarkMode ? 'text-gray-300' : 'text-text-dark'
+                      }`}
+                    >
                       {change.userAgent}
                     </p>
                   </div>
@@ -349,11 +388,11 @@ const SettingsHistory = ({ onClose, category }) => {
   const [expandedEntries, setExpandedEntries] = useState(new Set());
 
   // API hooks
-  const { 
-    data: historyData, 
-    isLoading, 
-    error, 
-    refetch 
+  const {
+    data: historyData,
+    isLoading,
+    error,
+    refetch,
   } = useGetSettingHistoryQuery({
     category,
     timeRange: timeFilter,
@@ -390,7 +429,7 @@ const SettingsHistory = ({ onClose, category }) => {
 
   // Handle entry expansion
   const handleToggleExpand = useCallback((entryId) => {
-    setExpandedEntries(prev => {
+    setExpandedEntries((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(entryId)) {
         newSet.delete(entryId);
@@ -402,26 +441,31 @@ const SettingsHistory = ({ onClose, category }) => {
   }, []);
 
   // Handle rollback
-  const handleRollback = useCallback(async (change) => {
-    if (!change.settingKey || change.oldValue === undefined) {
-      toast.error('Cannot rollback this change - insufficient data');
-      return;
-    }
+  const handleRollback = useCallback(
+    async (change) => {
+      if (!change.settingKey || change.oldValue === undefined) {
+        toast.error('Cannot rollback this change - insufficient data');
+        return;
+      }
 
-    try {
-      await updateSetting({
-        key: change.settingKey,
-        value: change.oldValue,
-        changeReason: `Rollback to value from ${format(new Date(change.timestamp), 'PPP')}`,
-      }).unwrap();
-      
-      toast.success(`Successfully rolled back ${change.settingKey}`);
-      refetch();
-    } catch (error) {
-      console.error('Failed to rollback setting:', error);
-      toast.error(`Failed to rollback ${change.settingKey}: ${error.message || 'Unknown error'}`);
-    }
-  }, [updateSetting, refetch]);
+      try {
+        await updateSetting({
+          key: change.settingKey,
+          value: change.oldValue,
+          changeReason: `Rollback to value from ${format(new Date(change.timestamp), 'PPP')}`,
+        }).unwrap();
+
+        toast.success(`Successfully rolled back ${change.settingKey}`);
+        refetch();
+      } catch (error) {
+        console.error('Failed to rollback setting:', error);
+        toast.error(
+          `Failed to rollback ${change.settingKey}: ${error.message || 'Unknown error'}`
+        );
+      }
+    },
+    [updateSetting, refetch]
+  );
 
   // Handle view details
   const handleViewDetails = useCallback((change) => {
@@ -433,18 +477,30 @@ const SettingsHistory = ({ onClose, category }) => {
   // Handle export history
   const handleExportHistory = useCallback(() => {
     const csvData = [
-      ['Timestamp', 'Setting', 'Change Type', 'Admin User', 'Old Value', 'New Value', 'Reason'],
-      ...historyEntries.map(entry => [
+      [
+        'Timestamp',
+        'Setting',
+        'Change Type',
+        'Admin User',
+        'Old Value',
+        'New Value',
+        'Reason',
+      ],
+      ...historyEntries.map((entry) => [
         format(new Date(entry.timestamp), 'yyyy-MM-dd HH:mm:ss'),
         entry.settingKey || 'Multiple',
         entry.changeType,
         entry.adminUser || 'System',
-        typeof entry.oldValue === 'object' ? JSON.stringify(entry.oldValue) : entry.oldValue,
-        typeof entry.newValue === 'object' ? JSON.stringify(entry.newValue) : entry.newValue,
+        typeof entry.oldValue === 'object'
+          ? JSON.stringify(entry.oldValue)
+          : entry.oldValue,
+        typeof entry.newValue === 'object'
+          ? JSON.stringify(entry.newValue)
+          : entry.newValue,
         entry.changeReason || '',
-      ])
+      ]),
     ];
-    
+
     // Create and download CSV (simplified implementation)
     toast.success('Settings history export started');
   }, [historyEntries]);
@@ -452,7 +508,7 @@ const SettingsHistory = ({ onClose, category }) => {
   // Group entries by date
   const groupedEntries = useMemo(() => {
     const groups = {};
-    historyEntries.forEach(entry => {
+    historyEntries.forEach((entry) => {
       const date = format(new Date(entry.timestamp), 'yyyy-MM-dd');
       if (!groups[date]) {
         groups[date] = [];
@@ -468,22 +524,30 @@ const SettingsHistory = ({ onClose, category }) => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className={`
+            <div
+              className={`
               w-10 h-10 rounded-xl flex items-center justify-center
               ${isDarkMode ? 'bg-dusty-cedar/20' : 'bg-dusty-cedar/10'}
-            `}>
+            `}
+            >
               <History className="w-5 h-5 text-dusty-cedar" />
             </div>
             <div>
-              <h3 className={`text-lg font-semibold ${
-                isDarkMode ? 'text-white' : 'text-text-dark'
-              }`}>
+              <h3
+                className={`text-lg font-semibold ${
+                  isDarkMode ? 'text-white' : 'text-text-dark'
+                }`}
+              >
                 Settings History
               </h3>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
-                {category ? `${category} category changes` : 'All settings changes'}
+              <p
+                className={`text-sm ${
+                  isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                }`}
+              >
+                {category
+                  ? `${category} category changes`
+                  : 'All settings changes'}
               </p>
             </div>
           </div>
@@ -514,10 +578,12 @@ const SettingsHistory = ({ onClose, category }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Search */}
           <div className="relative">
-            <Search className={`
+            <Search
+              className={`
               absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4
               ${isDarkMode ? 'text-gray-400' : 'text-text-muted'}
-            `} />
+            `}
+            />
             <input
               type="text"
               value={searchQuery}
@@ -525,9 +591,10 @@ const SettingsHistory = ({ onClose, category }) => {
               placeholder="Search settings..."
               className={`
                 w-full pl-10 pr-4 py-2 border rounded-lg text-sm touch-target
-                ${isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                  : 'bg-white border-gray-200 text-text-dark placeholder-text-muted'
+                ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
+                    : 'bg-white border-gray-200 text-text-dark placeholder-text-muted'
                 }
                 focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20
               `}
@@ -540,14 +607,15 @@ const SettingsHistory = ({ onClose, category }) => {
             onChange={(e) => setTimeFilter(e.target.value)}
             className={`
               px-3 py-2 border rounded-lg text-sm touch-target
-              ${isDarkMode 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'bg-white border-gray-200 text-text-dark'
+              ${
+                isDarkMode
+                  ? 'bg-gray-700 border-gray-600 text-white'
+                  : 'bg-white border-gray-200 text-text-dark'
               }
               focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20
             `}
           >
-            {timeFilterOptions.map(option => (
+            {timeFilterOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -560,14 +628,15 @@ const SettingsHistory = ({ onClose, category }) => {
             onChange={(e) => setTypeFilter(e.target.value)}
             className={`
               px-3 py-2 border rounded-lg text-sm touch-target
-              ${isDarkMode 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'bg-white border-gray-200 text-text-dark'
+              ${
+                isDarkMode
+                  ? 'bg-gray-700 border-gray-600 text-white'
+                  : 'bg-white border-gray-200 text-text-dark'
               }
               focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20
             `}
           >
-            {typeFilterOptions.map(option => (
+            {typeFilterOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -580,9 +649,11 @@ const SettingsHistory = ({ onClose, category }) => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <LoadingSpinner size="large" />
-              <p className={`mt-4 text-sm ${
-                isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
+              <p
+                className={`mt-4 text-sm ${
+                  isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                }`}
+              >
                 Loading settings history...
               </p>
             </div>
@@ -591,14 +662,18 @@ const SettingsHistory = ({ onClose, category }) => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <AlertTriangle className="w-12 h-12 text-tomato-red mx-auto mb-4" />
-              <h4 className={`text-lg font-semibold mb-2 ${
-                isDarkMode ? 'text-white' : 'text-text-dark'
-              }`}>
+              <h4
+                className={`text-lg font-semibold mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-text-dark'
+                }`}
+              >
                 Failed to Load History
               </h4>
-              <p className={`text-sm mb-4 ${
-                isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
+              <p
+                className={`text-sm mb-4 ${
+                  isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                }`}
+              >
                 There was an error loading the settings history.
               </p>
               <Button onClick={refetch}>
@@ -611,14 +686,18 @@ const SettingsHistory = ({ onClose, category }) => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h4 className={`text-lg font-semibold mb-2 ${
-                isDarkMode ? 'text-white' : 'text-text-dark'
-              }`}>
+              <h4
+                className={`text-lg font-semibold mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-text-dark'
+                }`}
+              >
                 No History Found
               </h4>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
+              <p
+                className={`text-sm ${
+                  isDarkMode ? 'text-gray-300' : 'text-text-muted'
+                }`}
+              >
                 No settings changes match your current filters.
               </p>
             </div>
@@ -629,14 +708,18 @@ const SettingsHistory = ({ onClose, category }) => {
               <div key={date}>
                 <div className="flex items-center gap-3 mb-3">
                   <Calendar className="w-4 h-4 text-text-muted" />
-                  <h4 className={`text-sm font-medium ${
-                    isDarkMode ? 'text-white' : 'text-text-dark'
-                  }`}>
+                  <h4
+                    className={`text-sm font-medium ${
+                      isDarkMode ? 'text-white' : 'text-text-dark'
+                    }`}
+                  >
                     {format(new Date(date), 'EEEE, MMMM do, yyyy')}
                   </h4>
-                  <div className={`h-px flex-1 ${
-                    isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
-                  }`} />
+                  <div
+                    className={`h-px flex-1 ${
+                      isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                    }`}
+                  />
                 </div>
                 <div className="space-y-3">
                   {entries.map((entry) => (
@@ -647,7 +730,7 @@ const SettingsHistory = ({ onClose, category }) => {
                       onViewDetails={handleViewDetails}
                       isExpanded={expandedEntries.has(entry.id)}
                       onToggleExpand={handleToggleExpand}
-                      canRollback={true}
+                      canRollback
                     />
                   ))}
                 </div>

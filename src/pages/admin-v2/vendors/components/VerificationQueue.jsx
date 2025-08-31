@@ -28,16 +28,13 @@ import {
   ArrowRight,
   Filter,
   SortAsc,
-  SortDesc
+  SortDesc,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
-import { Modal } from '../../../../components/ui';
-import { Input } from '../../../../components/ui';
+import { Card, Button, Modal, Input } from '../../../../components/ui';
 import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import EmptyState from '../../../../components/ui/EmptyState';
-import toast from 'react-hot-toast';
 
 // Document type configuration
 const DOCUMENT_TYPES = {
@@ -45,53 +42,64 @@ const DOCUMENT_TYPES = {
     label: 'Business License',
     icon: Building2,
     required: true,
-    description: 'Valid business registration certificate'
+    description: 'Valid business registration certificate',
   },
   taxId: {
     label: 'Tax ID',
     icon: CreditCard,
     required: true,
-    description: 'Tax identification number'
+    description: 'Tax identification number',
   },
   ownerIdentification: {
     label: 'Owner ID',
     icon: User,
     required: true,
-    description: 'Government issued photo ID'
+    description: 'Government issued photo ID',
   },
   bankAccount: {
     label: 'Bank Account',
     icon: Shield,
     required: true,
-    description: 'Bank account verification'
+    description: 'Bank account verification',
   },
   insurance: {
     label: 'Insurance',
     icon: Shield,
     required: false,
-    description: 'Business insurance certificate'
+    description: 'Business insurance certificate',
   },
   foodSafety: {
     label: 'Food Safety',
     icon: Shield,
     required: false,
-    description: 'Food safety certification'
-  }
+    description: 'Food safety certification',
+  },
 };
 
 // Priority badge component
 const PriorityBadge = ({ level, daysWaiting }) => {
   const config = {
-    critical: { color: 'text-tomato-red bg-tomato-red/10 border-tomato-red/20', label: 'Critical' },
-    high: { color: 'text-earthy-yellow bg-earthy-yellow/10 border-earthy-yellow/20', label: 'High' },
-    medium: { color: 'text-sage-green bg-sage-green/10 border-sage-green/20', label: 'Medium' },
-    low: { color: 'text-gray-500 bg-gray-100 border-gray-200', label: 'Low' }
+    critical: {
+      color: 'text-tomato-red bg-tomato-red/10 border-tomato-red/20',
+      label: 'Critical',
+    },
+    high: {
+      color: 'text-earthy-yellow bg-earthy-yellow/10 border-earthy-yellow/20',
+      label: 'High',
+    },
+    medium: {
+      color: 'text-sage-green bg-sage-green/10 border-sage-green/20',
+      label: 'Medium',
+    },
+    low: { color: 'text-gray-500 bg-gray-100 border-gray-200', label: 'Low' },
   };
 
   const { color, label } = config[level] || config.low;
 
   return (
-    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border ${color}`}>
+    <div
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border ${color}`}
+    >
       <Clock className="w-3 h-3" />
       <span>{label}</span>
       <span className="opacity-60">({daysWaiting}d)</span>
@@ -103,7 +111,7 @@ const PriorityBadge = ({ level, daysWaiting }) => {
 const DocumentStatus = ({ document, type }) => {
   const config = DOCUMENT_TYPES[type];
   const IconComponent = config?.icon || FileText;
-  
+
   if (!document?.provided) {
     return (
       <div className="flex items-center gap-2 text-gray-400">
@@ -115,10 +123,10 @@ const DocumentStatus = ({ document, type }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <IconComponent className={`w-4 h-4 ${document.verified ? 'text-sage-green' : 'text-earthy-yellow'}`} />
-      <span className="text-sm text-text-dark">
-        {config?.label}
-      </span>
+      <IconComponent
+        className={`w-4 h-4 ${document.verified ? 'text-sage-green' : 'text-earthy-yellow'}`}
+      />
+      <span className="text-sm text-text-dark">{config?.label}</span>
       {document.verified ? (
         <CheckCircle className="w-4 h-4 text-sage-green" />
       ) : (
@@ -131,12 +139,14 @@ const DocumentStatus = ({ document, type }) => {
 // Verification checklist component
 const VerificationChecklist = ({ vendor, onDocumentView }) => {
   const { documents = {}, businessInfo = {} } = vendor;
-  
+
   const completionPercentage = useMemo(() => {
-    const totalRequired = Object.values(DOCUMENT_TYPES).filter(type => type.required).length;
-    const provided = Object.entries(DOCUMENT_TYPES)
-      .filter(([key, type]) => type.required && documents[key]?.provided)
-      .length;
+    const totalRequired = Object.values(DOCUMENT_TYPES).filter(
+      (type) => type.required
+    ).length;
+    const provided = Object.entries(DOCUMENT_TYPES).filter(
+      ([key, type]) => type.required && documents[key]?.provided
+    ).length;
     return Math.round((provided / totalRequired) * 100);
   }, [documents]);
 
@@ -146,11 +156,15 @@ const VerificationChecklist = ({ vendor, onDocumentView }) => {
       <div className="flex items-center gap-3">
         <div className="flex-1">
           <div className="flex items-center justify-between text-sm mb-1">
-            <span className="font-medium text-text-dark">Document Completion</span>
-            <span className="text-muted-olive font-medium">{completionPercentage}%</span>
+            <span className="font-medium text-text-dark">
+              Document Completion
+            </span>
+            <span className="text-muted-olive font-medium">
+              {completionPercentage}%
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-gradient-to-r from-muted-olive to-sage-green h-2 rounded-full transition-all duration-500"
               style={{ width: `${completionPercentage}%` }}
             />
@@ -163,21 +177,27 @@ const VerificationChecklist = ({ vendor, onDocumentView }) => {
         {Object.entries(DOCUMENT_TYPES).map(([key, config]) => {
           const document = documents[key];
           return (
-            <div 
+            <div
               key={key}
               className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer hover:border-muted-olive/30 ${
-                document?.provided 
-                  ? document.verified 
-                    ? 'bg-sage-green/5 border-sage-green/20' 
+                document?.provided
+                  ? document.verified
+                    ? 'bg-sage-green/5 border-sage-green/20'
                     : 'bg-earthy-yellow/5 border-earthy-yellow/20'
                   : 'bg-gray-50 border-gray-200'
               }`}
-              onClick={() => document?.provided && onDocumentView?.(key, document)}
+              onClick={() =>
+                document?.provided && onDocumentView?.(key, document)
+              }
             >
               <DocumentStatus document={document} type={key} />
-              <p className="text-xs text-text-muted mt-1">{config.description}</p>
+              <p className="text-xs text-text-muted mt-1">
+                {config.description}
+              </p>
               {config.required && (
-                <span className="inline-block text-xs text-tomato-red mt-1">Required</span>
+                <span className="inline-block text-xs text-tomato-red mt-1">
+                  Required
+                </span>
               )}
             </div>
           );
@@ -186,29 +206,43 @@ const VerificationChecklist = ({ vendor, onDocumentView }) => {
 
       {/* Business information completeness */}
       <div className="p-4 bg-gradient-to-r from-earthy-beige/20 to-sage-green/10 rounded-xl">
-        <h4 className="font-medium text-text-dark mb-3">Business Information</h4>
+        <h4 className="font-medium text-text-dark mb-3">
+          Business Information
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
           <div className="flex items-center gap-2">
             <Building2 className="w-4 h-4 text-muted-olive" />
-            <span className={businessInfo.businessName ? 'text-text-dark' : 'text-text-muted'}>
+            <span
+              className={
+                businessInfo.businessName ? 'text-text-dark' : 'text-text-muted'
+              }
+            >
               {businessInfo.businessName || 'Business name missing'}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-muted-olive" />
-            <span className={businessInfo.address ? 'text-text-dark' : 'text-text-muted'}>
+            <span
+              className={
+                businessInfo.address ? 'text-text-dark' : 'text-text-muted'
+              }
+            >
               {businessInfo.address || 'Address missing'}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Phone className="w-4 h-4 text-muted-olive" />
-            <span className={vendor.phone ? 'text-text-dark' : 'text-text-muted'}>
+            <span
+              className={vendor.phone ? 'text-text-dark' : 'text-text-muted'}
+            >
               {vendor.phone || 'Phone missing'}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-muted-olive" />
-            <span className={vendor.email ? 'text-text-dark' : 'text-text-muted'}>
+            <span
+              className={vendor.email ? 'text-text-dark' : 'text-text-muted'}
+            >
               {vendor.email || 'Email missing'}
             </span>
           </div>
@@ -226,7 +260,10 @@ const VerificationActions = ({ vendor, onApprove, onReject, isProcessing }) => {
 
   const handleApprove = () => {
     setShowApproveConfirm(false);
-    onApprove(vendor.id, 'Business verification approved after document review');
+    onApprove(
+      vendor.id,
+      'Business verification approved after document review'
+    );
   };
 
   const handleReject = () => {
@@ -270,8 +307,9 @@ const VerificationActions = ({ vendor, onApprove, onReject, isProcessing }) => {
       >
         <div className="space-y-4">
           <p className="text-text-muted">
-            Are you sure you want to approve verification for <strong>{vendor.businessName}</strong>?
-            This will grant them full access to the platform.
+            Are you sure you want to approve verification for{' '}
+            <strong>{vendor.businessName}</strong>? This will grant them full
+            access to the platform.
           </p>
           <div className="flex gap-3">
             <Button
@@ -300,7 +338,8 @@ const VerificationActions = ({ vendor, onApprove, onReject, isProcessing }) => {
       >
         <div className="space-y-4">
           <p className="text-text-muted">
-            Please provide a reason for rejecting <strong>{vendor.businessName}</strong>'s verification:
+            Please provide a reason for rejecting{' '}
+            <strong>{vendor.businessName}</strong>'s verification:
           </p>
           <textarea
             value={rejectReason}
@@ -333,7 +372,12 @@ const VerificationActions = ({ vendor, onApprove, onReject, isProcessing }) => {
 };
 
 // Main verification queue item
-const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, isProcessing }) => {
+const VerificationQueueItem = ({
+  vendor,
+  onVerificationAction,
+  onVendorAction,
+  isProcessing,
+}) => {
   const { isDarkMode } = useTheme();
   const [expanded, setExpanded] = useState(false);
 
@@ -342,8 +386,8 @@ const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, i
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`glass-2 rounded-2xl border transition-all duration-300 ${
-        vendor.urgencyLevel === 'critical' 
-          ? 'border-tomato-red/30 bg-tomato-red/5 shadow-glow-amber/20' 
+        vendor.urgencyLevel === 'critical'
+          ? 'border-tomato-red/30 bg-tomato-red/5 shadow-glow-amber/20'
           : 'border-white/20 hover:shadow-glow-sage/20'
       }`}
     >
@@ -351,8 +395,10 @@ const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, i
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
-                            flex items-center justify-center shadow-lg text-white font-medium">
+            <div
+              className="w-12 h-12 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
+                            flex items-center justify-center shadow-lg text-white font-medium"
+            >
               <Building2 className="w-6 h-6" />
             </div>
             <div>
@@ -365,7 +411,10 @@ const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, i
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <PriorityBadge level={vendor.urgencyLevel} daysWaiting={vendor.waitingDays} />
+            <PriorityBadge
+              level={vendor.urgencyLevel}
+              daysWaiting={vendor.waitingDays}
+            />
             <Button
               variant="outline"
               size="sm"
@@ -385,17 +434,21 @@ const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, i
           </div>
           <div className="text-center p-3 bg-earthy-beige/20 rounded-xl">
             <p className="text-xs text-text-muted">Business Type</p>
-            <p className="font-medium text-text-dark">{vendor.businessInfo?.type || 'Not specified'}</p>
+            <p className="font-medium text-text-dark">
+              {vendor.businessInfo?.type || 'Not specified'}
+            </p>
           </div>
           <div className="text-center p-3 bg-earthy-beige/20 rounded-xl">
             <p className="text-xs text-text-muted">Risk Score</p>
-            <p className={`font-medium ${
-              vendor.riskAssessment?.score > 70 
-                ? 'text-tomato-red' 
-                : vendor.riskAssessment?.score > 40 
-                ? 'text-earthy-yellow'
-                : 'text-sage-green'
-            }`}>
+            <p
+              className={`font-medium ${
+                vendor.riskAssessment?.score > 70
+                  ? 'text-tomato-red'
+                  : vendor.riskAssessment?.score > 40
+                    ? 'text-earthy-yellow'
+                    : 'text-sage-green'
+              }`}
+            >
               {vendor.riskAssessment?.score || 0}%
             </p>
           </div>
@@ -409,8 +462,8 @@ const VerificationQueueItem = ({ vendor, onVerificationAction, onVendorAction, i
             exit={{ opacity: 0, height: 0 }}
             className="border-t border-white/10 pt-6 mt-6"
           >
-            <VerificationChecklist 
-              vendor={vendor} 
+            <VerificationChecklist
+              vendor={vendor}
               onDocumentView={(type, document) => {
                 // Handle document viewing
                 console.log('View document:', type, document);
@@ -439,7 +492,7 @@ const VerificationQueue = ({
   urgentCount = 0,
   averageWaitTime = 0,
   onVerificationAction,
-  onVendorAction
+  onVendorAction,
 }) => {
   const { isDarkMode } = useTheme();
   const [sortBy, setSortBy] = useState('urgency'); // 'urgency', 'date', 'name'
@@ -462,7 +515,7 @@ const VerificationQueue = ({
 
     // Apply filter
     if (filterBy !== 'all') {
-      filtered = filtered.filter(vendor => vendor.urgencyLevel === filterBy);
+      filtered = filtered.filter((vendor) => vendor.urgencyLevel === filterBy);
     }
 
     // Apply sort
@@ -516,7 +569,9 @@ const VerificationQueue = ({
             </div>
             <div>
               <p className="text-sm text-text-muted">Urgent Reviews</p>
-              <p className="text-2xl font-bold text-earthy-yellow">{urgentCount}</p>
+              <p className="text-2xl font-bold text-earthy-yellow">
+                {urgentCount}
+              </p>
             </div>
           </div>
         </Card>
@@ -528,7 +583,9 @@ const VerificationQueue = ({
             </div>
             <div>
               <p className="text-sm text-text-muted">Avg. Wait Time</p>
-              <p className="text-2xl font-bold text-sage-green">{averageWaitTime}d</p>
+              <p className="text-2xl font-bold text-sage-green">
+                {averageWaitTime}d
+              </p>
             </div>
           </div>
         </Card>
@@ -540,7 +597,9 @@ const VerificationQueue = ({
             </div>
             <div>
               <p className="text-sm text-text-muted">Total Queue</p>
-              <p className="text-2xl font-bold text-muted-olive">{vendors.length}</p>
+              <p className="text-2xl font-bold text-muted-olive">
+                {vendors.length}
+              </p>
             </div>
           </div>
         </Card>

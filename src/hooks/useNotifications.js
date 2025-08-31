@@ -438,55 +438,127 @@ export const useNotifications = () => {
   };
 };
 
-// Real-time notification hook for WebSocket integration
-export const useRealTimeNotifications = () => {
+// MVP Notification hook - Real-time features removed
+// This hook is kept for future enhancement but WebSocket functionality is removed
+export const usePullBasedNotifications = () => {
   const { addNotification, showOrderNotification, showListingNotification } =
     useNotifications();
 
-  const handleWebSocketMessage = useCallback(
-    (data) => {
-      const { type, payload } = data;
+  // Handle manual notification fetch results
+  const handleNotificationData = useCallback(
+    (notifications) => {
+      if (!notifications || !Array.isArray(notifications)) return;
 
-      switch (type) {
-        case 'order_update':
-          if (payload.order) {
-            showOrderNotification(
-              payload.order,
-              payload.updateType || 'update'
-            );
-          }
-          break;
+      notifications.forEach((notification) => {
+        switch (notification.type) {
+          case 'order_update':
+            if (notification.order) {
+              showOrderNotification(
+                notification.order,
+                notification.updateType || 'update'
+              );
+            }
+            break;
 
-        case 'listing_update':
-          if (payload.listing) {
-            showListingNotification(
-              payload.listing,
-              payload.updateType || 'update'
-            );
-          }
-          break;
+          case 'listing_update':
+            if (notification.listing) {
+              showListingNotification(
+                notification.listing,
+                notification.updateType || 'update'
+              );
+            }
+            break;
 
-        case 'notification':
-          addNotification({
-            id: payload.id || `realtime_${Date.now()}`,
-            type: payload.type || 'info',
-            title: payload.title || 'Real-time Update',
-            message: payload.message,
-            timestamp: Date.now(),
-            read: false,
-            data: payload.data || { type: 'realtime' },
-          });
-          break;
-
-        default:
-          console.log('Unhandled real-time message:', type, payload);
-      }
+          default:
+            addNotification({
+              id: notification.id || `notification_${Date.now()}`,
+              type: notification.type || 'info',
+              title: notification.title || 'Update',
+              message: notification.message,
+              timestamp: Date.now(),
+              read: false,
+              data: notification.data || { type: 'pull_based' },
+            });
+        }
+      });
     },
     [addNotification, showOrderNotification, showListingNotification]
   );
 
   return {
-    handleWebSocketMessage,
+    handleNotificationData,
+  };
+};
+
+// Manual notification fetching hook for MVP
+export const useManualNotificationFetch = () => {
+  const { user } = useSelector((state) => state.auth);
+  const { addNotification } = useNotifications();
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      let endpoint = '';
+
+      // Determine endpoint based on user role
+      switch (user?.role) {
+        case 'vendor':
+          endpoint = '/vendor-dashboard/notifications';
+          break;
+        case 'restaurantOwner':
+        case 'restaurantManager':
+          endpoint = '/restaurant-dashboard/notifications';
+          break;
+        case 'admin':
+          endpoint = '/admin/notifications';
+          break;
+        default:
+          return { success: false, error: 'Invalid user role' };
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'}${endpoint}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch notifications: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Process new notifications
+      if (data.notifications && Array.isArray(data.notifications)) {
+        data.notifications.forEach((notification) => {
+          addNotification({
+            id: notification.id || `notification_${Date.now()}`,
+            type: notification.type || 'info',
+            title: notification.title || 'Update',
+            message: notification.message,
+            timestamp: notification.timestamp || Date.now(),
+            read: notification.read || false,
+            data: notification.data || { type: 'manual_fetch' },
+          });
+        });
+      }
+
+      return {
+        success: true,
+        count: data.notifications?.length || 0,
+        data: data.notifications,
+      };
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+      return { success: false, error: error.message };
+    }
+  }, [user, addNotification]);
+
+  return {
+    fetchNotifications,
   };
 };
 

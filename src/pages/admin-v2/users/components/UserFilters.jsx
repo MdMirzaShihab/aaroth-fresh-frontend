@@ -22,16 +22,22 @@ import {
   AlertTriangle,
   Bookmark,
   BookmarkCheck,
-  RotateCcw
+  RotateCcw,
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
-import { Card } from '../../../../components/ui';
-import { Button } from '../../../../components/ui';
-import { Input } from '../../../../components/ui';
+import { Card, Button, Input } from '../../../../components/ui';
 import { getUserFilters } from '../../../../services/admin-v2/usersService';
 
 // Quick filter chips component
-const FilterChip = ({ label, count, isActive, onClick, onRemove, icon: IconComponent, color = 'muted-olive' }) => {
+const FilterChip = ({
+  label,
+  count,
+  isActive,
+  onClick,
+  onRemove,
+  icon: IconComponent,
+  color = 'muted-olive',
+}) => {
   const { isDarkMode } = useTheme();
 
   return (
@@ -41,9 +47,10 @@ const FilterChip = ({ label, count, isActive, onClick, onRemove, icon: IconCompo
       exit={{ opacity: 0, scale: 0.8 }}
       className={`
         inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer transition-all
-        ${isActive
-          ? `bg-${color} text-white shadow-md`
-          : `${isDarkMode ? 'bg-dark-surface text-dark-text-primary hover:bg-dark-sage-accent/10' : 'bg-gray-100 text-text-dark hover:bg-gray-200'}`
+        ${
+          isActive
+            ? `bg-${color} text-white shadow-md`
+            : `${isDarkMode ? 'bg-dark-surface text-dark-text-primary hover:bg-dark-sage-accent/10' : 'bg-gray-100 text-text-dark hover:bg-gray-200'}`
         }
       `}
       onClick={onClick}
@@ -51,7 +58,9 @@ const FilterChip = ({ label, count, isActive, onClick, onRemove, icon: IconCompo
       {IconComponent && <IconComponent className="w-3 h-3" />}
       <span>{label}</span>
       {count !== undefined && (
-        <span className={`px-1.5 py-0.5 rounded-full text-xs ${isActive ? 'bg-white/20' : 'bg-gray-200 text-gray-600'}`}>
+        <span
+          className={`px-1.5 py-0.5 rounded-full text-xs ${isActive ? 'bg-white/20' : 'bg-gray-200 text-gray-600'}`}
+        >
           {count}
         </span>
       )}
@@ -71,7 +80,12 @@ const FilterChip = ({ label, count, isActive, onClick, onRemove, icon: IconCompo
 };
 
 // Saved filter sets component
-const SavedFilters = ({ savedFilters, onApplyFilter, onSaveFilter, onDeleteFilter }) => {
+const SavedFilters = ({
+  savedFilters,
+  onApplyFilter,
+  onSaveFilter,
+  onDeleteFilter,
+}) => {
   const { isDarkMode } = useTheme();
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [filterName, setFilterName] = useState('');
@@ -86,7 +100,9 @@ const SavedFilters = ({ savedFilters, onApplyFilter, onSaveFilter, onDeleteFilte
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h4 className={`text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h4
+          className={`text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           Saved Filters
         </h4>
         <Button
@@ -114,12 +130,16 @@ const SavedFilters = ({ savedFilters, onApplyFilter, onSaveFilter, onDeleteFilte
               size="sm"
               className="flex-1"
             />
-            <Button size="xs" onClick={handleSaveFilter} disabled={!filterName.trim()}>
+            <Button
+              size="xs"
+              onClick={handleSaveFilter}
+              disabled={!filterName.trim()}
+            >
               <Save className="w-3 h-3" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="xs" 
+            <Button
+              variant="ghost"
+              size="xs"
               onClick={() => {
                 setShowSaveDialog(false);
                 setFilterName('');
@@ -165,7 +185,9 @@ const DateRangePicker = ({ label, value, onChange }) => {
 
   return (
     <div className="space-y-2">
-      <label className={`block text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+      <label
+        className={`block text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+      >
         <Calendar className="w-4 h-4 inline mr-2" />
         {label}
       </label>
@@ -187,16 +209,24 @@ const DateRangePicker = ({ label, value, onChange }) => {
   );
 };
 
-const UserFilters = ({ 
-  filters = {}, 
-  onFiltersChange, 
-  userCounts = { total: 0, filtered: 0 } 
+const UserFilters = ({
+  filters = {},
+  onFiltersChange,
+  userCounts = { total: 0, filtered: 0 },
 }) => {
   const { isDarkMode } = useTheme();
   const [savedFilters, setSavedFilters] = useState([
-    { id: 1, name: 'Active Vendors', filters: { role: 'vendor', status: 'active' } },
-    { id: 2, name: 'Pending Approval', filters: { status: 'pending_approval' } },
-    { id: 3, name: 'High Risk Users', filters: { riskLevel: 'high' } }
+    {
+      id: 1,
+      name: 'Active Vendors',
+      filters: { role: 'vendor', status: 'active' },
+    },
+    {
+      id: 2,
+      name: 'Pending Approval',
+      filters: { status: 'pending_approval' },
+    },
+    { id: 3, name: 'High Risk Users', filters: { riskLevel: 'high' } },
   ]);
 
   // Get filter options from service
@@ -205,49 +235,85 @@ const UserFilters = ({
   // Quick filters for common searches
   const quickFilters = [
     { key: 'role', value: 'vendor', label: 'Vendors', icon: Store, count: 142 },
-    { key: 'role', value: 'restaurantOwner', label: 'Restaurant Owners', icon: Utensils, count: 89 },
-    { key: 'status', value: 'pending_approval', label: 'Pending Approval', icon: Clock, count: 23 },
-    { key: 'status', value: 'active', label: 'Active Users', icon: CheckCircle, count: 256 },
-    { key: 'verificationStatus', value: 'approved', label: 'Verified', icon: Shield, count: 198 }
+    {
+      key: 'role',
+      value: 'restaurantOwner',
+      label: 'Restaurant Owners',
+      icon: Utensils,
+      count: 89,
+    },
+    {
+      key: 'status',
+      value: 'pending_approval',
+      label: 'Pending Approval',
+      icon: Clock,
+      count: 23,
+    },
+    {
+      key: 'status',
+      value: 'active',
+      label: 'Active Users',
+      icon: CheckCircle,
+      count: 256,
+    },
+    {
+      key: 'verificationStatus',
+      value: 'approved',
+      label: 'Verified',
+      icon: Shield,
+      count: 198,
+    },
   ];
 
   // Handle filter change
-  const handleFilterChange = useCallback((key, value) => {
-    const newFilters = { ...filters };
-    
-    if (value === 'all' || value === '' || value === null) {
-      delete newFilters[key];
-    } else {
-      newFilters[key] = value;
-    }
-    
-    onFiltersChange?.(newFilters);
-  }, [filters, onFiltersChange]);
+  const handleFilterChange = useCallback(
+    (key, value) => {
+      const newFilters = { ...filters };
+
+      if (value === 'all' || value === '' || value === null) {
+        delete newFilters[key];
+      } else {
+        newFilters[key] = value;
+      }
+
+      onFiltersChange?.(newFilters);
+    },
+    [filters, onFiltersChange]
+  );
 
   // Handle quick filter toggle
-  const handleQuickFilter = useCallback((key, value) => {
-    const isActive = filters[key] === value;
-    handleFilterChange(key, isActive ? null : value);
-  }, [filters, handleFilterChange]);
+  const handleQuickFilter = useCallback(
+    (key, value) => {
+      const isActive = filters[key] === value;
+      handleFilterChange(key, isActive ? null : value);
+    },
+    [filters, handleFilterChange]
+  );
 
   // Handle saved filter application
-  const handleApplyFilter = useCallback((savedFilter) => {
-    onFiltersChange?.(savedFilter.filters);
-  }, [onFiltersChange]);
+  const handleApplyFilter = useCallback(
+    (savedFilter) => {
+      onFiltersChange?.(savedFilter.filters);
+    },
+    [onFiltersChange]
+  );
 
   // Handle saving current filter
-  const handleSaveFilter = useCallback((name) => {
-    const newFilter = {
-      id: Date.now(),
-      name,
-      filters: { ...filters }
-    };
-    setSavedFilters(prev => [...prev, newFilter]);
-  }, [filters]);
+  const handleSaveFilter = useCallback(
+    (name) => {
+      const newFilter = {
+        id: Date.now(),
+        name,
+        filters: { ...filters },
+      };
+      setSavedFilters((prev) => [...prev, newFilter]);
+    },
+    [filters]
+  );
 
   // Handle deleting saved filter
   const handleDeleteFilter = useCallback((filterId) => {
-    setSavedFilters(prev => prev.filter(f => f.id !== filterId));
+    setSavedFilters((prev) => prev.filter((f) => f.id !== filterId));
   }, []);
 
   // Handle clear all filters
@@ -263,16 +329,24 @@ const UserFilters = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Filter className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
+          <Filter
+            className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+          />
           <div>
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Advanced Filters
             </h3>
-            <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
-              Showing {userCounts.filtered.toLocaleString()} of {userCounts.total.toLocaleString()} users
+            <p
+              className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+            >
+              Showing {userCounts.filtered.toLocaleString()} of{' '}
+              {userCounts.total.toLocaleString()} users
               {activeFilterCount > 0 && (
                 <span className="ml-2 px-2 py-0.5 bg-muted-olive/10 text-muted-olive rounded-full text-xs font-medium">
-                  {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} active
+                  {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}{' '}
+                  active
                 </span>
               )}
             </p>
@@ -280,11 +354,7 @@ const UserFilters = ({
         </div>
 
         {activeFilterCount > 0 && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleClearFilters}
-          >
+          <Button variant="outline" size="sm" onClick={handleClearFilters}>
             <RotateCcw className="w-4 h-4 mr-2" />
             Clear All
           </Button>
@@ -293,7 +363,9 @@ const UserFilters = ({
 
       {/* Quick Filters */}
       <div className="mb-6">
-        <h4 className={`text-sm font-medium mb-3 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <h4
+          className={`text-sm font-medium mb-3 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           Quick Filters
         </h4>
         <div className="flex flex-wrap gap-2">
@@ -315,7 +387,9 @@ const UserFilters = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {/* Role Filter */}
         <div>
-          <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+          <label
+            className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+          >
             <Users className="w-4 h-4 inline mr-2" />
             Role
           </label>
@@ -324,9 +398,10 @@ const UserFilters = ({
             onChange={(e) => handleFilterChange('role', e.target.value)}
             className={`
               w-full px-3 py-2 text-sm border rounded-lg transition-colors
-              ${isDarkMode 
-                ? 'bg-dark-surface border-dark-border text-dark-text-primary' 
-                : 'bg-white border-gray-300 text-text-dark'
+              ${
+                isDarkMode
+                  ? 'bg-dark-surface border-dark-border text-dark-text-primary'
+                  : 'bg-white border-gray-300 text-text-dark'
               }
             `}
           >
@@ -340,7 +415,9 @@ const UserFilters = ({
 
         {/* Status Filter */}
         <div>
-          <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+          <label
+            className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+          >
             <CheckCircle className="w-4 h-4 inline mr-2" />
             Status
           </label>
@@ -349,9 +426,10 @@ const UserFilters = ({
             onChange={(e) => handleFilterChange('status', e.target.value)}
             className={`
               w-full px-3 py-2 text-sm border rounded-lg transition-colors
-              ${isDarkMode 
-                ? 'bg-dark-surface border-dark-border text-dark-text-primary' 
-                : 'bg-white border-gray-300 text-text-dark'
+              ${
+                isDarkMode
+                  ? 'bg-dark-surface border-dark-border text-dark-text-primary'
+                  : 'bg-white border-gray-300 text-text-dark'
               }
             `}
           >
@@ -365,18 +443,23 @@ const UserFilters = ({
 
         {/* Verification Status Filter */}
         <div>
-          <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+          <label
+            className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+          >
             <Shield className="w-4 h-4 inline mr-2" />
             Verification
           </label>
           <select
             value={filters.verificationStatus || 'all'}
-            onChange={(e) => handleFilterChange('verificationStatus', e.target.value)}
+            onChange={(e) =>
+              handleFilterChange('verificationStatus', e.target.value)
+            }
             className={`
               w-full px-3 py-2 text-sm border rounded-lg transition-colors
-              ${isDarkMode 
-                ? 'bg-dark-surface border-dark-border text-dark-text-primary' 
-                : 'bg-white border-gray-300 text-text-dark'
+              ${
+                isDarkMode
+                  ? 'bg-dark-surface border-dark-border text-dark-text-primary'
+                  : 'bg-white border-gray-300 text-text-dark'
               }
             `}
           >
@@ -390,7 +473,9 @@ const UserFilters = ({
 
         {/* Risk Level Filter */}
         <div>
-          <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+          <label
+            className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+          >
             <AlertTriangle className="w-4 h-4 inline mr-2" />
             Risk Level
           </label>
@@ -399,9 +484,10 @@ const UserFilters = ({
             onChange={(e) => handleFilterChange('riskLevel', e.target.value)}
             className={`
               w-full px-3 py-2 text-sm border rounded-lg transition-colors
-              ${isDarkMode 
-                ? 'bg-dark-surface border-dark-border text-dark-text-primary' 
-                : 'bg-white border-gray-300 text-text-dark'
+              ${
+                isDarkMode
+                  ? 'bg-dark-surface border-dark-border text-dark-text-primary'
+                  : 'bg-white border-gray-300 text-text-dark'
               }
             `}
           >
@@ -430,7 +516,9 @@ const UserFilters = ({
 
       {/* Location Filter */}
       <div className="mb-6">
-        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+        <label
+          className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+        >
           <MapPin className="w-4 h-4 inline mr-2" />
           Location
         </label>

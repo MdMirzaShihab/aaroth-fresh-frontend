@@ -38,23 +38,16 @@ import SimpleBarChart from '../../components/ui/charts/SimpleBarChart';
 const VendorAnalytics = () => {
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedMetric, setSelectedMetric] = useState('revenue');
-  const [refreshInterval, setRefreshInterval] = useState(300000); // 5 minutes
+  // Auto-refresh interval removed for MVP
   const { user } = useSelector((state) => state.auth);
 
-  // Auto-refresh analytics data
+  // Analytics data - manual refresh only
   const {
     data: analyticsData,
     isLoading: analyticsLoading,
     error: analyticsError,
     refetch: refetchAnalytics,
-  } = useGetVendorAnalyticsQuery(
-    { timeRange },
-    {
-      pollingInterval: refreshInterval,
-      refetchOnFocus: true,
-      refetchOnReconnect: true,
-    }
-  );
+  } = useGetVendorAnalyticsQuery({ timeRange });
 
   // Get listing performance data
   const {

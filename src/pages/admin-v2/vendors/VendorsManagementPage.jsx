@@ -21,18 +21,17 @@ import {
   AlertTriangle,
   MapPin,
   Building2,
-  Eye
+  Eye,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../hooks/useTheme';
-import { Card } from '../../../components/ui';
-import { Button } from '../../../components/ui';
-import { Input } from '../../../components/ui';
-import { 
+import { Card, Button, Input } from '../../../components/ui';
+import {
   useGetVendorsQuery,
   useGetVendorAnalyticsQuery,
   useGetVerificationQueueQuery,
   useUpdateVendorVerificationMutation,
-  useBulkVendorOperationsMutation
+  useBulkVendorOperationsMutation,
 } from '../../../services/admin-v2/vendorsService';
 import VendorDirectory from './components/VendorDirectory';
 import VerificationQueue from './components/VerificationQueue';
@@ -41,21 +40,23 @@ import BulkVendorOperations from './components/BulkVendorOperations';
 import VendorAnalytics from './components/VendorAnalytics';
 import VendorProfileModal from './components/VendorProfileModal';
 import VendorStatusManager from './components/VendorStatusManager';
-import toast from 'react-hot-toast';
 
 const VendorsManagementPage = () => {
   const { isDarkMode } = useTheme();
-  
+
   // Page state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [sortConfig, setSortConfig] = useState({ field: 'createdAt', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({
+    field: 'createdAt',
+    direction: 'desc',
+  });
   const [activeFilters, setActiveFilters] = useState({});
   const [viewMode, setViewMode] = useState('directory'); // 'directory' | 'verification' | 'analytics'
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Modal state
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [showVendorProfile, setShowVendorProfile] = useState(false);
@@ -66,29 +67,27 @@ const VendorsManagementPage = () => {
     data: vendorsData,
     isLoading: vendorsLoading,
     error: vendorsError,
-    refetch: refetchVendors
+    refetch: refetchVendors,
   } = useGetVendorsQuery({
     page: currentPage,
     limit: pageSize,
     search: searchQuery,
     sortBy: sortConfig.field,
     sortOrder: sortConfig.direction,
-    ...activeFilters
+    ...activeFilters,
   });
 
-  const {
-    data: analyticsData,
-    isLoading: analyticsLoading
-  } = useGetVendorAnalyticsQuery({
-    enabled: viewMode === 'analytics'
-  });
+  const { data: analyticsData, isLoading: analyticsLoading } =
+    useGetVendorAnalyticsQuery({
+      enabled: viewMode === 'analytics',
+    });
 
   const {
     data: verificationData,
     isLoading: verificationLoading,
-    refetch: refetchVerification
+    refetch: refetchVerification,
   } = useGetVerificationQueueQuery({
-    enabled: viewMode === 'verification'
+    enabled: viewMode === 'verification',
   });
 
   // Mutations
@@ -103,20 +102,21 @@ const VendorsManagementPage = () => {
 
   // Handle vendor selection
   const handleVendorSelect = useCallback((vendorId, selected) => {
-    setSelectedVendors(prev => 
-      selected 
-        ? [...prev, vendorId]
-        : prev.filter(id => id !== vendorId)
+    setSelectedVendors((prev) =>
+      selected ? [...prev, vendorId] : prev.filter((id) => id !== vendorId)
     );
   }, []);
 
-  const handleSelectAll = useCallback((selected) => {
-    if (selected) {
-      setSelectedVendors(vendors.map(vendor => vendor.id));
-    } else {
-      setSelectedVendors([]);
-    }
-  }, [vendors]);
+  const handleSelectAll = useCallback(
+    (selected) => {
+      if (selected) {
+        setSelectedVendors(vendors.map((vendor) => vendor.id));
+      } else {
+        setSelectedVendors([]);
+      }
+    },
+    [vendors]
+  );
 
   // Handle search
   const handleSearch = useCallback((query) => {
@@ -126,9 +126,10 @@ const VendorsManagementPage = () => {
 
   // Handle sorting
   const handleSort = useCallback((field) => {
-    setSortConfig(prev => ({
+    setSortConfig((prev) => ({
       field,
-      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+      direction:
+        prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
     setCurrentPage(1);
   }, []);
@@ -166,62 +167,80 @@ const VendorsManagementPage = () => {
   }, []);
 
   // Handle verification actions
-  const handleVerificationAction = useCallback(async (vendorId, status, reason = '') => {
-    try {
-      toast.loading(`${status === 'approved' ? 'Approving' : 'Rejecting'} vendor verification...`);
-      
-      await updateVendorVerification({
-        vendorId,
-        status,
-        reason,
-        documents: [] // Will be handled by verification modal
-      }).unwrap();
-      
-      toast.dismiss();
-      toast.success(`Vendor verification ${status === 'approved' ? 'approved' : 'rejected'} successfully`);
-      refetchVendors();
-      refetchVerification();
-    } catch (error) {
-      toast.dismiss();
-      toast.error(`Failed to ${status} verification: ${error.message}`);
-    }
-  }, [updateVendorVerification, refetchVendors, refetchVerification]);
+  const handleVerificationAction = useCallback(
+    async (vendorId, status, reason = '') => {
+      try {
+        toast.loading(
+          `${status === 'approved' ? 'Approving' : 'Rejecting'} vendor verification...`
+        );
+
+        await updateVendorVerification({
+          vendorId,
+          status,
+          reason,
+          documents: [], // Will be handled by verification modal
+        }).unwrap();
+
+        toast.dismiss();
+        toast.success(
+          `Vendor verification ${status === 'approved' ? 'approved' : 'rejected'} successfully`
+        );
+        refetchVendors();
+        refetchVerification();
+      } catch (error) {
+        toast.dismiss();
+        toast.error(`Failed to ${status} verification: ${error.message}`);
+      }
+    },
+    [updateVendorVerification, refetchVendors, refetchVerification]
+  );
 
   // Handle bulk operations
-  const handleBulkOperation = useCallback(async (operation, options = {}) => {
-    if (selectedVendors.length === 0) {
-      toast.error('Please select vendors first');
-      return;
-    }
+  const handleBulkOperation = useCallback(
+    async (operation, options = {}) => {
+      if (selectedVendors.length === 0) {
+        toast.error('Please select vendors first');
+        return;
+      }
 
-    try {
-      toast.loading(`Processing ${operation} for ${selectedVendors.length} vendors...`);
-      
-      await bulkVendorOperations({
-        vendorIds: selectedVendors,
-        operation,
-        operationData: options
-      }).unwrap();
-      
-      toast.dismiss();
-      toast.success(`${operation} completed successfully`);
-      setSelectedVendors([]);
-      refetchVendors();
-      if (viewMode === 'verification') refetchVerification();
-    } catch (error) {
-      toast.dismiss();
-      toast.error(`Failed to ${operation}: ${error.message}`);
-    }
-  }, [selectedVendors, bulkVendorOperations, refetchVendors, refetchVerification, viewMode]);
+      try {
+        toast.loading(
+          `Processing ${operation} for ${selectedVendors.length} vendors...`
+        );
+
+        await bulkVendorOperations({
+          vendorIds: selectedVendors,
+          operation,
+          operationData: options,
+        }).unwrap();
+
+        toast.dismiss();
+        toast.success(`${operation} completed successfully`);
+        setSelectedVendors([]);
+        refetchVendors();
+        if (viewMode === 'verification') refetchVerification();
+      } catch (error) {
+        toast.dismiss();
+        toast.error(`Failed to ${operation}: ${error.message}`);
+      }
+    },
+    [
+      selectedVendors,
+      bulkVendorOperations,
+      refetchVendors,
+      refetchVerification,
+      viewMode,
+    ]
+  );
 
   // Handle export
   const handleExport = useCallback(async (format = 'csv') => {
     try {
       toast.loading('Preparing export...');
-      
+
       // Export logic will be implemented with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.dismiss();
       toast.success(`Vendors exported as ${format.toUpperCase()}`);
     } catch (error) {
@@ -233,13 +252,13 @@ const VendorsManagementPage = () => {
   // Quick stats for header
   const quickStats = useMemo(() => {
     if (!vendorStats && !analyticsData) return null;
-    
+
     const stats = vendorStats || {};
     return {
       totalVendors,
       verifiedVendors: stats.verifiedVendors || 0,
       pendingVerification: stats.pendingVerification || 0,
-      activeVendors: stats.activeVendors || 0
+      activeVendors: stats.activeVendors || 0,
     };
   }, [vendorStats, analyticsData, totalVendors]);
 
@@ -247,7 +266,7 @@ const VendorsManagementPage = () => {
   const viewTabs = [
     { id: 'directory', label: 'Vendor Directory', icon: Store },
     { id: 'verification', label: 'Verification Queue', icon: CheckCircle },
-    { id: 'analytics', label: 'Performance Analytics', icon: BarChart3 }
+    { id: 'analytics', label: 'Performance Analytics', icon: BarChart3 },
   ];
 
   return (
@@ -261,10 +280,14 @@ const VendorsManagementPage = () => {
                 <Store className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                <h1
+                  className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                >
                   Vendor Management
                 </h1>
-                <p className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                >
                   Comprehensive business directory with verification workflows
                 </p>
               </div>
@@ -294,7 +317,9 @@ const VendorsManagementPage = () => {
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => toast.info('Vendor registration handled by public portal')}
+                onClick={() =>
+                  toast.info('Vendor registration handled by public portal')
+                }
                 className="hidden sm:flex"
               >
                 <Building2 className="w-4 h-4 mr-2" />
@@ -309,52 +334,74 @@ const VendorsManagementPage = () => {
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       Total Vendors
                     </p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                    <p
+                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                    >
                       {quickStats.totalVendors.toLocaleString()}
                     </p>
                   </div>
-                  <Store className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
+                  <Store
+                    className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+                  />
                 </div>
               </Card>
 
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       Verified
                     </p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}>
+                    <p
+                      className={`text-lg font-bold ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+                    >
                       {quickStats.verifiedVendors.toLocaleString()}
                     </p>
                   </div>
-                  <CheckCircle className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
+                  <CheckCircle
+                    className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+                  />
                 </div>
               </Card>
 
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       Pending Verification
                     </p>
-                    <p className={`text-lg font-bold ${quickStats.pendingVerification > 0 ? 'text-earthy-yellow' : (isDarkMode ? 'text-dark-text-primary' : 'text-text-dark')}`}>
+                    <p
+                      className={`text-lg font-bold ${quickStats.pendingVerification > 0 ? 'text-earthy-yellow' : isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                    >
                       {quickStats.pendingVerification.toLocaleString()}
                     </p>
                   </div>
-                  <Clock className={`w-4 h-4 ${quickStats.pendingVerification > 0 ? 'text-earthy-yellow' : 'text-gray-300'}`} />
+                  <Clock
+                    className={`w-4 h-4 ${quickStats.pendingVerification > 0 ? 'text-earthy-yellow' : 'text-gray-300'}`}
+                  />
                 </div>
               </Card>
 
               <Card className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+                    <p
+                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                    >
                       Active
                     </p>
-                    <p className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                    <p
+                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                    >
                       {quickStats.activeVendors.toLocaleString()}
                     </p>
                   </div>
@@ -366,7 +413,7 @@ const VendorsManagementPage = () => {
 
           {/* View Mode Tabs */}
           <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-dark-surface rounded-2xl">
-            {viewTabs.map(tab => {
+            {viewTabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
                 <button
@@ -397,12 +444,12 @@ const VendorsManagementPage = () => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <VendorFilters 
+            <VendorFilters
               filters={activeFilters}
               onFiltersChange={handleFilterChange}
               vendorCounts={{
                 total: totalVendors,
-                filtered: vendors.length
+                filtered: vendors.length,
               }}
             />
           </motion.div>
@@ -430,7 +477,9 @@ const VendorsManagementPage = () => {
                 onClick={refetchVendors}
                 disabled={vendorsLoading}
               >
-                <RefreshCw className={`w-4 h-4 ${vendorsLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${vendorsLoading ? 'animate-spin' : ''}`}
+                />
               </Button>
             </div>
           </div>
@@ -478,7 +527,7 @@ const VendorsManagementPage = () => {
           )}
 
           {viewMode === 'analytics' && (
-            <VendorAnalytics 
+            <VendorAnalytics
               data={analyticsData}
               loading={analyticsLoading}
               vendors={vendors}

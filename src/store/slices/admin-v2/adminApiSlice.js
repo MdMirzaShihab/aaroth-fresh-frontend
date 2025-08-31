@@ -1,10 +1,10 @@
 /**
  * Admin V2 API Slice - Comprehensive Admin Interface RTK Query Integration
  * Covers all 44 admin endpoints from ADMIN_INTERFACE_PLAN.md
- * 
+ *
  * Categories:
  * - Dashboard & Analytics (7 APIs)
- * - User Management (6 APIs) 
+ * - User Management (6 APIs)
  * - Vendor Management (6 APIs)
  * - Restaurant Management (6 APIs)
  * - Product Management (5 APIs)
@@ -14,8 +14,27 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+// Helper function to map frontend period filters to backend-compatible periods
+const mapPeriodToBackend = (period) => {
+  const periodMap = {
+    '24h': 'day',
+    '7d': 'week', 
+    '30d': 'month',
+    '90d': 'quarter',
+    '365d': 'year',
+    // Direct mappings
+    'day': 'day',
+    'week': 'week',
+    'month': 'month',
+    'quarter': 'quarter',
+    'year': 'year'
+  };
+  
+  return periodMap[period] || 'month';
+};
+
 // Base URL for admin API endpoints
-const ADMIN_API_BASE_URL = 
+const ADMIN_API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const adminBaseQuery = fetchBaseQuery({
@@ -49,7 +68,7 @@ export const adminApiV2Slice = createApi({
   tagTypes: [
     // Core entity tags
     'AdminDashboard',
-    'AdminAnalytics', 
+    'AdminAnalytics',
     'AdminUsers',
     'AdminVendors',
     'AdminRestaurants',
@@ -67,37 +86,33 @@ export const adminApiV2Slice = createApi({
     'SalesAnalytics',
     'UserAnalytics',
     'ProductAnalytics',
-    'CategoryUsage'
+    'CategoryUsage',
   ],
   endpoints: (builder) => ({
     // ============================================
     // 1. DASHBOARD & ANALYTICS ENDPOINTS (7 APIs)
     // ============================================
-    
-    // Main admin dashboard with KPIs and overview metrics
-    getAdminDashboardV2: builder.query({
-      query: () => 'dashboard',
-      providesTags: ['AdminDashboard'],
-      // Auto-refresh every 5 minutes for real-time admin metrics
-      pollingInterval: 300000,
-    }),
+
 
     // Comprehensive dashboard overview with detailed statistics
     getDashboardOverview: builder.query({
       query: (params = {}) => ({
         url: 'dashboard/overview',
-        params,
+        params: {
+          ...params,
+          period: mapPeriodToBackend(params.period || 'month'),
+        },
       }),
       providesTags: ['AdminDashboard'],
-      pollingInterval: 300000,
+      // Polling disabled for MVP
     }),
 
-    // Analytics overview with business intelligence metrics  
+    // Analytics overview with business intelligence metrics
     getAnalyticsOverview: builder.query({
       query: (params = {}) => ({
         url: 'analytics/overview',
         params: {
-          period: params.period || '30d',
+          period: mapPeriodToBackend(params.period || 'month'),
           startDate: params.startDate,
           endDate: params.endDate,
           ...params,
@@ -113,7 +128,7 @@ export const adminApiV2Slice = createApi({
       query: (params = {}) => ({
         url: 'analytics/sales',
         params: {
-          period: params.period || '30d',
+          period: mapPeriodToBackend(params.period || 'month'),
           groupBy: params.groupBy || 'day',
           vendor: params.vendor,
           category: params.category,
@@ -129,7 +144,7 @@ export const adminApiV2Slice = createApi({
       query: (params = {}) => ({
         url: 'analytics/users',
         params: {
-          period: params.period || '30d',
+          period: mapPeriodToBackend(params.period || 'month'),
           role: params.role,
           verificationStatus: params.verificationStatus,
           ...params,
@@ -144,7 +159,7 @@ export const adminApiV2Slice = createApi({
       query: (params = {}) => ({
         url: 'analytics/products',
         params: {
-          period: params.period || '30d',
+          period: mapPeriodToBackend(params.period || 'month'),
           category: params.category,
           vendor: params.vendor,
           ...params,
@@ -154,13 +169,32 @@ export const adminApiV2Slice = createApi({
       keepUnusedDataFor: 900,
     }),
 
+    // Performance dashboard for comprehensive admin metrics
+    getPerformanceDashboard: builder.query({
+      query: (params = {}) => ({
+        url: 'performance/dashboard',
+        params: {
+          period: mapPeriodToBackend(params.period || 'month'),
+          adminId: params.adminId,
+          ...params,
+        },
+      }),
+      providesTags: ['PerformanceMetrics', 'AdminDashboard'],
+      keepUnusedDataFor: 300, // 5 minutes cache
+    }),
+
     // Clear analytics cache for fresh data regeneration
     clearAnalyticsCache: builder.mutation({
       query: () => ({
         url: 'analytics/cache',
         method: 'DELETE',
       }),
-      invalidatesTags: ['AdminAnalytics', 'SalesAnalytics', 'UserAnalytics', 'ProductAnalytics'],
+      invalidatesTags: [
+        'AdminAnalytics',
+        'SalesAnalytics',
+        'UserAnalytics',
+        'ProductAnalytics',
+      ],
     }),
 
     // ========================================
@@ -185,7 +219,10 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: (result) => [
         { type: 'AdminUsers', id: 'LIST' },
-        ...(result?.data?.users || []).map(({ _id }) => ({ type: 'AdminUsers', id: _id })),
+        ...(result?.data?.users || []).map(({ _id }) => ({
+          type: 'AdminUsers',
+          id: _id,
+        })),
       ],
     }),
 
@@ -208,14 +245,21 @@ export const adminApiV2Slice = createApi({
         'UserManagement',
       ],
       // Optimistic update for immediate UI feedback
-      onQueryStarted: async ({ id, ...userData }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, ...userData },
+        { dispatch, queryFulfilled }
+      ) => {
         const patchResult = dispatch(
-          adminApiV2Slice.util.updateQueryData('getAdminUsersV2', undefined, (draft) => {
-            const user = draft?.data?.users?.find(u => u._id === id);
-            if (user) {
-              Object.assign(user, userData);
+          adminApiV2Slice.util.updateQueryData(
+            'getAdminUsersV2',
+            undefined,
+            (draft) => {
+              const user = draft?.data?.users?.find((u) => u._id === id);
+              if (user) {
+                Object.assign(user, userData);
+              }
             }
-          })
+          )
         );
 
         try {
@@ -252,7 +296,7 @@ export const adminApiV2Slice = createApi({
     // Create restaurant manager under existing restaurant
     createRestaurantManagerV2: builder.mutation({
       query: (managerData) => ({
-        url: 'restaurant-managers', 
+        url: 'restaurant-managers',
         method: 'POST',
         body: managerData,
       }),
@@ -282,7 +326,10 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: (result) => [
         { type: 'AdminVendors', id: 'LIST' },
-        ...(result?.data || []).map(({ _id }) => ({ type: 'AdminVendors', id: _id })),
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'AdminVendors',
+          id: _id,
+        })),
       ],
     }),
 
@@ -296,7 +343,7 @@ export const adminApiV2Slice = createApi({
     updateVendorV2: builder.mutation({
       query: ({ id, ...vendorData }) => ({
         url: `vendors/${id}`,
-        method: 'PUT', 
+        method: 'PUT',
         body: vendorData,
       }),
       invalidatesTags: (result, error, { id }) => [
@@ -314,22 +361,30 @@ export const adminApiV2Slice = createApi({
         body: { status, reason },
       }),
       invalidatesTags: [
-        'AdminVendors', 
-        'VendorVerification', 
+        'AdminVendors',
+        'VendorVerification',
         'BusinessVerification',
-        'AdminDashboard'
+        'AdminDashboard',
       ],
       // Optimistic update for verification status
-      onQueryStarted: async ({ id, status, reason }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, status, reason },
+        { dispatch, queryFulfilled }
+      ) => {
         const patchResult = dispatch(
-          adminApiV2Slice.util.updateQueryData('getAdminVendorsV2', undefined, (draft) => {
-            const vendor = draft?.data?.find(v => v._id === id);
-            if (vendor) {
-              vendor.verificationStatus = status;
-              vendor.adminNotes = reason;
-              vendor.verificationDate = status === 'approved' ? new Date().toISOString() : null;
+          adminApiV2Slice.util.updateQueryData(
+            'getAdminVendorsV2',
+            undefined,
+            (draft) => {
+              const vendor = draft?.data?.find((v) => v._id === id);
+              if (vendor) {
+                vendor.verificationStatus = status;
+                vendor.adminNotes = reason;
+                vendor.verificationDate =
+                  status === 'approved' ? new Date().toISOString() : null;
+              }
             }
-          })
+          )
         );
 
         try {
@@ -365,7 +420,7 @@ export const adminApiV2Slice = createApi({
     }),
 
     // ===============================================
-    // 4. RESTAURANT MANAGEMENT ENDPOINTS (6 APIs)  
+    // 4. RESTAURANT MANAGEMENT ENDPOINTS (6 APIs)
     // ===============================================
 
     // Get all restaurants with business information
@@ -387,7 +442,10 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: (result) => [
         { type: 'AdminRestaurants', id: 'LIST' },
-        ...(result?.data || []).map(({ _id }) => ({ type: 'AdminRestaurants', id: _id })),
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'AdminRestaurants',
+          id: _id,
+        })),
       ],
     }),
 
@@ -420,21 +478,29 @@ export const adminApiV2Slice = createApi({
       }),
       invalidatesTags: [
         'AdminRestaurants',
-        'RestaurantVerification', 
+        'RestaurantVerification',
         'BusinessVerification',
-        'AdminDashboard'
+        'AdminDashboard',
       ],
       // Optimistic update for verification status
-      onQueryStarted: async ({ id, status, reason }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, status, reason },
+        { dispatch, queryFulfilled }
+      ) => {
         const patchResult = dispatch(
-          adminApiV2Slice.util.updateQueryData('getAdminRestaurantsV2', undefined, (draft) => {
-            const restaurant = draft?.data?.find(r => r._id === id);
-            if (restaurant) {
-              restaurant.verificationStatus = status;
-              restaurant.adminNotes = reason;
-              restaurant.verificationDate = status === 'approved' ? new Date().toISOString() : null;
+          adminApiV2Slice.util.updateQueryData(
+            'getAdminRestaurantsV2',
+            undefined,
+            (draft) => {
+              const restaurant = draft?.data?.find((r) => r._id === id);
+              if (restaurant) {
+                restaurant.verificationStatus = status;
+                restaurant.adminNotes = reason;
+                restaurant.verificationDate =
+                  status === 'approved' ? new Date().toISOString() : null;
+              }
             }
-          })
+          )
         );
 
         try {
@@ -463,7 +529,7 @@ export const adminApiV2Slice = createApi({
     safeDeleteRestaurantV2: builder.mutation({
       query: ({ id, reason }) => ({
         url: `restaurants/${id}/safe-delete`,
-        method: 'DELETE', 
+        method: 'DELETE',
         body: { reason },
       }),
       invalidatesTags: ['AdminRestaurants', 'RestaurantVerification'],
@@ -493,11 +559,14 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: (result) => [
         { type: 'AdminProducts', id: 'LIST' },
-        ...(result?.data?.products || []).map(({ _id }) => ({ type: 'AdminProducts', id: _id })),
+        ...(result?.data?.products || []).map(({ _id }) => ({
+          type: 'AdminProducts',
+          id: _id,
+        })),
       ],
     }),
 
-    // Get product details with analytics and listing information  
+    // Get product details with analytics and listing information
     getAdminProductDetails: builder.query({
       query: (id) => `products/${id}`,
       providesTags: (result, error, id) => [{ type: 'AdminProducts', id }],
@@ -561,7 +630,10 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: (result) => [
         { type: 'AdminCategories', id: 'LIST' },
-        ...(result?.data || []).map(({ _id }) => ({ type: 'AdminCategories', id: _id })),
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'AdminCategories',
+          id: _id,
+        })),
       ],
     }),
 
@@ -583,7 +655,7 @@ export const adminApiV2Slice = createApi({
     createAdminCategoryV2: builder.mutation({
       query: (categoryData) => ({
         url: 'categories',
-        method: 'POST', 
+        method: 'POST',
         body: categoryData, // FormData for image uploads
         // Let browser set Content-Type for FormData
       }),
@@ -645,7 +717,7 @@ export const adminApiV2Slice = createApi({
       }),
       invalidatesTags: [
         'AdminVendors',
-        'AdminRestaurants', 
+        'AdminRestaurants',
         'VendorVerification',
         'RestaurantVerification',
         'BusinessVerification',
@@ -683,7 +755,7 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: (result, error, category) => [
         { type: 'SystemSettings', id: category },
-        'SystemSettings'
+        'SystemSettings',
       ],
     }),
 
@@ -693,13 +765,21 @@ export const adminApiV2Slice = createApi({
         url: `settings/key/${key}`,
       }),
       providesTags: (result, error, key) => [
-        { type: 'SystemSettings', id: key }
+        { type: 'SystemSettings', id: key },
       ],
     }),
 
     // Get settings history for audit trail
     getSettingHistory: builder.query({
-      query: ({ key, category, timeRange = '30d', type, search, page = 1, limit = 50 }) => ({
+      query: ({
+        key,
+        category,
+        timeRange = '30d',
+        type,
+        search,
+        page = 1,
+        limit = 50,
+      }) => ({
         url: key ? `settings/key/${key}/history` : 'settings/history',
         params: {
           category,
@@ -711,7 +791,7 @@ export const adminApiV2Slice = createApi({
         },
       }),
       providesTags: (result, error, { key, category }) => [
-        { type: 'SettingsHistory', id: key || category || 'all' }
+        { type: 'SettingsHistory', id: key || category || 'all' },
       ],
     }),
 
@@ -797,7 +877,7 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: ['PerformanceMetrics'],
       // Auto-refresh performance metrics every 2 minutes
-      pollingInterval: 120000,
+      // Polling disabled for MVP
     }),
 
     // ================================================
@@ -838,7 +918,7 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: ['PerformanceMetrics'],
       // Refresh every minute for real-time monitoring
-      pollingInterval: 60000,
+      // Polling disabled for MVP
     }),
 
     // Get admin team performance metrics and efficiency tracking
@@ -871,7 +951,7 @@ export const adminApiV2Slice = createApi({
       }),
       providesTags: ['PerformanceMetrics'],
       // Refresh SLA data every 2 minutes
-      pollingInterval: 120000,
+      // Polling disabled for MVP
     }),
 
     // Create or update SLA violation
@@ -897,7 +977,12 @@ export const adminApiV2Slice = createApi({
           template: reportConfig.template || 'comprehensive',
           format: reportConfig.format || 'pdf', // pdf, csv, both
           timeRange: reportConfig.timeRange || '30d',
-          sections: reportConfig.sections || ['overview', 'sales', 'users', 'products'],
+          sections: reportConfig.sections || [
+            'overview',
+            'sales',
+            'users',
+            'products',
+          ],
           includeCharts: reportConfig.includeCharts !== false,
           includeRawData: reportConfig.includeRawData !== false,
           recipientEmail: reportConfig.recipientEmail,
@@ -952,7 +1037,7 @@ export const adminApiV2Slice = createApi({
         body: {
           category,
           confirm,
-          resetTimestamp: new Date().toISOString()
+          resetTimestamp: new Date().toISOString(),
         },
       }),
       invalidatesTags: ['SystemSettings', 'AdminDashboard'],
@@ -962,8 +1047,7 @@ export const adminApiV2Slice = createApi({
 
 // Export hooks for all endpoints
 export const {
-  // Dashboard & Analytics  
-  useGetAdminDashboardV2Query,
+  // Dashboard & Analytics
   useGetDashboardOverviewQuery,
   useGetAnalyticsOverviewQuery,
   useGetSalesAnalyticsQuery,
@@ -979,7 +1063,7 @@ export const {
   useCreateRestaurantOwnerV2Mutation,
   useCreateRestaurantManagerV2Mutation,
 
-  // Vendor Management  
+  // Vendor Management
   useGetAdminVendorsV2Query,
   useGetVendorDetailsV2Query,
   useUpdateVendorV2Mutation,
@@ -1032,13 +1116,14 @@ export const {
 
   // Enhanced Analytics (Prompt 7)
   useGetProductAnalyticsQuery,
-  
+
   // Performance Monitoring (Prompt 7)
   useGetPerformanceOverviewQuery,
+  useGetPerformanceDashboardQuery,
   useGetAdminPerformanceQuery,
   useGetSLAMetricsQuery,
   useUpdateSLAViolationMutation,
-  
+
   // Report Generation (Prompt 7)
   useGenerateAnalyticsReportMutation,
   useScheduleAnalyticsReportMutation,

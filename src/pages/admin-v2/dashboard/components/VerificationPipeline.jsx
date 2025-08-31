@@ -24,11 +24,11 @@ import {
   Users,
   Building2,
   Timer,
-  Zap
+  Zap,
 } from 'lucide-react';
+import { formatDistanceToNow, format } from 'date-fns';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Card, Button } from '../../../../components/ui';
-import { formatDistanceToNow, format } from 'date-fns';
 import { dashboardService } from '../../../../services/admin-v2';
 
 const VerificationPipeline = ({
@@ -37,7 +37,7 @@ const VerificationPipeline = ({
   onBatchAction,
   onViewDetails,
   permissions = {},
-  className = ""
+  className = '',
 }) => {
   const { isDarkMode } = useTheme();
   const [selectedItems, setSelectedItems] = useState(new Set());
@@ -52,36 +52,36 @@ const VerificationPipeline = ({
       label: 'Submitted',
       icon: FileText,
       color: 'gray',
-      description: 'Initial application received'
+      description: 'Initial application received',
     },
     {
       id: 'under_review',
       label: 'Under Review',
       icon: Eye,
       color: 'blue',
-      description: 'Currently being reviewed'
+      description: 'Currently being reviewed',
     },
     {
       id: 'pending_info',
       label: 'Pending Info',
       icon: Clock,
       color: 'amber',
-      description: 'Awaiting additional information'
+      description: 'Awaiting additional information',
     },
     {
       id: 'approved',
       label: 'Approved',
       icon: CheckCircle,
       color: 'green',
-      description: 'Verification completed successfully'
+      description: 'Verification completed successfully',
     },
     {
       id: 'rejected',
       label: 'Rejected',
       icon: XCircle,
       color: 'red',
-      description: 'Verification rejected'
-    }
+      description: 'Verification rejected',
+    },
   ];
 
   // Filter options
@@ -90,7 +90,7 @@ const VerificationPipeline = ({
     { value: 'vendor', label: 'Vendors Only' },
     { value: 'restaurant', label: 'Restaurants Only' },
     { value: 'urgent', label: 'Urgent (7+ days)' },
-    { value: 'pending_info', label: 'Needs Information' }
+    { value: 'pending_info', label: 'Needs Information' },
   ];
 
   // Sort options
@@ -98,7 +98,7 @@ const VerificationPipeline = ({
     { value: 'urgency', label: 'By Urgency' },
     { value: 'date', label: 'By Date' },
     { value: 'type', label: 'By Type' },
-    { value: 'stage', label: 'By Stage' }
+    { value: 'stage', label: 'By Stage' },
   ];
 
   // Filter and sort verification items
@@ -108,19 +108,21 @@ const VerificationPipeline = ({
     // Apply filters
     switch (filterType) {
       case 'vendor':
-        filtered = filtered.filter(item => item.type === 'vendor');
+        filtered = filtered.filter((item) => item.type === 'vendor');
         break;
       case 'restaurant':
-        filtered = filtered.filter(item => item.type === 'restaurant');
+        filtered = filtered.filter((item) => item.type === 'restaurant');
         break;
       case 'urgent':
-        filtered = filtered.filter(item => {
-          const urgency = dashboardService.calculateVerificationUrgency(item.createdAt);
+        filtered = filtered.filter((item) => {
+          const urgency = dashboardService.calculateVerificationUrgency(
+            item.createdAt
+          );
           return urgency === 'critical' || urgency === 'high';
         });
         break;
       case 'pending_info':
-        filtered = filtered.filter(item => item.stage === 'pending_info');
+        filtered = filtered.filter((item) => item.stage === 'pending_info');
         break;
       default:
         break;
@@ -130,21 +132,31 @@ const VerificationPipeline = ({
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'urgency':
-          const urgencyA = dashboardService.calculateVerificationUrgency(a.createdAt);
-          const urgencyB = dashboardService.calculateVerificationUrgency(b.createdAt);
+          const urgencyA = dashboardService.calculateVerificationUrgency(
+            a.createdAt
+          );
+          const urgencyB = dashboardService.calculateVerificationUrgency(
+            b.createdAt
+          );
           const urgencyOrder = { critical: 4, high: 3, medium: 2, normal: 1 };
           return (urgencyOrder[urgencyB] || 0) - (urgencyOrder[urgencyA] || 0);
-        
+
         case 'date':
           return new Date(b.createdAt) - new Date(a.createdAt);
-        
+
         case 'type':
           return a.type.localeCompare(b.type);
-        
+
         case 'stage':
-          const stageOrder = { submitted: 1, under_review: 2, pending_info: 3, approved: 4, rejected: 5 };
+          const stageOrder = {
+            submitted: 1,
+            under_review: 2,
+            pending_info: 3,
+            approved: 4,
+            rejected: 5,
+          };
           return (stageOrder[a.stage] || 0) - (stageOrder[b.stage] || 0);
-        
+
         default:
           return 0;
       }
@@ -164,35 +176,38 @@ const VerificationPipeline = ({
       critical: {
         bg: isDarkMode ? 'bg-tomato-red/20' : 'bg-tomato-red/10',
         text: 'text-tomato-red',
-        border: 'border-tomato-red/30'
+        border: 'border-tomato-red/30',
       },
       high: {
         bg: isDarkMode ? 'bg-earthy-yellow/20' : 'bg-earthy-yellow/10',
         text: isDarkMode ? 'text-earthy-yellow' : 'text-earthy-brown',
-        border: 'border-earthy-yellow/30'
+        border: 'border-earthy-yellow/30',
       },
       medium: {
         bg: isDarkMode ? 'bg-blue-500/20' : 'bg-blue-100',
         text: isDarkMode ? 'text-blue-400' : 'text-blue-600',
-        border: 'border-blue-500/30'
+        border: 'border-blue-500/30',
       },
       normal: {
         bg: isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10',
         text: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
-        border: 'border-sage-green/30'
-      }
+        border: 'border-sage-green/30',
+      },
     };
     return schemes[urgency] || schemes.normal;
   };
 
   // Get stage configuration
   const getStageConfig = (stageId) => {
-    return verificationStages.find(stage => stage.id === stageId) || verificationStages[0];
+    return (
+      verificationStages.find((stage) => stage.id === stageId) ||
+      verificationStages[0]
+    );
   };
 
   // Handle item selection
   const handleItemSelect = useCallback((itemId, selected) => {
-    setSelectedItems(prev => {
+    setSelectedItems((prev) => {
       const newSet = new Set(prev);
       if (selected) {
         newSet.add(itemId);
@@ -205,29 +220,38 @@ const VerificationPipeline = ({
   }, []);
 
   // Handle select all
-  const handleSelectAll = useCallback((selectAll) => {
-    if (selectAll) {
-      const allIds = new Set(filteredAndSortedItems.map(item => item.id));
-      setSelectedItems(allIds);
-      setShowBatchActions(true);
-    } else {
-      setSelectedItems(new Set());
-      setShowBatchActions(false);
-    }
-  }, [filteredAndSortedItems]);
+  const handleSelectAll = useCallback(
+    (selectAll) => {
+      if (selectAll) {
+        const allIds = new Set(filteredAndSortedItems.map((item) => item.id));
+        setSelectedItems(allIds);
+        setShowBatchActions(true);
+      } else {
+        setSelectedItems(new Set());
+        setShowBatchActions(false);
+      }
+    },
+    [filteredAndSortedItems]
+  );
 
   // Handle individual verification action
-  const handleVerificationAction = useCallback((item, action) => {
-    onVerificationAction?.(item, action);
-  }, [onVerificationAction]);
+  const handleVerificationAction = useCallback(
+    (item, action) => {
+      onVerificationAction?.(item, action);
+    },
+    [onVerificationAction]
+  );
 
   // Handle batch action
-  const handleBatchAction = useCallback((action) => {
-    const selectedItemsArray = Array.from(selectedItems);
-    onBatchAction?.(selectedItemsArray, action);
-    setSelectedItems(new Set());
-    setShowBatchActions(false);
-  }, [selectedItems, onBatchAction]);
+  const handleBatchAction = useCallback(
+    (action) => {
+      const selectedItemsArray = Array.from(selectedItems);
+      onBatchAction?.(selectedItemsArray, action);
+      setSelectedItems(new Set());
+      setShowBatchActions(false);
+    },
+    [selectedItems, onBatchAction]
+  );
 
   // Render verification item
   const renderVerificationItem = (item, index) => {
@@ -237,7 +261,9 @@ const VerificationPipeline = ({
     const StageIcon = stageConfig.icon;
     const TypeIcon = item.type === 'vendor' ? Store : Building2;
     const isSelected = selectedItems.has(item.id);
-    const timeAgo = formatDistanceToNow(new Date(item.createdAt), { addSuffix: true });
+    const timeAgo = formatDistanceToNow(new Date(item.createdAt), {
+      addSuffix: true,
+    });
 
     return (
       <motion.div
@@ -247,9 +273,14 @@ const VerificationPipeline = ({
         transition={{ delay: index * 0.05 }}
         className={`
           relative p-4 rounded-2xl border transition-all duration-200 cursor-pointer
-          ${isSelected 
-            ? (isDarkMode ? 'bg-sage-green/10 border-sage-green/30' : 'bg-sage-green/5 border-sage-green/20')
-            : (isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200')
+          ${
+            isSelected
+              ? isDarkMode
+                ? 'bg-sage-green/10 border-sage-green/30'
+                : 'bg-sage-green/5 border-sage-green/20'
+              : isDarkMode
+                ? 'bg-gray-800/50 border-gray-700'
+                : 'bg-white border-gray-200'
           }
           hover:shadow-lg hover:shadow-sage-green/10 hover:-translate-y-1
           ${urgency === 'critical' ? 'ring-2 ring-tomato-red/20' : ''}
@@ -272,11 +303,13 @@ const VerificationPipeline = ({
         {/* Urgency Badge */}
         {urgency !== 'normal' && (
           <div className="absolute top-3 right-3">
-            <div className={`
+            <div
+              className={`
               px-2 py-1 rounded-lg text-xs font-medium border
               ${urgencyScheme.bg} ${urgencyScheme.text} ${urgencyScheme.border}
               ${urgency === 'critical' ? 'animate-pulse' : ''}
-            `}>
+            `}
+            >
               {urgency}
             </div>
           </div>
@@ -284,54 +317,76 @@ const VerificationPipeline = ({
 
         <div className="flex items-start gap-4 ml-6">
           {/* Business Type Icon */}
-          <div className={`
+          <div
+            className={`
             flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center
-            ${item.type === 'vendor' 
-              ? (isDarkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600')
-              : (isDarkMode ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-600')
+            ${
+              item.type === 'vendor'
+                ? isDarkMode
+                  ? 'bg-blue-500/20 text-blue-400'
+                  : 'bg-blue-100 text-blue-600'
+                : isDarkMode
+                  ? 'bg-purple-500/20 text-purple-400'
+                  : 'bg-purple-100 text-purple-600'
             }
-          `}>
+          `}
+          >
             <TypeIcon className="w-6 h-6" />
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
-              <h4 className={`font-semibold truncate ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+              <h4
+                className={`font-semibold truncate ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+              >
                 {item.businessName || item.name}
               </h4>
-              <span className={`
+              <span
+                className={`
                 text-xs px-2 py-0.5 rounded-full font-medium
-                ${item.type === 'vendor' 
-                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' 
-                  : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                ${
+                  item.type === 'vendor'
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
                 }
-              `}>
+              `}
+              >
                 {item.type}
               </span>
             </div>
 
-            <p className={`text-sm mb-2 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'} line-clamp-2`}>
+            <p
+              className={`text-sm mb-2 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'} line-clamp-2`}
+            >
               {item.description || `${item.type} verification pending review`}
             </p>
 
             {/* Metadata */}
             <div className="flex items-center gap-4 text-xs">
               <div className="flex items-center gap-1">
-                <Calendar className={`w-3 h-3 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                <Calendar
+                  className={`w-3 h-3 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
+                />
+                <span
+                  className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}
+                >
                   {timeAgo}
                 </span>
               </div>
 
               {item.location && (
-                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                <span
+                  className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}
+                >
                   📍 {item.location}
                 </span>
               )}
 
               {item.contactEmail && (
-                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                <span
+                  className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}
+                >
                   📧 {item.contactEmail}
                 </span>
               )}
@@ -341,17 +396,26 @@ const VerificationPipeline = ({
           {/* Stage and Actions */}
           <div className="flex-shrink-0 flex items-center gap-2">
             {/* Current Stage */}
-            <div className={`
+            <div
+              className={`
               flex items-center gap-2 px-3 py-1 rounded-xl text-xs font-medium
-              ${stageConfig.color === 'green' 
-                ? (isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive')
-                : stageConfig.color === 'red'
-                ? 'bg-tomato-red/20 text-tomato-red'
-                : stageConfig.color === 'amber'
-                ? (isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown')
-                : (isDarkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600')
+              ${
+                stageConfig.color === 'green'
+                  ? isDarkMode
+                    ? 'bg-sage-green/20 text-sage-green'
+                    : 'bg-sage-green/10 text-muted-olive'
+                  : stageConfig.color === 'red'
+                    ? 'bg-tomato-red/20 text-tomato-red'
+                    : stageConfig.color === 'amber'
+                      ? isDarkMode
+                        ? 'bg-earthy-yellow/20 text-earthy-yellow'
+                        : 'bg-earthy-yellow/10 text-earthy-brown'
+                      : isDarkMode
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : 'bg-blue-100 text-blue-600'
               }
-            `}>
+            `}
+            >
               <StageIcon className="w-3 h-3" />
               {stageConfig.label}
             </div>
@@ -402,26 +466,39 @@ const VerificationPipeline = ({
         {/* Progress Indicator */}
         <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-2">
-            <span className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+            <span
+              className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+            >
               Verification Progress
             </span>
-            <span className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
-              {Math.round(((verificationStages.findIndex(s => s.id === item.stage) + 1) / verificationStages.length) * 100)}%
+            <span
+              className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+            >
+              {Math.round(
+                ((verificationStages.findIndex((s) => s.id === item.stage) +
+                  1) /
+                  verificationStages.length) *
+                  100
+              )}
+              %
             </span>
           </div>
-          
+
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ 
-                width: `${((verificationStages.findIndex(s => s.id === item.stage) + 1) / verificationStages.length) * 100}%` 
+              animate={{
+                width: `${((verificationStages.findIndex((s) => s.id === item.stage) + 1) / verificationStages.length) * 100}%`,
               }}
               transition={{ duration: 1, delay: index * 0.1 }}
               className={`h-full rounded-full ${
-                stageConfig.color === 'green' ? 'bg-sage-green' :
-                stageConfig.color === 'red' ? 'bg-tomato-red' :
-                stageConfig.color === 'amber' ? 'bg-earthy-yellow' :
-                'bg-blue-500'
+                stageConfig.color === 'green'
+                  ? 'bg-sage-green'
+                  : stageConfig.color === 'red'
+                    ? 'bg-tomato-red'
+                    : stageConfig.color === 'amber'
+                      ? 'bg-earthy-yellow'
+                      : 'bg-blue-500'
               }`}
             />
           </div>
@@ -436,14 +513,20 @@ const VerificationPipeline = ({
       <div className="p-6 pb-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <Timer className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <Timer
+              className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+            />
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Verification Pipeline
             </h3>
-            <span className={`
+            <span
+              className={`
               px-3 py-1 rounded-full text-sm font-medium
               ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}
-            `}>
+            `}
+            >
               {filteredAndSortedItems.length} items
             </span>
           </div>
@@ -456,11 +539,16 @@ const VerificationPipeline = ({
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                checked={selectedItems.size === filteredAndSortedItems.length && filteredAndSortedItems.length > 0}
+                checked={
+                  selectedItems.size === filteredAndSortedItems.length &&
+                  filteredAndSortedItems.length > 0
+                }
                 onChange={(e) => handleSelectAll(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-sage-green focus:ring-sage-green/20"
               />
-              <span className={`text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+              <span
+                className={`text-sm font-medium ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+              >
                 Select All
               </span>
             </label>
@@ -471,13 +559,14 @@ const VerificationPipeline = ({
               onChange={(e) => setFilterType(e.target.value)}
               className={`
                 px-3 py-1 rounded-xl border text-sm
-                ${isDarkMode 
-                  ? 'bg-gray-800 border-gray-700 text-white' 
-                  : 'bg-white border-gray-200 text-gray-900'
+                ${
+                  isDarkMode
+                    ? 'bg-gray-800 border-gray-700 text-white'
+                    : 'bg-white border-gray-200 text-gray-900'
                 }
               `}
             >
-              {filterOptions.map(option => (
+              {filterOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -490,13 +579,14 @@ const VerificationPipeline = ({
               onChange={(e) => setSortBy(e.target.value)}
               className={`
                 px-3 py-1 rounded-xl border text-sm
-                ${isDarkMode 
-                  ? 'bg-gray-800 border-gray-700 text-white' 
-                  : 'bg-white border-gray-200 text-gray-900'
+                ${
+                  isDarkMode
+                    ? 'bg-gray-800 border-gray-700 text-white'
+                    : 'bg-white border-gray-200 text-gray-900'
                 }
               `}
             >
-              {sortOptions.map(option => (
+              {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -542,16 +632,21 @@ const VerificationPipeline = ({
           <AnimatePresence mode="popLayout">
             {filteredAndSortedItems.length === 0 ? (
               <div className="text-center py-12">
-                <Users className={`w-12 h-12 mx-auto mb-4 opacity-40 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {filterType !== 'all' 
-                    ? 'No items match your current filter' 
-                    : 'No verification items in the queue'
-                  }
+                <Users
+                  className={`w-12 h-12 mx-auto mb-4 opacity-40 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                />
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                >
+                  {filterType !== 'all'
+                    ? 'No items match your current filter'
+                    : 'No verification items in the queue'}
                 </p>
               </div>
             ) : (
-              filteredAndSortedItems.map((item, index) => renderVerificationItem(item, index))
+              filteredAndSortedItems.map((item, index) =>
+                renderVerificationItem(item, index)
+              )
             )}
           </AnimatePresence>
         </div>

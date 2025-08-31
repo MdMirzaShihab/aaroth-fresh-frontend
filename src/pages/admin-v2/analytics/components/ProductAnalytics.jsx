@@ -32,27 +32,32 @@ import {
   Minus,
   Leaf,
 } from 'lucide-react';
-import { useTheme } from '../../../../hooks/useTheme';
-import { Card, Button } from '../../../../components/ui';
-import { LineChart, BarChart, PieChart, DoughnutChart } from '../../../../components/ui/charts/ChartJS';
 import { format, subDays } from 'date-fns';
 import toast from 'react-hot-toast';
+import { useTheme } from '../../../../hooks/useTheme';
+import { Card, Button } from '../../../../components/ui';
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  DoughnutChart,
+} from '../../../../components/ui/charts/ChartJS';
 
 // Product metric card component
-const ProductMetricCard = ({ 
-  title, 
-  value, 
-  change, 
-  trend, 
-  icon: Icon, 
+const ProductMetricCard = ({
+  title,
+  value,
+  change,
+  trend,
+  icon: Icon,
   color = 'sage-green',
   subtitle,
   onClick,
   isLoading = false,
-  status 
+  status,
 }) => {
   const { isDarkMode } = useTheme();
-  
+
   const getTrendIcon = () => {
     if (trend === 'up') return ArrowUpRight;
     if (trend === 'down') return ArrowDownRight;
@@ -60,7 +65,8 @@ const ProductMetricCard = ({
   };
 
   const getTrendColor = () => {
-    if (trend === 'up') return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
+    if (trend === 'up')
+      return isDarkMode ? 'text-sage-green' : 'text-muted-olive';
     if (trend === 'down') return 'text-tomato-red';
     return isDarkMode ? 'text-gray-400' : 'text-text-muted';
   };
@@ -80,13 +86,15 @@ const ProductMetricCard = ({
       `}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`
+        <div
+          className={`
           w-10 h-10 rounded-xl flex items-center justify-center
           ${isDarkMode ? `bg-${color}/20` : `bg-${color}/10`}
-        `}>
+        `}
+        >
           <Icon className={`w-5 h-5 text-${color}`} />
         </div>
-        
+
         {change !== undefined && (
           <div className={`flex items-center gap-1 ${getTrendColor()}`}>
             <TrendIcon className="w-3 h-3" />
@@ -94,7 +102,7 @@ const ProductMetricCard = ({
           </div>
         )}
       </div>
-      
+
       <div className="space-y-1">
         {isLoading ? (
           <div className="animate-pulse">
@@ -103,27 +111,40 @@ const ProductMetricCard = ({
           </div>
         ) : (
           <>
-            <p className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <p
+              className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               {value}
             </p>
-            <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+            <p
+              className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
               {title}
             </p>
             {subtitle && (
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-text-muted/80'}`}
+              >
                 {subtitle}
               </p>
             )}
             {status && (
-              <div className={`
+              <div
+                className={`
                 inline-flex px-2 py-1 rounded text-xs font-medium
-                ${status === 'healthy' 
-                  ? isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-muted-olive'
-                  : status === 'warning'
-                    ? isDarkMode ? 'bg-earthy-yellow/20 text-earthy-yellow' : 'bg-earthy-yellow/10 text-earthy-brown'
-                    : 'bg-tomato-red/10 text-tomato-red'
+                ${
+                  status === 'healthy'
+                    ? isDarkMode
+                      ? 'bg-sage-green/20 text-sage-green'
+                      : 'bg-sage-green/10 text-muted-olive'
+                    : status === 'warning'
+                      ? isDarkMode
+                        ? 'bg-earthy-yellow/20 text-earthy-yellow'
+                        : 'bg-earthy-yellow/10 text-earthy-brown'
+                      : 'bg-tomato-red/10 text-tomato-red'
                 }
-              `}>
+              `}
+              >
                 {status}
               </div>
             )}
@@ -139,9 +160,15 @@ const TopProductItem = ({ product, rank, metric = 'revenue' }) => {
   const { isDarkMode } = useTheme();
 
   const getRankBadgeColor = (rank) => {
-    if (rank <= 3) return 'bg-gradient-to-r from-earthy-yellow to-earthy-yellow/80 text-white';
-    if (rank <= 5) return isDarkMode ? 'bg-sage-green/20 text-sage-green' : 'bg-sage-green/10 text-sage-green';
-    return isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-text-muted';
+    if (rank <= 3)
+      return 'bg-gradient-to-r from-earthy-yellow to-earthy-yellow/80 text-white';
+    if (rank <= 5)
+      return isDarkMode
+        ? 'bg-sage-green/20 text-sage-green'
+        : 'bg-sage-green/10 text-sage-green';
+    return isDarkMode
+      ? 'bg-gray-700 text-gray-300'
+      : 'bg-gray-100 text-text-muted';
   };
 
   const getMetricValue = () => {
@@ -167,31 +194,43 @@ const TopProductItem = ({ product, rank, metric = 'revenue' }) => {
         ${isDarkMode ? 'bg-gray-700/30 hover:bg-gray-700/50' : 'bg-gray-50 hover:bg-gray-100'}
       `}
     >
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${getRankBadgeColor(rank)}`}>
+      <div
+        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${getRankBadgeColor(rank)}`}
+      >
         #{rank}
       </div>
-      
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
-                      flex items-center justify-center shadow-lg">
+
+      <div
+        className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
+                      flex items-center justify-center shadow-lg"
+      >
         <Leaf className="w-5 h-5 text-white" />
       </div>
-      
+
       <div className="flex-1 min-w-0">
-        <h4 className={`font-medium truncate ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+        <h4
+          className={`font-medium truncate ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+        >
           {product.name}
         </h4>
-        <p className={`text-sm truncate ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+        <p
+          className={`text-sm truncate ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+        >
           {product.category} • {product.vendor}
         </p>
       </div>
-      
+
       <div className="text-right">
-        <p className={`font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+        <p
+          className={`font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+        >
           {getMetricValue()}
         </p>
         <div className="flex items-center gap-1">
           <Star className="w-3 h-3 text-earthy-yellow" />
-          <span className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+          <span
+            className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+          >
             {product.rating.toFixed(1)}
           </span>
         </div>
@@ -200,11 +239,11 @@ const TopProductItem = ({ product, rank, metric = 'revenue' }) => {
   );
 };
 
-const ProductAnalytics = ({ 
-  data = {}, 
-  isLoading = false, 
+const ProductAnalytics = ({
+  data = {},
+  isLoading = false,
   timeRange = '30d',
-  onTimeRangeChange 
+  onTimeRangeChange,
 }) => {
   const { isDarkMode } = useTheme();
   const [chartView, setChartView] = useState('performance'); // performance, inventory, categories
@@ -229,112 +268,118 @@ const ProductAnalytics = ({
   }, [data]);
 
   // Category performance data
-  const categoryData = useMemo(() => [
-    { 
-      name: 'Vegetables', 
-      products: 1247, 
-      revenue: 34580, 
-      orders: 3421, 
-      avgRating: 4.4,
-      growth: 18.5,
-      color: '#10B981' 
-    },
-    { 
-      name: 'Fruits', 
-      products: 823, 
-      revenue: 28940, 
-      orders: 2847, 
-      avgRating: 4.2,
-      growth: 15.2,
-      color: '#F59E0B' 
-    },
-    { 
-      name: 'Herbs & Spices', 
-      products: 456, 
-      revenue: 15680, 
-      orders: 1892, 
-      avgRating: 4.6,
-      growth: 22.8,
-      color: '#8B5CF6' 
-    },
-    { 
-      name: 'Grains & Pulses', 
-      products: 234, 
-      revenue: 8920, 
-      orders: 967, 
-      avgRating: 4.1,
-      growth: 8.7,
-      color: '#F97316' 
-    },
-    { 
-      name: 'Dairy', 
-      products: 87, 
-      revenue: 3300, 
-      orders: 423, 
-      avgRating: 4.5,
-      growth: 12.3,
-      color: '#EC4899' 
-    },
-  ], []);
+  const categoryData = useMemo(
+    () => [
+      {
+        name: 'Vegetables',
+        products: 1247,
+        revenue: 34580,
+        orders: 3421,
+        avgRating: 4.4,
+        growth: 18.5,
+        color: '#10B981',
+      },
+      {
+        name: 'Fruits',
+        products: 823,
+        revenue: 28940,
+        orders: 2847,
+        avgRating: 4.2,
+        growth: 15.2,
+        color: '#F59E0B',
+      },
+      {
+        name: 'Herbs & Spices',
+        products: 456,
+        revenue: 15680,
+        orders: 1892,
+        avgRating: 4.6,
+        growth: 22.8,
+        color: '#8B5CF6',
+      },
+      {
+        name: 'Grains & Pulses',
+        products: 234,
+        revenue: 8920,
+        orders: 967,
+        avgRating: 4.1,
+        growth: 8.7,
+        color: '#F97316',
+      },
+      {
+        name: 'Dairy',
+        products: 87,
+        revenue: 3300,
+        orders: 423,
+        avgRating: 4.5,
+        growth: 12.3,
+        color: '#EC4899',
+      },
+    ],
+    []
+  );
 
   // Top performing products data
-  const topProducts = useMemo(() => [
-    {
-      id: 1,
-      name: 'Organic Spinach Bundle',
-      category: 'Vegetables',
-      vendor: 'Green Valley Farms',
-      revenue: 5420,
-      orders: 342,
-      views: 2847,
-      rating: 4.8,
-      stock: 156,
-    },
-    {
-      id: 2,
-      name: 'Fresh Tomato Mix',
-      category: 'Vegetables', 
-      vendor: 'Sunset Gardens',
-      revenue: 4890,
-      orders: 298,
-      views: 3124,
-      rating: 4.6,
-      stock: 89,
-    },
-    {
-      id: 3,
-      name: 'Premium Herb Collection',
-      category: 'Herbs & Spices',
-      vendor: 'Aromatic Fields',
-      revenue: 4320,
-      orders: 187,
-      views: 1956,
-      rating: 4.9,
-      stock: 234,
-    },
-    {
-      id: 4,
-      name: 'Seasonal Fruit Basket',
-      category: 'Fruits',
-      vendor: 'Orchard Fresh',
-      revenue: 3760,
-      orders: 165,
-      views: 2103,
-      rating: 4.4,
-      stock: 67,
-    },
-    {
-      id: 5,
-      name: 'Artisan Grain Selection',
-      category: 'Grains & Pulses',
-      vendor: 'Heritage Mills',
-      revenue: 3240,
-      orders: 143,
-      views: 1784,
-      rating: 4.3,
-      stock: 198,
-    },
-  ], []);
+  const topProducts = useMemo(
+    () => [
+      {
+        id: 1,
+        name: 'Organic Spinach Bundle',
+        category: 'Vegetables',
+        vendor: 'Green Valley Farms',
+        revenue: 5420,
+        orders: 342,
+        views: 2847,
+        rating: 4.8,
+        stock: 156,
+      },
+      {
+        id: 2,
+        name: 'Fresh Tomato Mix',
+        category: 'Vegetables',
+        vendor: 'Sunset Gardens',
+        revenue: 4890,
+        orders: 298,
+        views: 3124,
+        rating: 4.6,
+        stock: 89,
+      },
+      {
+        id: 3,
+        name: 'Premium Herb Collection',
+        category: 'Herbs & Spices',
+        vendor: 'Aromatic Fields',
+        revenue: 4320,
+        orders: 187,
+        views: 1956,
+        rating: 4.9,
+        stock: 234,
+      },
+      {
+        id: 4,
+        name: 'Seasonal Fruit Basket',
+        category: 'Fruits',
+        vendor: 'Orchard Fresh',
+        revenue: 3760,
+        orders: 165,
+        views: 2103,
+        rating: 4.4,
+        stock: 67,
+      },
+      {
+        id: 5,
+        name: 'Artisan Grain Selection',
+        category: 'Grains & Pulses',
+        vendor: 'Heritage Mills',
+        revenue: 3240,
+        orders: 143,
+        views: 1784,
+        rating: 4.3,
+        stock: 198,
+      },
+    ],
+    []
+  );
 
   // Product performance over time
   const productPerformanceData = useMemo(() => {
@@ -354,27 +399,30 @@ const ProductAnalytics = ({
       return result;
     };
 
-    return data.productPerformance || generateData(timeRange === '7d' ? 7 : timeRange === '90d' ? 90 : 30);
+    return (
+      data.productPerformance ||
+      generateData(timeRange === '7d' ? 7 : timeRange === '90d' ? 90 : 30)
+    );
   }, [data, timeRange]);
 
   // Chart data based on view
   const chartData = useMemo(() => {
-    const labels = productPerformanceData.map(item => item.date);
-    
+    const labels = productPerformanceData.map((item) => item.date);
+
     if (chartView === 'performance') {
       return {
         labels,
         datasets: [
           {
             label: 'Product Views',
-            data: productPerformanceData.map(item => item.productViews),
+            data: productPerformanceData.map((item) => item.productViews),
             color: '#10B981',
             borderColor: '#10B981',
             backgroundColor: '#10B98120',
           },
           {
             label: 'Orders',
-            data: productPerformanceData.map(item => item.orders),
+            data: productPerformanceData.map((item) => item.orders),
             color: '#3B82F6',
             borderColor: '#3B82F6',
             backgroundColor: '#3B82F620',
@@ -382,47 +430,67 @@ const ProductAnalytics = ({
         ],
       };
     }
-    
+
     if (chartView === 'inventory') {
       return {
         labels,
         datasets: [
           {
             label: 'New Products',
-            data: productPerformanceData.map(item => item.newProducts),
+            data: productPerformanceData.map((item) => item.newProducts),
             color: '#10B981',
           },
           {
             label: 'Out of Stock',
-            data: productPerformanceData.map(item => item.outOfStock),
+            data: productPerformanceData.map((item) => item.outOfStock),
             color: '#EF4444',
           },
         ],
       };
     }
-    
+
     // Categories view - pie chart data
     return categoryData;
   }, [productPerformanceData, categoryData, chartView]);
 
   // Inventory status data
-  const inventoryStatus = useMemo(() => [
-    { label: 'In Stock', value: productMetrics.activeProducts, color: '#10B981' },
-    { label: 'Low Stock', value: productMetrics.lowStock, color: '#F59E0B' },
-    { label: 'Out of Stock', value: productMetrics.outOfStock, color: '#EF4444' },
-  ], [productMetrics]);
+  const inventoryStatus = useMemo(
+    () => [
+      {
+        label: 'In Stock',
+        value: productMetrics.activeProducts,
+        color: '#10B981',
+      },
+      { label: 'Low Stock', value: productMetrics.lowStock, color: '#F59E0B' },
+      {
+        label: 'Out of Stock',
+        value: productMetrics.outOfStock,
+        color: '#EF4444',
+      },
+    ],
+    [productMetrics]
+  );
 
   // Handle chart interactions
   const handleChartClick = useCallback((dataPoint, context) => {
     const { label, value, datasetLabel } = dataPoint;
-    toast.success(`Analyzing ${datasetLabel}: ${label} (${typeof value === 'number' ? value.toLocaleString() : value})`);
+    toast.success(
+      `Analyzing ${datasetLabel}: ${label} (${typeof value === 'number' ? value.toLocaleString() : value})`
+    );
   }, []);
 
   // Handle category selection
-  const handleCategoryClick = useCallback((category) => {
-    setSelectedCategory(selectedCategory?.name === category.name ? null : category);
-    toast.success(`${selectedCategory?.name === category.name ? 'Deselected' : 'Selected'} ${category.name} category`);
-  }, [selectedCategory]);
+  const handleCategoryClick = useCallback(
+    (category) => {
+      setSelectedCategory(
+        selectedCategory?.name === category.name ? null : category
+      );
+      toast.success(
+        `${selectedCategory?.name === category.name ? 'Deselected' : 'Selected'} ${category.name} category`
+      );
+    },
+    [selectedCategory]
+  );
 
   // Handle export
   const handleExport = useCallback(() => {
@@ -435,11 +503,20 @@ const ProductAnalytics = ({
       exportDate: new Date().toISOString(),
       timeRange,
     };
-    
+
     // Generate CSV
     const csvData = [
-      ['Product', 'Category', 'Vendor', 'Revenue', 'Orders', 'Views', 'Rating', 'Stock'],
-      ...topProducts.map(product => [
+      [
+        'Product',
+        'Category',
+        'Vendor',
+        'Revenue',
+        'Orders',
+        'Views',
+        'Rating',
+        'Stock',
+      ],
+      ...topProducts.map((product) => [
         product.name,
         product.category,
         product.vendor,
@@ -448,47 +525,61 @@ const ProductAnalytics = ({
         product.views,
         product.rating,
         product.stock,
-      ])
+      ]),
     ];
-    
+
     toast.success('Product analytics export started');
-  }, [productMetrics, categoryData, topProducts, productPerformanceData, inventoryStatus, timeRange]);
+  }, [
+    productMetrics,
+    categoryData,
+    topProducts,
+    productPerformanceData,
+    inventoryStatus,
+    timeRange,
+  ]);
 
   return (
     <div className="space-y-6">
       {/* Product Analytics Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+          <h2
+            className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             Product Analytics
           </h2>
-          <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+          <p
+            className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+          >
             Product performance, inventory insights, and category analytics
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Chart View Toggle */}
-          <div className={`flex items-center gap-1 p-1 rounded-lg ${
-            isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
-          }`}>
+          <div
+            className={`flex items-center gap-1 p-1 rounded-lg ${
+              isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+            }`}
+          >
             {[
               { id: 'performance', label: 'Performance', icon: TrendingUp },
               { id: 'inventory', label: 'Inventory', icon: Package },
               { id: 'categories', label: 'Categories', icon: Tags },
-            ].map(view => (
+            ].map((view) => (
               <button
                 key={view.id}
                 onClick={() => setChartView(view.id)}
                 className={`
                   flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
-                  ${chartView === view.id
-                    ? isDarkMode 
-                      ? 'bg-sage-green/20 text-sage-green'
-                      : 'bg-white text-muted-olive shadow-sm'
-                    : isDarkMode
-                      ? 'text-gray-400 hover:text-gray-300'
-                      : 'text-text-muted hover:text-text-dark'
+                  ${
+                    chartView === view.id
+                      ? isDarkMode
+                        ? 'bg-sage-green/20 text-sage-green'
+                        : 'bg-white text-muted-olive shadow-sm'
+                      : isDarkMode
+                        ? 'text-gray-400 hover:text-gray-300'
+                        : 'text-text-muted hover:text-text-dark'
                   }
                 `}
               >
@@ -569,13 +660,26 @@ const ProductAnalytics = ({
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
-              Product {chartView === 'performance' ? 'Performance' : chartView === 'inventory' ? 'Inventory' : 'Category'} Analytics
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
+              Product{' '}
+              {chartView === 'performance'
+                ? 'Performance'
+                : chartView === 'inventory'
+                  ? 'Inventory'
+                  : 'Category'}{' '}
+              Analytics
             </h3>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              {chartView === 'performance' && 'Views, orders, and engagement over time'}
-              {chartView === 'inventory' && 'Stock levels and product additions tracking'}
-              {chartView === 'categories' && 'Revenue distribution across product categories'}
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              {chartView === 'performance' &&
+                'Views, orders, and engagement over time'}
+              {chartView === 'inventory' &&
+                'Stock levels and product additions tracking'}
+              {chartView === 'categories' &&
+                'Revenue distribution across product categories'}
             </p>
           </div>
 
@@ -588,7 +692,7 @@ const ProductAnalytics = ({
         <div className="h-80">
           {chartView === 'categories' ? (
             <PieChart
-              data={chartData.map(cat => ({
+              data={chartData.map((cat) => ({
                 label: cat.name,
                 value: cat.revenue,
                 color: cat.color,
@@ -596,7 +700,9 @@ const ProductAnalytics = ({
               height={320}
               showLegend={false}
               onSegmentClick={(segment) => {
-                const category = categoryData.find(cat => cat.name === segment.label);
+                const category = categoryData.find(
+                  (cat) => cat.name === segment.label
+                );
                 if (category) {
                   handleCategoryClick(category);
                 }
@@ -607,7 +713,7 @@ const ProductAnalytics = ({
               data={chartData}
               height={320}
               fillArea={chartView === 'performance'}
-              enableDrillDown={true}
+              enableDrillDown
               onDataPointClick={handleChartClick}
               formatTooltip={(context) => {
                 const value = context.parsed.y;
@@ -628,9 +734,13 @@ const ProductAnalytics = ({
       {/* Product Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Performing Products */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Top Performing Products
             </h3>
             <select
@@ -638,9 +748,10 @@ const ProductAnalytics = ({
               onChange={(e) => setTopProductsMetric(e.target.value)}
               className={`
                 px-3 py-2 rounded-lg text-sm border
-                ${isDarkMode
-                  ? 'bg-gray-700 border-gray-600 text-white'
-                  : 'bg-white border-gray-200 text-gray-900'
+                ${
+                  isDarkMode
+                    ? 'bg-gray-700 border-gray-600 text-white'
+                    : 'bg-white border-gray-200 text-gray-900'
                 }
               `}
             >
@@ -649,11 +760,12 @@ const ProductAnalytics = ({
               <option value="views">By Views</option>
             </select>
           </div>
-          
+
           <div className="space-y-3">
             {topProducts
               .sort((a, b) => {
-                if (topProductsMetric === 'revenue') return b.revenue - a.revenue;
+                if (topProductsMetric === 'revenue')
+                  return b.revenue - a.revenue;
                 if (topProductsMetric === 'orders') return b.orders - a.orders;
                 return b.views - a.views;
               })
@@ -669,16 +781,20 @@ const ProductAnalytics = ({
         </Card>
 
         {/* Inventory Status */}
-        <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+        <Card
+          className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+            >
               Inventory Status
             </h3>
             <Button variant="outline" size="sm">
               <AlertCircle className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="h-48 mb-4">
             <DoughnutChart
               data={inventoryStatus}
@@ -689,59 +805,105 @@ const ProductAnalytics = ({
               }}
               centerContent={(centerData) => (
                 <div className="text-center">
-                  <p className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                  <p
+                    className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                  >
                     {centerData.total.toLocaleString()}
                   </p>
-                  <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     Products
                   </p>
                 </div>
               )}
             />
           </div>
-          
+
           {/* Inventory Alerts */}
           <div className="space-y-3">
-            <div className={`
+            <div
+              className={`
               flex items-center justify-between p-3 rounded-xl
-              ${productMetrics.lowStock > 200 
-                ? isDarkMode ? 'bg-earthy-yellow/10 border border-earthy-yellow/20' : 'bg-earthy-yellow/5 border border-earthy-yellow/20'
-                : isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+              ${
+                productMetrics.lowStock > 200
+                  ? isDarkMode
+                    ? 'bg-earthy-yellow/10 border border-earthy-yellow/20'
+                    : 'bg-earthy-yellow/5 border border-earthy-yellow/20'
+                  : isDarkMode
+                    ? 'bg-gray-700/50'
+                    : 'bg-gray-50'
               }
-            `}>
+            `}
+            >
               <div className="flex items-center gap-2">
-                <AlertCircle className={`w-4 h-4 ${
-                  productMetrics.lowStock > 200 ? 'text-earthy-yellow' : isDarkMode ? 'text-gray-400' : 'text-text-muted'
-                }`} />
-                <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                <AlertCircle
+                  className={`w-4 h-4 ${
+                    productMetrics.lowStock > 200
+                      ? 'text-earthy-yellow'
+                      : isDarkMode
+                        ? 'text-gray-400'
+                        : 'text-text-muted'
+                  }`}
+                />
+                <span
+                  className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   Low Stock Alert
                 </span>
               </div>
-              <span className={`text-sm ${
-                productMetrics.lowStock > 200 ? 'text-earthy-yellow font-semibold' : isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
+              <span
+                className={`text-sm ${
+                  productMetrics.lowStock > 200
+                    ? 'text-earthy-yellow font-semibold'
+                    : isDarkMode
+                      ? 'text-gray-300'
+                      : 'text-text-muted'
+                }`}
+              >
                 {productMetrics.lowStock} products
               </span>
             </div>
 
-            <div className={`
+            <div
+              className={`
               flex items-center justify-between p-3 rounded-xl
-              ${productMetrics.outOfStock > 100 
-                ? isDarkMode ? 'bg-tomato-red/10 border border-tomato-red/20' : 'bg-tomato-red/5 border border-tomato-red/20'
-                : isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+              ${
+                productMetrics.outOfStock > 100
+                  ? isDarkMode
+                    ? 'bg-tomato-red/10 border border-tomato-red/20'
+                    : 'bg-tomato-red/5 border border-tomato-red/20'
+                  : isDarkMode
+                    ? 'bg-gray-700/50'
+                    : 'bg-gray-50'
               }
-            `}>
+            `}
+            >
               <div className="flex items-center gap-2">
-                <Package className={`w-4 h-4 ${
-                  productMetrics.outOfStock > 100 ? 'text-tomato-red' : isDarkMode ? 'text-gray-400' : 'text-text-muted'
-                }`} />
-                <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                <Package
+                  className={`w-4 h-4 ${
+                    productMetrics.outOfStock > 100
+                      ? 'text-tomato-red'
+                      : isDarkMode
+                        ? 'text-gray-400'
+                        : 'text-text-muted'
+                  }`}
+                />
+                <span
+                  className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   Out of Stock
                 </span>
               </div>
-              <span className={`text-sm ${
-                productMetrics.outOfStock > 100 ? 'text-tomato-red font-semibold' : isDarkMode ? 'text-gray-300' : 'text-text-muted'
-              }`}>
+              <span
+                className={`text-sm ${
+                  productMetrics.outOfStock > 100
+                    ? 'text-tomato-red font-semibold'
+                    : isDarkMode
+                      ? 'text-gray-300'
+                      : 'text-text-muted'
+                }`}
+              >
                 {productMetrics.outOfStock} products
               </span>
             </div>
@@ -752,14 +914,16 @@ const ProductAnalytics = ({
       {/* Category Performance Analysis */}
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+          <h3
+            className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+          >
             Category Performance
           </h3>
           <Button variant="outline" size="sm">
             <BarChart3 className="w-4 h-4" />
           </Button>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {categoryData.map((category, index) => (
             <motion.div
@@ -770,41 +934,62 @@ const ProductAnalytics = ({
               onClick={() => handleCategoryClick(category)}
               className={`
                 p-4 rounded-xl border cursor-pointer transition-all duration-200
-                ${selectedCategory?.name === category.name
-                  ? isDarkMode ? 'border-sage-green/50 bg-sage-green/5' : 'border-muted-olive/50 bg-muted-olive/5'
-                  : isDarkMode ? 'border-gray-700 hover:border-gray-600 bg-gray-700/30' : 'border-gray-200 hover:border-gray-300 bg-gray-50'
+                ${
+                  selectedCategory?.name === category.name
+                    ? isDarkMode
+                      ? 'border-sage-green/50 bg-sage-green/5'
+                      : 'border-muted-olive/50 bg-muted-olive/5'
+                    : isDarkMode
+                      ? 'border-gray-700 hover:border-gray-600 bg-gray-700/30'
+                      : 'border-gray-200 hover:border-gray-300 bg-gray-50'
                 }
               `}
             >
               <div className="flex items-center justify-between mb-2">
-                <div 
+                <div
                   className="w-8 h-8 rounded-lg flex items-center justify-center"
                   style={{ backgroundColor: `${category.color}20` }}
                 >
                   <Tags className="w-4 h-4" style={{ color: category.color }} />
                 </div>
-                <div className={`flex items-center gap-1 ${
-                  category.growth > 0 ? 'text-sage-green' : 'text-tomato-red'
-                }`}>
-                  {category.growth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                  <span className="text-xs font-medium">{category.growth.toFixed(1)}%</span>
+                <div
+                  className={`flex items-center gap-1 ${
+                    category.growth > 0 ? 'text-sage-green' : 'text-tomato-red'
+                  }`}
+                >
+                  {category.growth > 0 ? (
+                    <ArrowUpRight className="w-3 h-3" />
+                  ) : (
+                    <ArrowDownRight className="w-3 h-3" />
+                  )}
+                  <span className="text-xs font-medium">
+                    {category.growth.toFixed(1)}%
+                  </span>
                 </div>
               </div>
-              
+
               <div className="space-y-1">
-                <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                <p
+                  className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {category.name}
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   {category.products} products
                 </p>
                 <div className="flex items-center justify-between">
-                  <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                  <p
+                    className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                  >
                     ${category.revenue.toLocaleString()}
                   </p>
                   <div className="flex items-center gap-1">
                     <Star className="w-3 h-3 text-earthy-yellow" />
-                    <span className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                    <span
+                      className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                    >
                       {category.avgRating.toFixed(1)}
                     </span>
                   </div>
@@ -822,27 +1007,38 @@ const ProductAnalytics = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
-          <Card className={`p-6 ${
-            isDarkMode ? 'bg-gray-800/50 border-sage-green/20' : 'bg-white/80 border-muted-olive/20'
-          }`}>
+          <Card
+            className={`p-6 ${
+              isDarkMode
+                ? 'bg-gray-800/50 border-sage-green/20'
+                : 'bg-white/80 border-muted-olive/20'
+            }`}
+          >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{ backgroundColor: `${selectedCategory.color}20` }}
                 >
-                  <Tags className="w-5 h-5" style={{ color: selectedCategory.color }} />
+                  <Tags
+                    className="w-5 h-5"
+                    style={{ color: selectedCategory.color }}
+                  />
                 </div>
                 <div>
-                  <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+                  <h3
+                    className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                  >
                     {selectedCategory.name} Category Analysis
                   </h3>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                  <p
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                  >
                     Detailed performance metrics and insights
                   </p>
                 </div>
               </div>
-              
+
               <Button
                 variant="ghost"
                 size="sm"
@@ -853,35 +1049,59 @@ const ProductAnalytics = ({
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {selectedCategory.products}
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Products
                 </p>
               </div>
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   ${selectedCategory.revenue.toLocaleString()}
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Revenue
                 </p>
               </div>
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {selectedCategory.orders.toLocaleString()}
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Orders
                 </p>
               </div>
-              <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <div
+                className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+                >
                   {selectedCategory.avgRating.toFixed(1)} ⭐
                 </p>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+                >
                   Avg Rating
                 </p>
               </div>
@@ -892,59 +1112,95 @@ const ProductAnalytics = ({
 
       {/* Product Insights */}
       <Card className={`p-6 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
-        <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+        <h3
+          className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+        >
           Product Performance Insights
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
             ${isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'}
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
               <TrendingUp className="w-5 h-5 text-sage-green" />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 Best Performers
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              Vegetables category leads with ${categoryData[0]?.revenue.toLocaleString()} revenue and {categoryData[0]?.growth.toFixed(1)}% growth rate.
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              Vegetables category leads with $
+              {categoryData[0]?.revenue.toLocaleString()} revenue and{' '}
+              {categoryData[0]?.growth.toFixed(1)}% growth rate.
             </p>
           </div>
 
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
-            ${productMetrics.lowStock > 200
-              ? isDarkMode ? 'bg-earthy-yellow/5 border-earthy-yellow/20' : 'bg-earthy-yellow/5 border-earthy-yellow/20'
-              : isDarkMode ? 'bg-sage-green/5 border-sage-green/20' : 'bg-sage-green/5 border-sage-green/20'
+            ${
+              productMetrics.lowStock > 200
+                ? isDarkMode
+                  ? 'bg-earthy-yellow/5 border-earthy-yellow/20'
+                  : 'bg-earthy-yellow/5 border-earthy-yellow/20'
+                : isDarkMode
+                  ? 'bg-sage-green/5 border-sage-green/20'
+                  : 'bg-sage-green/5 border-sage-green/20'
             }
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
-              <Package className={`w-5 h-5 ${
-                productMetrics.lowStock > 200 ? 'text-earthy-yellow' : 'text-sage-green'
-              }`} />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <Package
+                className={`w-5 h-5 ${
+                  productMetrics.lowStock > 200
+                    ? 'text-earthy-yellow'
+                    : 'text-sage-green'
+                }`}
+              />
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 Inventory Health
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              {productMetrics.lowStock} products need restocking, {productMetrics.outOfStock} are out of stock.
-              {productMetrics.lowStock > 200 ? ' Attention required.' : ' Inventory levels healthy.'}
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              {productMetrics.lowStock} products need restocking,{' '}
+              {productMetrics.outOfStock} are out of stock.
+              {productMetrics.lowStock > 200
+                ? ' Attention required.'
+                : ' Inventory levels healthy.'}
             </p>
           </div>
 
-          <div className={`
+          <div
+            className={`
             p-4 rounded-xl border
             ${isDarkMode ? 'bg-muted-olive/5 border-muted-olive/20' : 'bg-muted-olive/5 border-muted-olive/20'}
-          `}>
+          `}
+          >
             <div className="flex items-center gap-3 mb-2">
               <Star className="w-5 h-5 text-muted-olive" />
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}>
+              <span
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-text-dark'}`}
+              >
                 Quality Metrics
               </span>
             </div>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}>
-              Platform average rating of {productMetrics.avgRating.toFixed(1)} stars with {productMetrics.returnRate.toFixed(1)}% return rate indicates high product quality.
+            <p
+              className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-text-muted'}`}
+            >
+              Platform average rating of {productMetrics.avgRating.toFixed(1)}{' '}
+              stars with {productMetrics.returnRate.toFixed(1)}% return rate
+              indicates high product quality.
             </p>
           </div>
         </div>

@@ -23,11 +23,11 @@ import {
   XCircle,
   Loader,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Card, Button } from '../../../../components/ui';
-import toast from 'react-hot-toast';
 
 const QuickActionPanel = ({
   pendingCounts = {},
@@ -35,7 +35,7 @@ const QuickActionPanel = ({
   permissions = {},
   systemStatus = {},
   isLoading = false,
-  className = ""
+  className = '',
 }) => {
   const { isDarkMode } = useTheme();
   const [activeOperations, setActiveOperations] = useState(new Set());
@@ -54,7 +54,7 @@ const QuickActionPanel = ({
       permission: 'verify_businesses',
       route: '/admin-v2/verifications',
       action: () => handleQuickNavigation('/admin-v2/verifications'),
-      priority: 1
+      priority: 1,
     },
     {
       id: 'system-maintenance',
@@ -67,7 +67,7 @@ const QuickActionPanel = ({
       currentState: systemStatus.maintenanceMode || false,
       action: () => handleSystemToggle('maintenance'),
       confirmationRequired: true,
-      priority: 2
+      priority: 2,
     },
     {
       id: 'clear-cache',
@@ -78,7 +78,7 @@ const QuickActionPanel = ({
       permission: 'cache_management',
       action: () => handleCacheOperation('analytics'),
       confirmationRequired: true,
-      priority: 3
+      priority: 3,
     },
     {
       id: 'bulk-user-operations',
@@ -90,7 +90,7 @@ const QuickActionPanel = ({
       permission: 'bulk_user_management',
       route: '/admin-v2/users?bulk=true',
       action: () => handleQuickNavigation('/admin-v2/users?bulk=true'),
-      priority: 4
+      priority: 4,
     },
     {
       id: 'flagged-listings',
@@ -103,7 +103,7 @@ const QuickActionPanel = ({
       permission: 'content_moderation',
       route: '/admin-v2/content/flagged',
       action: () => handleQuickNavigation('/admin-v2/content/flagged'),
-      priority: 5
+      priority: 5,
     },
     {
       id: 'system-reports',
@@ -113,7 +113,7 @@ const QuickActionPanel = ({
       color: 'green',
       permission: 'generate_reports',
       action: () => handleReportGeneration(),
-      priority: 6
+      priority: 6,
     },
     {
       id: 'emergency-disable',
@@ -124,7 +124,7 @@ const QuickActionPanel = ({
       permission: 'emergency_controls',
       action: () => handleEmergencyAction('disable_user'),
       confirmationRequired: true,
-      priority: 7
+      priority: 7,
     },
     {
       id: 'performance-monitor',
@@ -135,87 +135,101 @@ const QuickActionPanel = ({
       permission: 'system_monitoring',
       route: '/admin-v2/system/performance',
       action: () => handleQuickNavigation('/admin-v2/system/performance'),
-      priority: 8
-    }
+      priority: 8,
+    },
   ];
 
   // Filter actions based on permissions and sort by priority
   const availableActions = quickActions
-    .filter(action => !action.permission || permissions[action.permission])
+    .filter((action) => !action.permission || permissions[action.permission])
     .sort((a, b) => a.priority - b.priority);
 
   // Handle quick navigation
-  const handleQuickNavigation = useCallback((route) => {
-    onQuickAction?.({ type: 'navigate', route });
-  }, [onQuickAction]);
+  const handleQuickNavigation = useCallback(
+    (route) => {
+      onQuickAction?.({ type: 'navigate', route });
+    },
+    [onQuickAction]
+  );
 
   // Handle system toggle operations
-  const handleSystemToggle = useCallback((operation) => {
-    setActiveOperations(prev => new Set([...prev, operation]));
-    
-    // Simulate API call
-    setTimeout(() => {
-      setActiveOperations(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(operation);
-        return newSet;
-      });
-      
-      toast.success('System status updated successfully');
-      onQuickAction?.({ type: 'system_toggle', operation, success: true });
-    }, 2000);
-  }, [onQuickAction]);
+  const handleSystemToggle = useCallback(
+    (operation) => {
+      setActiveOperations((prev) => new Set([...prev, operation]));
+
+      // Simulate API call
+      setTimeout(() => {
+        setActiveOperations((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(operation);
+          return newSet;
+        });
+
+        toast.success('System status updated successfully');
+        onQuickAction?.({ type: 'system_toggle', operation, success: true });
+      }, 2000);
+    },
+    [onQuickAction]
+  );
 
   // Handle cache operations
-  const handleCacheOperation = useCallback((cacheType) => {
-    const operationId = `cache_${cacheType}`;
-    setActiveOperations(prev => new Set([...prev, operationId]));
-    
-    // Simulate cache clearing
-    setTimeout(() => {
-      setActiveOperations(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(operationId);
-        return newSet;
-      });
-      
-      toast.success(`${cacheType} cache cleared successfully`);
-      onQuickAction?.({ type: 'cache_clear', cacheType, success: true });
-    }, 1500);
-  }, [onQuickAction]);
+  const handleCacheOperation = useCallback(
+    (cacheType) => {
+      const operationId = `cache_${cacheType}`;
+      setActiveOperations((prev) => new Set([...prev, operationId]));
+
+      // Simulate cache clearing
+      setTimeout(() => {
+        setActiveOperations((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(operationId);
+          return newSet;
+        });
+
+        toast.success(`${cacheType} cache cleared successfully`);
+        onQuickAction?.({ type: 'cache_clear', cacheType, success: true });
+      }, 1500);
+    },
+    [onQuickAction]
+  );
 
   // Handle report generation
   const handleReportGeneration = useCallback(() => {
     const operationId = 'generate_reports';
-    setActiveOperations(prev => new Set([...prev, operationId]));
-    
+    setActiveOperations((prev) => new Set([...prev, operationId]));
+
     // Simulate report generation
     setTimeout(() => {
-      setActiveOperations(prev => {
+      setActiveOperations((prev) => {
         const newSet = new Set(prev);
         newSet.delete(operationId);
         return newSet;
       });
-      
+
       toast.success('System reports generated and downloaded');
       onQuickAction?.({ type: 'generate_reports', success: true });
     }, 3000);
   }, [onQuickAction]);
 
   // Handle emergency actions
-  const handleEmergencyAction = useCallback((actionType) => {
-    onQuickAction?.({ type: 'emergency_action', actionType });
-  }, [onQuickAction]);
+  const handleEmergencyAction = useCallback(
+    (actionType) => {
+      onQuickAction?.({ type: 'emergency_action', actionType });
+    },
+    [onQuickAction]
+  );
 
   // Show confirmation modal
   const showConfirmation = useCallback((action) => {
     setConfirmationModal({
       title: `Confirm ${action.title}`,
       message: `Are you sure you want to ${action.description.toLowerCase()}? This action ${
-        action.id === 'system-maintenance' ? 'will affect all users' : 'cannot be undone'
+        action.id === 'system-maintenance'
+          ? 'will affect all users'
+          : 'cannot be undone'
       }.`,
       action,
-      isDestructive: ['red', 'amber'].includes(action.color)
+      isDestructive: ['red', 'amber'].includes(action.color),
     });
   }, []);
 
@@ -229,45 +243,67 @@ const QuickActionPanel = ({
   const getActionColorScheme = (color, isActive = false) => {
     const schemes = {
       red: {
-        bg: isDarkMode 
-          ? (isActive ? 'bg-tomato-red/30' : 'bg-tomato-red/20') 
-          : (isActive ? 'bg-tomato-red/20' : 'bg-tomato-red/10'),
+        bg: isDarkMode
+          ? isActive
+            ? 'bg-tomato-red/30'
+            : 'bg-tomato-red/20'
+          : isActive
+            ? 'bg-tomato-red/20'
+            : 'bg-tomato-red/10',
         text: 'text-tomato-red',
         border: 'border-tomato-red/30',
-        hover: isDarkMode ? 'hover:bg-tomato-red/25' : 'hover:bg-tomato-red/15'
+        hover: isDarkMode ? 'hover:bg-tomato-red/25' : 'hover:bg-tomato-red/15',
       },
       amber: {
-        bg: isDarkMode 
-          ? (isActive ? 'bg-earthy-yellow/30' : 'bg-earthy-yellow/20') 
-          : (isActive ? 'bg-earthy-yellow/20' : 'bg-earthy-yellow/10'),
+        bg: isDarkMode
+          ? isActive
+            ? 'bg-earthy-yellow/30'
+            : 'bg-earthy-yellow/20'
+          : isActive
+            ? 'bg-earthy-yellow/20'
+            : 'bg-earthy-yellow/10',
         text: isDarkMode ? 'text-earthy-yellow' : 'text-earthy-brown',
         border: 'border-earthy-yellow/30',
-        hover: isDarkMode ? 'hover:bg-earthy-yellow/25' : 'hover:bg-earthy-yellow/15'
+        hover: isDarkMode
+          ? 'hover:bg-earthy-yellow/25'
+          : 'hover:bg-earthy-yellow/15',
       },
       green: {
-        bg: isDarkMode 
-          ? (isActive ? 'bg-sage-green/30' : 'bg-sage-green/20') 
-          : (isActive ? 'bg-sage-green/20' : 'bg-sage-green/10'),
+        bg: isDarkMode
+          ? isActive
+            ? 'bg-sage-green/30'
+            : 'bg-sage-green/20'
+          : isActive
+            ? 'bg-sage-green/20'
+            : 'bg-sage-green/10',
         text: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
         border: 'border-sage-green/30',
-        hover: isDarkMode ? 'hover:bg-sage-green/25' : 'hover:bg-sage-green/15'
+        hover: isDarkMode ? 'hover:bg-sage-green/25' : 'hover:bg-sage-green/15',
       },
       blue: {
-        bg: isDarkMode 
-          ? (isActive ? 'bg-blue-500/30' : 'bg-blue-500/20') 
-          : (isActive ? 'bg-blue-100' : 'bg-blue-50'),
+        bg: isDarkMode
+          ? isActive
+            ? 'bg-blue-500/30'
+            : 'bg-blue-500/20'
+          : isActive
+            ? 'bg-blue-100'
+            : 'bg-blue-50',
         text: isDarkMode ? 'text-blue-400' : 'text-blue-600',
         border: 'border-blue-500/30',
-        hover: isDarkMode ? 'hover:bg-blue-500/25' : 'hover:bg-blue-100'
+        hover: isDarkMode ? 'hover:bg-blue-500/25' : 'hover:bg-blue-100',
       },
       purple: {
-        bg: isDarkMode 
-          ? (isActive ? 'bg-purple-500/30' : 'bg-purple-500/20') 
-          : (isActive ? 'bg-purple-100' : 'bg-purple-50'),
+        bg: isDarkMode
+          ? isActive
+            ? 'bg-purple-500/30'
+            : 'bg-purple-500/20'
+          : isActive
+            ? 'bg-purple-100'
+            : 'bg-purple-50',
         text: isDarkMode ? 'text-purple-400' : 'text-purple-600',
         border: 'border-purple-500/30',
-        hover: isDarkMode ? 'hover:bg-purple-500/25' : 'hover:bg-purple-100'
-      }
+        hover: isDarkMode ? 'hover:bg-purple-500/25' : 'hover:bg-purple-100',
+      },
     };
 
     return schemes[color] || schemes.blue;
@@ -275,7 +311,9 @@ const QuickActionPanel = ({
 
   // Render action button
   const renderActionButton = (action) => {
-    const isActive = activeOperations.has(action.id) || activeOperations.has(`cache_${action.id}`);
+    const isActive =
+      activeOperations.has(action.id) ||
+      activeOperations.has(`cache_${action.id}`);
     const colorScheme = getActionColorScheme(action.color, isActive);
     const IconComponent = action.icon;
     const hasUrgentCount = action.count > (action.urgentThreshold || Infinity);
@@ -325,56 +363,70 @@ const QuickActionPanel = ({
               animate={{ opacity: 1 }}
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
               style={{
-                background: `linear-gradient(90deg, transparent 0%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'} 50%, transparent 100%)`
+                background: `linear-gradient(90deg, transparent 0%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'} 50%, transparent 100%)`,
               }}
             />
           )}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <div className={`
+              <div
+                className={`
                 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
                 ${isActive ? 'animate-pulse' : ''}
                 bg-white/10 backdrop-blur-sm
-              `}>
+              `}
+              >
                 {isActive ? (
-                  <Loader className={`w-4 h-4 ${colorScheme.text} animate-spin`} />
+                  <Loader
+                    className={`w-4 h-4 ${colorScheme.text} animate-spin`}
+                  />
                 ) : (
                   <IconComponent className={`w-4 h-4 ${colorScheme.text}`} />
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
-                <h4 className={`font-medium text-xs truncate ${colorScheme.text}`}>
+                <h4
+                  className={`font-medium text-xs truncate ${colorScheme.text}`}
+                >
                   {action.title}
                 </h4>
-                <p className={`text-xs opacity-70 mt-0.5 truncate ${colorScheme.text} line-clamp-1`}>
+                <p
+                  className={`text-xs opacity-70 mt-0.5 truncate ${colorScheme.text} line-clamp-1`}
+                >
                   {action.description}
                 </p>
-                
+
                 {/* Status Indicators */}
                 {(action.count !== undefined || action.isToggle) && (
                   <div className="flex items-center gap-1 mt-1">
                     {action.count !== undefined && (
-                      <span className={`
+                      <span
+                        className={`
                         text-xs px-1.5 py-0.5 rounded font-medium
-                        ${hasUrgentCount 
-                          ? 'bg-tomato-red/20 text-tomato-red animate-pulse' 
-                          : 'bg-white/20 text-current'
+                        ${
+                          hasUrgentCount
+                            ? 'bg-tomato-red/20 text-tomato-red animate-pulse'
+                            : 'bg-white/20 text-current'
                         }
-                      `}>
+                      `}
+                      >
                         {action.count}
                       </span>
                     )}
-                    
+
                     {action.isToggle && (
-                      <span className={`
+                      <span
+                        className={`
                         text-xs px-1.5 py-0.5 rounded font-medium flex items-center gap-1
-                        ${action.currentState
-                          ? 'bg-tomato-red/20 text-tomato-red'
-                          : 'bg-sage-green/20 text-muted-olive'
+                        ${
+                          action.currentState
+                            ? 'bg-tomato-red/20 text-tomato-red'
+                            : 'bg-sage-green/20 text-muted-olive'
                         }
-                      `}>
+                      `}
+                      >
                         {action.currentState ? (
                           <>
                             <XCircle className="w-2.5 h-2.5" />
@@ -396,9 +448,13 @@ const QuickActionPanel = ({
             {/* Action Indicator */}
             <div className="flex-shrink-0 ml-2">
               {action.route ? (
-                <ExternalLink className={`w-4 h-4 ${colorScheme.text} opacity-60`} />
+                <ExternalLink
+                  className={`w-4 h-4 ${colorScheme.text} opacity-60`}
+                />
               ) : (
-                <ChevronRight className={`w-4 h-4 ${colorScheme.text} opacity-60`} />
+                <ChevronRight
+                  className={`w-4 h-4 ${colorScheme.text} opacity-60`}
+                />
               )}
             </div>
           </div>
@@ -412,22 +468,32 @@ const QuickActionPanel = ({
       <Card className={`p-6 ${className}`}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Zap className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`} />
-            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+            <Zap
+              className={`w-5 h-5 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
+            />
+            <h3
+              className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+            >
               Quick Actions
             </h3>
           </div>
 
           {/* System Status Indicator */}
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${
-              systemStatus.healthy 
-                ? (isDarkMode ? 'bg-sage-green' : 'bg-muted-olive')
-                : 'bg-tomato-red animate-pulse'
-            }`} />
-            <span className={`text-xs font-medium ${
-              isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
-            }`}>
+            <div
+              className={`w-2 h-2 rounded-full ${
+                systemStatus.healthy
+                  ? isDarkMode
+                    ? 'bg-sage-green'
+                    : 'bg-muted-olive'
+                  : 'bg-tomato-red animate-pulse'
+              }`}
+            />
+            <span
+              className={`text-xs font-medium ${
+                isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'
+              }`}
+            >
               System {systemStatus.healthy ? 'Healthy' : 'Alert'}
             </span>
           </div>
@@ -436,12 +502,14 @@ const QuickActionPanel = ({
         {/* Action Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <AnimatePresence>
-            {availableActions.map(action => renderActionButton(action))}
+            {availableActions.map((action) => renderActionButton(action))}
           </AnimatePresence>
         </div>
 
         {/* Emergency Notice */}
-        {availableActions.some(action => action.color === 'red' && action.count > 0) && (
+        {availableActions.some(
+          (action) => action.color === 'red' && action.count > 0
+        ) && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -456,8 +524,11 @@ const QuickActionPanel = ({
                 <p className="text-sm font-medium text-tomato-red">
                   Urgent Actions Required
                 </p>
-                <p className={`text-xs mt-1 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
-                  Several items require immediate attention. Click on the highlighted actions above.
+                <p
+                  className={`text-xs mt-1 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+                >
+                  Several items require immediate attention. Click on the
+                  highlighted actions above.
                 </p>
               </div>
             </div>
@@ -486,21 +557,28 @@ const QuickActionPanel = ({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className={`
+                <div
+                  className={`
                   w-12 h-12 rounded-2xl flex items-center justify-center
-                  ${confirmationModal.isDestructive 
-                    ? 'bg-tomato-red/20 text-tomato-red' 
-                    : 'bg-blue-500/20 text-blue-500'
+                  ${
+                    confirmationModal.isDestructive
+                      ? 'bg-tomato-red/20 text-tomato-red'
+                      : 'bg-blue-500/20 text-blue-500'
                   }
-                `}>
+                `}
+                >
                   <AlertTriangle className="w-6 h-6" />
                 </div>
-                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}>
+                <h3
+                  className={`text-lg font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                >
                   {confirmationModal.title}
                 </h3>
               </div>
 
-              <p className={`text-sm mb-6 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}>
+              <p
+                className={`text-sm mb-6 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+              >
                 {confirmationModal.message}
               </p>
 
@@ -513,7 +591,9 @@ const QuickActionPanel = ({
                   Cancel
                 </Button>
                 <Button
-                  variant={confirmationModal.isDestructive ? 'destructive' : 'primary'}
+                  variant={
+                    confirmationModal.isDestructive ? 'destructive' : 'primary'
+                  }
                   onClick={() => executeAction(confirmationModal.action)}
                   className="flex-1 rounded-xl"
                 >

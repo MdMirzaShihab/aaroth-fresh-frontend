@@ -6,52 +6,62 @@ import { cn } from '../../utils';
 import { useTheme } from '../../hooks/useTheme';
 
 // Dynamic modal variants with dark mode support
-const getModalVariants = (isDarkMode) => cva(
-  // Base modal classes with enhanced glassmorphism and mobile optimization
-  cn(
-    'rounded-3xl border animate-scale-in max-h-[90vh] overflow-y-auto',
-    isDarkMode ? 'glass-5-dark shadow-dark-depth-3' : 'glass-5 shadow-depth-5'
-  ),
-  {
-    variants: {
-      size: {
-        sm: 'w-full max-w-md mx-4',
-        default: 'w-full max-w-lg mx-4',
-        lg: 'w-full max-w-2xl mx-4',
-        xl: 'w-full max-w-4xl mx-4',
-        full: 'w-full mx-4 h-[90vh]',
-        // Mobile-first: full width on mobile, constrained on desktop
-        responsive:
-          'w-full mx-4 sm:max-w-md sm:mx-auto md:max-w-lg lg:max-w-xl',
+const getModalVariants = (isDarkMode) =>
+  cva(
+    // Base modal classes with enhanced glassmorphism and mobile optimization
+    cn(
+      'rounded-3xl border animate-scale-in max-h-[90vh] overflow-y-auto',
+      isDarkMode ? 'glass-5-dark shadow-dark-depth-3' : 'glass-5 shadow-depth-5'
+    ),
+    {
+      variants: {
+        size: {
+          sm: 'w-full max-w-md mx-4',
+          default: 'w-full max-w-lg mx-4',
+          lg: 'w-full max-w-2xl mx-4',
+          xl: 'w-full max-w-4xl mx-4',
+          full: 'w-full mx-4 h-[90vh]',
+          // Mobile-first: full width on mobile, constrained on desktop
+          responsive:
+            'w-full mx-4 sm:max-w-md sm:mx-auto md:max-w-lg lg:max-w-xl',
+        },
+        position: {
+          center: 'flex items-center justify-center',
+          top: 'flex items-start justify-center pt-16',
+          bottom: 'flex items-end justify-center pb-16',
+        },
       },
-      position: {
-        center: 'flex items-center justify-center',
-        top: 'flex items-start justify-center pt-16',
-        bottom: 'flex items-end justify-center pb-16',
+      defaultVariants: {
+        size: 'responsive',
+        position: 'center',
+      },
+    }
+  );
+
+// Enhanced backdrop variants with olive accents and dark mode support
+const getBackdropVariants = (isDarkMode) =>
+  cva('fixed inset-0 z-50 transition-all duration-300', {
+    variants: {
+      blur: {
+        none: isDarkMode ? 'bg-black/70' : 'bg-black/50',
+        light: isDarkMode
+          ? 'bg-black/40 backdrop-blur-sm'
+          : 'bg-black/30 backdrop-blur-sm',
+        medium: isDarkMode
+          ? 'bg-black/60 backdrop-blur-md'
+          : 'bg-black/40 backdrop-blur-md',
+        heavy: isDarkMode
+          ? 'bg-black/70 backdrop-blur-lg'
+          : 'bg-black/50 backdrop-blur-lg',
+        olive: isDarkMode
+          ? 'bg-dark-olive-bg/20 backdrop-blur-md'
+          : 'bg-muted-olive/10 backdrop-blur-md',
       },
     },
     defaultVariants: {
-      size: 'responsive',
-      position: 'center',
+      blur: 'medium',
     },
-  }
-);
-
-// Enhanced backdrop variants with olive accents and dark mode support
-const getBackdropVariants = (isDarkMode) => cva('fixed inset-0 z-50 transition-all duration-300', {
-  variants: {
-    blur: {
-      none: isDarkMode ? 'bg-black/70' : 'bg-black/50',
-      light: isDarkMode ? 'bg-black/40 backdrop-blur-sm' : 'bg-black/30 backdrop-blur-sm',
-      medium: isDarkMode ? 'bg-black/60 backdrop-blur-md' : 'bg-black/40 backdrop-blur-md',
-      heavy: isDarkMode ? 'bg-black/70 backdrop-blur-lg' : 'bg-black/50 backdrop-blur-lg',
-      olive: isDarkMode ? 'bg-dark-olive-bg/20 backdrop-blur-md' : 'bg-muted-olive/10 backdrop-blur-md',
-    },
-  },
-  defaultVariants: {
-    blur: 'medium',
-  },
-});
+  });
 
 const Modal = ({
   isOpen,
@@ -74,7 +84,7 @@ const Modal = ({
   const { isDarkMode } = useTheme();
   const modalRef = useRef(null);
   const previousActiveElement = useRef(null);
-  
+
   // Get theme-aware variants
   const modalVariants = getModalVariants(isDarkMode);
   const backdropVariants = getBackdropVariants(isDarkMode);
