@@ -181,6 +181,13 @@ export default {
         'dark-depth-1': '0 1px 3px 0 rgba(0, 0, 0, 0.8), 0 1px 2px 0 rgba(143, 181, 124, 0.05)', // Dark mode depth level 1
         'dark-depth-2': '0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(143, 181, 124, 0.08)', // Dark mode depth level 2
         'dark-depth-3': '0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(143, 181, 124, 0.1)', // Dark mode depth level 3
+        
+        // Restaurant's Organic Shadow System
+        'shadow-organic': '0 4px 16px rgba(127, 137, 102, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)',
+        'shadow-organic-lg': '0 8px 32px rgba(127, 137, 102, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1)',
+        'shadow-dark-glass': '0 8px 32px rgba(0, 0, 0, 0.7), 0 4px 16px rgba(143, 181, 124, 0.08)',
+        'shadow-glow-green': '0 0 20px rgba(156, 175, 136, 0.2)', // Restaurant's glow green
+        'shadow-dark-glow-olive': '0 0 25px rgba(143, 181, 124, 0.3)', // Restaurant's dark olive glow
       },
 
       utilities: {
@@ -325,6 +332,38 @@ export default {
           outline: '2px solid transparent',
           outlineOffset: '2px',
           boxShadow: '0 0 0 2px rgba(143, 181, 124, 0.3)',
+        },
+        // Restaurant's Advanced Glassmorphism System
+        '.glass-layer-1': {
+          background: 'rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(6px)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+        },
+        '.glass-layer-2': {
+          background: 'rgba(255, 255, 255, 0.12)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+        },
+        '.glass-layer-3': {
+          background: 'rgba(255, 255, 255, 0.16)',
+          backdropFilter: 'blur(14px)',
+          border: '1px solid rgba(255, 255, 255, 0.22)',
+        },
+        // Dark Mode Glass Layers (Olive-themed)
+        '.glass-1-dark': {
+          background: 'rgba(47, 58, 47, 0.10)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(143, 181, 124, 0.10)',
+        },
+        '.glass-2-dark': {
+          background: 'rgba(47, 58, 47, 0.14)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(143, 181, 124, 0.14)',
+        },
+        '.glass-3-dark': {
+          background: 'rgba(47, 58, 47, 0.18)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(143, 181, 124, 0.18)',
         },
       },
     },

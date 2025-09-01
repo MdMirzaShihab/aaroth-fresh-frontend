@@ -106,17 +106,17 @@ const PlaceOrder = () => {
   if (cartItems.length === 0) {
     return (
       <div className="max-w-2xl mx-auto text-center py-12">
-        <div className="glass rounded-3xl p-12">
-          <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-text-dark dark:text-white mb-4">
+        <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-12 shadow-organic dark:shadow-dark-glass animate-fade-in">
+          <ShoppingCart className="w-16 h-16 text-text-muted/60 dark:text-dark-text-muted/60 mx-auto mb-6 animate-float" />
+          <h2 className="text-2xl font-light text-text-dark dark:text-dark-text-primary mb-4 tracking-wide">
             Your cart is empty
           </h2>
-          <p className="text-text-muted dark:text-gray-300 mb-8">
+          <p className="text-text-muted dark:text-dark-text-muted mb-8 font-light">
             Add some fresh products to get started
           </p>
           <button
             onClick={() => navigate('/restaurant/browse')}
-            className="bg-gradient-primary text-white px-8 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 touch-target"
+            className="bg-gradient-to-r from-muted-olive to-sage-green text-white px-8 py-3 rounded-2xl font-medium hover:shadow-glow-green hover:scale-105 transition-all duration-300 touch-target animate-float"
           >
             Browse Products
           </button>
@@ -129,16 +129,16 @@ const PlaceOrder = () => {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-dark dark:text-white">
+        <h1 className="text-3xl font-light text-text-dark dark:text-dark-text-primary tracking-wide">
           Place Order
         </h1>
-        <p className="text-text-muted dark:text-gray-300 mt-2">
+        <p className="text-text-muted dark:text-dark-text-muted mt-2 font-light">
           Review and confirm your order
         </p>
       </div>
 
       {/* Step Progress */}
-      <div className="glass rounded-2xl p-4 mb-8">
+      <div className="glass-layer-1 dark:glass-1-dark rounded-2xl p-4 mb-8 shadow-organic dark:shadow-dark-glass animate-fade-in">
         <div className="flex items-center justify-between">
           {[
             { step: 1, title: 'Cart Review', icon: ShoppingCart },
@@ -148,10 +148,10 @@ const PlaceOrder = () => {
           ].map(({ step: stepNum, title, icon: Icon }) => (
             <div key={stepNum} className="flex items-center">
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-soft ${
                   step >= stepNum
-                    ? 'bg-gradient-primary text-white'
-                    : 'bg-gray-200 text-gray-500'
+                    ? 'bg-gradient-to-r from-muted-olive to-sage-green text-white shadow-glow-green'
+                    : 'bg-gray-100 text-text-muted'
                 }`}
               >
                 {step > stepNum ? (
@@ -161,18 +161,18 @@ const PlaceOrder = () => {
                 )}
               </div>
               <span
-                className={`ml-3 font-medium hidden sm:inline ${
+                className={`ml-3 font-medium hidden sm:inline transition-colors duration-200 ${
                   step >= stepNum
-                    ? 'text-text-dark dark:text-white'
-                    : 'text-text-muted dark:text-gray-300'
+                    ? 'text-text-dark dark:text-dark-text-primary'
+                    : 'text-text-muted dark:text-dark-text-muted'
                 }`}
               >
                 {title}
               </span>
               {stepNum < 4 && (
                 <div
-                  className={`hidden sm:block w-16 h-0.5 ml-4 ${
-                    step > stepNum ? 'bg-muted-olive' : 'bg-gray-200'
+                  className={`hidden sm:block w-16 h-0.5 ml-4 transition-colors duration-300 ${
+                    step > stepNum ? 'bg-gradient-to-r from-muted-olive to-sage-green' : 'bg-gray-200'
                   }`}
                 />
               )}
@@ -186,12 +186,12 @@ const PlaceOrder = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Step 1: Cart Review */}
           {step === 1 && (
-            <div className="glass rounded-3xl p-6">
+            <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-slide-up">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-text-dark dark:text-white">
+                <h2 className="text-xl font-medium text-text-dark dark:text-dark-text-primary">
                   Cart Review
                 </h2>
-                <span className="text-text-muted dark:text-gray-300">
+                <span className="text-text-muted dark:text-dark-text-muted">
                   {cartItems.length} items
                 </span>
               </div>
@@ -200,7 +200,7 @@ const PlaceOrder = () => {
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-white/50 border border-gray-100 rounded-2xl p-4"
+                    className="glass-layer-1 dark:glass-1-dark border-0 rounded-2xl p-4 shadow-soft dark:shadow-dark-glass hover:glass-layer-2 dark:hover:glass-2-dark transition-all duration-200 animate-fade-in"
                   >
                     <div className="flex items-center gap-4">
                       {/* Product Image */}
@@ -213,20 +213,20 @@ const PlaceOrder = () => {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <ShoppingCart className="w-6 h-6 text-gray-400" />
+                            <ShoppingCart className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                           </div>
                         )}
                       </div>
 
                       {/* Product Details */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-text-dark dark:text-white truncate">
+                        <h3 className="font-semibold text-text-dark dark:text-dark-text-primary truncate">
                           {item.name}
                         </h3>
-                        <p className="text-sm text-text-muted dark:text-gray-300">
+                        <p className="text-sm text-text-muted dark:text-dark-text-muted">
                           {item.vendorName}
                         </p>
-                        <p className="text-sm font-medium text-text-dark dark:text-white">
+                        <p className="text-sm font-medium text-text-dark dark:text-dark-text-primary">
                           {formatCurrency(item.price)} per {item.unit}
                         </p>
                       </div>
@@ -237,26 +237,26 @@ const PlaceOrder = () => {
                           onClick={() =>
                             handleQuantityChange(item.id, item.quantity - 1)
                           }
-                          className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors touch-target"
+                          className="w-8 h-8 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl flex items-center justify-center transition-colors touch-target"
                         >
-                          <Minus className="w-4 h-4" />
+                          <Minus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
                         </button>
-                        <span className="font-semibold text-text-dark dark:text-white min-w-8 text-center">
+                        <span className="font-semibold text-text-dark dark:text-dark-text-primary min-w-8 text-center">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() =>
                             handleQuantityChange(item.id, item.quantity + 1)
                           }
-                          className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors touch-target"
+                          className="w-8 h-8 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl flex items-center justify-center transition-colors touch-target"
                         >
-                          <Plus className="w-4 h-4" />
+                          <Plus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
                         </button>
                       </div>
 
                       {/* Total Price */}
                       <div className="text-right">
-                        <p className="font-semibold text-text-dark dark:text-white">
+                        <p className="font-semibold text-text-dark dark:text-dark-text-primary">
                           {formatCurrency(item.price * item.quantity)}
                         </p>
                       </div>
@@ -264,7 +264,7 @@ const PlaceOrder = () => {
                       {/* Remove Button */}
                       <button
                         onClick={() => handleRemoveItem(item.id)}
-                        className="text-gray-400 hover:text-tomato-red transition-colors p-1 touch-target"
+                        className="text-gray-400 dark:text-gray-500 hover:text-tomato-red dark:hover:text-tomato-red transition-colors p-1 touch-target"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -273,16 +273,16 @@ const PlaceOrder = () => {
                 ))}
               </div>
 
-              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+              <div className="flex justify-between items-center mt-6 pt-4 border-t border-muted-olive/10 dark:border-dark-sage-accent/20">
                 <button
                   onClick={() => navigate('/restaurant/browse')}
-                  className="text-muted-olive dark:text-green-400 hover:text-muted-olive/80 dark:hover:text-green-300 font-medium transition-colors"
+                  className="text-muted-olive dark:text-dark-sage-accent hover:text-sage-green dark:hover:text-dark-sage-accent/80 font-medium transition-colors duration-200"
                 >
                   Continue Shopping
                 </button>
                 <button
                   onClick={() => setStep(2)}
-                  className="bg-gradient-primary text-white px-6 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 touch-target"
+                  className="bg-gradient-to-r from-muted-olive to-sage-green text-white px-6 py-3 rounded-2xl font-medium hover:shadow-glow-green hover:scale-105 transition-all duration-300 touch-target"
                 >
                   Continue to Delivery
                 </button>
@@ -292,15 +292,15 @@ const PlaceOrder = () => {
 
           {/* Step 2: Delivery Details */}
           {step === 2 && (
-            <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6">
+            <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-slide-up">
+              <h2 className="text-xl font-medium text-text-dark dark:text-dark-text-primary mb-6">
                 Delivery Details
               </h2>
 
               <div className="space-y-6">
                 {/* Delivery Address */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
+                  <label className="block text-sm font-medium text-text-dark mb-2">
                     Delivery Address
                   </label>
                   <textarea
@@ -313,14 +313,14 @@ const PlaceOrder = () => {
                     }
                     placeholder="Enter your complete delivery address"
                     rows={3}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
+                    className="w-full px-4 py-3 glass-layer-1 dark:glass-1-dark border-0 rounded-2xl focus:outline-none focus:glass-layer-2 dark:focus:glass-2-dark focus:shadow-glow-green/20 dark:focus:shadow-dark-sage-accent/20 transition-all duration-300 placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60 text-text-dark dark:text-dark-text-primary"
                     required
                   />
                 </div>
 
                 {/* Phone Number */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
+                  <label className="block text-sm font-medium text-text-dark mb-2">
                     Contact Phone
                   </label>
                   <input
@@ -333,14 +333,14 @@ const PlaceOrder = () => {
                       }))
                     }
                     placeholder="+880 1712-345-678"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200"
+                    className="w-full px-4 py-3 glass-layer-1 dark:glass-1-dark border-0 rounded-2xl focus:outline-none focus:glass-layer-2 dark:focus:glass-2-dark focus:shadow-glow-green/20 dark:focus:shadow-dark-sage-accent/20 transition-all duration-300 placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60 text-text-dark dark:text-dark-text-primary"
                     required
                   />
                 </div>
 
                 {/* Delivery Time */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
+                  <label className="block text-sm font-medium text-text-dark mb-2">
                     Preferred Delivery Time
                   </label>
                   <div className="space-y-3">
@@ -358,7 +358,7 @@ const PlaceOrder = () => {
                         }
                         className="text-muted-olive focus:ring-muted-olive/20"
                       />
-                      <span className="text-text-dark dark:text-white">
+                      <span className="text-text-dark dark:text-dark-text-primary">
                         As soon as possible
                       </span>
                     </label>
@@ -378,7 +378,7 @@ const PlaceOrder = () => {
                         }
                         className="text-muted-olive focus:ring-muted-olive/20"
                       />
-                      <span className="text-text-dark dark:text-white">
+                      <span className="text-text-dark dark:text-dark-text-primary">
                         Schedule for later
                       </span>
                     </label>
@@ -401,7 +401,7 @@ const PlaceOrder = () => {
 
                 {/* Special Instructions */}
                 <div>
-                  <label className="block text-sm font-medium text-text-dark dark:text-white mb-2">
+                  <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
                     Special Instructions (Optional)
                   </label>
                   <textarea
@@ -419,7 +419,7 @@ const PlaceOrder = () => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={() => setStep(1)}
                   className="text-gray-600 hover:text-gray-800 font-medium transition-colors"
@@ -439,8 +439,8 @@ const PlaceOrder = () => {
 
           {/* Step 3: Payment Method */}
           {step === 3 && (
-            <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6">
+            <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass">
+              <h2 className="text-xl font-semibold text-text-dark dark:text-dark-text-primary mb-6">
                 Payment Method
               </h2>
 
@@ -459,11 +459,11 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-green-600" />
                       </div>
-                      <span className="font-medium text-text-dark dark:text-white">
+                      <span className="font-medium text-text-dark dark:text-dark-text-primary">
                         Cash on Delivery
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted dark:text-gray-300 mt-1">
+                    <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
                       Pay when your order arrives
                     </p>
                   </div>
@@ -482,14 +482,14 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-blue-600" />
                       </div>
-                      <span className="font-medium text-text-dark dark:text-white">
+                      <span className="font-medium text-text-dark dark:text-dark-text-primary">
                         Credit/Debit Card
                       </span>
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
                         Coming Soon
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted dark:text-gray-300 mt-1">
+                    <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
                       Secure online payment
                     </p>
                   </div>
@@ -508,21 +508,21 @@ const PlaceOrder = () => {
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="w-4 h-4 text-purple-600" />
                       </div>
-                      <span className="font-medium text-text-dark dark:text-white">
+                      <span className="font-medium text-text-dark dark:text-dark-text-primary">
                         Mobile Banking
                       </span>
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
                         Coming Soon
                       </span>
                     </div>
-                    <p className="text-sm text-text-muted dark:text-gray-300 mt-1">
+                    <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
                       bKash, Rocket, Nagad
                     </p>
                   </div>
                 </label>
               </div>
 
-              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={() => setStep(2)}
                   className="text-gray-600 hover:text-gray-800 font-medium transition-colors"
@@ -541,8 +541,8 @@ const PlaceOrder = () => {
 
           {/* Step 4: Final Review */}
           {step === 4 && (
-            <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6">
+            <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass">
+              <h2 className="text-xl font-semibold text-text-dark dark:text-dark-text-primary mb-6">
                 Order Confirmation
               </h2>
 
@@ -550,12 +550,12 @@ const PlaceOrder = () => {
                 {/* Delivery Details Summary */}
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-text-dark dark:text-white">
+                    <h3 className="font-medium text-text-dark dark:text-dark-text-primary">
                       Delivery Details
                     </h3>
                     <button
                       onClick={() => setStep(2)}
-                      className="text-muted-olive dark:text-green-400 hover:text-muted-olive/80 dark:hover:text-green-300 text-sm font-medium"
+                      className="text-muted-olive dark:text-dark-sage-accent hover:text-muted-olive/80 dark:hover:text-dark-sage-accent/80 text-sm font-medium"
                     >
                       <Edit className="w-4 h-4 inline mr-1" />
                       Edit
@@ -564,13 +564,13 @@ const PlaceOrder = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-start gap-2">
                       <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-text-muted dark:text-gray-300">
+                      <span className="text-text-muted dark:text-dark-text-muted">
                         {deliveryInfo.address}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-text-muted dark:text-gray-300">
+                      <span className="text-text-muted dark:text-dark-text-muted">
                         {deliveryInfo.preferredDeliveryTime === 'asap'
                           ? 'As soon as possible'
                           : `Scheduled for ${new Date(deliveryInfo.customDeliveryTime).toLocaleDateString()} at ${new Date(deliveryInfo.customDeliveryTime).toLocaleTimeString()}`}
@@ -580,14 +580,14 @@ const PlaceOrder = () => {
                       <span className="w-4 h-4 text-center text-gray-400">
                         📞
                       </span>
-                      <span className="text-text-muted dark:text-gray-300">
+                      <span className="text-text-muted dark:text-dark-text-muted">
                         {formatPhoneForDisplay(deliveryInfo.phone)}
                       </span>
                     </div>
                     {deliveryInfo.notes && (
                       <div className="flex items-start gap-2">
                         <AlertCircle className="w-4 h-4 text-gray-400 mt-0.5" />
-                        <span className="text-text-muted dark:text-gray-300">
+                        <span className="text-text-muted dark:text-dark-text-muted">
                           {deliveryInfo.notes}
                         </span>
                       </div>
@@ -598,12 +598,12 @@ const PlaceOrder = () => {
                 {/* Payment Method Summary */}
                 <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-text-dark dark:text-white">
+                    <h3 className="font-medium text-text-dark dark:text-dark-text-primary">
                       Payment Method
                     </h3>
                     <button
                       onClick={() => setStep(3)}
-                      className="text-muted-olive dark:text-green-400 hover:text-muted-olive/80 dark:hover:text-green-300 text-sm font-medium"
+                      className="text-muted-olive dark:text-dark-sage-accent hover:text-muted-olive/80 dark:hover:text-dark-sage-accent/80 text-sm font-medium"
                     >
                       <Edit className="w-4 h-4 inline mr-1" />
                       Change
@@ -611,14 +611,14 @@ const PlaceOrder = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-5 h-5 text-gray-400" />
-                    <span className="text-text-muted dark:text-gray-300">
+                    <span className="text-text-muted dark:text-dark-text-muted">
                       Cash on Delivery
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={() => setStep(3)}
                   className="text-gray-600 hover:text-gray-800 font-medium transition-colors"
@@ -650,26 +650,26 @@ const PlaceOrder = () => {
         {/* Order Summary Sidebar */}
         <div className="lg:col-span-1">
           <div className="glass rounded-3xl p-6 sticky top-6">
-            <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-4">
+            <h3 className="text-lg font-semibold text-text-dark dark:text-dark-text-primary mb-4">
               Order Summary
             </h3>
 
             <div className="space-y-3 pb-4 border-b border-gray-100">
               <div className="flex justify-between">
-                <span className="text-text-muted dark:text-gray-300">
+                <span className="text-text-muted dark:text-dark-text-muted">
                   Subtotal ({cartItems.length} items)
                 </span>
-                <span className="font-medium text-text-dark dark:text-white">
+                <span className="font-medium text-text-dark dark:text-dark-text-primary">
                   {formatCurrency(subtotal)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-muted dark:text-gray-300">
+                <span className="text-text-muted dark:text-dark-text-muted">
                   Delivery Fee
                 </span>
-                <span className="font-medium text-text-dark dark:text-white">
+                <span className="font-medium text-text-dark dark:text-dark-text-primary">
                   {deliveryFee === 0 ? (
-                    <span className="text-sage-green dark:text-green-400">
+                    <span className="text-sage-green dark:text-dark-sage-accent">
                       Free
                     </span>
                   ) : (
@@ -678,18 +678,18 @@ const PlaceOrder = () => {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-muted dark:text-gray-300">Tax</span>
-                <span className="font-medium text-text-dark dark:text-white">
+                <span className="text-text-muted dark:text-dark-text-muted">Tax</span>
+                <span className="font-medium text-text-dark dark:text-dark-text-primary">
                   {formatCurrency(tax)}
                 </span>
               </div>
             </div>
 
             <div className="flex justify-between pt-4 mb-6">
-              <span className="text-lg font-semibold text-text-dark dark:text-white">
+              <span className="text-lg font-semibold text-text-dark dark:text-dark-text-primary">
                 Total
               </span>
-              <span className="text-lg font-bold text-text-dark dark:text-white">
+              <span className="text-lg font-bold text-text-dark dark:text-dark-text-primary">
                 {formatCurrency(finalTotal)}
               </span>
             </div>
@@ -701,7 +701,7 @@ const PlaceOrder = () => {
               </div>
             )}
 
-            <div className="text-xs text-text-muted dark:text-gray-300 space-y-1">
+            <div className="text-xs text-text-muted dark:text-dark-text-muted space-y-1">
               <p>• Estimated delivery: 30-60 minutes</p>
               <p>• Fresh vegetables from local vendors</p>
               <p>• Quality guaranteed or money back</p>

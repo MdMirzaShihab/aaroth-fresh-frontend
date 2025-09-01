@@ -46,12 +46,12 @@ import SearchBar from '../../components/ui/SearchBar';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import FormField from '../../components/ui/FormField';
-import ProductCard from '../../components/admin/products/ProductCard';
-import ProductListItem from '../../components/admin/products/ProductListItem';
-import ProductFilters from '../../components/admin/products/ProductFilters';
-import ProductModal from '../../components/admin/products/ProductModal';
-import BulkActionsBar from '../../components/admin/products/BulkActionsBar';
-import ProductAnalytics from '../../components/admin/products/ProductAnalytics';
+import ProductCard from '../../components/public/ProductCard';
+// import ProductListItem from '../../components/admin/products/ProductListItem';
+// import ProductFilters from '../../components/admin/products/ProductFilters';
+// import ProductModal from '../../components/admin/products/ProductModal';
+// import BulkActionsBar from '../../components/admin/products/BulkActionsBar';
+import ProductAnalytics from './ProductAnalytics';
 
 const ProductsManagementPage = () => {
   const [viewMode, setViewMode] = useState('cards'); // 'cards', 'list', 'analytics'
@@ -399,24 +399,24 @@ const ProductsManagementPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <ProductFilters
+            {/* <ProductFilters
               filters={filters}
               onFiltersChange={setFilters}
               resultCount={products.length}
               totalCount={totalCount}
               stats={stats}
-            />
+            /> */}
           </motion.div>
         )}
 
         {/* Bulk Actions Bar */}
         <AnimatePresence>
           {selectedProducts.size > 0 && (
-            <BulkActionsBar
+            {/* <BulkActionsBar
               selectedCount={selectedProducts.size}
               onBulkAction={handleBulkAction}
               onClearSelection={() => setSelectedProducts(new Set())}
-            />
+            /> */}
           )}
         </AnimatePresence>
 
@@ -491,7 +491,7 @@ const ProductsManagementPage = () => {
                         </div>
                         <div className="divide-y divide-gray-100">
                           {products.map((product, index) => (
-                            <ProductListItem
+                            {/* <ProductListItem
                               key={product.id}
                               product={product}
                               isSelected={selectedProducts.has(product.id)}
@@ -502,7 +502,7 @@ const ProductsManagementPage = () => {
                                 flagProduct({ id: product.id }).unwrap()
                               }
                               index={index}
-                            />
+                            /> */}
                           ))}
                         </div>
                       </Card>
@@ -564,7 +564,7 @@ const ProductsManagementPage = () => {
         </AnimatePresence>
 
         {/* Product Modal */}
-        <ProductModal
+        {/* <ProductModal
           isOpen={productModalOpen}
           onClose={() => {
             setProductModalOpen(false);
@@ -585,7 +585,7 @@ const ProductsManagementPage = () => {
             id: cat.categoryId,
             name: cat.categoryName,
           }))}
-        />
+        /> */}
 
         {/* Bulk Action Modal */}
         <BulkActionModal

@@ -23,10 +23,8 @@ import {
   Shield,
   Database,
 } from 'lucide-react';
-import { useTheme } from '../../../../hooks/useTheme';
 
 const Breadcrumb = () => {
-  const { isDarkMode } = useTheme();
   const location = useLocation();
 
   // Route configuration for breadcrumb generation
@@ -183,12 +181,7 @@ const Breadcrumb = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className={`
-        ${isDarkMode ? 'glass-1-dark' : 'glass-1'} backdrop-blur-sm
-        border ${isDarkMode ? 'border-dark-olive-border/50' : 'border-sage-green/20'}
-        rounded-2xl p-4 mb-6 shadow-depth-1
-        ${isDarkMode ? 'shadow-dark-depth-1' : ''}
-      `}
+      className="glass-layer-1 dark:glass-1-dark border border-sage-green/20 dark:border-dark-olive-border/50 rounded-2xl p-4 mb-6 shadow-organic dark:shadow-dark-glass hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-organic-lg dark:hover:shadow-dark-glass transition-all duration-300 animate-fade-in"
       aria-label="Breadcrumb navigation"
     >
       <ol className="flex items-center space-x-2">
@@ -203,10 +196,7 @@ const Breadcrumb = () => {
             >
               {index > 0 && (
                 <ChevronRight
-                  className={`
-                    w-4 h-4 mx-2 flex-shrink-0
-                    ${isDarkMode ? 'text-dark-text-muted/60' : 'text-text-muted/60'}
-                  `}
+                  className="w-4 h-4 mx-2 flex-shrink-0 text-text-muted/60 dark:text-dark-text-muted/60"
                   aria-hidden="true"
                 />
               )}
@@ -214,32 +204,20 @@ const Breadcrumb = () => {
               {crumb.isLast ? (
                 <div className="flex items-center gap-2">
                   <div
-                    className={`
-                    p-2 rounded-xl
-                    ${isDarkMode ? 'bg-dark-sage-accent/10' : 'bg-sage-green/10'}
-                  `}
+                    className="p-2 rounded-xl bg-sage-green/10 dark:bg-dark-sage-accent/10"
                   >
                     <IconComponent
-                      className={`
-                      w-4 h-4
-                      ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}
-                    `}
+                      className="w-4 h-4 text-muted-olive dark:text-dark-sage-accent"
                     />
                   </div>
                   <div>
                     <div
-                      className={`
-                      text-sm font-semibold
-                      ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}
-                    `}
+                      className="text-sm font-semibold text-text-dark dark:text-dark-text-primary"
                     >
                       {crumb.label}
                     </div>
                     <div
-                      className={`
-                      text-xs
-                      ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}
-                    `}
+                      className="text-xs text-text-muted dark:text-dark-text-muted"
                     >
                       {crumb.description}
                     </div>
@@ -248,15 +226,7 @@ const Breadcrumb = () => {
               ) : (
                 <Link
                   to={crumb.path}
-                  className={`
-                    flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200
-                    ${
-                      isDarkMode
-                        ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5'
-                        : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'
-                    }
-                    hover:scale-105 hover:shadow-glow-olive/10
-                  `}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:glass-layer-1 dark:hover:glass-1-dark hover:scale-105 hover:-translate-y-0.5 hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15 group"
                   title={crumb.description}
                 >
                   <IconComponent className="w-4 h-4 flex-shrink-0" />

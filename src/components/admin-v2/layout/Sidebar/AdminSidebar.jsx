@@ -22,10 +22,8 @@ import {
   Shield,
   Database,
 } from 'lucide-react';
-import { useTheme } from '../../../../hooks/useTheme';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
-  const { isDarkMode } = useTheme();
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState({});
 
@@ -178,42 +176,19 @@ const AdminSidebar = ({ isOpen, onClose }) => {
     <>
       {/* Enhanced Glassmorphic Sidebar */}
       <div
-        className={`
-          fixed top-0 left-0 z-50 h-full w-80 
-          ${isDarkMode 
-            ? 'bg-dark-olive-surface border-dark-olive-border text-dark-text-primary' 
-            : 'bg-white/95 border-sage-green/20 text-text-dark'
-          } backdrop-blur-xl border-r
-          shadow-depth-3 ${isDarkMode ? 'shadow-dark-depth-3' : ''}
-          transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-          lg:translate-x-0
-        `}
+        className={`fixed top-0 left-0 z-50 h-full w-80 glass-layer-3 dark:glass-3-dark border-r border-sage-green/20 dark:border-dark-olive-border text-text-dark dark:text-dark-text-primary shadow-organic dark:shadow-dark-glass transform transition-all duration-500 ease-out hover:shadow-organic-lg dark:hover:shadow-dark-glass ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 animate-fade-in`}
       >
         {/* Professional Header */}
-        <div
-          className={`
-          flex items-center justify-between p-6 
-          border-b ${isDarkMode ? 'border-dark-olive-border' : 'border-sage-green/20'}
-          ${isDarkMode 
-            ? 'bg-dark-olive-bg/50' 
-            : 'bg-white/50'
-          }
-        `}
-        >
+        <div className="flex items-center justify-between p-6 border-b border-sage-green/20 dark:border-dark-olive-border glass-layer-1 dark:glass-1-dark">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-glow-olive">
               <span className="text-white font-bold text-lg">A</span>
             </div>
             <div>
-              <h1
-                className={`font-bold text-lg ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-              >
+              <h1 className="font-bold text-lg text-text-dark dark:text-dark-text-primary">
                 Admin Portal
               </h1>
-              <p
-                className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-              >
+              <p className="text-xs text-text-muted dark:text-dark-text-muted">
                 Aaroth Fresh • B2B Platform
               </p>
             </div>
@@ -222,14 +197,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           {/* Enhanced Close Button */}
           <button
             onClick={onClose}
-            className={`
-              lg:hidden p-2 rounded-2xl transition-all duration-200
-              ${
-                isDarkMode
-                  ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent'
-                  : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'
-              }
-            `}
+            className="lg:hidden p-2 rounded-2xl transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
           >
             <X className="w-5 h-5" />
           </button>
@@ -240,16 +208,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           {navigationStructure.map((section, sectionIndex) => (
             <div key={section.section} className="space-y-2">
               {/* Section Header */}
-              <div
-                className={`
-                text-xs font-semibold uppercase tracking-wider px-4 py-2
-                ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}
-                flex items-center gap-2
-              `}
-              >
-                <div
-                  className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-dark-sage-accent' : 'bg-sage-green'}`}
-                />
+              <div className="text-xs font-semibold uppercase tracking-wider px-4 py-2 text-muted-olive dark:text-dark-sage-accent flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-sage-green dark:bg-dark-sage-accent" />
                 {section.section}
               </div>
 
@@ -271,23 +231,9 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                             }
                             if (window.innerWidth < 1024) onClose();
                           }}
-                          className={`
-                            flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200
-                            hover:shadow-glow-olive/20 hover:-translate-y-0.5
-                            ${
-                              isActive
-                                ? `${
-                                    isDarkMode
-                                      ? 'bg-dark-sage-accent/20 text-dark-sage-accent border border-dark-sage-accent/30'
-                                      : 'bg-sage-green/10 text-muted-olive border border-sage-green/30'
-                                  }`
-                                : `${
-                                    isDarkMode
-                                      ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-olive-surface/70'
-                                      : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'
-                                  }`
-                            }
-                          `}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group animate-fade-in ${isActive 
+                            ? 'glass-layer-2 dark:glass-2-dark text-muted-olive dark:text-dark-sage-accent border border-sage-green/30 dark:border-dark-sage-accent/30 shadow-glow-green/20 dark:shadow-dark-glow-olive/20' 
+                            : 'text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:glass-layer-1 dark:hover:glass-1-dark hover:-translate-y-1 hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15'}`}
                         >
                           <item.icon className="w-5 h-5 flex-shrink-0" />
 
@@ -331,22 +277,13 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                               <NavLink
                                 key={child.path}
                                 to={child.path}
-                                className={({ isActive: childActive }) => `
-                                  block px-4 py-2 rounded-xl text-sm transition-all duration-200
-                                  ${
-                                    childActive
-                                      ? `${isDarkMode ? 'text-dark-sage-accent bg-dark-sage-accent/10' : 'text-muted-olive bg-sage-green/10'}`
-                                      : `${isDarkMode ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-sage-accent/5' : 'text-text-muted hover:text-muted-olive hover:bg-sage-green/5'}`
-                                  }
-                                `}
+                                className={({ isActive: childActive }) => `block px-4 py-2 rounded-xl text-sm transition-all duration-200 ${childActive ? 'text-muted-olive dark:text-dark-sage-accent bg-sage-green/10 dark:bg-dark-sage-accent/10' : 'text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:bg-sage-green/5 dark:hover:bg-dark-sage-accent/5'}`}
                                 onClick={() => {
                                   if (window.innerWidth < 1024) onClose();
                                 }}
                               >
                                 <div className="flex items-center gap-2">
-                                  <div
-                                    className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-dark-sage-accent/60' : 'bg-sage-green/60'}`}
-                                  />
+                                  <div className="w-1.5 h-1.5 rounded-full bg-sage-green/60 dark:bg-dark-sage-accent/60" />
                                   {child.label}
                                 </div>
                               </NavLink>
@@ -366,15 +303,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         <div className="absolute bottom-20 left-4 right-4">
           <NavLink
             to="/admin/dashboard"
-            className={`
-              flex items-center gap-3 px-4 py-3 text-sm transition-all duration-200
-              rounded-2xl border ${isDarkMode ? 'bg-dark-olive-surface/50 border-dark-olive-border' : 'bg-white/80 border-sage-green/20'}
-              ${
-                isDarkMode
-                  ? 'text-dark-text-muted hover:text-dark-sage-accent hover:bg-dark-olive-surface/70'
-                  : 'text-text-muted hover:text-muted-olive hover:bg-white/90'
-              }
-            `}
+            className="flex items-center gap-3 px-4 py-3 text-sm transition-all duration-300 rounded-2xl glass-layer-1 dark:glass-1-dark border border-sage-green/20 dark:border-dark-olive-border text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:glass-layer-2 dark:hover:glass-2-dark hover:-translate-y-1 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15"
             onClick={() => {
               if (window.innerWidth < 1024) onClose();
             }}
@@ -385,19 +314,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         </div>
 
         {/* Enhanced Footer */}
-        <div
-          className={`
-          absolute bottom-4 left-4 right-4 p-4 rounded-2xl border
-          ${
-            isDarkMode
-              ? 'bg-dark-olive-surface/60 border-dark-sage-accent/20'
-              : 'bg-white/70 border-sage-green/20'
-          }
-        `}
-        >
-          <div
-            className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-          >
+        <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl glass-layer-2 dark:glass-2-dark border border-sage-green/20 dark:border-dark-sage-accent/20 shadow-organic dark:shadow-dark-glass">
+          <div className="text-xs text-text-muted dark:text-dark-text-muted">
             <div className="font-semibold mb-1">Admin Portal v2.0</div>
             <div className="opacity-80">
               Organic Futurism • Professional B2B

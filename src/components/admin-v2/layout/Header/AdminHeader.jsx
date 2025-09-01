@@ -22,11 +22,13 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useTheme } from '../../../../hooks/useTheme';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../ui';
+import authService from '../../../../services/authService';
+import { toggleTheme, isDarkMode } from '../../../../utils/themeUtils';
 
 const AdminHeader = ({ onMenuClick }) => {
-  const { isDarkMode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [searchFocused, setSearchFocused] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -63,6 +65,17 @@ const AdminHeader = ({ onMenuClick }) => {
     });
   };
 
+  const handleThemeToggle = () => {
+    const newTheme = toggleTheme();
+    toast.success(
+      `Switched to ${newTheme === 'dark' ? 'dark' : 'light'} mode`,
+      {
+        icon: newTheme === 'dark' ? '🌙' : '🌞',
+        duration: 2000,
+      }
+    );
+  };
+
   const handleNotificationClick = (notification) => {
     toast(notification.message, {
       icon:
@@ -75,17 +88,22 @@ const AdminHeader = ({ onMenuClick }) => {
     setNotificationsOpen(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      await authService.performLogout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error('Logout failed. Please try again.');
+    }
+  };
+
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className={`
-        sticky top-0 z-40 
-        ${isDarkMode ? 'bg-dark-olive-surface/95' : 'bg-white/95'} backdrop-blur-xl
-        border-b ${isDarkMode ? 'border-dark-olive-border' : 'border-sage-green/20'}
-        shadow-depth-2 ${isDarkMode ? 'shadow-dark-depth-2' : ''}
-      `}
+      className="sticky top-0 z-40 glass-layer-3 dark:glass-3-dark border-b border-sage-green/20 dark:border-dark-olive-border shadow-organic dark:shadow-dark-glass hover:shadow-organic-lg dark:hover:shadow-dark-glass transition-all duration-500"
     >
       <div className="px-4 lg:px-8 py-4">
         <div className="flex items-center justify-between">
@@ -94,14 +112,7 @@ const AdminHeader = ({ onMenuClick }) => {
             {/* Mobile menu button */}
             <button
               onClick={onMenuClick}
-              className={`
-                lg:hidden p-3 rounded-2xl transition-all duration-200
-                ${
-                  isDarkMode
-                    ? 'hover:bg-dark-olive-surface/70 text-dark-text-muted hover:text-dark-sage-accent'
-                    : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'
-                }
-              `}
+              className="lg:hidden p-3 rounded-2xl transition-all duration-300 hover:glass-layer-1 dark:hover:glass-1-dark text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:-translate-y-0.5 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -113,50 +124,28 @@ const AdminHeader = ({ onMenuClick }) => {
                 scale: searchFocused ? 1.02 : 1,
               }}
               transition={{ duration: 0.2 }}
-              className={`
-                hidden sm:flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200
-                ${
-                  searchFocused
-                    ? `${isDarkMode ? 'bg-dark-olive-surface/80 border-dark-sage-accent/30' : 'bg-white/80 border-sage-green/30'} shadow-glow-olive/20`
-                    : `${isDarkMode ? 'bg-dark-olive-surface/50' : 'bg-white/50'}`
-                }
-                border ${isDarkMode ? 'border-dark-olive-border' : 'border-sage-green/20'}
-              `}
+              className={`hidden sm:flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 border border-sage-green/20 dark:border-dark-olive-border ${
+                searchFocused
+                  ? 'glass-layer-2 dark:glass-2-dark border-sage-green/30 dark:border-dark-sage-accent/30 shadow-glow-green/20 dark:shadow-dark-glow-olive/25'
+                  : 'glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15'
+              }`}
             >
               <Search
                 className={`w-5 h-5 ${
                   searchFocused
-                    ? isDarkMode
-                      ? 'text-dark-sage-accent'
-                      : 'text-muted-olive'
-                    : isDarkMode
-                      ? 'text-dark-text-muted'
-                      : 'text-text-muted'
+                    ? 'text-muted-olive dark:text-dark-sage-accent'
+                    : 'text-text-muted dark:text-dark-text-muted'
                 }`}
               />
               <input
                 type="text"
                 placeholder="Search users, vendors, orders... (⌘K)"
-                className={`
-                  bg-transparent border-none outline-none flex-1 text-sm
-                  ${
-                    isDarkMode
-                      ? 'text-dark-text-primary placeholder-dark-text-muted'
-                      : 'text-text-dark placeholder-text-muted'
-                  }
-                `}
+                className="bg-transparent border-none outline-none flex-1 text-sm text-text-dark dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted"
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
               />
               <div
-                className={`
-                text-xs px-2 py-1 rounded-lg border
-                ${
-                  isDarkMode
-                    ? 'text-dark-text-muted border-dark-olive-border'
-                    : 'text-text-muted border-sage-green/20'
-                }
-              `}
+                className="text-xs px-2 py-1 rounded-lg border text-text-muted dark:text-dark-text-muted border-sage-green/20 dark:border-dark-olive-border"
               >
                 <Command className="w-3 h-3 inline mr-1" />K
               </div>
@@ -170,14 +159,7 @@ const AdminHeader = ({ onMenuClick }) => {
               variant="ghost"
               size="sm"
               onClick={handleQuickExport}
-              className={`
-                rounded-2xl transition-all duration-200 hidden md:flex
-                ${
-                  isDarkMode
-                    ? 'hover:bg-dark-olive-surface/70 text-dark-text-muted hover:text-dark-sage-accent'
-                    : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'
-                }
-              `}
+              className="rounded-2xl transition-all duration-300 hidden md:flex hover:glass-layer-1 dark:hover:glass-1-dark text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:-translate-y-1 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15 group"
               title="Quick Export Dashboard"
             >
               <Download className="w-4 h-4 mr-2" />
@@ -188,33 +170,12 @@ const AdminHeader = ({ onMenuClick }) => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                toggleTheme();
-                toast.success(
-                  `Switched to ${isDarkMode ? 'light' : 'dark'} mode`,
-                  {
-                    icon: isDarkMode ? '🌞' : '🌙',
-                    duration: 2000,
-                  }
-                );
-              }}
-              className={`
-                rounded-2xl transition-all duration-200
-                ${
-                  isDarkMode
-                    ? 'hover:bg-dark-olive-surface/70 text-amber-400 hover:text-amber-300'
-                    : 'hover:bg-sage-green/10 text-slate-600 hover:text-slate-700'
-                }
-              `}
-              title={
-                isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'
-              }
+              onClick={handleThemeToggle}
+              className="rounded-2xl transition-all duration-300 hover:glass-layer-1 dark:hover:glass-1-dark text-slate-600 dark:text-amber-400 hover:text-slate-700 dark:hover:text-amber-300 hover:-translate-y-1 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15"
+              title="Toggle theme"
             >
-              {isDarkMode ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
+              <Sun className="w-5 h-5 hidden dark:block" />
+              <Moon className="w-5 h-5 block dark:hidden" />
             </Button>
 
             {/* Enhanced Notifications */}
@@ -223,14 +184,11 @@ const AdminHeader = ({ onMenuClick }) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className={`
-                  rounded-2xl transition-all duration-200 relative
-                  ${
-                    notificationsOpen
-                      ? `${isDarkMode ? 'bg-dark-olive-surface/70 text-dark-sage-accent' : 'bg-sage-green/10 text-muted-olive'}`
-                      : `${isDarkMode ? 'hover:bg-dark-olive-surface/70 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'}`
-                  }
-                `}
+                className={`rounded-2xl transition-all duration-200 relative ${
+                  notificationsOpen
+                    ? 'bg-sage-green/10 dark:bg-dark-olive-surface/70 text-muted-olive dark:text-dark-sage-accent'
+                    : 'hover:bg-sage-green/10 dark:hover:bg-dark-olive-surface/70 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent'
+                }`}
                 title="Notifications"
               >
                 <Bell className="w-5 h-5" />
@@ -244,21 +202,14 @@ const AdminHeader = ({ onMenuClick }) => {
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.15 }}
-                  className={`
-                    absolute right-0 top-12 w-80 rounded-2xl border shadow-depth-3
-                    ${isDarkMode ? 'bg-dark-olive-surface/95 border-dark-olive-border shadow-dark-depth-3' : 'bg-white/95 border-sage-green/20'}
-                  `}
+                  className="absolute right-0 top-12 w-80 rounded-2xl border glass-layer-3 dark:glass-3-dark border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass"
                 >
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <h3
-                        className={`font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                      >
+                      <h3 className="font-semibold text-text-dark dark:text-dark-text-primary">
                         Notifications
                       </h3>
-                      <div
-                        className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                      >
+                      <div className="text-xs text-text-muted dark:text-dark-text-muted">
                         {notifications.length} new
                       </div>
                     </div>
@@ -267,11 +218,7 @@ const AdminHeader = ({ onMenuClick }) => {
                         <div
                           key={notification.id}
                           onClick={() => handleNotificationClick(notification)}
-                          className={`
-                            p-3 rounded-xl cursor-pointer transition-all duration-200
-                            ${isDarkMode ? 'hover:bg-dark-olive-surface/70' : 'hover:bg-sage-green/10'}
-                            border ${isDarkMode ? 'border-dark-olive-border/50' : 'border-sage-green/10'}
-                          `}
+                          className="p-3 rounded-xl cursor-pointer transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-dark-olive-surface/70 border border-sage-green/10 dark:border-dark-olive-border/50"
                         >
                           <div className="flex items-start gap-3">
                             <div
@@ -287,19 +234,13 @@ const AdminHeader = ({ onMenuClick }) => {
                             `}
                             />
                             <div className="flex-1 min-w-0">
-                              <p
-                                className={`font-medium text-sm ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                              >
+                              <p className="font-medium text-sm text-text-dark dark:text-dark-text-primary">
                                 {notification.title}
                               </p>
-                              <p
-                                className={`text-xs mt-1 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                              >
+                              <p className="text-xs mt-1 text-text-muted dark:text-dark-text-muted">
                                 {notification.message}
                               </p>
-                              <p
-                                className={`text-xs mt-1 ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}`}
-                              >
+                              <p className="text-xs mt-1 text-muted-olive dark:text-dark-sage-accent">
                                 {notification.time}
                               </p>
                             </div>
@@ -316,14 +257,7 @@ const AdminHeader = ({ onMenuClick }) => {
             <Button
               variant="ghost"
               size="sm"
-              className={`
-                sm:hidden rounded-2xl transition-all duration-200
-                ${
-                  isDarkMode
-                    ? 'hover:bg-dark-olive-surface/70 text-dark-text-muted hover:text-dark-sage-accent'
-                    : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'
-                }
-              `}
+              className="sm:hidden rounded-2xl transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-dark-olive-surface/70 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
               title="Search"
             >
               <Search className="w-5 h-5" />
@@ -333,24 +267,17 @@ const AdminHeader = ({ onMenuClick }) => {
             <div className="relative">
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className={`
-                  flex items-center gap-3 ml-2 p-2 rounded-2xl transition-all duration-200
-                  ${
-                    profileDropdownOpen
-                      ? `${isDarkMode ? 'bg-dark-olive-surface/70' : 'bg-sage-green/10'}`
-                      : `${isDarkMode ? 'hover:bg-dark-olive-surface/70' : 'hover:bg-sage-green/10'}`
-                  }
-                `}
+                className={`flex items-center gap-3 ml-2 p-2 rounded-2xl transition-all duration-200 ${
+                  profileDropdownOpen
+                    ? 'bg-sage-green/10 dark:bg-dark-olive-surface/70'
+                    : 'hover:bg-sage-green/10 dark:hover:bg-dark-olive-surface/70'
+                }`}
               >
                 <div className="hidden md:block text-right">
-                  <div
-                    className={`text-sm font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                  >
+                  <div className="text-sm font-semibold text-text-dark dark:text-dark-text-primary">
                     Admin User
                   </div>
-                  <div
-                    className={`text-xs ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                  >
+                  <div className="text-xs text-text-muted dark:text-dark-text-muted">
                     System Administrator
                   </div>
                 </div>
@@ -363,11 +290,9 @@ const AdminHeader = ({ onMenuClick }) => {
                   </div>
                 </div>
                 <ChevronDown
-                  className={`
-                  w-4 h-4 transition-transform duration-200
-                  ${profileDropdownOpen ? 'rotate-180' : ''}
-                  ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}
-                `}
+                  className={`w-4 h-4 transition-transform duration-200 text-text-muted dark:text-dark-text-muted ${
+                    profileDropdownOpen ? 'rotate-180' : ''
+                  }`}
                 />
               </button>
 
@@ -377,10 +302,7 @@ const AdminHeader = ({ onMenuClick }) => {
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.15 }}
-                  className={`
-                    absolute right-0 top-16 w-64 rounded-2xl border shadow-depth-3
-                    ${isDarkMode ? 'bg-dark-olive-surface/95 border-dark-olive-border shadow-dark-depth-3' : 'bg-white/95 border-sage-green/20'}
-                  `}
+                  className="absolute right-0 top-16 w-64 rounded-2xl border glass-layer-3 dark:glass-3-dark border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass"
                 >
                   <div className="p-4">
                     <div className="flex items-center gap-3 pb-3 border-b border-sage-green/20 dark:border-dark-olive-border">
@@ -388,52 +310,37 @@ const AdminHeader = ({ onMenuClick }) => {
                         <User className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div
-                          className={`font-semibold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                        >
+                        <div className="font-semibold text-text-dark dark:text-dark-text-primary">
                           Admin User
                         </div>
-                        <div
-                          className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                        >
+                        <div className="text-sm text-text-muted dark:text-dark-text-muted">
                           admin@aarothfresh.com
                         </div>
                       </div>
                     </div>
                     <div className="py-2 space-y-1">
                       <button
-                        className={`
-                        w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors
-                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'}
-                      `}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
                       >
                         <Settings className="w-4 h-4" />
                         <span>Account Settings</span>
                       </button>
                       <button
-                        className={`
-                        w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors
-                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'}
-                      `}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
                       >
                         <BarChart3 className="w-4 h-4" />
                         <span>Admin Analytics</span>
                       </button>
                       <button
-                        className={`
-                        w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors
-                        ${isDarkMode ? 'hover:bg-dark-sage-accent/10 text-dark-text-muted hover:text-dark-sage-accent' : 'hover:bg-sage-green/10 text-text-muted hover:text-muted-olive'}
-                      `}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
                       >
                         <Shield className="w-4 h-4" />
                         <span>Security</span>
                       </button>
                       <hr className="my-2 border-sage-green/20 dark:border-dark-olive-border" />
                       <button
-                        className={`
-                        w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors
-                        ${isDarkMode ? 'hover:bg-tomato-red/10 text-dark-text-muted hover:text-tomato-red' : 'hover:bg-tomato-red/10 text-text-muted hover:text-tomato-red'}
-                      `}
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-tomato-red/10 text-text-muted dark:text-dark-text-muted hover:text-tomato-red"
                       >
                         <LogOut className="w-4 h-4" />
                         <span>Sign Out</span>

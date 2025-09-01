@@ -6,7 +6,7 @@
 import React, { useRef, useMemo } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { useTheme } from '../../../../hooks/useTheme';
+// Theme now handled via CSS classes - no React state needed
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -32,7 +32,9 @@ const DoughnutChart = ({
   centerContent, // Custom content for the center
 }) => {
   const chartRef = useRef(null);
-  const { isDarkMode } = useTheme();
+  
+  // Detect dark mode from DOM instead of React state
+  const isDarkMode = document.documentElement.classList.contains('dark');
 
   // Chart data configuration
   const chartData = useMemo(() => {

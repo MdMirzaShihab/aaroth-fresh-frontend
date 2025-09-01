@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { useTheme } from '../../../../hooks/useTheme';
 // import { AdminLayoutProvider, useAdminLayout } from '../../../../hooks/admin-v2/useAdminLayout';
 import AdminSidebar from '../Sidebar/AdminSidebar';
 import AdminHeader from '../Header/AdminHeader';
@@ -15,7 +14,6 @@ import TestLayout from '../TestLayout';
 
 // Inner layout component that uses the context
 const AdminLayoutInner = ({ children }) => {
-  const { isDarkMode } = useTheme();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const layoutLoading = false;
@@ -31,29 +29,14 @@ const AdminLayoutInner = ({ children }) => {
   }, []);
 
   return (
-    <div
-      className={`min-h-screen transition-colors duration-300 ${
-        isDarkMode 
-          ? 'bg-dark-olive-bg text-dark-text-primary' 
-          : 'bg-background text-text-dark'
-      }`}
-    >
+    <div className="min-h-screen transition-all duration-500 bg-gradient-to-br from-earthy-beige via-background to-sage-green/5 dark:from-dark-olive-bg dark:via-dark-bg dark:to-dark-sage-accent/5 text-text-dark dark:text-dark-text-primary">
       {/* Loading overlay for layout transitions */}
       {layoutLoading && (
         <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-          <div
-            className={`
-            ${isDarkMode ? 'glass-4-dark' : 'glass-4'} p-6 rounded-2xl
-            border ${isDarkMode ? 'border-dark-olive-border' : 'border-sage-green/20'}
-          `}
-          >
+          <div className="glass-4 dark:glass-4-dark p-6 rounded-2xl border border-sage-green/20 dark:border-dark-olive-border">
             <div className="flex items-center gap-3">
               <div className="animate-spin w-5 h-5 border-2 border-sage-green border-t-transparent rounded-full" />
-              <span
-                className={
-                  isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'
-                }
-              >
+              <span className="text-text-dark dark:text-dark-text-primary">
                 Loading...
               </span>
             </div>
@@ -81,11 +64,7 @@ const AdminLayoutInner = ({ children }) => {
         <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
 
         {/* Main content */}
-        <main className={`flex-1 p-4 lg:p-6 ${
-          isDarkMode 
-            ? 'bg-dark-olive-bg' 
-            : 'bg-background'
-        }`}>
+        <main className="flex-1 p-4 lg:p-6">
           <div className="max-w-7xl mx-auto">
             <Breadcrumb />
             {children || <Outlet />}

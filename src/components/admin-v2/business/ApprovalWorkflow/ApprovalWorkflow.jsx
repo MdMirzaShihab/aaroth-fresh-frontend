@@ -102,7 +102,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-gray-700 p-6"
+      className="glass-layer-3 dark:glass-3-dark rounded-3xl border border-sage-green/20 dark:border-dark-olive-border p-6 shadow-organic dark:shadow-dark-glass"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
@@ -167,7 +167,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       </div>
 
       {/* Business Info */}
-      <div className="bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl p-4 mb-6">
+      <div className="glass-layer-1 dark:glass-1-dark border border-sage-green/10 dark:border-dark-olive-border/30 rounded-2xl p-4 mb-6">
         <h4 className="font-medium text-text-dark dark:text-white mb-3">
           Business Information
         </h4>
@@ -197,7 +197,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
 
       {/* Risk Assessment */}
       {entity.riskAssessment && (
-        <div className="bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl p-4 mb-6">
+        <div className="glass-layer-1 dark:glass-1-dark border border-sage-green/10 dark:border-dark-olive-border/30 rounded-2xl p-4 mb-6">
           <h4 className="font-medium text-text-dark dark:text-white mb-3">
             Risk Assessment
           </h4>

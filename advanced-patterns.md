@@ -1141,6 +1141,261 @@ export const measureComponentPerformance = (componentName) => {
 };
 ```
 
+## UI Integration with Olive-Themed Design System
+
+### Advanced Components with Olive Theme Integration
+```javascript
+// Enhanced Error Boundary with Olive Theme
+const ErrorBoundaryFallback = ({ error, onRetry, retryCount }) => (
+  <div className="min-h-[50vh] flex flex-col items-center justify-center text-center p-8 
+                  bg-gradient-to-br from-earthy-beige/20 to-white">
+    <div className="w-16 h-16 text-tomato-red/80 mb-6">
+      <AlertTriangle className="w-full h-full" />
+    </div>
+    <h2 className="text-2xl font-medium text-text-dark/80 mb-4">
+      Something went wrong
+    </h2>
+    <p className="text-text-muted mb-8 max-w-md leading-relaxed">
+      We encountered an unexpected error. Please try again or contact support if the problem persists.
+    </p>
+    <div className="flex gap-4">
+      <button
+        onClick={onRetry}
+        className="bg-gradient-secondary text-white px-8 py-3 rounded-2xl 
+                   font-medium hover:shadow-glow-olive hover:-translate-y-0.5 
+                   transition-all duration-300 focus:ring-2 focus:ring-muted-olive/20"
+      >
+        Try Again
+      </button>
+      <button
+        onClick={() => window.location.reload()}
+        className="glass-2 text-earthy-brown px-6 py-3 rounded-xl font-medium
+                   hover:glass-3 cedar-warmth transition-all duration-300 
+                   focus:ring-2 focus:ring-dusty-cedar/20"
+      >
+        Reload Page
+      </button>
+    </div>
+  </div>
+);
+
+// Performance-optimized components with olive styling
+const OptimizedProductCard = memo(({ product, onAction }) => (
+  <div className="glass-card-olive rounded-3xl shadow-depth-2 hover:shadow-depth-4 
+                  transition-all duration-500 p-6 border sage-highlight 
+                  hover:-translate-y-2 hover:scale-[1.02] group cursor-pointer">
+    <div className="relative mb-4 overflow-hidden rounded-2xl">
+      <img 
+        src={product.image} 
+        alt={product.name}
+        className="w-full h-48 object-cover transition-transform duration-500 
+                   group-hover:scale-110"
+        loading="lazy"
+      />
+      {product.featured && (
+        <div className="absolute top-2 right-2 bg-gradient-secondary 
+                        text-white px-3 py-1 rounded-full text-xs font-medium 
+                        animate-glow-olive">
+          Featured
+        </div>
+      )}
+    </div>
+    
+    <div className="space-y-3">
+      <h3 className="text-lg font-medium text-text-dark group-hover:text-muted-olive 
+                     transition-colors duration-200 line-clamp-2">
+        {product.name}
+      </h3>
+      <div className="flex justify-between items-center pt-2">
+        <span className="text-2xl font-bold text-muted-olive">
+          ${product.price}
+        </span>
+        <button 
+          onClick={() => onAction(product)}
+          className="opacity-0 group-hover:opacity-100 transition-all duration-200 
+                     bg-gradient-secondary text-white px-4 py-2 rounded-xl text-sm 
+                     font-medium hover:scale-105 active:scale-95 
+                     focus:ring-2 focus:ring-muted-olive/20"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+));
+
+// RTK Query with olive-themed loading states
+const useEnhancedListingsQuery = (filters = {}) => {
+  const {
+    data,
+    isLoading,
+    error,
+    refetch
+  } = useGetListingsQuery(filters, {
+    selectFromResult: ({ data, isLoading, error }) => ({
+      data: data?.listings || [],
+      isLoading,
+      error,
+      refetch
+    })
+  });
+
+  const LoadingComponent = useMemo(() => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="glass-2 rounded-3xl p-6 space-y-4 animate-pulse-subtle">
+          <div className="h-48 bg-gradient-to-r from-earthy-beige/30 to-sage-green/10 rounded-2xl animate-breathe" />
+          <div className="h-4 bg-earthy-beige/40 rounded-full w-3/4 animate-breathe" />
+          <div className="h-4 bg-earthy-beige/30 rounded-full w-1/2 animate-breathe" />
+          <div className="flex justify-between items-center pt-2">
+            <div className="h-6 bg-muted-olive/20 rounded-full w-1/3 animate-breathe" />
+            <div className="h-8 bg-gradient-secondary/20 rounded-xl w-20 animate-breathe" />
+          </div>
+        </div>
+      ))}
+    </div>
+  ), []);
+
+  const ErrorComponent = useMemo(() => (
+    <div className="text-center py-12">
+      <div className="w-16 h-16 text-tomato-red/60 mx-auto mb-4">
+        <AlertCircle className="w-full h-full" />
+      </div>
+      <h3 className="text-lg font-medium text-text-dark/80 mb-2">
+        Failed to load listings
+      </h3>
+      <p className="text-text-muted mb-6">
+        Please check your connection and try again
+      </p>
+      <button
+        onClick={refetch}
+        className="bg-gradient-secondary text-white px-6 py-3 rounded-2xl 
+                   font-medium hover:shadow-glow-olive transition-all duration-300
+                   focus:ring-2 focus:ring-muted-olive/20"
+      >
+        Retry
+      </button>
+    </div>
+  ), [refetch]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    LoadingComponent,
+    ErrorComponent,
+    refetch
+  };
+};
+```
+
+### Advanced State Management with UI Feedback
+```javascript
+// Enhanced notification slice with olive-themed notifications
+const notificationSlice = createSlice({
+  name: 'notifications',
+  initialState: {
+    items: []
+  },
+  reducers: {
+    addNotification: (state, action) => {
+      const notification = {
+        id: Date.now(),
+        timestamp: Date.now(),
+        autoRemove: true,
+        duration: 5000,
+        className: getNotificationStyle(action.payload.type),
+        ...action.payload
+      };
+      state.items.push(notification);
+    }
+  }
+});
+
+const getNotificationStyle = (type) => {
+  const styles = {
+    success: 'bg-success-light/10 backdrop-blur-sm border border-success-light/20 text-muted-olive',
+    error: 'bg-error-light/5 backdrop-blur-sm border border-tomato-red/20 text-tomato-red/90',
+    warning: 'bg-warning-light/80 backdrop-blur-sm border border-amber-200/50 text-amber-800',
+    info: 'bg-info-light/80 backdrop-blur-sm border border-sage-green/20 text-info-dark'
+  };
+  return styles[type] || styles.info;
+};
+
+// WebSocket integration with olive-themed connection status
+const useConnectionStatus = () => {
+  const [status, setStatus] = useState('connecting');
+  
+  const StatusIndicator = useMemo(() => {
+    const statusConfig = {
+      connected: {
+        className: 'bg-success-light text-success-dark border-success-dark/20',
+        icon: '●',
+        message: 'Connected'
+      },
+      connecting: {
+        className: 'bg-warning-light text-warning-dark border-warning-dark/20 animate-pulse-subtle',
+        icon: '◐',
+        message: 'Connecting...'
+      },
+      disconnected: {
+        className: 'bg-error-light text-error-dark border-error-dark/20',
+        icon: '●',
+        message: 'Disconnected'
+      }
+    };
+    
+    const config = statusConfig[status];
+    
+    return (
+      <div className={`fixed top-2 right-2 px-3 py-1 rounded-full text-xs 
+                       font-medium border ${config.className} glass-2 z-50`}>
+        <span className="mr-1">{config.icon}</span>
+        {config.message}
+      </div>
+    );
+  }, [status]);
+  
+  return { status, setStatus, StatusIndicator };
+};
+```
+
+### Performance Optimization with Visual Polish
+```javascript
+// Optimized infinite scroll with olive-themed loading
+const useOptimizedInfiniteScroll = (fetchNextPage, hasNextPage) => {
+  const loadMoreRef = useIntersectionObserver(
+    useCallback(() => {
+      if (hasNextPage) {
+        fetchNextPage();
+      }
+    }, [hasNextPage, fetchNextPage]),
+    { rootMargin: '100px' }
+  );
+
+  const LoadMoreIndicator = useMemo(() => (
+    <div ref={loadMoreRef} className="col-span-full text-center py-8">
+      {hasNextPage ? (
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-8 h-8 border-4 border-muted-olive/20 border-t-muted-olive 
+                          rounded-full animate-spin" />
+          <span className="text-text-muted font-medium">Loading more products...</span>
+        </div>
+      ) : (
+        <div className="glass-2 rounded-2xl p-6 cedar-warmth">
+          <p className="text-text-dark font-medium mb-2">That's all for now!</p>
+          <p className="text-text-muted text-sm">
+            Check back later for new products from our vendors.
+          </p>
+        </div>
+      )}
+    </div>
+  ), [hasNextPage]);
+
+  return { LoadMoreIndicator };
+};
+```
+
 ## Conclusion
 
-These advanced patterns provide a robust foundation for complex B2B marketplace functionality while maintaining performance, security, and maintainability. Always test thoroughly and adapt patterns to your specific use case.
+These advanced patterns provide a robust foundation for complex B2B marketplace functionality while maintaining performance, security, and maintainability. The integration with the olive-themed design system from ui-patterns-reference.md ensures visual consistency across all technical implementations. Always test thoroughly and adapt patterns to your specific use case.

@@ -3,67 +3,68 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../../hooks/useTheme';
+import { motion } from 'framer-motion';
 
 const TestLayout = () => {
-  const { isDarkMode } = useTheme();
 
   return (
     <div
-      className={`min-h-screen p-8 ${isDarkMode ? 'dark bg-dark-bg' : 'bg-gray-50'}`}
+      className="min-h-screen p-8 bg-gray-50 dark:bg-dark-bg dark:dark"
     >
       <div className="max-w-4xl mx-auto">
-        <div
-          className={`
-          p-8 rounded-3xl border shadow-lg
-          ${isDarkMode ? 'glass-3-dark border-dark-olive-border' : 'glass-3 border-sage-green/20'}
-        `}
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="p-8 rounded-3xl border shadow-organic dark:shadow-dark-glass glass-layer-3 dark:glass-3-dark border-sage-green/20 dark:border-dark-olive-border hover:glass-4 dark:hover:glass-4-dark hover:shadow-organic-lg dark:hover:shadow-dark-glass hover:-translate-y-1 transition-all duration-500 group"
         >
-          <h1
-            className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="text-3xl font-bold mb-4 text-text-dark dark:text-dark-text-primary group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors duration-300"
           >
-            🎉 Enhanced Admin Layout System Test
-          </h1>
+            ✨ Restaurant-Grade Admin Interface
+          </motion.h1>
 
-          <div className="space-y-4">
-            <div
-              className={`
-              p-4 rounded-2xl 
-              ${isDarkMode ? 'bg-dark-sage-accent/10 text-dark-sage-accent' : 'bg-sage-green/10 text-muted-olive'}
-            `}
+          <motion.div 
+            className="space-y-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+              className="p-4 rounded-2xl glass-layer-1 dark:glass-1-dark border border-sage-green/20 dark:border-dark-sage-accent/20 text-muted-olive dark:text-dark-sage-accent hover:glass-layer-2 dark:hover:glass-2-dark hover:-translate-y-0.5 hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15 transition-all duration-300 group cursor-pointer"
             >
-              ✅ <strong>Glassmorphic Design System:</strong> Working perfectly
-            </div>
+              ✨ <strong>Restaurant's Glass-Layer System:</strong> Advanced 3D glassmorphism with organic shadows
+            </motion.div>
 
             <div
-              className={`
-              p-4 rounded-2xl 
-              ${isDarkMode ? 'bg-sage-green/10 text-sage-green' : 'bg-sage-green/10 text-muted-olive'}
-            `}
+              className="p-4 rounded-2xl bg-sage-green/10 text-muted-olive dark:text-sage-green"
             >
               ✅ <strong>Theme System Integration:</strong> Dark/Light modes
               active
             </div>
 
             <div
-              className={`
-              p-4 rounded-2xl 
-              ${isDarkMode ? 'bg-earthy-yellow/10 text-earthy-brown' : 'bg-earthy-yellow/10 text-earthy-brown'}
-            `}
+              className="p-4 rounded-2xl bg-earthy-yellow/10 text-earthy-brown"
             >
               ✅ <strong>Tailwind Configuration:</strong> Custom colors and
               classes loaded
             </div>
-          </div>
+          </motion.div>
 
           <div className="mt-8 p-6 bg-gradient-to-br from-muted-olive/5 to-sage-green/5 rounded-2xl border border-sage-green/20">
             <h2
-              className={`text-xl font-semibold mb-3 ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+              className="text-xl font-semibold mb-3 text-text-dark dark:text-dark-text-primary"
             >
               🚀 Enhanced Features Ready
             </h2>
             <ul
-              className={`space-y-2 ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
+              className="space-y-2 text-text-muted dark:text-dark-text-muted"
             >
               <li>
                 • Professional glassmorphic sidebar with hierarchical navigation
@@ -77,20 +78,17 @@ const TestLayout = () => {
 
           <div className="mt-6 text-center">
             <div
-              className={`
-              inline-flex items-center gap-2 px-6 py-3 rounded-2xl
-              ${isDarkMode ? 'glass-2-dark border border-dark-sage-accent/30' : 'glass-2 border border-sage-green/30'}
-            `}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl glass-2 dark:glass-2-dark border border-sage-green/30 dark:border-dark-sage-accent/30"
             >
               <div className="w-2 h-2 bg-sage-green rounded-full animate-pulse"></div>
               <span
-                className={`font-medium ${isDarkMode ? 'text-dark-sage-accent' : 'text-muted-olive'}`}
+                className="font-medium text-muted-olive dark:text-dark-sage-accent"
               >
                 Admin Layout System: ACTIVE & READY
               </span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

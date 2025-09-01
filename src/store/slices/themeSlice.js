@@ -36,13 +36,10 @@ const themeSlice = createSlice({
       // Save to localStorage
       localStorage.setItem('theme', state.mode);
 
-      // Update HTML class for Tailwind CSS dark mode
+      // Update HTML class for Tailwind CSS dark mode (IMMEDIATE DOM update)
       if (typeof document !== 'undefined') {
-        if (state.mode === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        // Force immediate DOM update for instant theme switching
+        document.documentElement.classList.toggle('dark', state.mode === 'dark');
       }
     },
     setTheme: (state, action) => {
@@ -54,13 +51,9 @@ const themeSlice = createSlice({
         // Save to localStorage
         localStorage.setItem('theme', newTheme);
 
-        // Update HTML class for Tailwind CSS dark mode
+        // Update HTML class for Tailwind CSS dark mode (IMMEDIATE DOM update)
         if (typeof document !== 'undefined') {
-          if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
+          document.documentElement.classList.toggle('dark', newTheme === 'dark');
         }
       }
     },
@@ -75,24 +68,16 @@ const themeSlice = createSlice({
         ).matches;
         state.mode = isDark ? 'dark' : 'light';
 
-        // Update HTML class
+        // Update HTML class (IMMEDIATE DOM update)
         if (typeof document !== 'undefined') {
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
+          document.documentElement.classList.toggle('dark', isDark);
         }
       }
     },
     initializeTheme: (state) => {
-      // Initialize theme on app startup
+      // Initialize theme on app startup (IMMEDIATE DOM update)
       if (typeof document !== 'undefined') {
-        if (state.mode === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.toggle('dark', state.mode === 'dark');
       }
     },
   },

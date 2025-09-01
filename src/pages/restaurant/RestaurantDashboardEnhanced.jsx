@@ -138,16 +138,16 @@ const RestaurantDashboardEnhanced = () => {
 
   return (
     <CapabilityGate capability="canAccessDashboard">
-      <div className="min-h-screen bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-sage-green/5 via-white to-muted-olive/5 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header with Verification Status */}
           <div className="mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-medium text-text-dark mb-2">
+                <h1 className="text-3xl font-light text-text-dark mb-2 tracking-wide">
                   Restaurant Dashboard
                 </h1>
-                <p className="text-text-muted">
+                <p className="text-text-muted font-light">
                   {businessName
                     ? `Welcome back, ${businessName}`
                     : 'Manage your restaurant operations'}
@@ -174,22 +174,22 @@ const RestaurantDashboardEnhanced = () => {
           </div>
 
           {/* Quick Actions with Capability Gates */}
-          <Card className="p-6 mb-8">
-            <h2 className="text-lg font-semibold text-text-dark mb-4">
+          <div className="glass-layer-1 dark:glass-1-dark rounded-3xl p-6 mb-8 shadow-organic dark:shadow-dark-glass animate-fade-in">
+            <h2 className="text-lg font-medium text-text-dark mb-4">
               Quick Actions
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <CapabilityGate capability="canPlaceOrders" showMessage={false}>
                 <Link
                   to="/restaurant/place-order"
-                  className="flex items-center gap-3 p-4 rounded-2xl hover:bg-muted-olive/5 transition-all duration-200 group border border-muted-olive/10 hover:border-muted-olive/30"
+                  className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
                 >
-                  <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center group-hover:bg-muted-olive/20 transition-colors">
+                  <div className="w-12 h-12 bg-gradient-to-br from-muted-olive/10 to-sage-green/10 dark:from-dark-sage-accent/20 dark:to-dark-olive-surface/20 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
                     <Plus className="w-6 h-6 text-muted-olive" />
                   </div>
                   <div>
-                    <p className="font-medium text-text-dark">Place Order</p>
-                    <p className="text-sm text-text-muted">
+                    <p className="font-medium text-text-dark dark:text-dark-text-primary group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors duration-200">Place Order</p>
+                    <p className="text-sm text-text-muted dark:text-dark-text-muted group-hover:text-muted-olive/70 dark:group-hover:text-dark-sage-accent/70 transition-colors duration-200">
                       Order fresh produce
                     </p>
                   </div>
@@ -199,28 +199,28 @@ const RestaurantDashboardEnhanced = () => {
               <CapabilityGate capability="canPlaceOrders" showMessage={false}>
                 <Link
                   to="/restaurant/orders"
-                  className="flex items-center gap-3 p-4 rounded-2xl hover:bg-earthy-brown/5 transition-all duration-200 group border border-earthy-brown/10 hover:border-earthy-brown/30"
+                  className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
                 >
-                  <div className="w-12 h-12 bg-earthy-brown/10 rounded-2xl flex items-center justify-center group-hover:bg-earthy-brown/20 transition-colors">
-                    <Package className="w-6 h-6 text-earthy-brown" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-dusty-cedar/10 to-earthy-brown/10 dark:from-dark-cedar-warm/20 dark:to-dusty-cedar/20 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
+                    <Package className="w-6 h-6 text-dusty-cedar dark:text-dark-cedar-warm group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors duration-200" />
                   </div>
                   <div>
-                    <p className="font-medium text-text-dark">Order History</p>
-                    <p className="text-sm text-text-muted">View past orders</p>
+                    <p className="font-medium text-text-dark dark:text-dark-text-primary group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors duration-200">Order History</p>
+                    <p className="text-sm text-text-muted dark:text-dark-text-muted group-hover:text-muted-olive/70 dark:group-hover:text-dark-sage-accent/70 transition-colors duration-200">View past orders</p>
                   </div>
                 </Link>
               </CapabilityGate>
 
               <Link
                 to="/restaurant/profile"
-                className="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-50 transition-all duration-200 group border border-blue-100 hover:border-blue-200"
+                className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
               >
-                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                  <Users className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-gradient-to-br from-sage-green/10 to-muted-olive/10 dark:from-dark-sage-accent/20 dark:to-muted-olive/20 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
+                  <Users className="w-6 h-6 text-muted-olive dark:text-dark-sage-accent group-hover:text-sage-green dark:group-hover:text-dark-sage-accent/80 transition-colors duration-200" />
                 </div>
                 <div>
-                  <p className="font-medium text-text-dark">Profile</p>
-                  <p className="text-sm text-text-muted">Restaurant details</p>
+                  <p className="font-medium text-text-dark dark:text-dark-text-primary group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors duration-200">Profile</p>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted group-hover:text-muted-olive/70 dark:group-hover:text-dark-sage-accent/70 transition-colors duration-200">Restaurant details</p>
                 </div>
               </Link>
 
@@ -230,19 +230,19 @@ const RestaurantDashboardEnhanced = () => {
               >
                 <Link
                   to="/restaurant/budget"
-                  className="flex items-center gap-3 p-4 rounded-2xl hover:bg-green-50 transition-all duration-200 group border border-green-100 hover:border-green-200"
+                  className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
                 >
-                  <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
-                    <Target className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-sage-green/10 to-bottle-green/10 dark:from-dark-sage-accent/20 dark:to-dark-sage-accent/30 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
+                    <Target className="w-6 h-6 text-bottle-green dark:text-dark-sage-accent group-hover:text-sage-green dark:group-hover:text-dark-sage-accent/80 transition-colors duration-200" />
                   </div>
                   <div>
-                    <p className="font-medium text-text-dark">Budget</p>
-                    <p className="text-sm text-text-muted">Track spending</p>
+                    <p className="font-medium text-text-dark dark:text-dark-text-primary group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors duration-200">Budget</p>
+                    <p className="text-sm text-text-muted dark:text-dark-text-muted group-hover:text-muted-olive/70 dark:group-hover:text-dark-sage-accent/70 transition-colors duration-200">Track spending</p>
                   </div>
                 </Link>
               </CapabilityGate>
             </div>
-          </Card>
+          </div>
 
           {/* Only show analytics if user can access dashboard */}
           <CapabilityGate capability="canAccessDashboard">
@@ -328,12 +328,12 @@ const RestaurantDashboardEnhanced = () => {
 
             {/* Budget Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              <Card className="p-6">
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-text-dark">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary">
                     Budget Status
                   </h3>
-                  <Target className="w-5 h-5 text-text-muted" />
+                  <Target className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
                 </div>
 
                 {budgetLoading ? (
@@ -372,17 +372,17 @@ const RestaurantDashboardEnhanced = () => {
                     </p>
                   </div>
                 )}
-              </Card>
+              </div>
 
               {/* Recent Orders */}
-              <Card className="lg:col-span-2 p-6">
+              <div className="lg:col-span-2 glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-text-dark">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary">
                     Recent Orders
                   </h3>
                   <Link
                     to="/restaurant/orders"
-                    className="text-muted-olive hover:text-muted-olive/80 text-sm font-medium"
+                    className="text-muted-olive dark:text-dark-sage-accent hover:text-sage-green dark:hover:text-dark-sage-accent/80 text-sm font-medium transition-colors duration-200"
                   >
                     View All
                   </Link>
@@ -408,44 +408,44 @@ const RestaurantDashboardEnhanced = () => {
                     {orderHistory?.data?.orders?.slice(0, 5).map((order) => (
                       <div
                         key={order._id}
-                        className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50"
+                        className="flex items-center justify-between p-3 rounded-xl hover:glass-layer-1 dark:hover:glass-1-dark transition-all duration-200"
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-3 h-3 rounded-full ${
+                            className={`w-3 h-3 rounded-full shadow-soft animate-pulse ${
                               order.status === 'delivered'
-                                ? 'bg-green-500'
+                                ? 'bg-sage-green'
                                 : order.status === 'confirmed'
-                                  ? 'bg-blue-500'
-                                  : 'bg-yellow-500'
+                                  ? 'bg-muted-olive'
+                                  : 'bg-earthy-yellow'
                             }`}
                           ></div>
                           <div>
-                            <p className="font-medium text-text-dark">
+                            <p className="font-medium text-text-dark dark:text-dark-text-primary">
                               Order #{order.orderNumber}
                             </p>
-                            <p className="text-sm text-text-muted">
+                            <p className="text-sm text-text-muted dark:text-dark-text-muted">
                               {timeAgo(order.createdAt)}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-text-dark">
+                          <p className="font-semibold text-text-dark dark:text-dark-text-primary">
                             {formatCurrency(order.total)}
                           </p>
-                          <p className="text-sm text-text-muted capitalize">
+                          <p className="text-sm text-text-muted dark:text-dark-text-muted capitalize">
                             {order.status}
                           </p>
                         </div>
                       </div>
                     )) || (
-                      <div className="text-center py-8 text-text-muted">
+                      <div className="text-center py-8 text-text-muted dark:text-dark-text-muted">
                         No recent orders
                       </div>
                     )}
                   </div>
                 )}
-              </Card>
+              </div>
             </div>
           </CapabilityGate>
         </div>

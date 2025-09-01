@@ -14,7 +14,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { useTheme } from '../../../../hooks/useTheme';
+// Theme now handled via CSS classes - no React state needed
 
 // Register Chart.js components
 ChartJS.register(
@@ -48,7 +48,9 @@ const BarChart = ({
   borderRadius = 8,
 }) => {
   const chartRef = useRef(null);
-  const { isDarkMode } = useTheme();
+  
+  // Detect dark mode from DOM instead of React state
+  const isDarkMode = document.documentElement.classList.contains('dark');
 
   // Chart data configuration
   const chartData = useMemo(() => {

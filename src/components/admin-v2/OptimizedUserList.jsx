@@ -30,7 +30,6 @@ import {
   Phone,
   Mail,
 } from 'lucide-react';
-import { useTheme } from '../../hooks/useTheme';
 import useAccessibility from '../../hooks/useAccessibility';
 import useMobileOptimization from '../../hooks/useMobileOptimization';
 import usePerformanceOptimization from '../../hooks/usePerformanceOptimization';
@@ -44,7 +43,6 @@ import { Button, LoadingSpinner } from '../ui';
 // Memoized user row component for optimal performance
 const UserRow = memo(
   ({ user, index, isSelected, onSelect, onView, onEdit, onDelete, style }) => {
-    const { isDarkMode } = useTheme();
     const { isMobile } = useMobileOptimization();
     const { getFocusClasses, getAriaProps } = useAccessibility();
 

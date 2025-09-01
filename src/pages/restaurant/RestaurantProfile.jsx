@@ -155,7 +155,7 @@ const RestaurantProfile = () => {
                       }))
                     }
                     disabled={!isEditing}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
+                    className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
                     placeholder="Enter restaurant name"
                   />
                 </div>
@@ -174,7 +174,7 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
                 >
                   <option value="">Select restaurant type</option>
                   <option value="fine-dining">Fine Dining</option>
@@ -200,7 +200,7 @@ const RestaurantProfile = () => {
                   }
                   disabled={!isEditing}
                   rows={3}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
                   placeholder="Tell us about your restaurant..."
                 />
               </div>
@@ -232,13 +232,13 @@ const RestaurantProfile = () => {
                       }))
                     }
                     disabled={!isEditing}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
+                    className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
                     placeholder="Street address"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
+                <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
                   City *
                 </label>
                 <input
@@ -254,12 +254,12 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
                   placeholder="City"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
+                <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
                   Area
                 </label>
                 <input
@@ -275,12 +275,12 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
                   placeholder="Area"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
+                <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
                   Postal Code
                 </label>
                 <input
@@ -296,7 +296,7 @@ const RestaurantProfile = () => {
                     }))
                   }
                   disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all duration-200 disabled:bg-gray-50"
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
                   placeholder="Postal code"
                 />
               </div>
@@ -305,7 +305,7 @@ const RestaurantProfile = () => {
 
           {/* Operating Hours */}
           <div>
-            <h4 className="text-lg font-semibold text-text-dark mb-4">
+            <h4 className="text-lg font-semibold text-text-dark dark:text-dark-text-primary mb-4">
               Operating Hours
             </h4>
             <div className="space-y-4">
@@ -313,10 +313,10 @@ const RestaurantProfile = () => {
                 ([day, hours]) => (
                   <div
                     key={day}
-                    className="flex items-center gap-4 p-4 bg-white/50 border border-gray-100 rounded-2xl"
+                    className="flex items-center gap-4 p-4 bg-white/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl"
                   >
                     <div className="w-20">
-                      <span className="font-medium text-text-dark capitalize">
+                      <span className="font-medium text-text-dark dark:text-dark-text-primary capitalize">
                         {day}
                       </span>
                     </div>
@@ -340,9 +340,9 @@ const RestaurantProfile = () => {
                             }
                           }}
                           disabled={!isEditing}
-                          className="text-muted-olive focus:ring-muted-olive/20 rounded"
+                          className="text-muted-olive dark:text-dark-sage-accent focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 rounded"
                         />
-                        <span className="text-sm text-text-muted">Open</span>
+                        <span className="text-sm text-text-muted dark:text-dark-text-muted">Open</span>
                       </label>
 
                       {!hours.closed && (
@@ -362,9 +362,9 @@ const RestaurantProfile = () => {
                               }
                             }}
                             disabled={!isEditing}
-                            className="px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive disabled:bg-gray-50"
+                            className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary"
                           />
-                          <span className="text-text-muted">to</span>
+                          <span className="text-text-muted dark:text-dark-text-muted">to</span>
                           <input
                             type="time"
                             value={hours.close}
@@ -383,13 +383,13 @@ const RestaurantProfile = () => {
                               }
                             }}
                             disabled={!isEditing}
-                            className="px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive disabled:bg-gray-50"
+                            className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary"
                           />
                         </>
                       )}
 
                       {hours.closed && (
-                        <span className="text-text-muted/70 italic">
+                        <span className="text-text-muted/70 dark:text-dark-text-muted/70 italic">
                           Closed
                         </span>
                       )}
@@ -401,18 +401,18 @@ const RestaurantProfile = () => {
           </div>
 
           {/* Additional Info */}
-          <div className="bg-blue-50/50 border border-blue-200/50 rounded-2xl p-4">
+          <div className="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-700/30 rounded-2xl p-4">
             <div className="flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+              <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
               <div>
-                <h5 className="font-medium text-blue-900">
+                <h5 className="font-medium text-blue-900 dark:text-blue-300">
                   Profile Information
                 </h5>
-                <p className="text-sm text-blue-700 mt-1">
+                <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
                   This page focuses on your restaurant business information. For
                   personal account settings, password changes, and user-specific
                   preferences, please visit your{' '}
-                  <a href="/profile" className="font-medium underline">
+                  <a href="/profile" className="font-medium underline text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                     User Profile
                   </a>
                   .
@@ -423,11 +423,11 @@ const RestaurantProfile = () => {
 
           {/* Save Button */}
           {isEditing && (
-            <div className="flex justify-end pt-4 border-t border-gray-100">
+            <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
               <button
                 onClick={handleRestaurantSave}
                 disabled={isUpdating}
-                className="bg-gradient-primary text-white px-8 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 touch-target"
+                className="bg-gradient-to-r from-muted-olive to-sage-green text-white px-8 py-3 rounded-2xl font-medium hover:shadow-glow-green hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 touch-target"
               >
                 {isUpdating ? (
                   <>
