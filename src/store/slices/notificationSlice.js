@@ -81,7 +81,7 @@ const notificationSlice = createSlice({
       state.unreadCount = 0;
     },
 
-    // Increment unread count (for WebSocket updates)
+    // Increment unread count (for external updates)
     incrementUnreadNotifications: (state) => {
       state.unreadCount += 1;
     },

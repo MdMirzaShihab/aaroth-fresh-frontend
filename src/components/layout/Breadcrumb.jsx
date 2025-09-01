@@ -110,7 +110,7 @@ const Breadcrumb = ({ customItems = null }) => {
         const isLast = index === breadcrumbItems.length - 1;
 
         return (
-          <div key={item.path || index} className="flex items-center gap-2">
+          <div key={`breadcrumb-${item.path}-${index}`} className="flex items-center gap-2">
             {index > 0 && (
               <ChevronRight className="w-4 h-4 text-text-muted/40 flex-shrink-0" />
             )}
