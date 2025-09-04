@@ -20,11 +20,13 @@ import {
   Save,
 } from 'lucide-react';
 import {
-  useGetListingQuery,
+  useGetListingByIdQuery,
   useUpdateListingMutation,
-  useGetPublicProductsQuery,
-  useGetCategoriesQuery,
-} from '../../store/slices/apiSlice';
+  useGetProductCatalogQuery,
+  useGetListingCategoriesQuery,
+  useUploadListingImagesMutation,
+  useDeleteListingImageMutation,
+} from '../../store/slices/vendor/vendorListingsApi';
 import { addNotification } from '../../store/slices/notificationSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
@@ -44,12 +46,25 @@ const EditListing = () => {
 
   // Fetch the existing listing
   const {
-    data: listingData,
+    data: listing,
     isLoading: listingLoading,
     error: listingError,
-  } = useGetListingQuery(listingId);
+  } = useGetListingByIdQuery(listingId);
 
-  const listing = listingData?.data || listingData?.listing;
+  // API mutations and queries
+  const [updateListing] = useUpdateListingMutation();
+  const [uploadImages] = useUploadListingImagesMutation();
+  const [deleteImage] = useDeleteListingImageMutation();
+
+  const { data: productsData, isLoading: productsLoading } =
+    useGetProductCatalogQuery({
+      limit: 1000,
+    });
+
+  const { data: categoriesData } = useGetListingCategoriesQuery();
+
+  const products = productsData?.products || [];
+  const categories = categoriesData || [];
 
   // Form management
   const {
@@ -270,36 +285,58 @@ const EditListing = () => {
     setIsSubmitting(true);
 
     try {
-      // Create FormData for file upload
-      const formData = new FormData();
+      // First update the listing with JSON data
+      const updateData = {
+        productId: data.productId,
+        pricing: data.pricing,
+        qualityGrade: data.qualityGrade,
+        availability: data.availability,
+        description: data.description,
+        deliveryOptions: data.deliveryOptions,
+        minimumOrderValue: data.minimumOrderValue,
+        leadTime: data.leadTime,
+        certifications: data.certifications,
+        ...(data.discount.value && { discount: data.discount }),
+      };
 
-      // Add form data
-      formData.append('productId', data.productId);
-      formData.append('pricing', JSON.stringify(data.pricing));
-      formData.append('qualityGrade', data.qualityGrade);
-      formData.append('availability', JSON.stringify(data.availability));
-      formData.append('description', data.description);
-      formData.append('deliveryOptions', JSON.stringify(data.deliveryOptions));
-      formData.append('minimumOrderValue', data.minimumOrderValue);
-      formData.append('leadTime', data.leadTime);
-      formData.append('certifications', JSON.stringify(data.certifications));
+      const result = await updateListing({
+        listingId: listingId,
+        updateData: updateData,
+      }).unwrap();
 
-      if (data.discount.value) {
-        formData.append('discount', JSON.stringify(data.discount));
+      // Handle image updates if there are new images to upload
+      if (imageFiles.length > 0) {
+        const imageFormData = new FormData();
+        imageFiles.forEach((file) => {
+          imageFormData.append('images', file);
+        });
+
+        await uploadImages({
+          listingId: listingId,
+          imagesFormData: imageFormData,
+        }).unwrap();
       }
 
-      // Add existing images that should be kept
-      const existingImageUrls = existingImages.map((img) => img.url);
-      if (existingImageUrls.length > 0) {
-        formData.append('existingImages', JSON.stringify(existingImageUrls));
+      // Delete removed existing images
+      const currentImageUrls = listing.images?.map(img => 
+        typeof img === 'string' ? img : img.url
+      ) || [];
+      const keptImageUrls = existingImages.map(img => img.url);
+      
+      for (const imageUrl of currentImageUrls) {
+        if (!keptImageUrls.includes(imageUrl)) {
+          // Find image ID and delete it
+          const imageToDelete = listing.images?.find(img => 
+            (typeof img === 'string' ? img : img.url) === imageUrl
+          );
+          if (imageToDelete && typeof imageToDelete === 'object' && imageToDelete.id) {
+            await deleteImage({
+              listingId: listingId,
+              imageId: imageToDelete.id,
+            }).unwrap();
+          }
+        }
       }
-
-      // Add new image files
-      imageFiles.forEach((file) => {
-        formData.append('images', file);
-      });
-
-      const result = await updateListing({ id: listingId, formData }).unwrap();
 
       dispatch(
         addNotification({

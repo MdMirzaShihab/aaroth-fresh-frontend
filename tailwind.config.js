@@ -189,94 +189,153 @@ export default {
         'shadow-glow-green': '0 0 20px rgba(156, 175, 136, 0.2)', // Restaurant's glow green
         'shadow-dark-glow-olive': '0 0 25px rgba(143, 181, 124, 0.3)', // Restaurant's dark olive glow
       },
-
-      utilities: {
+    },
+  },
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        // Basic Glass Card Utilities
         '.glass-card': {
           background: 'rgba(255, 255, 255, 0.7)',
           backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
           border: '1px solid rgba(255, 255, 255, 0.2)',
         },
         '.glass-card-dark': {
           background: 'rgba(31, 41, 55, 0.8)',
           backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
           border: '1px solid rgba(75, 85, 99, 0.3)',
         },
         '.glass-card-olive': {
-          // New olive-themed glass card
           background: 'rgba(127, 137, 102, 0.1)',
           backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
           border: '1px solid rgba(127, 137, 102, 0.2)',
         },
         '.glass-card-dark-olive': {
-          // Dark mode olive-themed glass card
           background: 'rgba(143, 181, 124, 0.08)',
           backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)', // Safari support
           border: '1px solid rgba(143, 181, 124, 0.15)',
         },
+
+        // Light Mode Glass System
         '.glass-1': {
           background: 'rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)', // Safari support
           border: '1px solid rgba(255, 255, 255, 0.1)',
         },
         '.glass-2': {
           background: 'rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)', // Safari support
           border: '1px solid rgba(255, 255, 255, 0.15)',
         },
         '.glass-3': {
           background: 'rgba(255, 255, 255, 0.15)',
           backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
           border: '1px solid rgba(255, 255, 255, 0.2)',
         },
         '.glass-4': {
           background: 'rgba(255, 255, 255, 0.2)',
           backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)', // Safari support
           border: '1px solid rgba(255, 255, 255, 0.25)',
         },
         '.glass-5': {
           background: 'rgba(255, 255, 255, 0.25)',
           backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)', // Safari support
           border: '1px solid rgba(255, 255, 255, 0.3)',
         },
-        // Dark Mode Glass Variants (Enhanced for Professional UI)
-        '.glass-1-dark': {
-          background: 'rgba(47, 58, 47, 0.08)',
+
+        // Advanced Glass Layers (Alternative naming)
+        '.glass-layer-1': {
+          background: 'rgba(255, 255, 255, 0.08)',
           backdropFilter: 'blur(6px)',
-          border: '1px solid rgba(143, 181, 124, 0.08)',
+          WebkitBackdropFilter: 'blur(6px)', // Safari support
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+        },
+        '.glass-layer-2': {
+          background: 'rgba(255, 255, 255, 0.12)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)', // Safari support
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+        },
+        '.glass-layer-3': {
+          background: 'rgba(255, 255, 255, 0.16)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)', // Safari support
+          border: '1px solid rgba(255, 255, 255, 0.22)',
+        },
+
+        // Advanced Glass Layers - Dark Mode Variants
+        '.glass-layer-1-dark': {
+          background: 'rgba(47, 58, 47, 0.10)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.10)',
+        },
+        '.glass-layer-2-dark': {
+          background: 'rgba(47, 58, 47, 0.14)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.14)',
+        },
+        '.glass-layer-3-dark': {
+          background: 'rgba(47, 58, 47, 0.18)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.18)',
+        },
+
+        // Dark Mode Glass System (Olive-themed)
+        '.glass-1-dark': {
+          background: 'rgba(47, 58, 47, 0.10)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.10)',
         },
         '.glass-2-dark': {
-          background: 'rgba(47, 58, 47, 0.12)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(143, 181, 124, 0.12)',
+          background: 'rgba(47, 58, 47, 0.14)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.14)',
         },
         '.glass-3-dark': {
-          background: 'rgba(47, 58, 47, 0.16)',
-          backdropFilter: 'blur(14px)',
-          border: '1px solid rgba(143, 181, 124, 0.16)',
+          background: 'rgba(47, 58, 47, 0.18)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.18)',
         },
         '.glass-4-dark': {
-          background: 'rgba(47, 58, 47, 0.20)',
-          backdropFilter: 'blur(18px)',
-          border: '1px solid rgba(143, 181, 124, 0.20)',
+          background: 'rgba(47, 58, 47, 0.22)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.22)',
         },
         '.glass-5-dark': {
-          background: 'rgba(47, 58, 47, 0.25)',
-          backdropFilter: 'blur(22px)',
-          border: '1px solid rgba(143, 181, 124, 0.24)',
+          background: 'rgba(47, 58, 47, 0.26)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)', // Safari support
+          border: '1px solid rgba(143, 181, 124, 0.26)',
         },
+
+        // Focus Ring Utilities
         '.focus-ring': {
           outline: '2px solid transparent',
           outlineOffset: '2px',
-          boxShadow: '0 0 0 2px rgba(127, 137, 102, 0.2)', // Updated to olive
+          boxShadow: '0 0 0 2px rgba(127, 137, 102, 0.2)',
         },
         '.focus-ring-sage': {
-          // New sage focus ring
           outline: '2px solid transparent',
           outlineOffset: '2px',
           boxShadow: '0 0 0 2px rgba(156, 175, 136, 0.2)',
         },
         '.focus-ring-cedar': {
-          // New cedar focus ring
           outline: '2px solid transparent',
           outlineOffset: '2px',
           boxShadow: '0 0 0 2px rgba(160, 130, 109, 0.2)',
@@ -286,87 +345,48 @@ export default {
           outlineOffset: '2px',
           boxShadow: '0 0 0 2px rgba(245, 158, 11, 0.2)',
         },
-        '.touch-target': {
-          minHeight: '44px',
-          minWidth: '44px',
-        },
-        '.professional-shadow': {
-          boxShadow:
-            '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-        },
-        '.professional-shadow-lg': {
-          boxShadow:
-            '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        },
-        '.olive-accent': {
-          // New utility for olive accents
-          borderLeft: '4px solid #7f8966',
-        },
-        '.sage-highlight': {
-          // New utility for sage highlights
-          background:
-            'linear-gradient(90deg, rgba(156, 175, 136, 0.1) 0%, transparent 100%)',
-        },
-        '.cedar-warmth': {
-          // New utility for cedar warmth
-          background:
-            'linear-gradient(135deg, rgba(160, 130, 109, 0.05) 0%, transparent 100%)',
-        },
-        // Dark Mode Specific Utilities
-        '.dark-olive-accent': {
-          // Dark mode olive accent
-          borderLeft: '4px solid #8FB57C',
-        },
-        '.dark-sage-highlight': {
-          // Dark mode sage highlight
-          background:
-            'linear-gradient(90deg, rgba(143, 181, 124, 0.08) 0%, transparent 100%)',
-        },
-        '.dark-cedar-warmth': {
-          // Dark mode cedar warmth
-          background:
-            'linear-gradient(135deg, rgba(184, 144, 111, 0.06) 0%, transparent 100%)',
-        },
         '.dark-focus-ring': {
-          // Enhanced dark mode focus ring
           outline: '2px solid transparent',
           outlineOffset: '2px',
           boxShadow: '0 0 0 2px rgba(143, 181, 124, 0.3)',
         },
-        // Restaurant's Advanced Glassmorphism System
-        '.glass-layer-1': {
-          background: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(6px)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
+
+        // Touch Target & Accessibility
+        '.touch-target': {
+          minHeight: '44px',
+          minWidth: '44px',
         },
-        '.glass-layer-2': {
-          background: 'rgba(255, 255, 255, 0.12)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.18)',
+
+        // Professional Shadows
+        '.professional-shadow': {
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
         },
-        '.glass-layer-3': {
-          background: 'rgba(255, 255, 255, 0.16)',
-          backdropFilter: 'blur(14px)',
-          border: '1px solid rgba(255, 255, 255, 0.22)',
+        '.professional-shadow-lg': {
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         },
-        // Dark Mode Glass Layers (Olive-themed)
-        '.glass-1-dark': {
-          background: 'rgba(47, 58, 47, 0.10)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(143, 181, 124, 0.10)',
+
+        // Brand Accent Utilities
+        '.olive-accent': {
+          borderLeft: '4px solid #7f8966',
         },
-        '.glass-2-dark': {
-          background: 'rgba(47, 58, 47, 0.14)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(143, 181, 124, 0.14)',
+        '.sage-highlight': {
+          background: 'linear-gradient(90deg, rgba(156, 175, 136, 0.1) 0%, transparent 100%)',
         },
-        '.glass-3-dark': {
-          background: 'rgba(47, 58, 47, 0.18)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(143, 181, 124, 0.18)',
+        '.cedar-warmth': {
+          background: 'linear-gradient(135deg, rgba(160, 130, 109, 0.05) 0%, transparent 100%)',
         },
-      },
-    },
-  },
-  plugins: [],
+
+        // Dark Mode Brand Utilities
+        '.dark-olive-accent': {
+          borderLeft: '4px solid #8FB57C',
+        },
+        '.dark-sage-highlight': {
+          background: 'linear-gradient(90deg, rgba(143, 181, 124, 0.08) 0%, transparent 100%)',
+        },
+        '.dark-cedar-warmth': {
+          background: 'linear-gradient(135deg, rgba(184, 144, 111, 0.06) 0%, transparent 100%)',
+        },
+      })
+    }
+  ],
 };

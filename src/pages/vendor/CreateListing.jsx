@@ -20,9 +20,10 @@ import {
 } from 'lucide-react';
 import {
   useCreateListingMutation,
-  useGetPublicProductsQuery,
-  useGetCategoriesQuery,
-} from '../../store/slices/apiSlice';
+  useGetProductCatalogQuery,
+  useGetListingCategoriesQuery,
+  useUploadListingImagesMutation,
+} from '../../store/slices/vendor/vendorListingsApi';
 import { addNotification } from '../../store/slices/notificationSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
@@ -102,16 +103,17 @@ const CreateListing = () => {
 
   // API mutations and queries
   const [createListing] = useCreateListingMutation();
+  const [uploadImages] = useUploadListingImagesMutation();
 
   const { data: productsData, isLoading: productsLoading } =
-    useGetPublicProductsQuery({
+    useGetProductCatalogQuery({
       limit: 1000, // Get all products for selection
     });
 
-  const { data: categoriesData } = useGetCategoriesQuery();
+  const { data: categoriesData } = useGetListingCategoriesQuery();
 
-  const products = productsData?.data?.products || [];
-  const categories = categoriesData?.categories || [];
+  const products = productsData?.products || [];
+  const categories = categoriesData || [];
 
   // Form data watchers
   const watchedProduct = watch('productId');
@@ -205,30 +207,34 @@ const CreateListing = () => {
     setIsSubmitting(true);
 
     try {
-      // Create FormData for file upload
-      const formData = new FormData();
+      // First create the listing with JSON data
+      const listingData = {
+        productId: data.productId,
+        pricing: data.pricing,
+        qualityGrade: data.qualityGrade,
+        availability: data.availability,
+        description: data.description,
+        deliveryOptions: data.deliveryOptions,
+        minimumOrderValue: data.minimumOrderValue,
+        leadTime: data.leadTime,
+        certifications: data.certifications,
+        ...(data.discount.value && { discount: data.discount }),
+      };
 
-      // Add form data
-      formData.append('productId', data.productId);
-      formData.append('pricing', JSON.stringify(data.pricing));
-      formData.append('qualityGrade', data.qualityGrade);
-      formData.append('availability', JSON.stringify(data.availability));
-      formData.append('description', data.description);
-      formData.append('deliveryOptions', JSON.stringify(data.deliveryOptions));
-      formData.append('minimumOrderValue', data.minimumOrderValue);
-      formData.append('leadTime', data.leadTime);
-      formData.append('certifications', JSON.stringify(data.certifications));
+      const result = await createListing(listingData).unwrap();
 
-      if (data.discount.value) {
-        formData.append('discount', JSON.stringify(data.discount));
+      // Then upload images if listing was created successfully
+      if (result.listing && imageFiles.length > 0) {
+        const imageFormData = new FormData();
+        imageFiles.forEach((file) => {
+          imageFormData.append('images', file);
+        });
+
+        await uploadImages({
+          listingId: result.listing.id,
+          imagesFormData: imageFormData,
+        }).unwrap();
       }
-
-      // Add image files
-      imageFiles.forEach((file) => {
-        formData.append('images', file);
-      });
-
-      const result = await createListing(formData).unwrap();
 
       dispatch(
         addNotification({

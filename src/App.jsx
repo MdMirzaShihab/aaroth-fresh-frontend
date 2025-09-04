@@ -62,7 +62,7 @@ const ProductApproval = lazy(() => import('./pages/admin/ProductApproval'));
 
 // Enhanced Restaurant & Catalog Management (Prompt 6)
 const RestaurantsManagementPage = lazy(
-  () => import('./pages/admin/RestaurantsManagementPage')
+  () => import('./pages/admin-v2/restaurants/RestaurantManagementPage')
 );
 const ProductsManagementPage = lazy(
   () => import('./pages/admin/ProductsManagementPage')

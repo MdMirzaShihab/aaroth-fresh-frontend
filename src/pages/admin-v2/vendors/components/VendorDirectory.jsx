@@ -36,7 +36,7 @@ import EmptyState from '../../../../components/ui/EmptyState';
 import Pagination from '../../../../components/ui/Pagination';
 
 // Vendor business card component
-const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
+const VendorBusinessCard = ({ vendor, onAction }) => {
   const { isDarkMode } = useTheme();
   const [showActions, setShowActions] = useState(false);
 
@@ -60,7 +60,51 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
     };
   };
 
-  const metrics = formatBusinessMetrics(vendor.businessMetrics);
+  // Use raw API fields instead of transformed businessMetrics
+  const metrics = {
+    orders: vendor.totalOrders || 0,
+    revenue: vendor.totalRevenue || 0,
+    rating: vendor.rating?.average || 0,
+    ratingCount: vendor.rating?.count || 0,
+  };
+
+  // Helper functions for raw API data
+  const formatLocation = (address) => {
+    if (!address) return 'Location not provided';
+    const parts = [];
+    if (address.street) parts.push(address.street);
+    if (address.city) parts.push(address.city);
+    if (address.state) parts.push(address.state);
+    return parts.join(', ') || 'Location not provided';
+  };
+
+  const calculateRiskScore = () => {
+    let score = 0;
+    if (!vendor.isVerified) score += 30;
+    if (vendor.verificationStatus === 'pending') score += 20;
+    if (vendor.totalOrders === 0) score += 25;
+    if (!vendor.taxId) score += 15;
+    return Math.min(score, 100);
+  };
+
+  const calculateUrgencyLevel = () => {
+    if (vendor.verificationStatus !== 'pending') return 'none';
+    const daysWaiting = Math.floor((Date.now() - new Date(vendor.createdAt)) / (1000 * 60 * 60 * 24));
+    if (daysWaiting >= 14) return 'critical';
+    if (daysWaiting >= 7) return 'high';  
+    if (daysWaiting >= 3) return 'medium';
+    return 'low';
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Never';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  // Calculated values
+  const riskScore = calculateRiskScore();
+  const location = formatLocation(vendor.address);
+  const urgencyLevel = calculateUrgencyLevel();
 
   return (
     <motion.div
@@ -70,18 +114,13 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
       className="group relative"
     >
       <Card
-        className={`glass-card-olive rounded-3xl p-6 border sage-highlight hover:shadow-glow-sage 
-                        transition-all duration-300 cursor-pointer ${isSelected ? 'ring-2 ring-muted-olive/30' : ''}`}
+        className="glass-card-olive rounded-3xl p-6 border sage-highlight hover:shadow-glow-sage 
+                        transition-all duration-300 cursor-pointer"
+        onClick={() => onAction(vendor, 'view_details')}
       >
         {/* Header with selection and actions */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3 flex-1">
-            <input
-              type="checkbox"
-              checked={isSelected}
-              onChange={(e) => onSelect(vendor.id, e.target.checked)}
-              className="w-4 h-4 rounded border-2 border-muted-olive/30 text-muted-olive focus:ring-muted-olive/20"
-            />
             <div
               className="w-12 h-12 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                             flex items-center justify-center shadow-lg text-white font-medium"
@@ -178,22 +217,22 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
           <h3 className="text-lg font-semibold text-text-dark dark:text-dark-text-primary mb-1">
             {vendor.businessName}
           </h3>
-          <p className="text-sm text-text-muted">Owner: {vendor.ownerName}</p>
+          <p className="text-sm text-text-muted">Owner: {vendor.createdBy?.name || 'Unknown Owner'}</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="px-2 py-1 bg-dusty-cedar/10 text-dusty-cedar text-xs rounded-full font-medium">
               {vendor.businessType}
             </span>
-            {vendor.riskScore > 0 && (
+            {riskScore > 0 && (
               <span
                 className={`px-2 py-1 text-xs rounded-full font-medium ${
-                  vendor.riskScore > 70
+                  riskScore > 70
                     ? 'bg-tomato-red/10 text-tomato-red'
-                    : vendor.riskScore > 40
+                    : riskScore > 40
                       ? 'bg-earthy-yellow/10 text-earthy-yellow'
                       : 'bg-sage-green/10 text-sage-green'
                 }`}
               >
-                Risk: {vendor.riskScore}%
+                Risk: {riskScore}%
               </span>
             )}
           </div>
@@ -212,11 +251,11 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
             </div>
             <div className="flex items-center gap-2 text-text-muted">
               <MapPin className="w-4 h-4 text-muted-olive" />
-              <span className="truncate">{vendor.location}</span>
+              <span className="truncate">{location}</span>
             </div>
             <div className="flex items-center gap-2 text-text-muted">
               <Calendar className="w-4 h-4 text-muted-olive" />
-              <span>Joined: {vendor.createdAt}</span>
+              <span>Joined: {formatDate(vendor.createdAt)}</span>
             </div>
           </div>
         </div>
@@ -264,19 +303,19 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
         {/* Action Footer */}
         <div className="pt-4 border-t border-white/10">
           <div className="flex items-center justify-between text-xs text-text-muted">
-            <span>Last active: {vendor.lastActiveAt}</span>
-            {vendor.urgencyLevel && vendor.urgencyLevel !== 'none' && (
+            <span>Last active: {formatDate(vendor.lastActiveAt)}</span>
+            {urgencyLevel && urgencyLevel !== 'none' && (
               <span
                 className={`flex items-center gap-1 ${
-                  vendor.urgencyLevel === 'critical'
+                  urgencyLevel === 'critical'
                     ? 'text-tomato-red'
-                    : vendor.urgencyLevel === 'high'
+                    : urgencyLevel === 'high'
                       ? 'text-earthy-yellow'
                       : 'text-sage-green'
                 }`}
               >
                 <AlertTriangle className="w-3 h-3" />
-                {vendor.urgencyLevel}
+                {urgencyLevel}
               </span>
             )}
           </div>
@@ -286,24 +325,44 @@ const VendorBusinessCard = ({ vendor, isSelected, onSelect, onAction }) => {
   );
 };
 
-// List view component
-const VendorListItem = ({ vendor, isSelected, onSelect, onAction }) => {
+// List view component  
+const VendorListItem = ({ vendor, onAction }) => {
   const { isDarkMode } = useTheme();
+  
+  // Calculate derived values for this vendor
+  const formatLocation = (address) => {
+    if (!address) return 'Location not provided';
+    const parts = [];
+    if (address.street) parts.push(address.street);
+    if (address.city) parts.push(address.city);
+    if (address.state) parts.push(address.state);
+    return parts.join(', ') || 'Location not provided';
+  };
+  
+  const calculateRiskScore = () => {
+    let score = 0;
+    if (!vendor.isVerified) score += 30;
+    if (vendor.verificationStatus === 'pending') score += 20;
+    if (vendor.totalOrders === 0) score += 25;
+    if (!vendor.taxId) score += 15;
+    return Math.min(score, 100);
+  };
+  
+  const location = formatLocation(vendor.address);
+  const metrics = {
+    orders: vendor.totalOrders || 0,
+    rating: vendor.rating?.average || 0,
+  };
+  const riskScore = calculateRiskScore();
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="flex items-center gap-4 p-4 bg-white dark:bg-dark-bg-alt rounded-2xl border 
-                 border-gray-200 dark:border-dark-border hover:border-muted-olive/30 transition-all duration-200"
+                 border-gray-200 dark:border-dark-border hover:border-muted-olive/30 transition-all duration-200 cursor-pointer"
+      onClick={() => onAction(vendor, 'view_details')}
     >
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={(e) => onSelect(vendor.id, e.target.checked)}
-        className="w-4 h-4 rounded border-2 border-muted-olive/30 text-muted-olive focus:ring-muted-olive/20"
-      />
-
       <div
         className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green 
                       flex items-center justify-center shadow-lg text-white font-medium"
@@ -323,38 +382,38 @@ const VendorListItem = ({ vendor, isSelected, onSelect, onAction }) => {
           />
         </div>
         <p className="text-sm text-text-muted truncate">
-          {vendor.ownerName} • {vendor.businessType} • {vendor.location}
+          {vendor.createdBy?.name || 'Unknown Owner'} • {vendor.businessType || 'N/A'} • {location}
         </p>
       </div>
 
       <div className="hidden sm:flex items-center gap-6 text-sm">
         <div className="text-center">
           <p className="font-medium text-text-dark dark:text-dark-text-primary">
-            {vendor.businessMetrics?.totalOrders || 0}
+            {metrics.orders}
           </p>
           <p className="text-xs text-text-muted">Orders</p>
         </div>
         <div className="text-center">
           <p className="font-medium text-text-dark dark:text-dark-text-primary">
-            {vendor.businessMetrics?.rating?.toFixed(1) || 'N/A'}
+            {metrics.rating > 0 ? metrics.rating.toFixed(1) : 'N/A'}
           </p>
           <p className="text-xs text-text-muted">Rating</p>
         </div>
         <div className="text-center">
           <p
-            className={`font-medium ${vendor.riskScore > 70 ? 'text-tomato-red' : 'text-text-dark dark:text-dark-text-primary'}`}
+            className={`font-medium ${riskScore > 70 ? 'text-tomato-red' : 'text-text-dark dark:text-dark-text-primary'}`}
           >
-            {vendor.riskScore}%
+            {riskScore}%
           </p>
           <p className="text-xs text-text-muted">Risk</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onAction(vendor, 'view_profile')}
+          onClick={() => onAction(vendor, 'view_details')}
         >
           <Eye className="w-4 h-4" />
         </Button>
@@ -374,27 +433,16 @@ const VendorDirectory = ({
   vendors = [],
   loading = false,
   error = null,
-  selectedVendors = [],
   currentPage = 1,
   pageSize = 20,
   totalPages = 1,
   totalVendors = 0,
-  onVendorSelect,
-  onSelectAll,
   onPageChange,
   onPageSizeChange,
   onVendorAction,
 }) => {
   const { isDarkMode } = useTheme();
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'list'
-
-  // Handle select all
-  const handleSelectAll = (e) => {
-    const isChecked = e.target.checked;
-    if (onSelectAll) {
-      onSelectAll(isChecked);
-    }
-  };
 
   // Loading state
   if (loading && vendors.length === 0) {
@@ -441,21 +489,9 @@ const VendorDirectory = ({
       {/* Directory Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={
-                selectedVendors.length === vendors.length && vendors.length > 0
-              }
-              onChange={handleSelectAll}
-              className="w-4 h-4 rounded border-2 border-muted-olive/30 text-muted-olive focus:ring-muted-olive/20"
-            />
-            <span className="text-sm text-text-muted">
-              {selectedVendors.length > 0
-                ? `${selectedVendors.length} selected`
-                : `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalVendors)} of ${totalVendors.toLocaleString()}`}
-            </span>
-          </div>
+          <span className="text-sm text-text-muted">
+            Showing {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalVendors)} of {totalVendors.toLocaleString()} vendors
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -505,10 +541,8 @@ const VendorDirectory = ({
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {vendors.map((vendor) => (
             <VendorBusinessCard
-              key={vendor.id}
+              key={vendor._id || vendor.id}
               vendor={vendor}
-              isSelected={selectedVendors.includes(vendor.id)}
-              onSelect={onVendorSelect}
               onAction={onVendorAction}
             />
           ))}
@@ -517,10 +551,8 @@ const VendorDirectory = ({
         <div className="space-y-3">
           {vendors.map((vendor) => (
             <VendorListItem
-              key={vendor.id}
+              key={vendor._id || vendor.id}
               vendor={vendor}
-              isSelected={selectedVendors.includes(vendor.id)}
-              onSelect={onVendorSelect}
               onAction={onVendorAction}
             />
           ))}

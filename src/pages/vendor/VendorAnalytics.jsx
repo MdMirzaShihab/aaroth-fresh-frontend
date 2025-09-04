@@ -23,11 +23,24 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import {
-  useGetVendorAnalyticsQuery,
+  useGetDashboardOverviewQuery,
+  useGetRevenueAnalyticsQuery,
+  useGetProfitAnalyticsQuery,
+  useGetCustomerAnalyticsQuery,
+  useGetInventoryAnalyticsQuery,
+} from '../../store/slices/vendor/vendorDashboardApi';
+import {
+  useGetAllOrdersQuery,
+  useGetOrderAnalyticsQuery,
+  useGetOrderPerformanceQuery,
+} from '../../store/slices/vendor/vendorOrdersApi';
+import {
+  useGetAllListingsQuery,
   useGetListingPerformanceQuery,
-  useGetVendorOrdersQuery,
-  useGetVendorDashboardQuery,
-} from '../../store/slices/apiSlice';
+} from '../../store/slices/vendor/vendorListingsApi';
+import {
+  useGetInventoryAnalyticsQuery as useGetInventoryAnalyticsQueryAlt,
+} from '../../store/slices/vendor/vendorInventoryApi';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -38,36 +51,96 @@ import SimpleBarChart from '../../components/ui/charts/SimpleBarChart';
 const VendorAnalytics = () => {
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedMetric, setSelectedMetric] = useState('revenue');
-  // Auto-refresh interval removed for MVP
+  const [refreshInterval, setRefreshInterval] = useState(0); // Manual refresh only for MVP
   const { user } = useSelector((state) => state.auth);
 
-  // Analytics data - manual refresh only
-  const {
-    data: analyticsData,
-    isLoading: analyticsLoading,
-    error: analyticsError,
-    refetch: refetchAnalytics,
-  } = useGetVendorAnalyticsQuery({ timeRange });
-
-  // Get listing performance data
-  const {
-    data: performanceData,
-    isLoading: performanceLoading,
-    refetch: refetchPerformance,
-  } = useGetListingPerformanceQuery(
-    { timeRange },
-    {
-      pollingInterval: refreshInterval * 2, // Less frequent refresh
-      refetchOnFocus: true,
+  // Convert timeRange to period format
+  const getPeriod = (range) => {
+    switch (range) {
+      case '7d': return 'week';
+      case '30d': return 'month';
+      case '90d': return 'quarter';
+      case '180d': return 'half-year';
+      case '365d': return 'year';
+      default: return 'month';
     }
-  );
+  };
 
-  // Get dashboard data for comparison
-  const { data: dashboardData } = useGetVendorDashboardQuery();
+  // Analytics data - comprehensive vendor metrics
+  const {
+    data: dashboardData,
+    isLoading: dashboardLoading,
+    refetch: refetchDashboard,
+  } = useGetDashboardOverviewQuery({ period: getPeriod(timeRange) });
 
-  const analytics = analyticsData?.data || {};
-  const performance = performanceData?.data || {};
-  const dashboard = dashboardData?.data || {};
+  const {
+    data: revenueData,
+    isLoading: revenueLoading,
+    refetch: refetchRevenue,
+  } = useGetRevenueAnalyticsQuery({ period: getPeriod(timeRange) });
+
+  const {
+    data: profitData,
+    isLoading: profitLoading,
+  } = useGetProfitAnalyticsQuery({ period: getPeriod(timeRange) });
+
+  const {
+    data: customerData,
+    isLoading: customerLoading,
+  } = useGetCustomerAnalyticsQuery({ period: getPeriod(timeRange) });
+
+  const {
+    data: orderAnalytics,
+    isLoading: orderAnalyticsLoading,
+  } = useGetOrderAnalyticsQuery({ period: getPeriod(timeRange) });
+
+  const {
+    data: orderPerformance,
+    isLoading: orderPerformanceLoading,
+  } = useGetOrderPerformanceQuery({ period: getPeriod(timeRange) });
+
+  const {
+    data: listingPerformance,
+    isLoading: listingPerformanceLoading,
+    refetch: refetchListingPerformance,
+  } = useGetListingPerformanceQuery({ period: getPeriod(timeRange) });
+
+  const {
+    data: inventoryAnalytics,
+    isLoading: inventoryAnalyticsLoading,
+  } = useGetInventoryAnalyticsQueryAlt({ period: getPeriod(timeRange) });
+
+  // Consolidated loading state
+  const analyticsLoading = dashboardLoading || revenueLoading || profitLoading || customerLoading;
+  const performanceLoading = orderAnalyticsLoading || orderPerformanceLoading || listingPerformanceLoading;
+  const analyticsError = false; // Handle errors as needed
+
+  // Consolidated data objects
+  const analytics = {
+    revenue: revenueData || {},
+    profit: profitData || {},
+    customers: customerData || {},
+    orders: orderAnalytics || {},
+    inventory: inventoryAnalytics || {},
+    ...dashboardData,
+  };
+  
+  const performance = {
+    orders: orderPerformance || {},
+    listings: listingPerformance || {},
+  };
+  
+  const dashboard = dashboardData || {};
+
+  // Refetch all analytics
+  const refetchAnalytics = () => {
+    refetchDashboard();
+    refetchRevenue();
+  };
+  
+  const refetchPerformance = () => {
+    refetchListingPerformance();
+  };
 
   // Time range options with descriptions
   const timeRangeOptions = [
@@ -99,16 +172,16 @@ const VendorAnalytics = () => {
     { value: 0, label: 'Manual only' },
   ];
 
-  // Calculate performance metrics
+  // Calculate performance metrics from new API structure
   const performanceMetrics = {
-    totalRevenue: analytics.totalRevenue || 0,
-    totalOrders: analytics.totalOrders || 0,
-    averageOrderValue: analytics.averageOrderValue || 0,
-    conversionRate: analytics.conversionRate || 0,
-    topPerformingProduct: performance.topProduct?.name || 'N/A',
-    totalViews: analytics.totalViews || 0,
-    revenueGrowth: analytics.revenueGrowth || 0,
-    orderGrowth: analytics.orderGrowth || 0,
+    totalRevenue: analytics.revenue?.totalRevenue || dashboardData?.totalRevenue || 0,
+    totalOrders: analytics.orders?.totalOrders || dashboardData?.totalOrders || 0,
+    averageOrderValue: analytics.customers?.averageOrderValue || dashboardData?.averageOrderValue || 0,
+    conversionRate: analytics.customers?.conversionRate || performance.listings?.conversionRate || 0,
+    topPerformingProduct: performance.listings?.topProduct?.name || 'N/A',
+    totalViews: performance.listings?.totalViews || 0,
+    revenueGrowth: analytics.revenue?.growth || dashboardData?.revenueGrowth || 0,
+    orderGrowth: analytics.orders?.growth || dashboardData?.orderGrowth || 0,
   };
 
   // Format change percentage
@@ -160,8 +233,8 @@ const VendorAnalytics = () => {
       id: 'aov',
       title: 'Average Order Value',
       value: `৳${performanceMetrics.averageOrderValue.toLocaleString()}`,
-      change: formatChange(analytics.aovGrowth || 0),
-      changeType: (analytics.aovGrowth || 0) >= 0 ? 'positive' : 'negative',
+      change: formatChange(analytics.customers?.aovGrowth || 0),
+      changeType: (analytics.customers?.aovGrowth || 0) >= 0 ? 'positive' : 'negative',
       icon: TrendingUp,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
@@ -171,9 +244,9 @@ const VendorAnalytics = () => {
       id: 'conversion',
       title: 'Conversion Rate',
       value: `${performanceMetrics.conversionRate.toFixed(1)}%`,
-      change: formatChange(analytics.conversionGrowth || 0),
+      change: formatChange(analytics.customers?.conversionGrowth || 0),
       changeType:
-        (analytics.conversionGrowth || 0) >= 0 ? 'positive' : 'negative',
+        (analytics.customers?.conversionGrowth || 0) >= 0 ? 'positive' : 'negative',
       icon: Star,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
@@ -183,8 +256,8 @@ const VendorAnalytics = () => {
       id: 'views',
       title: 'Product Views',
       value: performanceMetrics.totalViews.toLocaleString(),
-      change: formatChange(analytics.viewsGrowth || 0),
-      changeType: (analytics.viewsGrowth || 0) >= 0 ? 'positive' : 'negative',
+      change: formatChange(performance.listings?.viewsGrowth || 0),
+      changeType: (performance.listings?.viewsGrowth || 0) >= 0 ? 'positive' : 'negative',
       icon: Eye,
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
@@ -203,7 +276,7 @@ const VendorAnalytics = () => {
     },
   ];
 
-  if (analyticsLoading && !analytics.totalRevenue) {
+  if (analyticsLoading && !dashboardData?.totalRevenue) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <LoadingSpinner size="lg" text="Loading analytics..." />
@@ -375,7 +448,7 @@ const VendorAnalytics = () => {
             </div>
           ) : (
             <SimpleLineChart
-              data={analytics.revenueChart || []}
+              data={analytics.revenue?.chartData || revenueData?.chartData || []}
               height={300}
               color="#10B981"
             />
@@ -405,7 +478,7 @@ const VendorAnalytics = () => {
             </div>
           ) : (
             <SimpleBarChart
-              data={analytics.ordersChart || []}
+              data={analytics.orders?.chartData || orderAnalytics?.chartData || []}
               height={300}
               color="#3B82F6"
             />
@@ -496,9 +569,9 @@ const VendorAnalytics = () => {
                 </div>
               ))}
             </div>
-          ) : analytics.orderStatus ? (
+          ) : analytics.orders?.statusBreakdown ? (
             <div className="space-y-4">
-              {Object.entries(analytics.orderStatus).map(([status, count]) => {
+              {Object.entries(analytics.orders?.statusBreakdown || {}).map(([status, count]) => {
                 const percentage =
                   (count / performanceMetrics.totalOrders) * 100 || 0;
                 const statusConfig = {
@@ -632,28 +705,62 @@ const VendorAnalytics = () => {
         </Card>
       </div>
 
-      {/* Business Insights */}
-      {analytics.insights && analytics.insights.length > 0 && (
+      {/* Profit Analysis */}
+      {analytics.revenue?.profitAnalytics && (
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
-            <Activity className="w-5 h-5" />
-            Business Insights
+            <TrendingUp className="w-5 h-5" />
+            Profit Analysis
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {analytics.insights.map((insight, index) => (
-              <div key={index} className="bg-blue-50 rounded-xl p-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Activity className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-blue-800 leading-relaxed">
-                      {insight}
-                    </p>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-green-50 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-800">
+                    High Margin Products
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    > 30% margin
+                  </p>
+                </div>
+                <div className="text-2xl font-bold text-green-600">
+                  {analytics.revenue.profitAnalytics.profitMarginDistribution?.highMargin?.count || 0}
                 </div>
               </div>
-            ))}
+            </div>
+            
+            <div className="bg-yellow-50 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-yellow-800">
+                    Medium Margin Products
+                  </p>
+                  <p className="text-xs text-yellow-600 mt-1">
+                    10-30% margin
+                  </p>
+                </div>
+                <div className="text-2xl font-bold text-yellow-600">
+                  {analytics.revenue.profitAnalytics.profitMarginDistribution?.mediumMargin?.count || 0}
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-red-50 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-red-800">
+                    Low/Negative Margin
+                  </p>
+                  <p className="text-xs text-red-600 mt-1">
+                    &lt; 10% margin
+                  </p>
+                </div>
+                <div className="text-2xl font-bold text-red-600">
+                  {(analytics.revenue.profitAnalytics.profitMarginDistribution?.lowMargin?.count || 0) + 
+                   (analytics.revenue.profitAnalytics.profitMarginDistribution?.negative?.count || 0)}
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
       )}

@@ -17,13 +17,22 @@ import {
   Calendar,
 } from 'lucide-react';
 import {
-  useGetVendorOrdersQuery,
-  useGetVendorOrderAnalyticsQuery,
-  useGetOrderNotificationsQuery,
-  useUpdateOrderStatusWorkflowMutation,
-  useBulkUpdateOrderStatusMutation,
-  useMarkNotificationAsReadMutation,
-} from '../../store/slices/apiSlice';
+  useGetAllOrdersQuery,
+  useGetOrderAnalyticsQuery,
+  useUpdateOrderStatusMutation,
+  useConfirmOrderMutation,
+  useStartProcessingMutation,
+  useMarkOrderReadyMutation,
+  useMarkOrderDeliveredMutation,
+  useCancelOrderMutation,
+  useBulkUpdateStatusMutation,
+  useAddOrderNoteMutation,
+  useSendCustomerMessageMutation,
+  useExportOrdersMutation,
+} from '../../store/slices/vendor/vendorOrdersApi';
+import {
+  useGetNotificationsQuery,
+} from '../../store/slices/vendor/vendorDashboardApi';
 import { addNotification } from '../../store/slices/notificationSlice';
 
 const OrderManagement = () => {
@@ -59,18 +68,30 @@ const OrderManagement = () => {
     isLoading: ordersLoading,
     error: ordersError,
     refetch: refetchOrders,
-  } = useGetVendorOrdersQuery(queryParams);
+  } = useGetAllOrdersQuery(queryParams);
 
   const { data: analyticsData, isLoading: analyticsLoading } =
-    useGetVendorOrderAnalyticsQuery({ timeRange });
+    useGetOrderAnalyticsQuery({ 
+      period: timeRange === '7d' ? 'week' : timeRange === '30d' ? 'month' : 'year' 
+    });
 
   const { data: notificationsData, isLoading: notificationsLoading } =
-    useGetOrderNotificationsQuery();
+    useGetNotificationsQuery({
+      limit: 10,
+      unreadOnly: false,
+    });
 
   // Mutations
-  const [updateOrderStatus] = useUpdateOrderStatusWorkflowMutation();
-  const [bulkUpdateOrderStatus] = useBulkUpdateOrderStatusMutation();
-  const [markNotificationAsRead] = useMarkNotificationAsReadMutation();
+  const [updateOrderStatus] = useUpdateOrderStatusMutation();
+  const [confirmOrder] = useConfirmOrderMutation();
+  const [startProcessing] = useStartProcessingMutation();
+  const [markOrderReady] = useMarkOrderReadyMutation();
+  const [markOrderDelivered] = useMarkOrderDeliveredMutation();
+  const [cancelOrder] = useCancelOrderMutation();
+  const [bulkUpdateStatus] = useBulkUpdateStatusMutation();
+  const [addOrderNote] = useAddOrderNoteMutation();
+  const [sendMessage] = useSendCustomerMessageMutation();
+  const [exportOrders] = useExportOrdersMutation();
 
   // Order status configuration
   const orderStatuses = [
@@ -145,11 +166,11 @@ const OrderManagement = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedOrders.length === ordersData?.data?.orders?.length) {
+    if (selectedOrders.length === ordersData?.orders?.length) {
       setSelectedOrders([]);
     } else {
       setSelectedOrders(
-        ordersData?.data?.orders?.map((order) => order.id) || []
+        ordersData?.orders?.map((order) => order.id) || []
       );
     }
   };
@@ -157,10 +178,12 @@ const OrderManagement = () => {
   // Handle bulk status update
   const handleBulkStatusUpdate = async (status) => {
     try {
-      await bulkUpdateOrderStatus({
+      await bulkUpdateStatus({
         orderIds: selectedOrders,
-        status,
-        notes: `Bulk updated to ${status}`,
+        statusData: {
+          status,
+          notes: `Bulk updated to ${status}`,
+        },
       }).unwrap();
 
       dispatch(
@@ -186,12 +209,62 @@ const OrderManagement = () => {
   // Handle individual status update
   const handleStatusUpdate = async (orderId, status, notes = '') => {
     try {
-      await updateOrderStatus({
-        id: orderId,
-        status,
-        notes,
-        estimatedTime: status === 'confirmed' ? '2-4 hours' : undefined,
-      }).unwrap();
+      let result;
+      
+      // Use specific mutation based on status
+      switch (status) {
+        case 'confirmed':
+          result = await confirmOrder({
+            orderId,
+            confirmationData: {
+              estimatedDeliveryTime: '2-4 hours',
+              ...(notes && { notes }),
+            },
+          }).unwrap();
+          break;
+        case 'processing':
+          result = await startProcessing({
+            orderId,
+            processingData: {
+              ...(notes && { notes }),
+            },
+          }).unwrap();
+          break;
+        case 'ready':
+          result = await markOrderReady({
+            orderId,
+            readyData: {
+              ...(notes && { notes }),
+            },
+          }).unwrap();
+          break;
+        case 'delivered':
+          result = await markOrderDelivered({
+            orderId,
+            deliveryData: {
+              deliveredAt: new Date().toISOString(),
+              ...(notes && { notes }),
+            },
+          }).unwrap();
+          break;
+        case 'cancelled':
+          result = await cancelOrder({
+            orderId,
+            cancellationData: {
+              reason: notes || 'Cancelled by vendor',
+            },
+          }).unwrap();
+          break;
+        default:
+          // Fallback to generic status update
+          result = await updateOrderStatus({
+            orderId,
+            statusData: {
+              status,
+              ...(notes && { notes }),
+            },
+          }).unwrap();
+      }
 
       dispatch(
         addNotification({
@@ -205,7 +278,7 @@ const OrderManagement = () => {
         addNotification({
           type: 'error',
           title: 'Update Failed',
-          message: error.data?.message || 'Failed to update order status',
+          message: error.message || 'Failed to update order status',
         })
       );
     }
@@ -221,8 +294,40 @@ const OrderManagement = () => {
   };
 
   // Export orders
-  const handleExport = () => {
-    const csvData = ordersData?.data?.orders?.map((order) => ({
+  const handleExport = async () => {
+    try {
+      const result = await exportOrders({
+        format: 'csv',
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+        timeRange,
+      }).unwrap();
+      
+      // Create download link
+      const blob = new Blob([result.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      dispatch(addNotification({
+        type: 'success',
+        message: 'Orders exported successfully',
+      }));
+    } catch (error) {
+      dispatch(addNotification({
+        type: 'error',
+        message: 'Failed to export orders',
+      }));
+    }
+  };
+  
+  // Legacy export function
+  const handleLegacyExport = () => {
+    const csvData = ordersData?.orders?.map((order) => ({
       'Order ID': order.id,
       Restaurant: order.restaurant.name,
       Items: order.items.length,
@@ -305,10 +410,10 @@ const OrderManagement = () => {
     );
   }
 
-  const orders = ordersData?.data?.orders || [];
-  const pagination = ordersData?.data?.pagination || {};
-  const analytics = analyticsData?.data || {};
-  const notifications = notificationsData?.data?.notifications || [];
+  const orders = ordersData?.orders || [];
+  const pagination = ordersData?.pagination || {};
+  const analytics = analyticsData || {};
+  const notifications = notificationsData?.notifications || [];
 
   return (
     <div className="space-y-8 pb-8">

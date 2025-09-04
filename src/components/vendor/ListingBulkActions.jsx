@@ -8,6 +8,7 @@ import {
   Edit3,
   Zap,
   AlertTriangle,
+  DollarSign,
 } from 'lucide-react';
 import {
   useBulkUpdateListingsMutation,
@@ -18,6 +19,7 @@ import { addNotification } from '../../store/slices/notificationSlice';
 import Button from '../ui/Button';
 import FormField from '../ui/FormField';
 import ConfirmDialog from '../ui/ConfirmDialog';
+import BulkPricingModal from './BulkPricingModal';
 
 const ListingBulkActions = ({
   selectedListings = [],
@@ -28,6 +30,7 @@ const ListingBulkActions = ({
   const dispatch = useDispatch();
   const [showConfirm, setShowConfirm] = useState(null);
   const [bulkUpdateData, setBulkUpdateData] = useState({});
+  const [showBulkPricing, setShowBulkPricing] = useState(false);
 
   const [bulkUpdateListings, { isLoading: isUpdating }] =
     useBulkUpdateListingsMutation();
@@ -246,7 +249,6 @@ const ListingBulkActions = ({
       setShowConfirm(null);
       setBulkUpdateData({});
     } catch (error) {
-      console.error('Bulk action failed:', error);
       dispatch(
         addNotification({
           type: 'error',
@@ -360,6 +362,18 @@ const ListingBulkActions = ({
           Update Inventory
         </Button>
 
+        {/* Bulk Pricing Action */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowBulkPricing(true)}
+          disabled={isUpdating}
+          className="flex items-center gap-1 text-earthy-yellow border-earthy-yellow/30 hover:bg-earthy-yellow/10"
+        >
+          <DollarSign className="w-4 h-4" />
+          Update Pricing
+        </Button>
+
         {/* Delete Action */}
         <Button
           variant="outline"
@@ -414,6 +428,23 @@ const ListingBulkActions = ({
           isLoading={isUpdating || isDeleting}
         />
       )}
+
+      {/* Bulk Pricing Modal */}
+      <BulkPricingModal
+        isOpen={showBulkPricing}
+        onClose={() => setShowBulkPricing(false)}
+        selectedListings={selectedListingData}
+        onSuccess={(result) => {
+          dispatch(
+            addNotification({
+              type: 'success',
+              title: 'Pricing Updated',
+              message: `Successfully updated prices for ${result.results?.updated || selectedCount} listings`,
+            })
+          );
+          onClearSelection();
+        }}
+      />
     </div>
   );
 };

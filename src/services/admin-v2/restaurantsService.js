@@ -47,7 +47,7 @@ export const transformRestaurantsData = (rawData) => {
 /**
  * Format business address for display
  */
-const formatAddress = (address) => {
+export const formatAddress = (address) => {
   if (!address) return 'Not provided';
 
   const parts = [];
@@ -57,6 +57,14 @@ const formatAddress = (address) => {
   if (address.zipCode) parts.push(address.zipCode);
 
   return parts.join(', ');
+};
+
+/**
+ * Format date for display
+ */
+export const formatDate = (dateString) => {
+  if (!dateString) return 'Never';
+  return format(new Date(dateString), 'PPp');
 };
 
 /**
@@ -70,7 +78,7 @@ const calculateAverageOrderValue = (restaurant) => {
 /**
  * Calculate verification urgency level
  */
-const calculateVerificationUrgency = (createdAt, verificationStatus) => {
+export const calculateVerificationUrgency = (createdAt, verificationStatus) => {
   if (verificationStatus !== 'pending') return 'none';
 
   const daysWaiting = Math.floor(

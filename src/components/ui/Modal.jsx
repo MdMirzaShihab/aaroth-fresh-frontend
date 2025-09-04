@@ -76,6 +76,7 @@ const Modal = ({
   closeOnEscape = true,
   showCloseButton = true,
   className,
+  backdropClassName,
   headerClassName,
   contentClassName,
   footerClassName,
@@ -150,7 +151,7 @@ const Modal = ({
 
   const modalContent = (
     <div
-      className={cn(backdropVariants({ blur }))}
+      className={cn(backdropVariants({ blur }), backdropClassName)}
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"

@@ -17,6 +17,7 @@ import {
   BarChart3,
   UserPlus,
   CheckCircle,
+  XCircle,
   Clock,
   AlertTriangle,
   MapPin,
@@ -28,18 +29,14 @@ import { useTheme } from '../../../hooks/useTheme';
 import { Card, Button, Input } from '../../../components/ui';
 import {
   useGetVendorsQuery,
-  useGetVendorAnalyticsQuery,
-  useGetVerificationQueueQuery,
   useUpdateVendorVerificationMutation,
-  useBulkVendorOperationsMutation,
+  useDeactivateVendorMutation,
+  useSafeDeleteVendorMutation,
 } from '../../../services/admin-v2/vendorsService';
 import VendorDirectory from './components/VendorDirectory';
-import VerificationQueue from './components/VerificationQueue';
 import VendorFilters from './components/VendorFilters';
-import BulkVendorOperations from './components/BulkVendorOperations';
-import VendorAnalytics from './components/VendorAnalytics';
-import VendorProfileModal from './components/VendorProfileModal';
-import VendorStatusManager from './components/VendorStatusManager';
+import VendorDetailsModal from './components/VendorDetailsModal';
+import VendorEditModal from './components/VendorEditModal';
 
 const VendorsManagementPage = () => {
   const { isDarkMode } = useTheme();
@@ -54,13 +51,13 @@ const VendorsManagementPage = () => {
     direction: 'desc',
   });
   const [activeFilters, setActiveFilters] = useState({});
-  const [viewMode, setViewMode] = useState('directory'); // 'directory' | 'verification' | 'analytics'
   const [showFilters, setShowFilters] = useState(false);
 
   // Modal state
   const [selectedVendor, setSelectedVendor] = useState(null);
-  const [showVendorProfile, setShowVendorProfile] = useState(false);
-  const [showStatusManager, setShowStatusManager] = useState(false);
+  const [showVendorDetails, setShowVendorDetails] = useState(false);
+  const [showVendorEdit, setShowVendorEdit] = useState(false);
+  const [isModalLoading, setIsModalLoading] = useState(false);
 
   // API queries
   const {
@@ -77,27 +74,15 @@ const VendorsManagementPage = () => {
     ...activeFilters,
   });
 
-  const { data: analyticsData, isLoading: analyticsLoading } =
-    useGetVendorAnalyticsQuery({
-      enabled: viewMode === 'analytics',
-    });
-
-  const {
-    data: verificationData,
-    isLoading: verificationLoading,
-    refetch: refetchVerification,
-  } = useGetVerificationQueueQuery({
-    enabled: viewMode === 'verification',
-  });
-
   // Mutations
   const [updateVendorVerification] = useUpdateVendorVerificationMutation();
-  const [bulkVendorOperations] = useBulkVendorOperationsMutation();
+  const [deactivateVendor] = useDeactivateVendorMutation();
+  const [safeDeleteVendor] = useSafeDeleteVendorMutation();
 
-  // Memoized data transformations
+  // Follow RestaurantsManagementPage pattern - direct data access
+  const vendors = vendorsData?.data || [];
   const totalVendors = vendorsData?.total || 0;
-  const vendors = vendorsData?.vendors || [];
-  const totalPages = Math.ceil(totalVendors / pageSize);
+  const totalPages = vendorsData?.pages || Math.ceil(totalVendors / pageSize);
   const vendorStats = vendorsData?.stats || {};
 
   // Handle vendor selection
@@ -140,45 +125,19 @@ const VendorsManagementPage = () => {
     setCurrentPage(1);
   }, []);
 
-  // Handle vendor actions
-  const handleVendorAction = useCallback((vendor, action) => {
-    switch (action) {
-      case 'view_profile':
-        setSelectedVendor(vendor);
-        setShowVendorProfile(true);
-        break;
-      case 'edit_profile':
-        setSelectedVendor(vendor);
-        setShowVendorProfile(true);
-        break;
-      case 'manage_status':
-        setSelectedVendor(vendor);
-        setShowStatusManager(true);
-        break;
-      case 'approve_verification':
-        handleVerificationAction(vendor.id, 'approved');
-        break;
-      case 'reject_verification':
-        handleVerificationAction(vendor.id, 'rejected');
-        break;
-      default:
-        console.log(`Unhandled vendor action: ${action}`, vendor);
-    }
-  }, []);
-
   // Handle verification actions
   const handleVerificationAction = useCallback(
     async (vendorId, status, reason = '') => {
       try {
+        setIsModalLoading(true);
         toast.loading(
           `${status === 'approved' ? 'Approving' : 'Rejecting'} vendor verification...`
         );
 
-        await updateVendorVerification({
+        const result = await updateVendorVerification({
           vendorId,
           status,
           reason,
-          documents: [], // Will be handled by verification modal
         }).unwrap();
 
         toast.dismiss();
@@ -186,52 +145,98 @@ const VendorsManagementPage = () => {
           `Vendor verification ${status === 'approved' ? 'approved' : 'rejected'} successfully`
         );
         refetchVendors();
-        refetchVerification();
+        
+        // Close the modal after successful verification
+        setShowVendorDetails(false);
+        setSelectedVendor(null);
       } catch (error) {
         toast.dismiss();
-        toast.error(`Failed to ${status} verification: ${error.message}`);
+        
+        // Handle different types of backend errors
+        let errorMessage = `Failed to ${status} verification`;
+        
+        if (error.status === 400) {
+          // Validation errors from backend
+          if (error.data?.error) {
+            errorMessage = error.data.error;
+          } else if (error.data?.message) {
+            errorMessage = error.data.message;
+          } else {
+            errorMessage += ': Invalid data provided';
+          }
+        } else if (error.status === 401) {
+          errorMessage = 'You are not authorized to perform this action';
+        } else if (error.status === 403) {
+          errorMessage = 'You do not have permission to perform this action';
+        } else if (error.status === 404) {
+          errorMessage = 'Vendor not found';
+        } else if (error.status === 500) {
+          errorMessage = 'Server error occurred. Please try again later';
+        } else if (error.message) {
+          errorMessage += `: ${error.message}`;
+        } else {
+          errorMessage += '. Please check your connection and try again';
+        }
+        
+        toast.error(errorMessage);
+        // Keep modal open on error so user can retry
+      } finally {
+        setIsModalLoading(false);
       }
     },
-    [updateVendorVerification, refetchVendors, refetchVerification]
+    [updateVendorVerification, refetchVendors]
   );
 
-  // Handle bulk operations
-  const handleBulkOperation = useCallback(
-    async (operation, options = {}) => {
-      if (selectedVendors.length === 0) {
-        toast.error('Please select vendors first');
-        return;
+  // Handle individual vendor actions
+  const handleVendorDeactivate = useCallback(async (vendorId, reason) => {
+    try {
+      setIsModalLoading(true);
+      toast.loading('Deactivating vendor...');
+      await deactivateVendor({ vendorId, reason }).unwrap();
+      toast.dismiss();
+      toast.success('Vendor deactivated successfully');
+      refetchVendors();
+      
+      // Close the modal after successful deactivation
+      setShowVendorDetails(false);
+      setSelectedVendor(null);
+    } catch (error) {
+      toast.dismiss();
+      if (error.data?.dependencies) {
+        toast.error(`Cannot deactivate vendor: ${error.data.error}`);
+      } else {
+        toast.error(`Failed to deactivate vendor: ${error.message}`);
       }
+      // Keep modal open on error so user can retry
+    } finally {
+      setIsModalLoading(false);
+    }
+  }, [deactivateVendor, refetchVendors]);
 
-      try {
-        toast.loading(
-          `Processing ${operation} for ${selectedVendors.length} vendors...`
-        );
-
-        await bulkVendorOperations({
-          vendorIds: selectedVendors,
-          operation,
-          operationData: options,
-        }).unwrap();
-
-        toast.dismiss();
-        toast.success(`${operation} completed successfully`);
-        setSelectedVendors([]);
-        refetchVendors();
-        if (viewMode === 'verification') refetchVerification();
-      } catch (error) {
-        toast.dismiss();
-        toast.error(`Failed to ${operation}: ${error.message}`);
+  const handleVendorDelete = useCallback(async (vendorId, reason) => {
+    try {
+      setIsModalLoading(true);
+      toast.loading('Deleting vendor...');
+      await safeDeleteVendor({ vendorId, reason }).unwrap();
+      toast.dismiss();
+      toast.success('Vendor deleted successfully');
+      refetchVendors();
+      
+      // Close the modal after successful deletion
+      setShowVendorDetails(false);
+      setSelectedVendor(null);
+    } catch (error) {
+      toast.dismiss();
+      if (error.data?.dependencies) {
+        toast.error(`Cannot delete vendor: ${error.data.error}`);
+      } else {
+        toast.error(`Failed to delete vendor: ${error.message}`);
       }
-    },
-    [
-      selectedVendors,
-      bulkVendorOperations,
-      refetchVendors,
-      refetchVerification,
-      viewMode,
-    ]
-  );
+      // Keep modal open on error so user can retry
+    } finally {
+      setIsModalLoading(false);
+    }
+  }, [safeDeleteVendor, refetchVendors]);
 
   // Handle export
   const handleExport = useCallback(async (format = 'csv') => {
@@ -249,24 +254,54 @@ const VendorsManagementPage = () => {
     }
   }, []);
 
-  // Quick stats for header
+  // Handle vendor actions
+  const handleVendorAction = useCallback((vendor, action, data = {}) => {
+    const vendorId = vendor._id || vendor.id;
+    
+    switch (action) {
+      case 'view_details':
+      case 'view_profile':
+      case 'edit_profile':
+        setSelectedVendor(vendor);
+        setShowVendorDetails(true);
+        break;
+      case 'approve_verification':
+        handleVerificationAction(vendorId, 'approved', data.reason);
+        break;
+      case 'reject_verification':
+        handleVerificationAction(vendorId, 'rejected', data.reason);
+        break;
+      case 'deactivate':
+        handleVendorDeactivate(vendorId, data.reason);
+        break;
+      case 'delete':
+        handleVendorDelete(vendorId, data.reason);
+        break;
+      default:
+        // Unhandled action
+        break;
+    }
+  }, [handleVerificationAction, handleVendorDeactivate, handleVendorDelete]);
+
+  // Quick stats for header - match API response structure
   const quickStats = useMemo(() => {
-    if (!vendorStats && !analyticsData) return null;
+    if (!vendorStats) return null;
 
     const stats = vendorStats || {};
     return {
       totalVendors,
-      verifiedVendors: stats.verifiedVendors || 0,
-      pendingVerification: stats.pendingVerification || 0,
-      activeVendors: stats.activeVendors || 0,
+      verifiedVendors: stats.approvedVendors || 0,
+      pendingVerification: stats.pendingVendors || 0,
+      rejectedVendors: stats.rejectedVendors || 0,
     };
-  }, [vendorStats, analyticsData, totalVendors]);
+  }, [vendorStats, totalVendors]);
 
-  // View mode tabs
-  const viewTabs = [
-    { id: 'directory', label: 'Vendor Directory', icon: Store },
-    { id: 'verification', label: 'Verification Queue', icon: CheckCircle },
-    { id: 'analytics', label: 'Performance Analytics', icon: BarChart3 },
+  // Status filter tabs
+  const statusTabs = [
+    { id: '', label: 'All Vendors', icon: Store, count: quickStats?.totalVendors || 0 },
+    { id: 'pending', label: 'Pending Verification', icon: Clock, count: quickStats?.pendingVerification || 0, urgent: true },
+    { id: 'approved', label: 'Approved', icon: CheckCircle, count: quickStats?.verifiedVendors || 0 },
+    { id: 'rejected', label: 'Rejected', icon: XCircle, count: quickStats?.rejectedVendors || 0 },
   ];
 
   return (
@@ -397,36 +432,50 @@ const VendorsManagementPage = () => {
                     <p
                       className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
                     >
-                      Active
+                      Rejected
                     </p>
                     <p
-                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
+                      className={`text-lg font-bold ${quickStats.rejectedVendors > 0 ? 'text-tomato-red' : isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
                     >
-                      {quickStats.activeVendors.toLocaleString()}
+                      {quickStats.rejectedVendors.toLocaleString()}
                     </p>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-sage-green animate-pulse" />
+                  <XCircle
+                    className={`w-4 h-4 ${quickStats.rejectedVendors > 0 ? 'text-tomato-red' : 'text-gray-300'}`}
+                  />
                 </div>
               </Card>
             </div>
           )}
 
-          {/* View Mode Tabs */}
+          {/* Status Filter Tabs */}
           <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-dark-surface rounded-2xl">
-            {viewTabs.map((tab) => {
+            {statusTabs.map((tab) => {
               const IconComponent = tab.icon;
+              const isActive = activeFilters.status === tab.id;
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setViewMode(tab.id)}
+                  onClick={() => handleFilterChange({...activeFilters, status: tab.id})}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    viewMode === tab.id
+                    isActive
                       ? 'bg-white dark:bg-dark-bg text-muted-olive shadow-sm'
                       : 'text-text-muted hover:text-text-dark dark:hover:text-dark-text-primary'
                   }`}
                 >
                   <IconComponent className="w-4 h-4" />
                   <span className="hidden sm:inline">{tab.label}</span>
+                  {tab.count > 0 && (
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      isActive 
+                        ? 'bg-muted-olive/10 text-muted-olive'
+                        : tab.urgent
+                          ? 'bg-earthy-yellow/20 text-earthy-yellow'
+                          : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -484,80 +533,64 @@ const VendorsManagementPage = () => {
             </div>
           </div>
 
-          {/* Bulk Operations Bar */}
-          {selectedVendors.length > 0 && (
-            <BulkVendorOperations
-              selectedVendors={selectedVendors}
-              totalVendors={vendors.length}
-              onBulkOperation={handleBulkOperation}
-              onClearSelection={() => setSelectedVendors([])}
-            />
-          )}
-
-          {/* Content based on view mode */}
-          {viewMode === 'directory' && (
-            <VendorDirectory
-              vendors={vendors}
-              loading={vendorsLoading}
-              error={vendorsError}
-              selectedVendors={selectedVendors}
-              sortConfig={sortConfig}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              totalPages={totalPages}
-              totalVendors={totalVendors}
-              onVendorSelect={handleVendorSelect}
-              onSelectAll={handleSelectAll}
-              onSort={handleSort}
-              onPageChange={setCurrentPage}
-              onPageSizeChange={setPageSize}
-              onVendorAction={handleVendorAction}
-            />
-          )}
-
-          {viewMode === 'verification' && (
-            <VerificationQueue
-              vendors={verificationData?.vendors || []}
-              loading={verificationLoading}
-              urgentCount={verificationData?.urgentCount || 0}
-              averageWaitTime={verificationData?.averageWaitTime || 0}
-              onVerificationAction={handleVerificationAction}
-              onVendorAction={handleVendorAction}
-            />
-          )}
-
-          {viewMode === 'analytics' && (
-            <VendorAnalytics
-              data={analyticsData}
-              loading={analyticsLoading}
-              vendors={vendors}
-            />
-          )}
+          {/* Vendor Directory */}
+          <VendorDirectory
+            vendors={vendors}
+            loading={vendorsLoading}
+            error={vendorsError}
+            selectedVendors={selectedVendors}
+            sortConfig={sortConfig}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            totalVendors={totalVendors}
+            onVendorSelect={handleVendorSelect}
+            onSelectAll={handleSelectAll}
+            onSort={handleSort}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
+            onVendorAction={handleVendorAction}
+          />
         </Card>
       </div>
 
-      {/* Modals */}
-      {showVendorProfile && selectedVendor && (
-        <VendorProfileModal
+      {/* Vendor Details Modal */}
+      {showVendorDetails && selectedVendor && (
+        <VendorDetailsModal
           vendor={selectedVendor}
-          isOpen={showVendorProfile}
+          isOpen={showVendorDetails}
           onClose={() => {
-            setShowVendorProfile(false);
+            setShowVendorDetails(false);
             setSelectedVendor(null);
           }}
-          onVendorUpdate={refetchVendors}
+          onEdit={(vendor) => {
+            setShowVendorDetails(false);
+            setSelectedVendor(vendor);
+            setShowVendorEdit(true);
+          }}
+          onVerify={(vendorId, status, reason) => {
+            // The modal passes the status (approved/rejected) and reason
+            handleVerificationAction(vendorId, status, reason);
+          }}
+          onDeactivate={handleVendorDeactivate}
+          onDelete={handleVendorDelete}
+          isLoading={isModalLoading}
         />
       )}
 
-      {showStatusManager && selectedVendor && (
-        <VendorStatusManager
+      {/* Vendor Edit Modal */}
+      {showVendorEdit && selectedVendor && (
+        <VendorEditModal
           vendor={selectedVendor}
-          isOpen={showStatusManager}
+          isOpen={showVendorEdit}
           onClose={() => {
-            setShowStatusManager(false);
+            setShowVendorEdit(false);
             setSelectedVendor(null);
           }}
-          onStatusUpdate={refetchVendors}
+          onVendorUpdate={() => {
+            refetchVendors();
+          }}
+          isLoading={isModalLoading}
         />
       )}
     </div>

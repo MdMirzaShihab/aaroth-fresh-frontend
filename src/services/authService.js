@@ -2,6 +2,7 @@ import { store } from '../store';
 import { logout } from '../store/slices/authSlice';
 import { apiSlice } from '../store/slices/apiSlice';
 import { addNotification } from '../store/slices/notificationSlice';
+import vendorAuthApi from '../store/slices/vendor/vendorAuthApi';
 
 class AuthService {
   /**
@@ -218,6 +219,193 @@ class AuthService {
     if (!user) return 'Guest';
 
     return user.name || user.email || user.phone || 'User';
+  }
+
+  /**
+   * Vendor Authentication Methods
+   */
+
+  /**
+   * Vendor login with phone and password
+   */
+  async vendorLogin(phone, password) {
+    try {
+      const result = await store.dispatch(
+        vendorAuthApi.endpoints.login.initiate({ phone, password })
+      ).unwrap();
+
+      store.dispatch(
+        addNotification({
+          type: 'success',
+          message: 'Login successful! Welcome back.',
+        })
+      );
+
+      return result;
+    } catch (error) {
+      store.dispatch(
+        addNotification({
+          type: 'error',
+          message: error.message || 'Login failed. Please try again.',
+        })
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Vendor registration
+   */
+  async vendorRegister(registrationData) {
+    try {
+      const result = await store.dispatch(
+        vendorAuthApi.endpoints.register.initiate(registrationData)
+      ).unwrap();
+
+      store.dispatch(
+        addNotification({
+          type: 'success',
+          message: 'Registration successful! Please complete your profile.',
+        })
+      );
+
+      return result;
+    } catch (error) {
+      store.dispatch(
+        addNotification({
+          type: 'error',
+          message: error.message || 'Registration failed. Please try again.',
+        })
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Update vendor profile
+   */
+  async updateVendorProfile(profileData) {
+    try {
+      const result = await store.dispatch(
+        vendorAuthApi.endpoints.updateProfile.initiate(profileData)
+      ).unwrap();
+
+      store.dispatch(
+        addNotification({
+          type: 'success',
+          message: 'Profile updated successfully.',
+        })
+      );
+
+      return result;
+    } catch (error) {
+      store.dispatch(
+        addNotification({
+          type: 'error',
+          message: error.message || 'Profile update failed. Please try again.',
+        })
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Upload vendor documents
+   */
+  async uploadVendorDocuments(documentsFormData) {
+    try {
+      const result = await store.dispatch(
+        vendorAuthApi.endpoints.uploadDocuments.initiate(documentsFormData)
+      ).unwrap();
+
+      store.dispatch(
+        addNotification({
+          type: 'success',
+          message: 'Documents uploaded successfully. Your verification is in progress.',
+        })
+      );
+
+      return result;
+    } catch (error) {
+      store.dispatch(
+        addNotification({
+          type: 'error',
+          message: error.message || 'Document upload failed. Please try again.',
+        })
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Change vendor password
+   */
+  async changeVendorPassword(passwordData) {
+    try {
+      const result = await store.dispatch(
+        vendorAuthApi.endpoints.changePassword.initiate(passwordData)
+      ).unwrap();
+
+      store.dispatch(
+        addNotification({
+          type: 'success',
+          message: 'Password changed successfully.',
+        })
+      );
+
+      return result;
+    } catch (error) {
+      store.dispatch(
+        addNotification({
+          type: 'error',
+          message: error.message || 'Password change failed. Please try again.',
+        })
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Get vendor verification status with detailed info
+   */
+  async getVendorVerificationStatus() {
+    try {
+      const result = await store.dispatch(
+        vendorAuthApi.endpoints.getVerificationStatus.initiate()
+      ).unwrap();
+
+      return result;
+    } catch (error) {
+      console.error('Failed to get verification status:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Validate phone number for vendor registration
+   */
+  validateVendorPhone(phone) {
+    // Enhanced phone validation for vendor registration
+    const phoneRegex = /^\+[1-9]\d{1,14}$/;
+    return phoneRegex.test(phone);
+  }
+
+  /**
+   * Format phone number for display
+   */
+  formatPhoneNumber(phone) {
+    if (!phone) return '';
+    
+    // Remove any non-digit characters except +
+    const cleaned = phone.replace(/[^\d+]/g, '');
+    
+    // Format based on length (assuming international format)
+    if (cleaned.startsWith('+88')) {
+      // Bangladesh format
+      return cleaned.replace(/^\+88(\d{4})(\d{6})$/, '+88 $1 $2');
+    }
+    
+    return cleaned;
   }
 }
 

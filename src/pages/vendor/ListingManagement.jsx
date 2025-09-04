@@ -26,12 +26,13 @@ import {
   Settings,
 } from 'lucide-react';
 import {
-  useGetVendorListingsQuery,
+  useGetAllListingsQuery,
   useDeleteListingMutation,
   useUpdateListingStatusMutation,
-  useBulkUpdateListingsMutation,
-  useBulkDeleteListingsMutation,
-} from '../../store/slices/apiSlice';
+  useBulkUpdateStatusMutation,
+  useExportListingsMutation,
+  useDuplicateListingMutation,
+} from '../../store/slices/vendor/vendorListingsApi';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -41,6 +42,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import Pagination from '../../components/ui/Pagination';
 import ListingStatusToggle from '../../components/vendor/ListingStatusToggle';
 import ListingBulkActions from '../../components/vendor/ListingBulkActions';
+import SEOOptimizationPanel from '../../components/vendor/SEOOptimizationPanel';
 
 const ListingManagement = () => {
   const navigate = useNavigate();
@@ -52,6 +54,7 @@ const ListingManagement = () => {
   const [selectedListings, setSelectedListings] = useState(new Set());
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [seoOptimizationListing, setSeoOptimizationListing] = useState(null);
 
   const itemsPerPage = 15;
 
@@ -61,7 +64,7 @@ const ListingManagement = () => {
     isLoading,
     error,
     refetch,
-  } = useGetVendorListingsQuery({
+  } = useGetAllListingsQuery({
     page: currentPage,
     limit: itemsPerPage,
     search: searchTerm || undefined,
@@ -73,12 +76,13 @@ const ListingManagement = () => {
   // Mutations
   const [deleteListing] = useDeleteListingMutation();
   const [updateListingStatus] = useUpdateListingStatusMutation();
-  const [bulkUpdateListings] = useBulkUpdateListingsMutation();
-  const [bulkDeleteListings] = useBulkDeleteListingsMutation();
+  const [bulkUpdateStatus] = useBulkUpdateStatusMutation();
+  const [exportListings] = useExportListingsMutation();
+  const [duplicateListing] = useDuplicateListingMutation();
 
-  const listings = listingsData?.data?.listings || [];
-  const pagination = listingsData?.data?.pagination || {};
-  const stats = listingsData?.data?.stats || {};
+  const listings = listingsData?.listings || [];
+  const pagination = listingsData?.pagination || {};
+  const stats = listingsData?.stats || {};
 
   // Filter options
   const statusOptions = [
@@ -132,7 +136,10 @@ const ListingManagement = () => {
   const handleToggleStatus = async (listing) => {
     const newStatus = listing.status === 'active' ? 'inactive' : 'active';
     try {
-      await updateListingStatus({ id: listing.id, status: newStatus }).unwrap();
+      await updateListingStatus({ 
+        listingId: listing.id, 
+        status: newStatus 
+      }).unwrap();
     } catch (error) {
       console.error('Failed to update listing status:', error);
     }
@@ -171,9 +178,9 @@ const ListingManagement = () => {
       confirmText: actionName.charAt(0).toUpperCase() + actionName.slice(1),
       onConfirm: async () => {
         try {
-          await bulkUpdateListings({
+          await bulkUpdateStatus({
             listingIds,
-            updates: { status },
+            status,
           }).unwrap();
           setSelectedListings(new Set());
           setConfirmDialog(null);
@@ -194,7 +201,10 @@ const ListingManagement = () => {
       isDangerous: true,
       onConfirm: async () => {
         try {
-          await bulkDeleteListings(listingIds).unwrap();
+          // Delete listings one by one since there's no bulk delete in the new API
+          for (const listingId of listingIds) {
+            await deleteListing(listingId).unwrap();
+          }
           setSelectedListings(new Set());
           setConfirmDialog(null);
         } catch (error) {
@@ -307,7 +317,31 @@ const ListingManagement = () => {
             Refresh
           </Button>
 
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={async () => {
+              try {
+                const result = await exportListings({
+                  format: 'csv',
+                  status: statusFilter !== 'all' ? statusFilter : undefined,
+                }).unwrap();
+                
+                // Create download link
+                const blob = new Blob([result.data], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `listings-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+              } catch (error) {
+                console.error('Failed to export listings:', error);
+              }
+            }}
+          >
             <Download className="w-4 h-4" />
             Export
           </Button>
@@ -589,6 +623,24 @@ const ListingManagement = () => {
                             size="sm"
                           />
                           <button
+                            onClick={async () => {
+                              try {
+                                await duplicateListing({ 
+                                  listingId: listing.id,
+                                  modifications: {
+                                    name: `${listing.product?.name} (Copy)`,
+                                  }
+                                }).unwrap();
+                              } catch (error) {
+                                console.error('Failed to duplicate listing:', error);
+                              }
+                            }}
+                            className="p-2 text-text-muted hover:text-blue-600 rounded-lg transition-colors"
+                            title="Duplicate listing"
+                          >
+                            <Package className="w-4 h-4" />
+                          </button>
+                          <button
                             onClick={() => handleDeleteListing(listing)}
                             className="p-2 text-text-muted hover:text-tomato-red rounded-lg transition-colors"
                             title="Delete listing"
@@ -679,6 +731,24 @@ const ListingManagement = () => {
                           variant="button"
                           size="sm"
                         />
+                        <button
+                          onClick={async () => {
+                            try {
+                              await duplicateListing({ 
+                                listingId: listing.id,
+                                modifications: {
+                                  name: `${listing.product?.name} (Copy)`,
+                                }
+                              }).unwrap();
+                            } catch (error) {
+                              console.error('Failed to duplicate listing:', error);
+                            }
+                          }}
+                          className="p-2 text-text-muted hover:text-blue-600 rounded-lg transition-colors"
+                          title="Duplicate listing"
+                        >
+                          <Package className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => handleDeleteListing(listing)}
                           className="p-2 text-text-muted hover:text-tomato-red rounded-lg transition-colors"

@@ -13,25 +13,42 @@ import {
   Globe,
   TrendingUp,
   AlertCircle,
+  Clock,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   useGetAdminRestaurantsUnifiedQuery,
   useGetAdminRestaurantsStatsQuery,
-} from '../../store/slices/apiSlice';
-import { Card } from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import EmptyState from '../../components/ui/EmptyState';
-import RestaurantDirectory from '../../components/admin/restaurants/RestaurantDirectory';
-import RestaurantVerification from '../../components/admin/restaurants/RestaurantVerification';
-import OwnerManagerRelations from '../../components/admin/restaurants/OwnerManagerRelations';
+} from '../../../store/slices/apiSlice';
+import {
+  formatAddress,
+  formatDate,
+} from '../../../services/admin-v2/restaurantsService';
+import { Card } from '../../../components/ui/Card';
+import Button from '../../../components/ui/Button';
+import LoadingSpinner from '../../../components/ui/LoadingSpinner';
+import EmptyState from '../../../components/ui/EmptyState';
+import RestaurantDirectory from '../../../components/admin/restaurants/RestaurantDirectory';
+import RestaurantVerification from '../../../components/admin/restaurants/RestaurantVerification';
+import OwnerManagerRelations from '../../../components/admin/restaurants/OwnerManagerRelations';
+import RestaurantDetailsModal from './components/RestaurantDetailsModal';
+import RestaurantEditModal from './components/RestaurantEditModal';
+import RestaurantVerificationModal from './components/RestaurantVerificationModal';
 
-const RestaurantsManagementPage = () => {
+const RestaurantManagementPage = () => {
   const { user } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState('directory');
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
+  
+  // Modal states
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  
   const [filters, setFilters] = useState({
     search: '',
     verificationStatus: 'all',
@@ -61,7 +78,15 @@ const RestaurantsManagementPage = () => {
     refetch: refetchStats,
   } = useGetAdminRestaurantsStatsQuery();
 
-  const restaurants = restaurantsData?.data || [];
+  // Transform restaurants data to ensure compatibility with cards
+  const restaurants = (restaurantsData?.data || []).map((restaurant) => ({
+    ...restaurant,
+    id: restaurant._id || restaurant.id, // Ensure id field exists
+    location: restaurant.address ? formatAddress(restaurant.address) : (restaurant.location || 'Not provided'),
+    email: restaurant.userId?.email || restaurant.email || 'Not provided',
+    phone: restaurant.userId?.phone || restaurant.phone || 'Not provided',
+    cuisineType: restaurant.cuisineTypes?.join(', ') || restaurant.cuisineType || 'Not specified',
+  }));
   const stats = statsData?.data || {
     totalRestaurants: 0,
     pendingVerification: 0,
@@ -120,6 +145,29 @@ const RestaurantsManagementPage = () => {
   const handleRefresh = () => {
     refetchRestaurants();
     refetchStats();
+  };
+
+  // Modal handlers
+  const handleRestaurantDetails = (restaurant) => {
+    setSelectedRestaurant(restaurant);
+    setShowDetailsModal(true);
+  };
+
+  const handleRestaurantEdit = (restaurant) => {
+    setSelectedRestaurant(restaurant);
+    setShowEditModal(true);
+  };
+
+  const handleRestaurantVerification = (restaurant) => {
+    setSelectedRestaurant(restaurant);
+    setShowVerificationModal(true);
+  };
+
+  const closeAllModals = () => {
+    setShowDetailsModal(false);
+    setShowEditModal(false);
+    setShowVerificationModal(false);
+    setSelectedRestaurant(null);
   };
 
   if (isLoadingStats && isLoadingRestaurants) {
@@ -390,6 +438,9 @@ const RestaurantsManagementPage = () => {
                 stats={stats}
                 locationFilter={locationFilter}
                 onLocationFilterChange={setLocationFilter}
+                onRestaurantDetails={handleRestaurantDetails}
+                onRestaurantEdit={handleRestaurantEdit}
+                onRestaurantVerification={handleRestaurantVerification}
               />
             )}
 
@@ -453,8 +504,37 @@ const RestaurantsManagementPage = () => {
           </motion.div>
         )}
       </div>
+
+      {/* Restaurant Modals */}
+      {selectedRestaurant && (
+        <>
+          <RestaurantDetailsModal
+            restaurant={selectedRestaurant}
+            isOpen={showDetailsModal}
+            onClose={closeAllModals}
+          />
+          <RestaurantEditModal
+            restaurant={selectedRestaurant}
+            isOpen={showEditModal}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedRestaurant(null);
+              handleRefresh(); // Refresh data after edit
+            }}
+          />
+          <RestaurantVerificationModal
+            restaurant={selectedRestaurant}
+            isOpen={showVerificationModal}
+            onClose={() => {
+              setShowVerificationModal(false);
+              setSelectedRestaurant(null);
+              handleRefresh(); // Refresh data after verification update
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };
 
-export default RestaurantsManagementPage;
+export default RestaurantManagementPage;

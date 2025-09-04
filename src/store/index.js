@@ -9,6 +9,13 @@ import { apiSlice } from './slices/apiSlice';
 import { adminApiV2Slice } from './slices/admin-v2/adminApiSlice';
 import { authMiddlewareWithRetry } from './middleware/authMiddleware';
 
+// Vendor API Slices
+import vendorAuthApi from './slices/vendor/vendorAuthApi';
+import vendorDashboardApi from './slices/vendor/vendorDashboardApi';
+import vendorInventoryApi from './slices/vendor/vendorInventoryApi';
+import vendorListingsApi from './slices/vendor/vendorListingsApi';
+import vendorOrdersApi from './slices/vendor/vendorOrdersApi';
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -19,6 +26,12 @@ export const store = configureStore({
     comparison: comparisonReducer,
     api: apiSlice.reducer,
     adminApiV2: adminApiV2Slice.reducer,
+    // Vendor API reducers
+    vendorAuthApi: vendorAuthApi.reducer,
+    vendorDashboardApi: vendorDashboardApi.reducer,
+    vendorInventoryApi: vendorInventoryApi.reducer,
+    vendorListingsApi: vendorListingsApi.reducer,
+    vendorOrdersApi: vendorOrdersApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -28,6 +41,12 @@ export const store = configureStore({
     }).concat(
       apiSlice.middleware,
       adminApiV2Slice.middleware,
+      // Vendor API middlewares
+      vendorAuthApi.middleware,
+      vendorDashboardApi.middleware,
+      vendorInventoryApi.middleware,
+      vendorListingsApi.middleware,
+      vendorOrdersApi.middleware,
       authMiddlewareWithRetry
     ),
   devTools: process.env.NODE_ENV !== 'production',

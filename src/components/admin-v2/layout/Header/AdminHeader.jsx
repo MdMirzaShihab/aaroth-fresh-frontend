@@ -103,7 +103,7 @@ const AdminHeader = ({ onMenuClick }) => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="sticky top-0 z-40 glass-layer-3 dark:glass-3-dark border-b border-sage-green/20 dark:border-dark-olive-border shadow-organic dark:shadow-dark-glass hover:shadow-organic-lg dark:hover:shadow-dark-glass transition-all duration-500"
+      className="sticky top-0 z-40  glass-3 dark:glass-3-dark border-b border-sage-green/20 dark:border-dark-olive-border shadow-organic dark:shadow-dark-glass hover:shadow-organic-lg dark:hover:shadow-dark-glass transition-all duration-500"
     >
       <div className="px-4 lg:px-8 py-4">
         <div className="flex items-center justify-between">
@@ -112,7 +112,7 @@ const AdminHeader = ({ onMenuClick }) => {
             {/* Mobile menu button */}
             <button
               onClick={onMenuClick}
-              className="lg:hidden p-3 rounded-2xl transition-all duration-300 hover:glass-layer-1 dark:hover:glass-1-dark text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:-translate-y-0.5 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15"
+              className="lg:hidden p-3 rounded-2xl transition-all duration-300 hover:glass-1 dark:hover:glass-1-dark text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:-translate-y-0.5 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -126,8 +126,8 @@ const AdminHeader = ({ onMenuClick }) => {
               transition={{ duration: 0.2 }}
               className={`hidden sm:flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 border border-sage-green/20 dark:border-dark-olive-border ${
                 searchFocused
-                  ? 'glass-layer-2 dark:glass-2-dark border-sage-green/30 dark:border-dark-sage-accent/30 shadow-glow-green/20 dark:shadow-dark-glow-olive/25'
-                  : 'glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15'
+                  ? 'glass-2 dark:glass-2-dark border-sage-green/30 dark:border-dark-sage-accent/30 shadow-glow-green/20 dark:shadow-dark-glow-olive/25'
+                  : 'glass-1 dark:glass-1-dark hover:glass-2 dark:hover:glass-2-dark hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15'
               }`}
             >
               <Search
@@ -144,9 +144,7 @@ const AdminHeader = ({ onMenuClick }) => {
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
               />
-              <div
-                className="text-xs px-2 py-1 rounded-lg border text-text-muted dark:text-dark-text-muted border-sage-green/20 dark:border-dark-olive-border"
-              >
+              <div className="text-xs px-2 py-1 rounded-lg border text-text-muted dark:text-dark-text-muted border-sage-green/20 dark:border-dark-olive-border">
                 <Command className="w-3 h-3 inline mr-1" />K
               </div>
             </motion.div>
@@ -159,7 +157,7 @@ const AdminHeader = ({ onMenuClick }) => {
               variant="ghost"
               size="sm"
               onClick={handleQuickExport}
-              className="rounded-2xl transition-all duration-300 hidden md:flex hover:glass-layer-1 dark:hover:glass-1-dark text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:-translate-y-1 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15 group"
+              className="rounded-2xl transition-all duration-300 hidden md:flex hover:glass-1 dark:hover:glass-1-dark text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:-translate-y-1 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15 group"
               title="Quick Export Dashboard"
             >
               <Download className="w-4 h-4 mr-2" />
@@ -171,7 +169,7 @@ const AdminHeader = ({ onMenuClick }) => {
               variant="ghost"
               size="sm"
               onClick={handleThemeToggle}
-              className="rounded-2xl transition-all duration-300 hover:glass-layer-1 dark:hover:glass-1-dark text-slate-600 dark:text-amber-400 hover:text-slate-700 dark:hover:text-amber-300 hover:-translate-y-1 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15"
+              className="rounded-2xl transition-all duration-300 hover:glass-1 dark:hover:glass-1-dark text-slate-600 dark:text-amber-400 hover:text-slate-700 dark:hover:text-amber-300 hover:-translate-y-1 hover:shadow-glow-green/10 dark:hover:shadow-dark-glow-olive/15"
               title="Toggle theme"
             >
               <Sun className="w-5 h-5 hidden dark:block" />
@@ -202,9 +200,9 @@ const AdminHeader = ({ onMenuClick }) => {
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-12 w-80 rounded-2xl border glass-layer-3 dark:glass-3-dark border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass"
+                  className="absolute right-0 top-12 w-80 z-50 glass-3 dark:glass-3-dark rounded-2xl"
                 >
-                  <div className="p-4">
+                  <div className="p-4 rounded-2xl bg-sage-green/50 dark:bg-dark-olive-surface/70 border-2 border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-text-dark dark:text-dark-text-primary">
                         Notifications
@@ -302,9 +300,9 @@ const AdminHeader = ({ onMenuClick }) => {
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-16 w-64 rounded-2xl border glass-layer-3 dark:glass-3-dark border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass"
+                  className="absolute right-0 top-16 w-64 z-50 rounded-2xl glass-5 dark:glass-5-dark"
                 >
-                  <div className="p-4">
+                  <div className="p-4 bg-sage-green/50 dark:bg-dark-olive-surface/70 rounded-2xl border-2 border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass">
                     <div className="flex items-center gap-3 pb-3 border-b border-sage-green/20 dark:border-dark-olive-border">
                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center">
                         <User className="w-6 h-6 text-white" />
@@ -319,21 +317,15 @@ const AdminHeader = ({ onMenuClick }) => {
                       </div>
                     </div>
                     <div className="py-2 space-y-1">
-                      <button
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
-                      >
+                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent">
                         <Settings className="w-4 h-4" />
                         <span>Account Settings</span>
                       </button>
-                      <button
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
-                      >
+                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent">
                         <BarChart3 className="w-4 h-4" />
                         <span>Admin Analytics</span>
                       </button>
-                      <button
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent"
-                      >
+                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent">
                         <Shield className="w-4 h-4" />
                         <span>Security</span>
                       </button>
@@ -357,7 +349,7 @@ const AdminHeader = ({ onMenuClick }) => {
       {/* Click outside to close dropdowns */}
       {(profileDropdownOpen || notificationsOpen) && (
         <div
-          className="fixed inset-0 z-30"
+          className="fixed inset-0 z-50"
           onClick={() => {
             setProfileDropdownOpen(false);
             setNotificationsOpen(false);

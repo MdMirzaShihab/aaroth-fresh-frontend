@@ -75,6 +75,9 @@ const RestaurantDirectory = ({
   stats,
   locationFilter,
   onLocationFilterChange,
+  onRestaurantDetails,
+  onRestaurantEdit,
+  onRestaurantVerification,
 }) => {
   const [viewMode, setViewMode] = useState('cards'); // 'cards', 'list', 'map'
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
@@ -119,8 +122,13 @@ const RestaurantDirectory = ({
   }, [restaurants, chainGrouping]);
 
   const handleRestaurantClick = (restaurant) => {
-    setSelectedRestaurant(restaurant);
-    setProfileModalOpen(true);
+    if (onRestaurantDetails) {
+      onRestaurantDetails(restaurant);
+    } else {
+      // Fallback to original modal if callback not provided
+      setSelectedRestaurant(restaurant);
+      setProfileModalOpen(true);
+    }
   };
 
   const handleStatusUpdate = async (restaurantId, newStatus) => {
@@ -304,6 +312,8 @@ const RestaurantDirectory = ({
                       restaurant={item}
                       viewMode={viewMode}
                       onRestaurantClick={handleRestaurantClick}
+                      onRestaurantEdit={onRestaurantEdit}
+                      onRestaurantVerification={onRestaurantVerification}
                       onStatusUpdate={handleStatusUpdate}
                       onFlag={handleFlagRestaurant}
                       actionMenuOpen={actionMenuOpen}
@@ -409,6 +419,8 @@ const RestaurantCard = ({
   restaurant,
   viewMode,
   onRestaurantClick,
+  onRestaurantEdit,
+  onRestaurantVerification,
   onStatusUpdate,
   onFlag,
   actionMenuOpen,
@@ -453,7 +465,7 @@ const RestaurantCard = ({
           <button
             onClick={() =>
               setActionMenuOpen(
-                actionMenuOpen === restaurant.id ? null : restaurant.id
+                actionMenuOpen === (restaurant.id || restaurant._id) ? null : (restaurant.id || restaurant._id)
               )
             }
             className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
@@ -461,23 +473,45 @@ const RestaurantCard = ({
             <MoreVertical className="w-4 h-4 text-text-muted" />
           </button>
 
-          {actionMenuOpen === restaurant.id && (
+          {actionMenuOpen === (restaurant.id || restaurant._id) && (
             <div className="absolute right-0 top-10 bg-white rounded-2xl shadow-lg border border-gray-100 z-20 min-w-48">
               <div className="py-2">
                 <button
-                  onClick={() => onRestaurantClick(restaurant)}
+                  onClick={() => {
+                    setActionMenuOpen(null);
+                    onRestaurantClick(restaurant);
+                  }}
                   className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm"
                 >
                   <Eye className="w-4 h-4" />
                   View Details
                 </button>
                 <button
-                  onClick={() => onRestaurantClick(restaurant)}
+                  onClick={() => {
+                    setActionMenuOpen(null);
+                    if (onRestaurantEdit) {
+                      onRestaurantEdit(restaurant);
+                    } else {
+                      onRestaurantClick(restaurant);
+                    }
+                  }}
                   className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm"
                 >
                   <Edit className="w-4 h-4" />
                   Edit Profile
                 </button>
+                {restaurant.verificationStatus === 'pending' && onRestaurantVerification && (
+                  <button
+                    onClick={() => {
+                      setActionMenuOpen(null);
+                      onRestaurantVerification(restaurant);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-blue-600"
+                  >
+                    <Shield className="w-4 h-4" />
+                    Verify Restaurant
+                  </button>
+                )}
                 <hr className="my-2" />
                 {restaurant.isActive ? (
                   <button

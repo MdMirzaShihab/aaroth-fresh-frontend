@@ -15,14 +15,17 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import {
-  useGetVendorDashboardOverviewQuery,
-  useGetVendorRevenueQuery,
-  useGetVendorProductPerformanceQuery,
-  useGetVendorInventoryQuery,
-  useGetVendorOrderManagementQuery,
-  useGetVendorCustomerInsightsQuery,
+  useGetDashboardOverviewQuery,
+  useGetRevenueAnalyticsQuery,
+  useGetOrderAnalyticsQuery,
+  useGetCustomerAnalyticsQuery,
+  useGetInventoryStatusQuery,
+  useGetOrderManagementQuery,
   useGetVendorNotificationsQuery,
-} from '../../store/slices/apiSlice';
+} from '../../store/slices/vendor/vendorDashboardApi';
+import {
+  useGetAllListingsQuery,
+} from '../../store/slices/vendor/vendorListingsApi';
 import { selectAuth } from '../../store/slices/authSlice';
 import { formatCurrency, timeAgo } from '../../utils';
 
@@ -70,11 +73,11 @@ const VendorDashboardEnhanced = () => {
   // Get status display information
   const statusDisplay = getStatusDisplay();
 
-  // Fetch comprehensive vendor dashboard data with new APIs
+  // Fetch comprehensive vendor dashboard data with backend-aligned APIs
   const { data: overview = {}, isLoading: overviewLoading } =
-    useGetVendorDashboardOverviewQuery(
+    useGetDashboardOverviewQuery(
       {
-        ...filters,
+        period: filters.dateRange.type,
       },
       {
         skip: !canAccessDashboard,
@@ -82,19 +85,30 @@ const VendorDashboardEnhanced = () => {
     );
 
   const { data: revenueData = {}, isLoading: revenueLoading } =
-    useGetVendorRevenueQuery(
+    useGetRevenueAnalyticsQuery(
       {
-        ...filters,
+        period: filters.dateRange.type,
       },
       {
         skip: !canAccessDashboard,
       }
     );
 
-  const { data: productPerformance = {}, isLoading: productLoading } =
-    useGetVendorProductPerformanceQuery(
+  const { data: orderData = {}, isLoading: orderLoading } =
+    useGetOrderAnalyticsQuery(
       {
-        ...filters,
+        period: filters.dateRange.type,
+      },
+      {
+        skip: !canAccessDashboard,
+      }
+    );
+
+  const { data: listings = {}, isLoading: listingsLoading } =
+    useGetAllListingsQuery(
+      {
+        status: 'active',
+        limit: 10,
       },
       {
         skip: !canAccessDashboard,
@@ -102,19 +116,18 @@ const VendorDashboardEnhanced = () => {
     );
 
   const { data: inventory = {}, isLoading: inventoryLoading } =
-    useGetVendorInventoryQuery(
-      {
-        ...filters,
-      },
+    useGetInventoryStatusQuery(
+      {},
       {
         skip: !canAccessDashboard,
       }
     );
 
-  const { data: orderManagement = {}, isLoading: ordersLoading } =
-    useGetVendorOrderManagementQuery(
+  const { data: orderManagement = {}, isLoading: orderManagementLoading } =
+    useGetOrderManagementQuery(
       {
-        ...filters,
+        status: 'all',
+        limit: 5,
       },
       {
         skip: !canAccessDashboard,
@@ -122,9 +135,9 @@ const VendorDashboardEnhanced = () => {
     );
 
   const { data: customerInsights = {}, isLoading: customersLoading } =
-    useGetVendorCustomerInsightsQuery(
+    useGetCustomerAnalyticsQuery(
       {
-        ...filters,
+        period: filters.dateRange.type,
       },
       {
         skip: !canAccessDashboard,
@@ -135,6 +148,7 @@ const VendorDashboardEnhanced = () => {
     useGetVendorNotificationsQuery(
       {
         limit: 5,
+        unreadOnly: false,
       },
       {
         skip: !canAccessDashboard,
@@ -262,96 +276,193 @@ const VendorDashboardEnhanced = () => {
 
           {/* Only show analytics if user can access dashboard */}
           <CapabilityGate capability="canAccessDashboard">
-            {/* KPI Cards */}
+            {/* KPI Cards - Updated for new backend data structure */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <KPICard
-                title="Monthly Revenue"
-                value={formatCurrency(overview?.data?.monthlyRevenue || 0)}
-                change={overview?.data?.revenueChange}
+                title="Revenue"
+                value={formatCurrency(overview?.keyMetrics?.revenue?.current || 0)}
+                change={overview?.keyMetrics?.revenue?.growth}
                 icon={DollarSign}
                 loading={overviewLoading}
                 color="green"
               />
               <KPICard
-                title="Active Listings"
-                value={overview?.data?.activeListings || 0}
-                change={overview?.data?.listingsChange}
-                icon={Package}
+                title="Orders"
+                value={overview?.keyMetrics?.orders?.current || 0}
+                change={overview?.keyMetrics?.orders?.growth}
+                icon={ShoppingCart}
                 loading={overviewLoading}
                 color="blue"
               />
               <KPICard
-                title="Pending Orders"
-                value={overview?.data?.pendingOrders || 0}
-                icon={ShoppingCart}
-                loading={overviewLoading}
-                color="orange"
-                alert={overview?.data?.pendingOrders > 10}
-              />
-              <KPICard
-                title="Customer Base"
-                value={overview?.data?.totalCustomers || 0}
-                change={overview?.data?.customersChange}
-                icon={Users}
+                title="Gross Profit"
+                value={formatCurrency(overview?.keyMetrics?.profit?.current || 0)}
+                change={overview?.keyMetrics?.profit?.growth}
+                icon={TrendingUp}
                 loading={overviewLoading}
                 color="purple"
               />
+              <KPICard
+                title="Active Listings"
+                value={overview?.businessMetrics?.activeListings || 0}
+                icon={Package}
+                loading={overviewLoading}
+                color="orange"
+                alert={(overview?.businessMetrics?.activeListings || 0) === 0}
+              />
             </div>
 
-            {/* Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {/* Revenue Trend */}
-              <ChartContainer
-                title="Revenue Trend"
-                loading={revenueLoading}
-                error={revenueData?.error}
-              >
-                <LineChart
-                  data={revenueData?.data?.chartData}
-                  options={{
-                    responsive: true,
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                        ticks: {
-                          callback: (value) => formatCurrency(value),
-                        },
-                      },
-                    },
-                  }}
-                />
-              </ChartContainer>
+            {/* Business Metrics Summary */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              {/* Financial Summary */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-text-dark">
+                    Financial Overview
+                  </h3>
+                  <DollarSign className="w-5 h-5 text-text-muted" />
+                </div>
+                
+                {overviewLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-4 bg-gray-200 rounded"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Total Revenue</span>
+                      <span className="font-semibold">
+                        {formatCurrency(overview?.financialSummary?.totalRevenue || 0)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Gross Profit</span>
+                      <span className="font-semibold text-green-600">
+                        {formatCurrency(overview?.financialSummary?.grossProfit || 0)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Profit Margin</span>
+                      <span className="font-semibold">
+                        {(overview?.financialSummary?.profitMargin || 0).toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Avg Order Value</span>
+                      <span className="font-semibold">
+                        {formatCurrency(overview?.keyMetrics?.averageOrderValue || 0)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </Card>
 
-              {/* Product Performance */}
-              <ChartContainer
-                title="Top Products by Revenue"
-                loading={productLoading}
-                error={productPerformance?.error}
-              >
-                <BarChart
-                  data={productPerformance?.data?.chartData}
-                  options={{
-                    responsive: true,
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                        ticks: {
-                          callback: (value) => formatCurrency(value),
-                        },
-                      },
-                    },
-                  }}
-                />
-              </ChartContainer>
+              {/* Business Health */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-text-dark">
+                    Business Health
+                  </h3>
+                  <Target className="w-5 h-5 text-text-muted" />
+                </div>
+                
+                {overviewLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-4 bg-gray-200 rounded"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Total Products</span>
+                      <span className="font-semibold">
+                        {overview?.businessMetrics?.totalProducts || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Profitable Products</span>
+                      <span className="font-semibold text-green-600">
+                        {overview?.businessMetrics?.profitableListings || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Average Rating</span>
+                      <span className="font-semibold">
+                        {(overview?.businessMetrics?.averageRating || 0).toFixed(1)} ⭐
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Profitability Rate</span>
+                      <span className="font-semibold">
+                        {overview?.businessMetrics?.profitabilityRate || 0}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </Card>
+
+              {/* Inventory Health */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-text-dark">
+                    Inventory Health
+                  </h3>
+                  <Package className="w-5 h-5 text-text-muted" />
+                </div>
+                
+                {overviewLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-4 bg-gray-200 rounded"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Health Score</span>
+                      <span className="font-semibold text-blue-600">
+                        {overview?.inventoryHealth?.healthScore || 0}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Total Items</span>
+                      <span className="font-semibold">
+                        {overview?.inventoryHealth?.totalItems || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Low Stock</span>
+                      <span className={`font-semibold ${
+                        (overview?.inventoryHealth?.lowStockItems || 0) > 0 
+                          ? 'text-amber-600' : 'text-green-600'
+                      }`}>
+                        {overview?.inventoryHealth?.lowStockItems || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-text-muted">Critical Alerts</span>
+                      <span className={`font-semibold ${
+                        (overview?.inventoryHealth?.criticalAlerts || 0) > 0 
+                          ? 'text-red-600' : 'text-green-600'
+                      }`}>
+                        {overview?.inventoryHealth?.criticalAlerts || 0}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </Card>
             </div>
 
             {/* Inventory Alerts & Recent Orders */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              {/* Inventory Alerts */}
+              {/* Inventory Alerts - Updated for new backend structure */}
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-text-dark">
-                    Inventory Alerts
+                    Stock Alerts
                   </h3>
                   <Package className="w-5 h-5 text-text-muted" />
                 </div>
@@ -364,23 +475,39 @@ const VendorDashboardEnhanced = () => {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {inventory?.data?.alerts
+                    {inventory?.stockAlerts
                       ?.slice(0, 5)
                       .map((alert, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between p-3 rounded-xl bg-amber-50/80 border border-amber-200/50"
+                          className={`flex items-center justify-between p-3 rounded-xl border ${
+                            alert.status === 'out_of_stock'
+                              ? 'bg-red-50/80 border-red-200/50'
+                              : 'bg-amber-50/80 border-amber-200/50'
+                          }`}
                         >
                           <div>
-                            <p className="text-sm font-medium text-amber-800">
+                            <p className={`text-sm font-medium ${
+                              alert.status === 'out_of_stock'
+                                ? 'text-red-800'
+                                : 'text-amber-800'
+                            }`}>
                               {alert.productName}
                             </p>
-                            <p className="text-xs text-amber-600">
-                              {alert.currentStock} units remaining
+                            <p className={`text-xs ${
+                              alert.status === 'out_of_stock'
+                                ? 'text-red-600'
+                                : 'text-amber-600'
+                            }`}>
+                              {alert.currentStock} units • Reorder at {alert.reorderLevel}
                             </p>
                           </div>
-                          <div className="text-xs text-amber-700 font-medium">
-                            Low Stock
+                          <div className={`text-xs font-medium ${
+                            alert.status === 'out_of_stock'
+                              ? 'text-red-700'
+                              : 'text-amber-700'
+                          }`}>
+                            {alert.status === 'out_of_stock' ? 'Out of Stock' : 'Low Stock'}
                           </div>
                         </div>
                       )) || (
@@ -392,7 +519,7 @@ const VendorDashboardEnhanced = () => {
                 )}
               </Card>
 
-              {/* Recent Orders */}
+              {/* Recent Orders - Updated for new backend structure */}
               <Card className="lg:col-span-2 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-text-dark">
@@ -406,7 +533,7 @@ const VendorDashboardEnhanced = () => {
                   </Link>
                 </div>
 
-                {ordersLoading ? (
+                {orderManagementLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
                       <div
@@ -423,11 +550,11 @@ const VendorDashboardEnhanced = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {orderManagement?.data?.recentOrders
+                    {(overview?.recentActivity?.recentOrders || orderManagement?.orders)
                       ?.slice(0, 5)
                       .map((order) => (
                         <div
-                          key={order._id}
+                          key={order.id}
                           className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50"
                         >
                           <div className="flex items-center gap-3">
@@ -447,14 +574,14 @@ const VendorDashboardEnhanced = () => {
                                 Order #{order.orderNumber}
                               </p>
                               <p className="text-sm text-text-muted">
-                                {order.customerName} •{' '}
-                                {timeAgo(order.createdAt)}
+                                {order.restaurant?.name || order.customerName} •{' '}
+                                {timeAgo(order.createdAt || order.orderDate)}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="font-semibold text-text-dark">
-                              {formatCurrency(order.total)}
+                              {formatCurrency(order.totalAmount || order.total)}
                             </p>
                             <p className="text-sm text-text-muted capitalize">
                               {order.status}
@@ -471,7 +598,7 @@ const VendorDashboardEnhanced = () => {
               </Card>
             </div>
 
-            {/* Customer Insights */}
+            {/* Customer Insights - Updated for new backend structure */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-text-dark">
@@ -490,17 +617,17 @@ const VendorDashboardEnhanced = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center p-4 rounded-xl bg-blue-50">
                     <div className="text-2xl font-bold text-blue-600 mb-1">
-                      {customerInsights?.data?.repeatCustomers || 0}
+                      {customerInsights?.summary?.totalCustomers || 0}
                     </div>
                     <div className="text-sm text-blue-700">
-                      Repeat Customers
+                      Total Customers
                     </div>
                   </div>
 
                   <div className="text-center p-4 rounded-xl bg-green-50">
                     <div className="text-2xl font-bold text-green-600 mb-1">
                       {formatCurrency(
-                        customerInsights?.data?.avgOrderValue || 0
+                        customerInsights?.summary?.averageOrderValue || 0
                       )}
                     </div>
                     <div className="text-sm text-green-700">
@@ -510,10 +637,10 @@ const VendorDashboardEnhanced = () => {
 
                   <div className="text-center p-4 rounded-xl bg-purple-50">
                     <div className="text-2xl font-bold text-purple-600 mb-1">
-                      {customerInsights?.data?.customerSatisfaction || 0}%
+                      {customerInsights?.summary?.customerLifetimeValue || 0}
                     </div>
                     <div className="text-sm text-purple-700">
-                      Satisfaction Rate
+                      Customer LTV
                     </div>
                   </div>
                 </div>

@@ -73,7 +73,9 @@ const ProtectedRoute = ({
 
   // Check vendor approval status (three-state verification system)
   if (requireApproval && user && user.role === 'vendor') {
-    const verificationStatus = user.verificationStatus || 'pending';
+    // Fix: Check vendor verification status from correct nested path
+    const verificationStatus = user.vendorId?.verificationStatus || user.verificationStatus || 'pending';
+    
     if (verificationStatus === 'pending') {
       return <Navigate to="/vendor/pending-approval" replace />;
     }
