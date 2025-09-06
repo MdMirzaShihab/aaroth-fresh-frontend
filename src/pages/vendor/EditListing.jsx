@@ -130,18 +130,6 @@ const EditListing = () => {
     name: 'deliveryOptions',
   });
 
-  // API mutations and queries
-  const [updateListing] = useUpdateListingMutation();
-
-  const { data: productsData, isLoading: productsLoading } =
-    useGetPublicProductsQuery({
-      limit: 1000, // Get all products for selection
-    });
-
-  const { data: categoriesData } = useGetCategoriesQuery();
-
-  const products = productsData?.data?.products || [];
-  const categories = categoriesData?.categories || [];
 
   // Unit options
   const unitOptions = [

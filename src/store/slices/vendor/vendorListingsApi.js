@@ -8,7 +8,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const vendorListingsApi = createApi({
   reducerPath: 'vendorListingsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/v1/listings',
+    baseUrl: '/api/v1/listings/vendor',
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth?.token;
       if (token) {
@@ -21,39 +21,46 @@ const vendorListingsApi = createApi({
       const text = await response.text();
       try {
         const data = JSON.parse(text);
-        
+
         // Handle API errors based on documentation error codes
         if (!response.ok) {
           const error = new Error();
           error.status = response.status;
           error.data = data;
-          
+
           // Enhanced error messages based on API documentation
           const errorMessages = {
             // Common errors
-            'LISTING_NOT_FOUND': 'Listing not found or not accessible',
-            'PRODUCT_NOT_FOUND': 'Product not found or not accessible',
-            'LISTING_EXISTS': 'Product already has an active listing',
-            'NO_INVENTORY': 'No inventory available for this product',
-            
+            LISTING_NOT_FOUND: 'Listing not found or not accessible',
+            PRODUCT_NOT_FOUND: 'Product not found or not accessible',
+            LISTING_EXISTS: 'Product already has an active listing',
+            NO_INVENTORY: 'No inventory available for this product',
+
             // Validation errors
-            'PRICE_VALIDATION_ERROR': 'Invalid pricing structure - check selling, minimum, and bulk prices',
-            'INVENTORY_SYNC_REQUIRED': 'Listing inventory is out of sync - please refresh inventory first',
-            'VALIDATION_ERROR': 'Please check your input and try again',
-            
+            PRICE_VALIDATION_ERROR:
+              'Invalid pricing structure - check selling, minimum, and bulk prices',
+            INVENTORY_SYNC_REQUIRED:
+              'Listing inventory is out of sync - please refresh inventory first',
+            VALIDATION_ERROR: 'Please check your input and try again',
+
             // Permission errors
-            'INSUFFICIENT_PERMISSIONS': 'You do not have permission to perform this action',
-            'INVALID_STATUS': 'Invalid listing status',
-            
+            INSUFFICIENT_PERMISSIONS:
+              'You do not have permission to perform this action',
+            INVALID_STATUS: 'Invalid listing status',
+
             // File upload errors
-            'FILE_TOO_LARGE': 'Image file size exceeds 5MB limit',
-            'INVALID_FILE_TYPE': 'Only JPG, PNG, and WebP images are allowed',
+            FILE_TOO_LARGE: 'Image file size exceeds 5MB limit',
+            INVALID_FILE_TYPE: 'Only JPG, PNG, and WebP images are allowed',
           };
-          
-          error.message = errorMessages[data.errorCode] || data.error || data.message || 'An error occurred';
+
+          error.message =
+            errorMessages[data.errorCode] ||
+            data.error ||
+            data.message ||
+            'An error occurred';
           throw error;
         }
-        
+
         return data;
       } catch (parseError) {
         if (parseError.status) throw parseError;
@@ -62,16 +69,15 @@ const vendorListingsApi = createApi({
     },
   }),
   tagTypes: [
-    'AllListings', 
-    'Listing', 
-    'ListingPerformance', 
+    'AllListings',
+    'Listing',
+    'ListingPerformance',
     'ListingReviews',
     'ProductCatalog',
     'ListingCategories',
-    'ListingImages'
+    'ListingImages',
   ],
   endpoints: (builder) => ({
-    
     // Listing Management
 
     getAllListings: builder.query({
@@ -87,7 +93,7 @@ const vendorListingsApi = createApi({
       query: (listingId) => `/${listingId}`,
       transformResponse: (response) => response.data.listing,
       providesTags: (result, error, listingId) => [
-        { type: 'Listing', id: listingId }
+        { type: 'Listing', id: listingId },
       ],
     }),
 
@@ -110,7 +116,7 @@ const vendorListingsApi = createApi({
       transformResponse: (response) => response.data.listing,
       invalidatesTags: (result, error, { listingId }) => [
         { type: 'Listing', id: listingId },
-        'AllListings'
+        'AllListings',
       ],
     }),
 
@@ -123,7 +129,7 @@ const vendorListingsApi = createApi({
       transformResponse: (response) => response.data,
       invalidatesTags: (result, error, { listingId }) => [
         { type: 'Listing', id: listingId },
-        'AllListings'
+        'AllListings',
       ],
     }),
 
@@ -138,17 +144,21 @@ const vendorListingsApi = createApi({
       transformResponse: (response) => response.data.listing,
       invalidatesTags: (result, error, { listingId }) => [
         { type: 'Listing', id: listingId },
-        'AllListings'
+        'AllListings',
       ],
       // Optimistic update
       onQueryStarted({ listingId, status }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
-          vendorListingsApi.util.updateQueryData('getAllListings', {}, (draft) => {
-            const listing = draft.listings?.find(l => l.id === listingId);
-            if (listing) {
-              listing.status = status;
+          vendorListingsApi.util.updateQueryData(
+            'getAllListings',
+            {},
+            (draft) => {
+              const listing = draft.listings?.find((l) => l.id === listingId);
+              if (listing) {
+                listing.status = status;
+              }
             }
-          })
+          )
         );
         queryFulfilled.catch(patchResult.undo);
       },
@@ -163,7 +173,7 @@ const vendorListingsApi = createApi({
       transformResponse: (response) => response.data.listing,
       invalidatesTags: (result, error, { listingId }) => [
         { type: 'Listing', id: listingId },
-        'AllListings'
+        'AllListings',
       ],
     }),
 
@@ -176,7 +186,7 @@ const vendorListingsApi = createApi({
       transformResponse: (response) => response.data.listing,
       invalidatesTags: (result, error, { listingId }) => [
         { type: 'Listing', id: listingId },
-        'AllListings'
+        'AllListings',
       ],
     }),
 
@@ -189,7 +199,7 @@ const vendorListingsApi = createApi({
       }),
       transformResponse: (response) => response.data,
       providesTags: (result, error, { listingId }) => [
-        { type: 'ListingPerformance', id: listingId }
+        { type: 'ListingPerformance', id: listingId },
       ],
     }),
 
@@ -200,7 +210,7 @@ const vendorListingsApi = createApi({
       }),
       transformResponse: (response) => response.data,
       providesTags: (result, error, { listingId }) => [
-        { type: 'ListingReviews', id: listingId }
+        { type: 'ListingReviews', id: listingId },
       ],
     }),
 
@@ -212,7 +222,7 @@ const vendorListingsApi = createApi({
       }),
       transformResponse: (response) => response.data,
       invalidatesTags: (result, error, { listingId }) => [
-        { type: 'ListingReviews', id: listingId }
+        { type: 'ListingReviews', id: listingId },
       ],
     }),
 
@@ -249,15 +259,19 @@ const vendorListingsApi = createApi({
       // Optimistic update for bulk status changes
       onQueryStarted({ listingIds, status }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
-          vendorListingsApi.util.updateQueryData('getAllListings', {}, (draft) => {
-            if (draft.listings) {
-              draft.listings.forEach(listing => {
-                if (listingIds.includes(listing.id)) {
-                  listing.status = status;
-                }
-              });
+          vendorListingsApi.util.updateQueryData(
+            'getAllListings',
+            {},
+            (draft) => {
+              if (draft.listings) {
+                draft.listings.forEach((listing) => {
+                  if (listingIds.includes(listing.id)) {
+                    listing.status = status;
+                  }
+                });
+              }
             }
-          })
+          )
         );
         queryFulfilled.catch(patchResult.undo);
       },
@@ -303,7 +317,7 @@ const vendorListingsApi = createApi({
       transformResponse: (response) => response.data,
       invalidatesTags: (result, error, { listingId }) => [
         { type: 'Listing', id: listingId },
-        { type: 'ListingImages', id: listingId }
+        { type: 'ListingImages', id: listingId },
       ],
     }),
 
@@ -315,7 +329,7 @@ const vendorListingsApi = createApi({
       transformResponse: (response) => response.data,
       invalidatesTags: (result, error, { listingId }) => [
         { type: 'Listing', id: listingId },
-        { type: 'ListingImages', id: listingId }
+        { type: 'ListingImages', id: listingId },
       ],
     }),
 
@@ -328,7 +342,7 @@ const vendorListingsApi = createApi({
       }),
       transformResponse: (response) => response.data,
       invalidatesTags: (result, error, listingId) => [
-        { type: 'Listing', id: listingId }
+        { type: 'Listing', id: listingId },
       ],
     }),
 
@@ -342,7 +356,6 @@ const vendorListingsApi = createApi({
       }),
       transformResponse: (response) => response.data,
     }),
-
   }),
 });
 
@@ -355,37 +368,37 @@ export const {
   useCreateListingMutation,
   useUpdateListingMutation,
   useDeleteListingMutation,
-  
+
   // Quick updates
   useUpdateListingStatusMutation,
   useUpdateListingInventoryMutation,
   useUpdateListingPricingMutation,
-  
+
   // Performance and reviews
   useGetListingPerformanceQuery,
   useLazyGetListingPerformanceQuery,
   useGetListingReviewsQuery,
   useLazyGetListingReviewsQuery,
   useRespondToReviewMutation,
-  
+
   // Bulk operations
   useDuplicateListingMutation,
   useBulkUpdateListingsMutation,
   useBulkUpdateStatusMutation,
   useBulkPricingUpdateMutation,
-  
+
   // Support data
   useGetProductCatalogQuery,
   useLazyGetProductCatalogQuery,
   useGetListingCategoriesQuery,
-  
+
   // Image management
   useUploadListingImagesMutation,
   useDeleteListingImageMutation,
-  
+
   // SEO optimization
   useOptimizeListingSEOMutation,
-  
+
   // Export
   useExportListingsMutation,
 } = vendorListingsApi;

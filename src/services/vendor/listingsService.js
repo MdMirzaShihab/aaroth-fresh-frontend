@@ -6,10 +6,9 @@
 
 import api from '../api';
 
-const VENDOR_LISTINGS_BASE = '/listings';
+const VENDOR_LISTINGS_BASE = '/listings/vendor';
 
 class VendorListingsService {
-  
   /**
    * Get all vendor listings with filtering and search
    * @param {Object} params - Query parameters
@@ -26,8 +25,8 @@ class VendorListingsService {
    */
   async getAllListings(params = {}) {
     try {
-      const response = await api.get(`${VENDOR_LISTINGS_BASE}/`, { 
-        params: this.sanitizeParams(params) 
+      const response = await api.get(`${VENDOR_LISTINGS_BASE}/`, {
+        params: this.sanitizeParams(params),
       });
       return response.data;
     } catch (error) {
@@ -57,7 +56,10 @@ class VendorListingsService {
   async createListing(listingData) {
     try {
       const formattedData = this.formatListingData(listingData);
-      const response = await api.post(`${VENDOR_LISTINGS_BASE}/`, formattedData);
+      const response = await api.post(
+        `${VENDOR_LISTINGS_BASE}/`,
+        formattedData
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -73,7 +75,10 @@ class VendorListingsService {
   async updateListing(listingId, updateData) {
     try {
       const formattedData = this.formatListingData(updateData);
-      const response = await api.put(`${VENDOR_LISTINGS_BASE}/${listingId}`, formattedData);
+      const response = await api.put(
+        `${VENDOR_LISTINGS_BASE}/${listingId}`,
+        formattedData
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -102,7 +107,10 @@ class VendorListingsService {
    */
   async updateListingStatus(listingId, status) {
     try {
-      const response = await api.patch(`${VENDOR_LISTINGS_BASE}/${listingId}/status`, { status });
+      const response = await api.patch(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/status`,
+        { status }
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -118,7 +126,10 @@ class VendorListingsService {
   async updateListingInventory(listingId, inventoryData) {
     try {
       const formattedData = this.formatInventoryData(inventoryData);
-      const response = await api.patch(`${VENDOR_LISTINGS_BASE}/${listingId}/inventory`, formattedData);
+      const response = await api.patch(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/inventory`,
+        formattedData
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -134,7 +145,10 @@ class VendorListingsService {
   async updateListingPricing(listingId, pricingData) {
     try {
       const formattedData = this.formatPricingData(pricingData);
-      const response = await api.patch(`${VENDOR_LISTINGS_BASE}/${listingId}/pricing`, formattedData);
+      const response = await api.patch(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/pricing`,
+        formattedData
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -149,9 +163,12 @@ class VendorListingsService {
    */
   async getListingPerformance(listingId, params = {}) {
     try {
-      const response = await api.get(`${VENDOR_LISTINGS_BASE}/${listingId}/performance`, { 
-        params: this.sanitizeParams(params) 
-      });
+      const response = await api.get(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/performance`,
+        {
+          params: this.sanitizeParams(params),
+        }
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -166,9 +183,12 @@ class VendorListingsService {
    */
   async getListingReviews(listingId, params = {}) {
     try {
-      const response = await api.get(`${VENDOR_LISTINGS_BASE}/${listingId}/reviews`, { 
-        params: this.sanitizeParams(params) 
-      });
+      const response = await api.get(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/reviews`,
+        {
+          params: this.sanitizeParams(params),
+        }
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -184,7 +204,10 @@ class VendorListingsService {
    */
   async respondToReview(listingId, reviewId, responseData) {
     try {
-      const response = await api.post(`${VENDOR_LISTINGS_BASE}/${listingId}/reviews/${reviewId}/respond`, responseData);
+      const response = await api.post(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/reviews/${reviewId}/respond`,
+        responseData
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -199,7 +222,10 @@ class VendorListingsService {
    */
   async duplicateListing(listingId, modifications = {}) {
     try {
-      const response = await api.post(`${VENDOR_LISTINGS_BASE}/${listingId}/duplicate`, modifications);
+      const response = await api.post(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/duplicate`,
+        modifications
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -213,11 +239,13 @@ class VendorListingsService {
    */
   async bulkUpdateListings(updates) {
     try {
-      const formattedUpdates = updates.map(update => ({
+      const formattedUpdates = updates.map((update) => ({
         id: update.id,
-        data: this.formatListingData(update.data)
+        data: this.formatListingData(update.data),
       }));
-      const response = await api.put(`${VENDOR_LISTINGS_BASE}/bulk-update`, { updates: formattedUpdates });
+      const response = await api.put(`${VENDOR_LISTINGS_BASE}/bulk-update`, {
+        updates: formattedUpdates,
+      });
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -232,9 +260,9 @@ class VendorListingsService {
    */
   async bulkUpdateStatus(listingIds, status) {
     try {
-      const response = await api.patch(`${VENDOR_LISTINGS_BASE}/bulk-status`, { 
-        listingIds, 
-        status 
+      const response = await api.patch(`${VENDOR_LISTINGS_BASE}/bulk-status`, {
+        listingIds,
+        status,
       });
       return response.data;
     } catch (error) {
@@ -263,8 +291,8 @@ class VendorListingsService {
    */
   async getProductCatalog(params = {}) {
     try {
-      const response = await api.get(`${VENDOR_LISTINGS_BASE}/catalog`, { 
-        params: this.sanitizeParams(params) 
+      const response = await api.get(`${VENDOR_LISTINGS_BASE}/catalog`, {
+        params: this.sanitizeParams(params),
       });
       return response.data;
     } catch (error) {
@@ -294,12 +322,12 @@ class VendorListingsService {
   async uploadListingImages(listingId, imagesFormData) {
     try {
       const response = await api.post(
-        `${VENDOR_LISTINGS_BASE}/${listingId}/images`, 
+        `${VENDOR_LISTINGS_BASE}/${listingId}/images`,
         imagesFormData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            'Content-Type': 'multipart/form-data',
+          },
         }
       );
       return response.data;
@@ -316,7 +344,9 @@ class VendorListingsService {
    */
   async deleteListingImage(listingId, imageId) {
     try {
-      const response = await api.delete(`${VENDOR_LISTINGS_BASE}/${listingId}/images/${imageId}`);
+      const response = await api.delete(
+        `${VENDOR_LISTINGS_BASE}/${listingId}/images/${imageId}`
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -336,7 +366,8 @@ class VendorListingsService {
     // Required fields
     if (listingData.productId) formatted.productId = listingData.productId;
     if (listingData.title) formatted.title = listingData.title.trim();
-    if (listingData.description) formatted.description = listingData.description.trim();
+    if (listingData.description)
+      formatted.description = listingData.description.trim();
 
     // Pricing
     if (listingData.price) {
@@ -356,21 +387,27 @@ class VendorListingsService {
     if (listingData.quality) {
       formatted.quality = {
         grade: listingData.quality.grade,
-        certifications: Array.isArray(listingData.quality.certifications) 
-          ? listingData.quality.certifications 
+        certifications: Array.isArray(listingData.quality.certifications)
+          ? listingData.quality.certifications
           : [],
-        shelfLife: listingData.quality.shelfLife ? parseInt(listingData.quality.shelfLife) : undefined,
-        storageInstructions: listingData.quality.storageInstructions || ''
+        shelfLife: listingData.quality.shelfLife
+          ? parseInt(listingData.quality.shelfLife)
+          : undefined,
+        storageInstructions: listingData.quality.storageInstructions || '',
       };
     }
 
     // Delivery information
     if (listingData.delivery) {
       formatted.delivery = {
-        areas: Array.isArray(listingData.delivery.areas) ? listingData.delivery.areas : [],
-        timeSlots: Array.isArray(listingData.delivery.timeSlots) ? listingData.delivery.timeSlots : [],
+        areas: Array.isArray(listingData.delivery.areas)
+          ? listingData.delivery.areas
+          : [],
+        timeSlots: Array.isArray(listingData.delivery.timeSlots)
+          ? listingData.delivery.timeSlots
+          : [],
         minDeliveryTime: listingData.delivery.minDeliveryTime || '',
-        maxDeliveryTime: listingData.delivery.maxDeliveryTime || ''
+        maxDeliveryTime: listingData.delivery.maxDeliveryTime || '',
       };
     }
 
@@ -385,9 +422,11 @@ class VendorListingsService {
   formatPricingData(pricingData) {
     return {
       selling: parseFloat(pricingData.selling),
-      minimum: pricingData.minimum ? parseFloat(pricingData.minimum) : undefined,
+      minimum: pricingData.minimum
+        ? parseFloat(pricingData.minimum)
+        : undefined,
       bulk: pricingData.bulk ? parseFloat(pricingData.bulk) : undefined,
-      currency: pricingData.currency || 'BDT'
+      currency: pricingData.currency || 'BDT',
     };
   }
 
@@ -401,9 +440,13 @@ class VendorListingsService {
       available: parseFloat(inventoryData.available),
       reserved: inventoryData.reserved ? parseFloat(inventoryData.reserved) : 0,
       unit: inventoryData.unit,
-      minOrderQuantity: inventoryData.minOrderQuantity ? parseFloat(inventoryData.minOrderQuantity) : 1,
-      maxOrderQuantity: inventoryData.maxOrderQuantity ? parseFloat(inventoryData.maxOrderQuantity) : undefined,
-      inventoryId: inventoryData.inventoryId
+      minOrderQuantity: inventoryData.minOrderQuantity
+        ? parseFloat(inventoryData.minOrderQuantity)
+        : 1,
+      maxOrderQuantity: inventoryData.maxOrderQuantity
+        ? parseFloat(inventoryData.maxOrderQuantity)
+        : undefined,
+      inventoryId: inventoryData.inventoryId,
     };
   }
 
@@ -440,7 +483,14 @@ class VendorListingsService {
     }
 
     // Sorting
-    const validSortFields = ['name', 'price', 'createdAt', 'updatedAt', 'rating', 'sales'];
+    const validSortFields = [
+      'name',
+      'price',
+      'createdAt',
+      'updatedAt',
+      'rating',
+      'sales',
+    ];
     if (params.sortBy && validSortFields.includes(params.sortBy)) {
       sanitized.sortBy = params.sortBy;
     }
@@ -452,7 +502,12 @@ class VendorListingsService {
     if (params.page && Number.isInteger(params.page) && params.page > 0) {
       sanitized.page = params.page;
     }
-    if (params.limit && Number.isInteger(params.limit) && params.limit > 0 && params.limit <= 100) {
+    if (
+      params.limit &&
+      Number.isInteger(params.limit) &&
+      params.limit > 0 &&
+      params.limit <= 100
+    ) {
       sanitized.limit = params.limit;
     }
 
@@ -496,7 +551,10 @@ class VendorListingsService {
     if (!listingData.title || listingData.title.trim().length < 5) {
       errors.push('Title must be at least 5 characters long');
     }
-    if (!listingData.description || listingData.description.trim().length < 20) {
+    if (
+      !listingData.description ||
+      listingData.description.trim().length < 20
+    ) {
       errors.push('Description must be at least 20 characters long');
     }
 
@@ -504,12 +562,18 @@ class VendorListingsService {
     if (!listingData.price?.selling || listingData.price.selling <= 0) {
       errors.push('Selling price is required and must be greater than 0');
     }
-    if (listingData.price?.minimum && listingData.price.minimum >= listingData.price.selling) {
+    if (
+      listingData.price?.minimum &&
+      listingData.price.minimum >= listingData.price.selling
+    ) {
       errors.push('Minimum price must be less than selling price');
     }
 
     // Inventory validation
-    if (!listingData.inventory?.available || listingData.inventory.available < 0) {
+    if (
+      !listingData.inventory?.available ||
+      listingData.inventory.available < 0
+    ) {
       errors.push('Available quantity is required and cannot be negative');
     }
     if (!listingData.inventory?.unit) {
@@ -518,7 +582,7 @@ class VendorListingsService {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -530,27 +594,33 @@ class VendorListingsService {
   handleError(error) {
     if (error.response?.data) {
       const { errorCode, error: errorMessage } = error.response.data;
-      
+
       const errorMessages = {
         LISTING_NOT_FOUND: 'Listing not found',
         PRODUCT_NOT_FOUND: 'Product not found',
-        INSUFFICIENT_PERMISSIONS: 'You do not have permission to perform this action',
+        INSUFFICIENT_PERMISSIONS:
+          'You do not have permission to perform this action',
         DUPLICATE_LISTING: 'A listing for this product already exists',
         INVALID_STATUS: 'Invalid listing status',
         VALIDATION_ERROR: 'Please check your input and try again',
         FILE_TOO_LARGE: 'Image file size exceeds 5MB limit',
-        INVALID_FILE_TYPE: 'Only JPG, PNG, and WebP images are allowed'
+        INVALID_FILE_TYPE: 'Only JPG, PNG, and WebP images are allowed',
       };
 
-      const userMessage = errorMessages[errorCode] || errorMessage || 'Failed to process listing request';
+      const userMessage =
+        errorMessages[errorCode] ||
+        errorMessage ||
+        'Failed to process listing request';
       const processedError = new Error(userMessage);
       processedError.code = errorCode;
       processedError.status = error.response.status;
-      
+
       return processedError;
     }
 
-    return new Error('Network error. Please check your connection and try again.');
+    return new Error(
+      'Network error. Please check your connection and try again.'
+    );
   }
 }
 
