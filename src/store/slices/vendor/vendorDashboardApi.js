@@ -8,7 +8,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const vendorDashboardApi = createApi({
   reducerPath: 'vendorDashboardApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/v1/vendor-dashboard',
+    baseUrl: import.meta.env.VITE_API_BASE_URL 
+      ? `${import.meta.env.VITE_API_BASE_URL}/vendor-dashboard`
+      : 'http://localhost:5000/api/v1/vendor-dashboard',
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth?.token;
       if (token) {
