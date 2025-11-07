@@ -27,7 +27,6 @@ import {
   useGetRevenueAnalyticsQuery,
   // useGetProfitAnalyticsQuery,
   useGetCustomerAnalyticsQuery,
-  useGetInventoryAnalyticsQuery,
 } from '../../store/slices/vendor/vendorDashboardApi';
 import {
   useGetAllOrdersQuery,
