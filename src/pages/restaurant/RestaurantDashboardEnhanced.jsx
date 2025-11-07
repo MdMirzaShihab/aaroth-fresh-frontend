@@ -17,6 +17,13 @@ import {
   Bell,
   Download,
   Shield,
+  RefreshCw,
+  TrendingDown,
+  Truck,
+  Activity,
+  Star,
+  BarChart3,
+  PieChart,
 } from 'lucide-react';
 import {
   useGetRestaurantDashboardOverviewQuery,
@@ -25,6 +32,14 @@ import {
   useGetRestaurantVendorInsightsQuery,
   useGetRestaurantOrderHistoryQuery,
   useGetRestaurantNotificationsQuery,
+  useGetRestaurantInventoryPlanningQuery,
+  useGetRestaurantReorderSuggestionsQuery,
+  useGetRestaurantCostAnalysisQuery,
+  useGetRestaurantPriceAnalyticsQuery,
+  useGetRestaurantPurchasePatternsQuery,
+  useGetRestaurantDeliveryTrackingQuery,
+  useGetRestaurantTeamActivityQuery,
+  useGetRestaurantFavoriteVendorsQuery,
 } from '../../store/slices/apiSlice';
 import { selectAuth } from '../../store/slices/authSlice';
 import { formatCurrency, formatDate, timeAgo } from '../../utils';
@@ -43,6 +58,29 @@ import {
 import { LineChart, BarChart, DoughnutChart } from '../../components/charts';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+
+// Helper function to transform filters for API calls
+const transformFiltersForAPI = (filters) => {
+  const apiParams = {};
+
+  if (filters.dateRange) {
+    if (filters.dateRange.type) {
+      apiParams.period = filters.dateRange.type;
+    }
+    if (filters.dateRange.startDate) {
+      apiParams.startDate = filters.dateRange.startDate;
+    }
+    if (filters.dateRange.endDate) {
+      apiParams.endDate = filters.dateRange.endDate;
+    }
+  }
+
+  if (filters.category) {
+    apiParams.category = filters.category;
+  }
+
+  return apiParams;
+};
 
 const RestaurantDashboardEnhanced = () => {
   const { user, isAuthenticated, token } = useSelector(selectAuth);
@@ -85,28 +123,28 @@ const RestaurantDashboardEnhanced = () => {
     data: overview = {},
     isLoading: overviewLoading,
     error: overviewError,
-  } = useGetRestaurantDashboardOverviewQuery(filters, {
+  } = useGetRestaurantDashboardOverviewQuery(transformFiltersForAPI(filters), {
     skip: !isValidUser || !canAccessDashboard,
   });
 
   const { data: spending = {}, isLoading: spendingLoading } =
-    useGetRestaurantSpendingQuery(filters, {
+    useGetRestaurantSpendingQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: budget = {}, isLoading: budgetLoading } =
-    useGetRestaurantBudgetQuery(filters, {
+    useGetRestaurantBudgetQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: vendorInsights = {}, isLoading: vendorInsightsLoading } =
-    useGetRestaurantVendorInsightsQuery(filters, {
+    useGetRestaurantVendorInsightsQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: orderHistory = {}, isLoading: orderHistoryLoading } =
     useGetRestaurantOrderHistoryQuery(
-      { ...filters, limit: 5 },
+      { ...transformFiltersForAPI(filters), limit: 5 },
       {
         skip: !isValidUser || !canAccessDashboard,
       }
@@ -119,6 +157,47 @@ const RestaurantDashboardEnhanced = () => {
         skip: !isValidUser || !canAccessDashboard,
       }
     );
+
+  // New API integrations
+  const { data: inventoryPlanning = {}, isLoading: inventoryLoading } =
+    useGetRestaurantInventoryPlanningQuery(transformFiltersForAPI(filters), {
+      skip: !isValidUser || !canAccessDashboard,
+    });
+
+  const { data: reorderSuggestions = {}, isLoading: reorderLoading } =
+    useGetRestaurantReorderSuggestionsQuery({ limit: 10 }, {
+      skip: !isValidUser || !canAccessDashboard,
+    });
+
+  const { data: costAnalysis = {}, isLoading: costAnalysisLoading } =
+    useGetRestaurantCostAnalysisQuery(transformFiltersForAPI(filters), {
+      skip: !isValidUser || !canAccessDashboard,
+    });
+
+  const { data: priceAnalytics = {}, isLoading: priceAnalyticsLoading } =
+    useGetRestaurantPriceAnalyticsQuery(transformFiltersForAPI(filters), {
+      skip: !isValidUser || !canAccessDashboard,
+    });
+
+  const { data: purchasePatterns = {}, isLoading: patternsLoading } =
+    useGetRestaurantPurchasePatternsQuery(transformFiltersForAPI(filters), {
+      skip: !isValidUser || !canAccessDashboard,
+    });
+
+  const { data: deliveryTracking = {}, isLoading: deliveryLoading } =
+    useGetRestaurantDeliveryTrackingQuery(transformFiltersForAPI(filters), {
+      skip: !isValidUser || !canAccessDashboard,
+    });
+
+  const { data: teamActivity = {}, isLoading: teamActivityLoading } =
+    useGetRestaurantTeamActivityQuery(transformFiltersForAPI(filters), {
+      skip: !isValidUser || !canAccessDashboard || user?.role !== 'restaurantOwner',
+    });
+
+  const { data: favoriteVendors = {}, isLoading: favoriteVendorsLoading } =
+    useGetRestaurantFavoriteVendorsQuery({ limit: 5 }, {
+      skip: !isValidUser || !canAccessDashboard,
+    });
 
   if (!isValidUser) {
     return (
@@ -446,6 +525,383 @@ const RestaurantDashboardEnhanced = () => {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Inventory Planning & Reorder Suggestions Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Inventory Planning */}
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <Package className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                    Inventory Planning
+                  </h3>
+                </div>
+
+                {inventoryLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {inventoryPlanning?.data?.lowStockItems?.slice(0, 3).map((item) => (
+                      <div
+                        key={item._id}
+                        className="p-3 rounded-xl glass-layer-1 dark:glass-1-dark hover:shadow-glow-green/20 transition-all duration-200"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-text-dark dark:text-dark-text-primary">
+                              {item.name}
+                            </p>
+                            <p className="text-sm text-text-muted dark:text-dark-text-muted">
+                              Current: {item.currentStock} {item.unit}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded-full">
+                              Low Stock
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )) || (
+                      <div className="text-center py-8 text-text-muted dark:text-dark-text-muted">
+                        All items well stocked
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Reorder Suggestions */}
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <RefreshCw className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                    Reorder Suggestions
+                  </h3>
+                </div>
+
+                {reorderLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {reorderSuggestions?.data?.suggestions?.slice(0, 3).map((suggestion) => (
+                      <div
+                        key={suggestion._id}
+                        className="p-3 rounded-xl glass-layer-1 dark:glass-1-dark hover:shadow-glow-green/20 transition-all duration-200"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-text-dark dark:text-dark-text-primary">
+                              {suggestion.productName}
+                            </p>
+                            <p className="text-sm text-text-muted dark:text-dark-text-muted">
+                              Suggested: {suggestion.suggestedQuantity} {suggestion.unit}
+                            </p>
+                          </div>
+                          <button className="px-3 py-1 bg-gradient-secondary text-white rounded-xl text-sm hover:shadow-glow-green transition-all duration-200">
+                            Order
+                          </button>
+                        </div>
+                      </div>
+                    )) || (
+                      <div className="text-center py-8 text-text-muted dark:text-dark-text-muted">
+                        No reorder suggestions
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Cost Analysis & Price Analytics Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Cost Analysis */}
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <TrendingDown className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                    Cost Analysis
+                  </h3>
+                </div>
+
+                {costAnalysisLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-24 bg-gray-200 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 rounded-xl bg-sage-green/5">
+                        <p className="text-sm text-text-muted">Total Savings</p>
+                        <p className="text-2xl font-semibold text-sage-green">
+                          {formatCurrency(costAnalysis?.data?.totalSavings || 0)}
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-amber-50">
+                        <p className="text-sm text-text-muted">Avg Cost/Order</p>
+                        <p className="text-2xl font-semibold text-text-dark">
+                          {formatCurrency(costAnalysis?.data?.avgCostPerOrder || 0)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-sm text-text-muted">
+                      {costAnalysis?.data?.trend === 'down' ? (
+                        <span className="text-sage-green flex items-center gap-1">
+                          <TrendingDown className="w-4 h-4" />
+                          Costs trending down
+                        </span>
+                      ) : (
+                        <span className="text-amber-600 flex items-center gap-1">
+                          <TrendingUp className="w-4 h-4" />
+                          Costs trending up
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Price Analytics */}
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                    Price Analytics
+                  </h3>
+                </div>
+
+                {priceAnalyticsLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-24 bg-gray-200 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {priceAnalytics?.data?.priceChanges?.slice(0, 3).map((item) => (
+                      <div
+                        key={item._id}
+                        className="p-3 rounded-xl glass-layer-1 dark:glass-1-dark"
+                      >
+                        <div className="flex justify-between items-center">
+                          <p className="font-medium text-text-dark dark:text-dark-text-primary">
+                            {item.productName}
+                          </p>
+                          <span
+                            className={`text-sm font-semibold ${
+                              item.change > 0 ? 'text-red-500' : 'text-sage-green'
+                            }`}
+                          >
+                            {item.change > 0 ? '+' : ''}
+                            {item.change}%
+                          </span>
+                        </div>
+                      </div>
+                    )) || (
+                      <div className="text-center py-8 text-text-muted dark:text-dark-text-muted">
+                        No price changes
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Purchase Patterns & Delivery Tracking Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Purchase Patterns */}
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <PieChart className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                    Purchase Patterns
+                  </h3>
+                </div>
+
+                {patternsLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-24 bg-gray-200 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 rounded-xl glass-layer-1">
+                        <p className="text-sm text-text-muted">Most Ordered</p>
+                        <p className="font-semibold text-text-dark">
+                          {purchasePatterns?.data?.topProduct || 'N/A'}
+                        </p>
+                      </div>
+                      <div className="text-center p-3 rounded-xl glass-layer-1">
+                        <p className="text-sm text-text-muted">Peak Day</p>
+                        <p className="font-semibold text-text-dark">
+                          {purchasePatterns?.data?.peakDay || 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-text-muted">
+                      {purchasePatterns?.data?.insight || 'Gathering purchase pattern insights...'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Delivery Tracking */}
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                    Delivery Tracking
+                  </h3>
+                </div>
+
+                {deliveryLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1, 2].map((i) => (
+                      <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {deliveryTracking?.data?.activeDeliveries?.slice(0, 2).map((delivery) => (
+                      <div
+                        key={delivery._id}
+                        className="p-3 rounded-xl glass-layer-1 dark:glass-1-dark"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-text-dark dark:text-dark-text-primary">
+                              Order #{delivery.orderNumber}
+                            </p>
+                            <p className="text-sm text-text-muted dark:text-dark-text-muted">
+                              {delivery.status}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-olive font-medium">
+                              ETA: {delivery.eta}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )) || (
+                      <div className="text-center py-8 text-text-muted dark:text-dark-text-muted">
+                        No active deliveries
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Favorite Vendors & Team Activity Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Favorite Vendors */}
+              <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <Star className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                    Favorite Vendors
+                  </h3>
+                </div>
+
+                {favoriteVendorsLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {favoriteVendors?.data?.vendors?.slice(0, 3).map((vendor) => (
+                      <div
+                        key={vendor._id}
+                        className="p-3 rounded-xl glass-layer-1 dark:glass-1-dark hover:shadow-glow-green/20 transition-all duration-200 cursor-pointer"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-text-dark dark:text-dark-text-primary">
+                              {vendor.businessName}
+                            </p>
+                            <p className="text-sm text-text-muted dark:text-dark-text-muted">
+                              {vendor.orderCount} orders • {formatCurrency(vendor.totalSpent)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-earthy-yellow text-earthy-yellow" />
+                            <span className="text-sm font-medium">
+                              {vendor.rating?.toFixed(1) || 'N/A'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )) || (
+                      <div className="text-center py-8 text-text-muted dark:text-dark-text-muted">
+                        No favorite vendors yet
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Team Activity (Owner Only) */}
+              {user?.role === 'restaurantOwner' && (
+                <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                      <Activity className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent" />
+                      Team Activity
+                    </h3>
+                    <Link
+                      to="/restaurant/manage/managers"
+                      className="text-muted-olive dark:text-dark-sage-accent hover:text-sage-green text-sm font-medium transition-colors duration-200"
+                    >
+                      Manage
+                    </Link>
+                  </div>
+
+                  {teamActivityLoading ? (
+                    <div className="animate-pulse space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {teamActivity?.data?.recentActivity?.slice(0, 3).map((activity) => (
+                        <div
+                          key={activity._id}
+                          className="p-3 rounded-xl glass-layer-1 dark:glass-1-dark"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="font-medium text-text-dark dark:text-dark-text-primary">
+                                {activity.managerName}
+                              </p>
+                              <p className="text-sm text-text-muted dark:text-dark-text-muted">
+                                {activity.action}
+                              </p>
+                            </div>
+                            <p className="text-xs text-text-muted">
+                              {timeAgo(activity.timestamp)}
+                            </p>
+                          </div>
+                        </div>
+                      )) || (
+                        <div className="text-center py-8 text-text-muted dark:text-dark-text-muted">
+                          No team activity
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </CapabilityGate>
         </div>

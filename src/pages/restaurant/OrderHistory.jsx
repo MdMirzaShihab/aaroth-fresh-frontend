@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -20,6 +20,10 @@ import { formatCurrency, formatDate, timeAgo, debounce } from '../../utils';
 
 const OrderHistory = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Get filter from URL query parameter
+  const filterParam = searchParams.get('filter');
 
   // State management
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,9 +32,18 @@ const OrderHistory = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(false);
 
+  // Set initial status filter based on URL parameter
+  useEffect(() => {
+    if (filterParam === 'current') {
+      setStatusFilter('pending,confirmed,processing,ready');
+    } else if (filterParam === 'history') {
+      setStatusFilter('delivered,cancelled');
+    }
+  }, [filterParam]);
+
   // API query
   const {
-    data: orders = [],
+    data: ordersResponse,
     isLoading,
     error,
     refetch,
@@ -41,6 +54,9 @@ const OrderHistory = () => {
     sortBy,
     limit: 100,
   });
+
+  // Extract orders array from response
+  const orders = ordersResponse?.data || [];
 
   // Debounced search
   const debouncedSearch = useMemo(
@@ -197,9 +213,19 @@ const OrderHistory = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-dark dark:text-dark-text-primary">Order History</h1>
+          <h1 className="text-3xl font-bold text-text-dark dark:text-dark-text-primary">
+            {filterParam === 'current'
+              ? 'Current Orders'
+              : filterParam === 'history'
+                ? 'Order History'
+                : 'All Orders'}
+          </h1>
           <p className="text-text-muted dark:text-dark-text-muted mt-2">
-            Track all your orders and reorder favorites
+            {filterParam === 'current'
+              ? 'View and track your active orders'
+              : filterParam === 'history'
+                ? 'Review past orders and reorder favorites'
+                : 'Track all your orders and reorder favorites'}
           </p>
         </div>
         <div className="flex items-center gap-3">

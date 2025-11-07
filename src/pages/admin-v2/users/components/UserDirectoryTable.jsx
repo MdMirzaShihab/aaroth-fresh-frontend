@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { formatDistanceToNow } from 'date-fns';
 import {
   ChevronUp,
   ChevronDown,
@@ -97,52 +98,29 @@ const RoleBadge = ({ role, className = '' }) => {
     </span>
   );
 };
-
-// Risk score indicator
-const RiskScore = ({ score, className = '' }) => {
-  const getRiskLevel = (score) => {
-    if (score <= 30)
-      return { level: 'Low', color: 'sage-green', bgColor: 'sage-green/10' };
-    if (score <= 60)
-      return {
-        level: 'Medium',
-        color: 'earthy-yellow',
-        bgColor: 'earthy-yellow/10',
-      };
-    return { level: 'High', color: 'tomato-red', bgColor: 'tomato-red/10' };
-  };
-
-  const risk = getRiskLevel(score);
-
-  return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <div className="w-8 h-2 rounded-full bg-gray-200 overflow-hidden">
-        <div
-          className={`h-full bg-${risk.color} rounded-full transition-all duration-500`}
-          style={{ width: `${score}%` }}
-        />
-      </div>
-      <span className={`text-xs font-medium text-${risk.color}`}>{score}</span>
-    </div>
-  );
-};
-
-// Business info component
+// Business info component - displays actual backend data
 const BusinessInfo = ({ user }) => {
-  const { businessInfo } = user;
+  // Get business name from actual backend data
+  const businessName = user.vendorId?.businessName || user.restaurantId?.name;
 
-  if (!businessInfo?.businessName) {
-    return <span className="text-xs text-gray-400">No business</span>;
+  // Get business type/cuisine from backend
+  const businessType = user.vendorId?.businessType || user.restaurantId?.cuisineType;
+
+  // Get location from backend (if available)
+  const location = user.vendorId?.fullAddress || user.restaurantId?.fullAddress;
+
+  if (!businessName) {
+    return <span className="text-xs text-gray-400 dark:text-gray-500">No business</span>;
   }
 
   return (
     <div className="flex flex-col">
-      <span className="text-sm font-medium text-text-dark truncate">
-        {businessInfo.businessName}
+      <span className="text-sm font-medium text-text-dark dark:text-dark-text-primary truncate">
+        {businessName}
       </span>
-      {businessInfo.location && (
+      {businessType && (
         <span className="text-xs text-text-muted truncate">
-          {businessInfo.location}
+          {businessType}
         </span>
       )}
     </div>
@@ -271,6 +249,16 @@ const UserDirectoryTable = memo(
         ),
       },
       {
+        key: 'phone',
+        label: 'Phone',
+        sortable: false,
+        render: (_, user) => (
+          <span className="text-sm text-text-dark dark:text-dark-text-primary">
+            {user.phone || 'N/A'}
+          </span>
+        ),
+      },
+      {
         key: 'role',
         label: 'Role',
         sortable: true,
@@ -278,15 +266,36 @@ const UserDirectoryTable = memo(
       },
       {
         key: 'status',
-        label: 'Status',
+        label: 'Account',
         sortable: true,
         render: (_, user) => (
           <StatusBadge
-            status={user.status}
+            status={user.isActive ? 'active' : 'inactive'}
             variant="glass"
             className="capitalize"
           />
         ),
+      },
+      {
+        key: 'verification',
+        label: 'Verification',
+        sortable: false,
+        render: (_, user) => {
+          // Get verification status from vendor or restaurant
+          const verificationStatus = user.vendorId?.verificationStatus || user.restaurantId?.verificationStatus;
+
+          if (!verificationStatus) {
+            return <span className="text-xs text-gray-400 dark:text-gray-500">N/A</span>;
+          }
+
+          return (
+            <StatusBadge
+              status={verificationStatus}
+              variant="glass"
+              className="capitalize"
+            />
+          );
+        },
       },
       {
         key: 'business',
@@ -295,18 +304,18 @@ const UserDirectoryTable = memo(
         render: (_, user) => <BusinessInfo user={user} />,
       },
       {
-        key: 'riskScore',
-        label: 'Risk Score',
-        sortable: true,
-        render: (_, user) => <RiskScore score={user.riskScore || 0} />,
-      },
-      {
         key: 'lastLogin',
         label: 'Last Login',
         sortable: true,
-        render: (value) => (
-          <span className="text-sm text-text-muted">{value || 'Never'}</span>
-        ),
+        render: (value) => {
+          if (!value) return <span className="text-sm text-text-muted">Never</span>;
+          try {
+            const formatted = formatDistanceToNow(new Date(value), { addSuffix: true });
+            return <span className="text-sm text-text-muted">{formatted}</span>;
+          } catch (error) {
+            return <span className="text-sm text-text-muted">{value}</span>;
+          }
+        },
       },
       {
         key: 'actions',
@@ -405,7 +414,7 @@ const UserDirectoryTable = memo(
     return (
       <div className="space-y-4">
         {/* Table Header with controls */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-2">
           <div className="flex items-center gap-2 text-sm text-text-muted">
             <span>
               Showing {(currentPage - 1) * pageSize + 1}-
@@ -430,21 +439,10 @@ const UserDirectoryTable = memo(
 
         {/* Desktop Table View */}
         <div className="hidden lg:block">
-          <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-dark-border">
+          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-border">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-dark-surface">
                 <tr>
-                  <th className="px-6 py-4 text-left">
-                    <input
-                      type="checkbox"
-                      checked={
-                        selectedUsers.length === users.length &&
-                        users.length > 0
-                      }
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-muted-olive focus:ring-muted-olive"
-                    />
-                  </th>
                   {columns.map((column) => (
                     <th key={column.key} className="px-6 py-4 text-left">
                       {column.sortable ? (
@@ -467,7 +465,7 @@ const UserDirectoryTable = memo(
               <tbody className="bg-white dark:bg-dark-bg-alt divide-y divide-gray-200 dark:divide-dark-border">
                 {tablePerformance.tableData.map((user, index) => (
                   <motion.tr
-                    key={user.id}
+                    key={user._id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="hover:bg-gray-50 dark:hover:bg-dark-surface transition-colors"
@@ -476,17 +474,6 @@ const UserDirectoryTable = memo(
                       label: `User ${user.name}, ${user.role}, row ${index + 1}`,
                     })}
                   >
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedUsers.includes(user.id)}
-                        onChange={(e) =>
-                          handleUserSelect(user.id, e.target.checked)
-                        }
-                        className={`rounded border-gray-300 text-muted-olive focus:ring-muted-olive ${getFocusClasses()}`}
-                        {...getAriaProps({ label: `Select user ${user.name}` })}
-                      />
-                    </td>
                     {tablePerformance.columns.map((column) => (
                       <td key={column.key} className="px-6 py-4">
                         {column.render
@@ -505,27 +492,18 @@ const UserDirectoryTable = memo(
         <div className="lg:hidden space-y-4">
           {tablePerformance.tableData.map((user, index) => (
             <motion.div
-              key={user.id}
+              key={user._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               {...getAriaProps({
                 role: 'article',
                 label: `User ${user.name}, ${user.role}`,
-                describedby: `user-${user.id}-details`,
+                describedby: `user-${user._id}-details`,
               })}
             >
               <Card className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <input
-                      type="checkbox"
-                      checked={selectedUsers.includes(user.id)}
-                      onChange={(e) =>
-                        handleUserSelect(user.id, e.target.checked)
-                      }
-                      className={`rounded border-gray-300 text-muted-olive focus:ring-muted-olive ${getFocusClasses()} touch-target`}
-                      {...getAriaProps({ label: `Select user ${user.name}` })}
-                    />
                     <UserAvatar user={user} size="md" />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-text-dark dark:text-dark-text-primary truncate">
@@ -534,7 +512,7 @@ const UserDirectoryTable = memo(
                       <div className="flex items-center gap-2 text-sm text-text-muted">
                         <RoleBadge role={user.role} />
                         <StatusBadge
-                          status={user.status}
+                          status={user.isActive ? 'active' : 'inactive'}
                           variant="glass"
                           className="capitalize"
                         />
@@ -555,20 +533,25 @@ const UserDirectoryTable = memo(
                       <span>{user.phone}</span>
                     </div>
                   )}
-                  {user.businessInfo?.businessName && (
+                  {(user.vendorId?.businessName || user.restaurantId?.name) && (
                     <div className="flex items-center gap-2 text-text-muted">
                       <Store className="w-4 h-4" />
                       <span className="truncate">
-                        {user.businessInfo.businessName}
+                        {user.vendorId?.businessName || user.restaurantId?.name}
                       </span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-dark-border">
-                  <RiskScore score={user.riskScore || 0} />
+                <div className="mt-4 pt-3 border-t border-gray-200 dark:border-dark-border">
                   <span className="text-xs text-text-muted">
-                    Last login: {user.lastLogin || 'Never'}
+                    Last login: {user.lastLogin ? (() => {
+                      try {
+                        return formatDistanceToNow(new Date(user.lastLogin), { addSuffix: true });
+                      } catch (error) {
+                        return user.lastLogin;
+                      }
+                    })() : 'Never'}
                   </span>
                 </div>
               </Card>

@@ -1453,27 +1453,27 @@ export const apiSlice = createApi({
     // Restaurant verification workflow
     approveRestaurantVerification: builder.mutation({
       query: ({ id, notes }) => ({
-        url: `/admin/restaurants/${id}/verification/approve`,
+        url: `/admin/restaurants/${id}/verification`,
         method: 'PUT',
-        body: { notes },
+        body: { status: 'approved', reason: notes },
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: ['Restaurant', 'Approvals'],
     }),
 
     rejectRestaurantVerification: builder.mutation({
-      query: ({ id, reason, notes }) => ({
-        url: `/admin/restaurants/${id}/verification/reject`,
+      query: ({ id, reason }) => ({
+        url: `/admin/restaurants/${id}/verification`,
         method: 'PUT',
-        body: { reason, notes },
+        body: { status: 'rejected', reason },
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: ['Restaurant', 'Approvals'],
     }),
 
     requestAdditionalDocuments: builder.mutation({
-      query: ({ id, requiredDocuments, message }) => ({
-        url: `/admin/restaurants/${id}/verification/request-docs`,
+      query: ({ id, documentTypes, message, deadline }) => ({
+        url: `/admin/restaurants/${id}/request-documents`,
         method: 'PUT',
-        body: { requiredDocuments, message },
+        body: { documentTypes, message, deadline },
       }),
       invalidatesTags: ['Restaurant'],
     }),
@@ -1515,10 +1515,10 @@ export const apiSlice = createApi({
     }),
 
     transferOwnership: builder.mutation({
-      query: ({ restaurantId, newOwnerId, transferReason }) => ({
+      query: ({ restaurantId, newOwnerId, reason }) => ({
         url: `/admin/restaurants/${restaurantId}/transfer-ownership`,
-        method: 'PUT',
-        body: { newOwnerId, transferReason },
+        method: 'POST',
+        body: { newOwnerId, reason },
       }),
       invalidatesTags: ['Restaurant', 'User'],
     }),
@@ -2027,14 +2027,14 @@ export const apiSlice = createApi({
     // Restaurant-specific endpoints
     getRestaurantOrders: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant/orders',
+        url: '/orders',
         params,
       }),
       providesTags: (result) => [
         { type: 'Order', id: 'RESTAURANT_LIST' },
-        ...(result?.data?.orders || []).map(({ id }) => ({
+        ...(result?.data || []).map(({ _id }) => ({
           type: 'Order',
-          id,
+          id: _id,
         })),
       ],
     }),
@@ -2211,8 +2211,28 @@ export const apiSlice = createApi({
         url: '/restaurant-dashboard/budget',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Restaurant', 'Budget'],
       // Polling disabled for MVP
+    }),
+
+    // Create Restaurant Budget - Create a new monthly/quarterly budget
+    createRestaurantBudget: builder.mutation({
+      query: (budgetData) => ({
+        url: '/restaurant-dashboard/budget',
+        method: 'POST',
+        body: budgetData,
+      }),
+      invalidatesTags: ['Restaurant', 'Budget'],
+    }),
+
+    // Update Restaurant Budget - Update an existing budget
+    updateRestaurantBudget: builder.mutation({
+      query: ({ budgetId, ...budgetData }) => ({
+        url: `/restaurant-dashboard/budget/${budgetId}`,
+        method: 'PUT',
+        body: budgetData,
+      }),
+      invalidatesTags: ['Restaurant', 'Budget'],
     }),
 
     // Restaurant Order History - Complete order history with filtering
@@ -2275,14 +2295,44 @@ export const apiSlice = createApi({
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Delivery Analytics - Delivery performance and timing
-    getRestaurantDeliveryAnalytics: builder.query({
+    // Restaurant Delivery Tracking - Delivery performance and timing
+    getRestaurantDeliveryTracking: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/delivery-analytics',
+        url: '/restaurant-dashboard/delivery-tracking',
         params,
       }),
       providesTags: ['Restaurant'],
       keepUnusedDataFor: 900,
+    }),
+
+    // Restaurant Price Analytics - Average price tracking and trends
+    getRestaurantPriceAnalytics: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/price-analytics',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
+    }),
+
+    // Restaurant Team Activity - Team member activity and order management (Owner only)
+    getRestaurantTeamActivity: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/team-activity',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 900,
+    }),
+
+    // Restaurant Reorder Suggestions - Smart reorder suggestions based on patterns
+    getRestaurantReorderSuggestions: builder.query({
+      query: (params = {}) => ({
+        url: '/restaurant-dashboard/reorder-suggestions',
+        params,
+      }),
+      providesTags: ['Restaurant'],
+      keepUnusedDataFor: 1800,
     }),
 
     // Restaurant Seasonal Insights - Seasonal purchasing trends
@@ -2920,13 +2970,18 @@ export const {
   useGetRestaurantSpendingQuery,
   useGetRestaurantVendorInsightsQuery,
   useGetRestaurantBudgetQuery,
+  useCreateRestaurantBudgetMutation,
+  useUpdateRestaurantBudgetMutation,
   useGetRestaurantOrderHistoryQuery,
   useGetRestaurantInventoryPlanningQuery,
   useGetRestaurantFavoriteVendorsQuery,
   useGetRestaurantNotificationsQuery,
   useGetRestaurantCostAnalysisQuery,
   useGetRestaurantPurchasePatternsQuery,
-  useGetRestaurantDeliveryAnalyticsQuery,
+  useGetRestaurantDeliveryTrackingQuery,
+  useGetRestaurantPriceAnalyticsQuery,
+  useGetRestaurantTeamActivityQuery,
+  useGetRestaurantReorderSuggestionsQuery,
   useGetRestaurantSeasonalInsightsQuery,
   useGetRestaurantVendorComparisonQuery,
   useGetRestaurantProcurementInsightsQuery,

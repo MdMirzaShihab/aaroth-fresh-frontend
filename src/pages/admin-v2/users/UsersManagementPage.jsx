@@ -76,7 +76,8 @@ const UsersManagementPage = () => {
 
   // Memoized data transformations
   const totalUsers = usersData?.total || 0;
-  const users = usersData?.users || [];
+  // Backend returns data as array directly, not nested in data.users
+  const users = usersData?.data || [];
   const totalPages = Math.ceil(totalUsers / pageSize);
 
   // Handle user selection
@@ -164,31 +165,33 @@ const UsersManagementPage = () => {
     }
   }, []);
 
-  // Handle export
-  const handleExport = useCallback(async (format = 'csv') => {
-    try {
-      toast.loading('Preparing export...');
-
-      // Export logic will be implemented
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.dismiss();
-      toast.success(`Users exported as ${format.toUpperCase()}`);
-    } catch (error) {
-      toast.dismiss();
-      toast.error(`Export failed: ${error.message}`);
-    }
-  }, []);
-
   // Quick stats for header
   const quickStats = useMemo(() => {
-    if (!analyticsData) return null;
+    if (!analyticsData?.data) return null;
+
+    // Calculate active users from userActivity (sum across all roles)
+    const userActivity = analyticsData.data.userActivity || {};
+    const activeUsers = Object.values(userActivity).reduce(
+      (sum, roleData) => sum + (roleData.active || 0),
+      0
+    );
+
+    // Calculate pending approvals from approvalStats
+    const approvalStats = analyticsData.data.approvalStats || {};
+    const pendingApproval = Object.values(approvalStats).reduce(
+      (sum, roleStats) => sum + (roleStats.pending || 0),
+      0
+    );
+
+    // Registration trends for new users this week (if available)
+    const registrationTrends = analyticsData.data.registrationTrends || {};
+    const newThisWeek = registrationTrends.thisWeek || 0;
 
     return {
       totalUsers,
-      activeUsers: analyticsData.activeUsers || 0,
-      pendingApproval: analyticsData.pendingApproval || 0,
-      newThisWeek: analyticsData.newThisWeek || 0,
+      activeUsers,
+      pendingApproval,
+      newThisWeek,
     };
   }, [analyticsData, totalUsers]);
 
@@ -264,37 +267,27 @@ const UsersManagementPage = () => {
           {/* Quick Stats */}
           {quickStats && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <Card className="p-3">
+              <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
+                    <p className="text-xs font-medium text-text-muted">
                       Total Users
                     </p>
-                    <p
-                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                    >
+                    <p className="text-lg font-bold text-text-dark dark:text-dark-text-primary">
                       {quickStats.totalUsers.toLocaleString()}
                     </p>
                   </div>
-                  <Users
-                    className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
-                  />
+                  <Users className="w-5 h-5 text-muted-olive" />
                 </div>
               </Card>
 
-              <Card className="p-3">
+              <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
+                    <p className="text-xs font-medium text-text-muted">
                       Active Users
                     </p>
-                    <p
-                      className={`text-lg font-bold ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
-                    >
+                    <p className="text-lg font-bold text-sage-green">
                       {quickStats.activeUsers.toLocaleString()}
                     </p>
                   </div>
@@ -302,37 +295,27 @@ const UsersManagementPage = () => {
                 </div>
               </Card>
 
-              <Card className="p-3">
+              <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
+                    <p className="text-xs font-medium text-text-muted">
                       Pending Approval
                     </p>
-                    <p
-                      className={`text-lg font-bold ${quickStats.pendingApproval > 0 ? 'text-earthy-yellow' : isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                    >
+                    <p className={`text-lg font-bold ${quickStats.pendingApproval > 0 ? 'text-earthy-yellow' : 'text-text-dark dark:text-dark-text-primary'}`}>
                       {quickStats.pendingApproval.toLocaleString()}
                     </p>
                   </div>
-                  <div
-                    className={`w-2 h-2 rounded-full ${quickStats.pendingApproval > 0 ? 'bg-earthy-yellow animate-pulse' : 'bg-gray-300'}`}
-                  />
+                  <div className={`w-2 h-2 rounded-full ${quickStats.pendingApproval > 0 ? 'bg-earthy-yellow animate-pulse' : 'bg-gray-300'}`} />
                 </div>
               </Card>
 
-              <Card className="p-3">
+              <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
+                    <p className="text-xs font-medium text-text-muted">
                       New This Week
                     </p>
-                    <p
-                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                    >
+                    <p className="text-lg font-bold text-text-dark dark:text-dark-text-primary">
                       {quickStats.newThisWeek.toLocaleString()}
                     </p>
                   </div>
@@ -391,29 +374,17 @@ const UsersManagementPage = () => {
               />
             </div>
 
-            {/* Export and Refresh */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleExport('csv')}
-                disabled={usersLoading}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={refetchUsers}
-                disabled={usersLoading}
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${usersLoading ? 'animate-spin' : ''}`}
-                />
-              </Button>
-            </div>
+            {/* Refresh Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={refetchUsers}
+              disabled={usersLoading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${usersLoading ? 'animate-spin' : ''}`}
+              />
+            </Button>
           </div>
 
           {/* Bulk Operations Bar */}

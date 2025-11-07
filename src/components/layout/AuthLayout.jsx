@@ -152,15 +152,7 @@ export const LoginLayout = ({ children }) => (
 );
 
 export const RegisterLayout = ({ children }) => (
-  <AuthLayout
-    title="Join Aaroth Fresh"
-    subtitle="Create your account and start trading fresh produce"
-    showBackButton
-    backButtonText="Back to Home"
-    backButtonPath="/"
-  >
-    {children}
-  </AuthLayout>
+  <AuthLayout>{children}</AuthLayout>
 );
 
 export const VendorRegisterLayout = ({ children }) => (

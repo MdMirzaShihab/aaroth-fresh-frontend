@@ -72,19 +72,19 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         {
           label: 'Products',
           icon: Package,
-          path: '/admin-v2/catalog/products',
+          path: '/admin-v2/products',
           description: 'Product Library',
         },
         {
           label: 'Categories',
           icon: FolderOpen,
-          path: '/admin-v2/catalog/categories',
+          path: '/admin-v2/categories',
           description: 'Category Structure',
         },
         {
           label: 'Listings',
           icon: Database,
-          path: '/admin-v2/catalog/listings',
+          path: '/admin-v2/listings',
           description: 'Active Listings',
         },
       ],

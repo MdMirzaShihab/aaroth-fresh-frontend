@@ -590,12 +590,11 @@ export const useTablePerformance = (config) => {
     dataOptimization.paginatedData,
   ]);
 
-  // Memoized column renderers
+  // Memoized columns
+  // Note: Don't wrap render functions with memo() - they're callbacks, not components
+  // The columns array is already memoized in the parent component
   const memoizedColumns = useMemo(() => {
-    return columns.map((column) => ({
-      ...column,
-      render: column.render ? memo(column.render) : undefined,
-    }));
+    return columns;
   }, [columns]);
 
   return {

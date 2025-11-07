@@ -26,6 +26,7 @@ import {
 import {
   useGetRestaurantDetailsQuery,
   useGetRestaurantManagersQuery,
+  useRequestAdditionalDocumentsMutation,
 } from '../../../../store/slices/apiSlice';
 import {
   formatAddress,
@@ -42,6 +43,10 @@ const RestaurantDetailsModal = ({ restaurant, isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDocumentRequestModal, setShowDocumentRequestModal] = useState(false);
+
+  // RTK Query mutations
+  const [requestDocuments, { isLoading: isRequestingDocuments }] = useRequestAdditionalDocumentsMutation();
 
   // Fetch detailed restaurant data
   const {
@@ -535,23 +540,335 @@ const RestaurantDetailsModal = ({ restaurant, isOpen, onClose }) => {
 
             {/* Orders Tab */}
             {activeTab === 'orders' && (
-              <div className="text-center py-12">
-                <ShoppingBag className="w-12 h-12 text-text-muted/40 mx-auto mb-4" />
-                <h4 className="font-medium text-text-dark mb-2">Order History</h4>
-                <p className="text-text-muted text-sm">
-                  Order history functionality will be implemented here.
-                </p>
+              <div className="space-y-6">
+                {/* Order Statistics */}
+                {restaurantData.orderStats && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-gradient-to-br from-sage-green/10 to-sage-green/5 rounded-2xl p-4 border border-sage-green/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <ShoppingBag className="w-5 h-5 text-bottle-green" />
+                        <span className="text-sm text-text-muted">Total Orders</span>
+                      </div>
+                      <p className="text-2xl font-semibold text-bottle-green">
+                        {restaurantData.orderStats.totalOrders || 0}
+                      </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-earthy-yellow/10 to-earthy-yellow/5 rounded-2xl p-4 border border-earthy-yellow/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <DollarSign className="w-5 h-5 text-earthy-brown" />
+                        <span className="text-sm text-text-muted">Total Amount</span>
+                      </div>
+                      <p className="text-2xl font-semibold text-earthy-brown">
+                        ৳{restaurantData.orderStats.totalAmount?.toLocaleString() || 0}
+                      </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-blue-50/50 to-blue-50/20 rounded-2xl p-4 border border-blue-200/30">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Clock className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm text-text-muted">Active Orders</span>
+                      </div>
+                      <p className="text-2xl font-semibold text-blue-600">
+                        {restaurantData.orderStats.activeOrders || 0}
+                      </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-mint-fresh/10 to-mint-fresh/5 rounded-2xl p-4 border border-mint-fresh/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <CheckCircle className="w-5 h-5 text-muted-olive" />
+                        <span className="text-sm text-text-muted">Completed</span>
+                      </div>
+                      <p className="text-2xl font-semibold text-muted-olive">
+                        {restaurantData.orderStats.completedOrders || 0}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Orders List */}
+                <div>
+                  <h4 className="font-medium text-text-dark mb-4 flex items-center gap-2">
+                    <ShoppingBag className="w-5 h-5 text-bottle-green" />
+                    Recent Orders (Last 30 Days)
+                  </h4>
+
+                  {isLoadingDetails ? (
+                    <div className="flex justify-center py-8">
+                      <LoadingSpinner />
+                    </div>
+                  ) : restaurantData.recentOrders && restaurantData.recentOrders.length > 0 ? (
+                    <div className="space-y-3">
+                      {restaurantData.recentOrders.map((order) => (
+                        <div
+                          key={order._id}
+                          className="bg-white rounded-2xl p-4 border border-sage-green/20 hover:shadow-md transition-all duration-200"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-text-dark">
+                                  Order #{order.orderNumber || order._id.slice(-8)}
+                                </span>
+                                <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                  order.status === 'completed' ? 'bg-mint-fresh/20 text-muted-olive' :
+                                  order.status === 'pending' ? 'bg-orange-50 text-orange-600' :
+                                  order.status === 'cancelled' ? 'bg-tomato-red/10 text-tomato-red' :
+                                  'bg-blue-50 text-blue-600'
+                                }`}>
+                                  {order.status}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-4 text-sm text-text-muted">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-4 h-4" />
+                                  {formatDate(order.createdAt)}
+                                </span>
+                                {order.vendorId?.businessName && (
+                                  <span className="flex items-center gap-1">
+                                    <User className="w-4 h-4" />
+                                    {order.vendorId.businessName}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <p className="text-lg font-semibold text-bottle-green">
+                                ৳{order.totalAmount?.toLocaleString() || 0}
+                              </p>
+                              <p className="text-xs text-text-muted">
+                                {order.items?.length || 0} items
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Order Items Preview */}
+                          {order.items && order.items.length > 0 && (
+                            <div className="pt-3 border-t border-sage-green/10">
+                              <p className="text-sm text-text-muted mb-2">Items:</p>
+                              <div className="flex flex-wrap gap-2">
+                                {order.items.slice(0, 3).map((item, idx) => (
+                                  <span key={idx} className="text-xs bg-earthy-beige/30 text-earthy-brown px-2 py-1 rounded-lg">
+                                    {item.productName || item.listingId?.productId?.name} × {item.quantity}
+                                  </span>
+                                ))}
+                                {order.items.length > 3 && (
+                                  <span className="text-xs bg-earthy-beige/30 text-earthy-brown px-2 py-1 rounded-lg">
+                                    +{order.items.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 bg-earthy-beige/10 rounded-2xl">
+                      <ShoppingBag className="w-12 h-12 text-text-muted/40 mx-auto mb-4" />
+                      <h4 className="font-medium text-text-dark mb-2">No Orders Yet</h4>
+                      <p className="text-text-muted text-sm">
+                        This restaurant hasn't placed any orders in the last 30 days.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Documents Tab */}
             {activeTab === 'documents' && (
-              <div className="text-center py-12">
-                <FileText className="w-12 h-12 text-text-muted/40 mx-auto mb-4" />
-                <h4 className="font-medium text-text-dark mb-2">Documents</h4>
-                <p className="text-text-muted text-sm">
-                  Document management functionality will be implemented here.
-                </p>
+              <div className="space-y-6">
+                {/* Document Status Overview */}
+                <div className="bg-gradient-to-br from-sage-green/5 to-earthy-beige/10 rounded-2xl p-6 border border-sage-green/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Shield className="w-6 h-6 text-bottle-green" />
+                    <h4 className="font-medium text-text-dark">Document Verification Status</h4>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        restaurantData.businessLicense?.document ? 'bg-mint-fresh' : 'bg-tomato-red/50'
+                      }`}></div>
+                      <span className="text-sm text-text-muted">Business License</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        restaurantData.tradeLicenseNo ? 'bg-mint-fresh' : 'bg-tomato-red/50'
+                      }`}></div>
+                      <span className="text-sm text-text-muted">Trade License</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        restaurantData.logo ? 'bg-mint-fresh' : 'bg-orange-400'
+                      }`}></div>
+                      <span className="text-sm text-text-muted">Restaurant Logo</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Documents List */}
+                <div className="space-y-4">
+                  {/* Business License */}
+                  <div className="bg-white rounded-2xl p-5 border border-sage-green/20 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sage-green/10 to-sage-green/5 flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-bottle-green" />
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-text-dark">Business License</h5>
+                          <p className="text-sm text-text-muted">Official business registration</p>
+                        </div>
+                      </div>
+                      {restaurantData.businessLicense?.document ? (
+                        <CheckCircle className="w-5 h-5 text-muted-olive" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5 text-orange-500" />
+                      )}
+                    </div>
+
+                    {restaurantData.businessLicense ? (
+                      <div className="space-y-2">
+                        {restaurantData.businessLicense.number && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-text-muted">License Number:</span>
+                            <span className="font-medium text-text-dark">
+                              {restaurantData.businessLicense.number}
+                            </span>
+                          </div>
+                        )}
+                        {restaurantData.businessLicense.expiryDate && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-text-muted">Expiry Date:</span>
+                            <span className={`font-medium ${
+                              new Date(restaurantData.businessLicense.expiryDate) < new Date()
+                                ? 'text-tomato-red'
+                                : new Date(restaurantData.businessLicense.expiryDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                                ? 'text-orange-500'
+                                : 'text-muted-olive'
+                            }`}>
+                              {formatDate(restaurantData.businessLicense.expiryDate)}
+                              {new Date(restaurantData.businessLicense.expiryDate) < new Date() && ' (Expired)'}
+                            </span>
+                          </div>
+                        )}
+                        {restaurantData.businessLicense.document && (
+                          <a
+                            href={restaurantData.businessLicense.document}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-sm text-bottle-green hover:text-muted-olive transition-colors mt-3 group"
+                          >
+                            <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                            View Document
+                          </a>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-tomato-red">No business license uploaded</p>
+                    )}
+                  </div>
+
+                  {/* Trade License */}
+                  <div className="bg-white rounded-2xl p-5 border border-sage-green/20 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-earthy-yellow/10 to-earthy-yellow/5 flex items-center justify-center">
+                          <Shield className="w-6 h-6 text-earthy-brown" />
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-text-dark">Trade License</h5>
+                          <p className="text-sm text-text-muted">Trade license number</p>
+                        </div>
+                      </div>
+                      {restaurantData.tradeLicenseNo ? (
+                        <CheckCircle className="w-5 h-5 text-muted-olive" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5 text-orange-500" />
+                      )}
+                    </div>
+
+                    {restaurantData.tradeLicenseNo ? (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-text-muted">License Number:</span>
+                        <span className="font-medium text-text-dark">
+                          {restaurantData.tradeLicenseNo}
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-tomato-red">No trade license number provided</p>
+                    )}
+                  </div>
+
+                  {/* Restaurant Logo */}
+                  <div className="bg-white rounded-2xl p-5 border border-sage-green/20 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50/50 to-blue-50/20 flex items-center justify-center">
+                          <Building2 className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-text-dark">Restaurant Logo</h5>
+                          <p className="text-sm text-text-muted">Brand identity image</p>
+                        </div>
+                      </div>
+                      {restaurantData.logo ? (
+                        <CheckCircle className="w-5 h-5 text-muted-olive" />
+                      ) : (
+                        <Clock className="w-5 h-5 text-orange-500" />
+                      )}
+                    </div>
+
+                    {restaurantData.logo ? (
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={restaurantData.logo}
+                          alt={`${restaurantData.name} logo`}
+                          className="w-20 h-20 object-cover rounded-xl border border-sage-green/20"
+                        />
+                        <a
+                          href={restaurantData.logo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-sm text-bottle-green hover:text-muted-olive transition-colors group"
+                        >
+                          <Eye className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                          View Full Size
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-orange-600">No logo uploaded</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Document Request Actions */}
+                {restaurantData.verificationStatus === 'pending' && (
+                  <div className="bg-gradient-to-r from-earthy-beige/20 to-sage-green/10 rounded-2xl p-5 border border-sage-green/20">
+                    <div className="flex items-start gap-4">
+                      <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h5 className="font-medium text-text-dark mb-1">Missing Documents?</h5>
+                        <p className="text-sm text-text-muted mb-3">
+                          If documents are incomplete, you can request additional documents from the restaurant.
+                        </p>
+                        <Button
+                          variant="secondary"
+                          size="small"
+                          onClick={() => setShowDocumentRequestModal(true)}
+                          disabled={isRequestingDocuments}
+                          className="flex items-center gap-2"
+                        >
+                          <FileText className="w-4 h-4" />
+                          Request Documents
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -576,7 +893,187 @@ const RestaurantDetailsModal = ({ restaurant, isOpen, onClose }) => {
         />
       )}
 
+      {/* Document Request Modal */}
+      {showDocumentRequestModal && (
+        <DocumentRequestModal
+          restaurant={restaurantData}
+          isOpen={showDocumentRequestModal}
+          onClose={() => setShowDocumentRequestModal(false)}
+          onSubmit={async (documentData) => {
+            try {
+              await requestDocuments({
+                id: restaurantData._id,
+                documentTypes: documentData.documentTypes,
+                message: documentData.message,
+                deadline: documentData.deadline,
+              }).unwrap();
+
+              dispatch(addNotification({
+                type: 'success',
+                message: 'Document request sent successfully',
+                duration: 3000
+              }));
+
+              setShowDocumentRequestModal(false);
+            } catch (error) {
+              dispatch(addNotification({
+                type: 'error',
+                message: error.data?.message || 'Failed to request documents',
+                duration: 5000
+              }));
+            }
+          }}
+        />
+      )}
+
     </>
+  );
+};
+
+// Document Request Modal Component
+const DocumentRequestModal = ({ restaurant, isOpen, onClose, onSubmit }) => {
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
+  const [message, setMessage] = useState('');
+  const [deadline, setDeadline] = useState('');
+
+  const documentOptions = [
+    { value: 'business_license', label: 'Business License' },
+    { value: 'trade_license', label: 'Trade License' },
+    { value: 'health_permit', label: 'Health Permit' },
+    { value: 'fire_safety', label: 'Fire Safety Certificate' },
+    { value: 'food_safety', label: 'Food Safety Certificate' },
+    { value: 'tax_clearance', label: 'Tax Clearance' },
+  ];
+
+  const handleToggleDocument = (docValue) => {
+    setSelectedDocuments(prev =>
+      prev.includes(docValue)
+        ? prev.filter(d => d !== docValue)
+        : [...prev, docValue]
+    );
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit({
+      documentTypes: selectedDocuments,
+      message: message || 'Please submit the following documents for verification.',
+      deadline: deadline || undefined,
+    });
+  };
+
+  // Set default deadline to 7 days from now
+  React.useEffect(() => {
+    if (isOpen && !deadline) {
+      const defaultDeadline = new Date();
+      defaultDeadline.setDate(defaultDeadline.getDate() + 7);
+      setDeadline(defaultDeadline.toISOString().split('T')[0]);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-sage-green/20 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+          <h3 className="text-xl font-semibold text-text-dark">Request Documents</h3>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+            <div className="flex items-start gap-3">
+              <FileText className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-blue-900 mb-1">
+                  Requesting documents from {restaurant?.name || restaurant?.businessName}
+                </h4>
+                <p className="text-sm text-blue-800">
+                  Select the documents you need and set a deadline for submission. An email notification will be sent to the restaurant owner.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-dark mb-3">
+              Select Required Documents *
+            </label>
+            <div className="space-y-2">
+              {documentOptions.map((doc) => (
+                <label
+                  key={doc.value}
+                  className="flex items-center gap-3 p-3 bg-earthy-beige/10 hover:bg-earthy-beige/20 rounded-xl cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedDocuments.includes(doc.value)}
+                    onChange={() => handleToggleDocument(doc.value)}
+                    className="w-5 h-5 text-bottle-green rounded focus:ring-2 focus:ring-bottle-green/20"
+                  />
+                  <span className="text-text-dark">{doc.label}</span>
+                </label>
+              ))}
+            </div>
+            {selectedDocuments.length === 0 && (
+              <p className="text-sm text-tomato-red mt-2">
+                Please select at least one document type
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-dark mb-2">
+              Submission Deadline
+            </label>
+            <input
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-dark mb-2">
+              Custom Message (Optional)
+            </label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Add any specific instructions or details..."
+              rows={4}
+              maxLength={1000}
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green resize-none"
+            />
+            <p className="text-xs text-text-muted mt-1">
+              Max 1000 characters
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-sage-green/20">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={selectedDocuments.length === 0}
+              className="bg-bottle-green hover:bg-muted-olive text-white"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Send Request
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

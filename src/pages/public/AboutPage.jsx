@@ -315,7 +315,7 @@ const AboutPage = () => {
               </div>
               <h3 className="text-lg font-bold text-text-dark mb-2">Call Us</h3>
               <p className="text-text-muted">Mon-Fri, 8AM-6PM EST</p>
-              <p className="text-muted-olive font-semibold">1-800-AAROTH-1</p>
+              <p className="text-muted-olive font-semibold">01335156145</p>
             </Card>
             <Card className="p-6 text-center">
               <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -326,7 +326,7 @@ const AboutPage = () => {
               </h3>
               <p className="text-text-muted">Response within 24 hours</p>
               <p className="text-muted-olive font-semibold">
-                hello@aarothfresh.com
+                hello@aaroth.com
               </p>
             </Card>
           </div>

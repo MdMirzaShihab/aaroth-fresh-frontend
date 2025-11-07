@@ -21,7 +21,9 @@ export { default as RestaurantsManagementPage } from './restaurants/RestaurantsM
 // Catalog Management
 export { default as ProductsManagementPage } from './catalog/products/ProductsManagementPage';
 export { default as CategoriesManagementPage } from './catalog/categories/CategoriesManagementPage';
-export { default as ListingsManagementPage } from './catalog/listings/ListingsManagementPage';
+
+// Listing Management
+export { default as ListingManagementPage } from './listings/ListingManagementPage';
 
 // Analytics
 export { default as BusinessAnalytics } from './analytics/BusinessAnalytics';

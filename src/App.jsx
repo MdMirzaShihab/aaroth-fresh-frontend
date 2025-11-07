@@ -64,11 +64,11 @@ const ProductApproval = lazy(() => import('./pages/admin/ProductApproval'));
 const RestaurantsManagementPage = lazy(
   () => import('./pages/admin-v2/restaurants/RestaurantManagementPage')
 );
-const ProductsManagementPage = lazy(
-  () => import('./pages/admin/ProductsManagementPage')
+const ProductsManagementPageV2 = lazy(
+  () => import('./pages/admin-v2/catalog/products/ProductsManagementPage')
 );
 const ListingsManagementPage = lazy(
-  () => import('./pages/admin/ListingsManagementPage')
+  () => import('./pages/admin-v2/listings/ListingManagementPage')
 );
 const CategoryManagementEnhanced = lazy(
   () => import('./pages/admin/CategoryManagementEnhanced')
@@ -148,6 +148,9 @@ const RestaurantProfile = lazy(
 );
 const ManagerManagement = lazy(
   () => import('./pages/restaurant/ManagerManagement')
+);
+const BudgetManagement = lazy(
+  () => import('./pages/restaurant/BudgetManagement')
 );
 
 // Shared Pages
@@ -542,7 +545,7 @@ const App = () => {
               path="products"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <ProductsManagementPage />
+                  <ProductsManagementPageV2 />
                 </Suspense>
               }
             />
@@ -765,6 +768,14 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <OrderDetail />
+                </Suspense>
+              }
+            />
+            <Route
+              path="budget"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <BudgetManagement />
                 </Suspense>
               }
             />

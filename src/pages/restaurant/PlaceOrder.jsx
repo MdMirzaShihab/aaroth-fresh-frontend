@@ -22,7 +22,10 @@ import {
   clearCart,
 } from '../../store/slices/cartSlice';
 import { selectAuth } from '../../store/slices/authSlice';
-import { useCreateOrderMutation } from '../../store/slices/apiSlice';
+import {
+  useCreateOrderMutation,
+  useGetRestaurantBudgetQuery
+} from '../../store/slices/apiSlice';
 import { formatCurrency, formatPhoneForDisplay } from '../../utils';
 
 const PlaceOrder = () => {
@@ -46,11 +49,28 @@ const PlaceOrder = () => {
   const [createOrder, { isLoading: isCreatingOrder }] =
     useCreateOrderMutation();
 
+  // Fetch budget data for validation
+  const { data: budgetData, isLoading: budgetLoading } = useGetRestaurantBudgetQuery(
+    { period: 'month' },
+    { skip: !user }
+  );
+
   // Calculations
   const subtotal = total;
   const deliveryFee = subtotal >= 1000 ? 0 : 50; // Free delivery for orders above 1000
   const tax = subtotal * 0.05; // 5% tax
   const finalTotal = subtotal + deliveryFee + tax;
+
+  // Budget validation
+  const budget = budgetData?.data || {};
+  const currentSpending = budget.used || 0;
+  const budgetLimit = budget.total || 0;
+  const afterOrderSpending = currentSpending + finalTotal;
+  const budgetPercentageAfterOrder = budgetLimit > 0
+    ? (afterOrderSpending / budgetLimit) * 100
+    : 0;
+  const exceedsBudget = afterOrderSpending > budgetLimit && budgetLimit > 0;
+  const nearBudgetLimit = budgetPercentageAfterOrder >= 90 && budgetPercentageAfterOrder < 100;
 
   const handleQuantityChange = (itemId, newQuantity) => {
     if (newQuantity <= 0) {
@@ -693,6 +713,45 @@ const PlaceOrder = () => {
                 {formatCurrency(finalTotal)}
               </span>
             </div>
+
+            {/* Budget Warnings */}
+            {!budgetLoading && budgetLimit > 0 && (
+              <>
+                {exceedsBudget && (
+                  <div className="bg-red-50/80 border border-red-200/50 text-red-800 p-3 rounded-2xl text-sm mb-4 animate-fade-in">
+                    <AlertCircle className="w-4 h-4 inline mr-2" />
+                    <div className="inline-block">
+                      <p className="font-medium">Budget Limit Exceeded!</p>
+                      <p className="text-xs mt-1">
+                        This order will exceed your budget by {formatCurrency(afterOrderSpending - budgetLimit)}
+                      </p>
+                      <p className="text-xs text-red-600 mt-1">
+                        Current: {formatCurrency(currentSpending)} | After: {formatCurrency(afterOrderSpending)} | Limit: {formatCurrency(budgetLimit)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {nearBudgetLimit && !exceedsBudget && (
+                  <div className="bg-amber-50/80 border border-amber-200/50 text-amber-800 p-3 rounded-2xl text-sm mb-4 animate-fade-in">
+                    <AlertCircle className="w-4 h-4 inline mr-2" />
+                    <div className="inline-block">
+                      <p className="font-medium">Approaching Budget Limit</p>
+                      <p className="text-xs mt-1">
+                        This order will use {budgetPercentageAfterOrder.toFixed(1)}% of your monthly budget
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {!exceedsBudget && !nearBudgetLimit && (
+                  <div className="bg-sage-green/10 border border-sage-green/20 text-sage-green p-3 rounded-2xl text-sm mb-4">
+                    <CheckCircle className="w-4 h-4 inline mr-2" />
+                    <span className="text-xs">
+                      Within budget • {budgetPercentageAfterOrder.toFixed(1)}% of limit
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
 
             {deliveryFee > 0 && (
               <div className="bg-amber-50/80 border border-amber-200/50 text-amber-800 p-3 rounded-2xl text-sm mb-4">

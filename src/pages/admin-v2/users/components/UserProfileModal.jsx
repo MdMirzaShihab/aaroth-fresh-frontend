@@ -35,6 +35,7 @@ import { Card, Button, Input, StatusBadge } from '../../../../components/ui';
 import { Modal } from '../../../../components/ui/Modal';
 import { Tabs } from '../../../../components/ui/Tabs';
 import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
+import { useUpdateUserMutation } from '../../../../services/admin-v2/usersService';
 
 // User avatar component
 const UserProfileAvatar = ({ user, size = 'lg' }) => {
@@ -62,7 +63,8 @@ const UserProfileAvatar = ({ user, size = 'lg' }) => {
       className={`${sizeClasses[size]} rounded-3xl ${getRoleGradient(user.role)} flex items-center justify-center shadow-xl text-white font-bold relative`}
     >
       {user.name?.charAt(0)?.toUpperCase() || 'U'}
-      {user.verificationStatus === 'approved' && (
+      {/* Check verification status from vendor or restaurant, not user */}
+      {(user.vendorId?.verificationStatus === 'approved' || user.restaurantId?.verificationStatus === 'approved') && (
         <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-sage-green rounded-full flex items-center justify-center border-2 border-white">
           <CheckCircle className="w-3 h-3 text-white" />
         </div>
@@ -235,7 +237,7 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
         >
           Account Status
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
             <div
               className={`text-lg font-bold ${user.isActive ? 'text-sage-green' : 'text-gray-400'}`}
@@ -247,51 +249,37 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
               )}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {user.isActive ? 'Active' : 'Inactive'}
+              Account: {user.isActive ? 'Active' : 'Inactive'}
             </p>
           </div>
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div
-              className={`text-lg font-bold ${user.isApproved ? 'text-sage-green' : 'text-earthy-yellow'}`}
-            >
-              {user.isApproved ? (
-                <CheckCircle className="w-6 h-6 mx-auto mb-1" />
-              ) : (
-                <Clock className="w-6 h-6 mx-auto mb-1" />
-              )}
-            </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              {user.isApproved ? 'Approved' : 'Pending'}
-            </p>
-          </div>
+            {(() => {
+              // Get verification status from vendor or restaurant, not user
+              const verificationStatus = user.vendorId?.verificationStatus || user.restaurantId?.verificationStatus || 'N/A';
+              const isApproved = verificationStatus === 'approved';
+              const isPending = verificationStatus === 'pending';
+              const isRejected = verificationStatus === 'rejected';
 
-          <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div
-              className={`text-lg font-bold ${user.verificationStatus === 'approved' ? 'text-sage-green' : user.verificationStatus === 'pending' ? 'text-earthy-yellow' : 'text-tomato-red'}`}
-            >
-              {user.verificationStatus === 'approved' ? (
-                <CheckCircle className="w-6 h-6 mx-auto mb-1" />
-              ) : user.verificationStatus === 'pending' ? (
-                <Clock className="w-6 h-6 mx-auto mb-1" />
-              ) : (
-                <XCircle className="w-6 h-6 mx-auto mb-1" />
-              )}
-            </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 capitalize">
-              {user.verificationStatus}
-            </p>
-          </div>
-
-          <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
-            <div
-              className={`text-lg font-bold ${user.riskScore <= 30 ? 'text-sage-green' : user.riskScore <= 60 ? 'text-earthy-yellow' : 'text-tomato-red'}`}
-            >
-              <span>{user.riskScore || 0}</span>
-            </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              Risk Score
-            </p>
+              return (
+                <>
+                  <div
+                    className={`text-lg font-bold ${isApproved ? 'text-sage-green' : isPending ? 'text-earthy-yellow' : 'text-tomato-red'}`}
+                  >
+                    {isApproved ? (
+                      <CheckCircle className="w-6 h-6 mx-auto mb-1" />
+                    ) : isPending ? (
+                      <Clock className="w-6 h-6 mx-auto mb-1" />
+                    ) : (
+                      <XCircle className="w-6 h-6 mx-auto mb-1" />
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    Verification: <span className="capitalize">{verificationStatus}</span>
+                  </p>
+                </>
+              );
+            })()}
           </div>
         </div>
       </Card>
@@ -501,26 +489,38 @@ const UserProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
   const [activeTab, setActiveTab] = useState('basic');
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+
+  // RTK Query mutation hook for updating user
+  const [updateUser, { isLoading }] = useUpdateUserMutation();
 
   // Handle save changes
   const handleSave = useCallback(async () => {
-    setIsLoading(true);
     try {
-      // API call to update user
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock API call
+      // Call the actual API to update user
+      await updateUser({
+        id: user._id,
+        ...editedData
+      }).unwrap();
 
       toast.success('User updated successfully');
       setIsEditing(false);
+      setEditedData({});
+
       if (onUserUpdate) {
         onUserUpdate();
       }
     } catch (error) {
-      toast.error('Failed to update user');
-    } finally {
-      setIsLoading(false);
+      // Handle different error cases
+      if (error.status === 400) {
+        toast.error(error.data?.message || 'Invalid user data. Please check all fields.');
+      } else if (error.status === 404) {
+        toast.error('User not found');
+      } else {
+        toast.error(error.data?.message || 'Failed to update user');
+      }
+      console.error('Update user error:', error);
     }
-  }, [editedData, onUserUpdate]);
+  }, [user._id, editedData, updateUser, onUserUpdate]);
 
   // Handle cancel editing
   const handleCancel = useCallback(() => {

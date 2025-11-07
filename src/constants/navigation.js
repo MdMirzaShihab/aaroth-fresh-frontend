@@ -15,6 +15,8 @@ import {
   MapPin,
   Tag,
   CheckCircle,
+  Target,
+  DollarSign,
 } from 'lucide-react';
 
 // Navigation items configuration with role-based access
@@ -212,14 +214,21 @@ export const NAVIGATION_ITEMS = {
         {
           id: 'current',
           label: 'Current Orders',
-          path: '/restaurant/orders/current',
+          path: '/restaurant/orders?filter=current',
         },
         {
           id: 'history',
           label: 'Order History',
-          path: '/restaurant/orders/history',
+          path: '/restaurant/orders?filter=history',
         },
       ],
+    },
+    {
+      id: 'budget',
+      label: 'Budget Management',
+      icon: Target,
+      path: '/restaurant/budget',
+      roles: ['restaurantOwner', 'restaurantManager'],
     },
     {
       id: 'restaurant-management',

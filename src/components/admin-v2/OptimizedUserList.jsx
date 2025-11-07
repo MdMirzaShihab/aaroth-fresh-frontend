@@ -40,6 +40,12 @@ import {
 } from '../../utils/performance';
 import { Button, LoadingSpinner } from '../ui';
 
+// Helper: Get verification status from vendor or restaurant, not user
+// User model doesn't have verificationStatus - it's on vendor/restaurant entities
+const getVerificationStatus = (user) => {
+  return user.vendorId?.verificationStatus || user.restaurantId?.verificationStatus || user.status || 'active';
+};
+
 // Memoized user row component for optimal performance
 const UserRow = memo(
   ({ user, index, isSelected, onSelect, onView, onEdit, onDelete, style }) => {
@@ -50,8 +56,11 @@ const UserRow = memo(
       onSelect(user._id, !isSelected);
     }, [user._id, isSelected, onSelect]);
 
+    // Get verification status from vendor/restaurant, not user
+    const verificationStatus = useMemo(() => getVerificationStatus(user), [user]);
+
     const getStatusColor = useMemo(() => {
-      switch (user.verificationStatus) {
+      switch (verificationStatus) {
         case 'approved':
           return 'sage-green';
         case 'pending':
@@ -61,10 +70,10 @@ const UserRow = memo(
         default:
           return 'dusty-cedar';
       }
-    }, [user.verificationStatus]);
+    }, [verificationStatus]);
 
     const getStatusIcon = useMemo(() => {
-      switch (user.verificationStatus) {
+      switch (verificationStatus) {
         case 'approved':
           return CheckCircle;
         case 'pending':
@@ -74,7 +83,7 @@ const UserRow = memo(
         default:
           return Shield;
       }
-    }, [user.verificationStatus]);
+    }, [verificationStatus]);
 
     const StatusIcon = getStatusIcon;
 
@@ -94,7 +103,7 @@ const UserRow = memo(
         {...getAriaProps({
           role: 'row',
           selected: isSelected,
-          label: `User ${user.name}, ${user.role}, ${user.verificationStatus}`,
+          label: `User ${user.name}, ${user.role}, ${verificationStatus}`,
           describedby: `user-${user._id}-details`,
         })}
         tabIndex={0}
@@ -247,7 +256,7 @@ const UserRow = memo(
               ${isDarkMode ? `bg-${getStatusColor}/20 text-${getStatusColor}` : `bg-${getStatusColor}/10 text-${getStatusColor}`}
             `}
               >
-                {user.verificationStatus}
+                {verificationStatus}
               </div>
 
               <div className="flex items-center gap-1">
@@ -297,7 +306,7 @@ const UserRow = memo(
         {/* Hidden description for screen readers */}
         <div id={`user-${user._id}-details`} className="sr-only">
           User details: {user.name}, {user.role}, Status:{' '}
-          {user.verificationStatus}, Phone: {user.phone}, Created:{' '}
+          {verificationStatus}, Phone: {user.phone}, Created:{' '}
           {new Date(user.createdAt).toLocaleDateString()}
         </div>
       </motion.div>
@@ -584,8 +593,9 @@ const OptimizedUserList = memo(
         result = result.filter((user) => user.role === filters.role);
       }
       if (filters.verificationStatus) {
+        // Use helper to get verification status from vendor/restaurant
         result = result.filter(
-          (user) => user.verificationStatus === filters.verificationStatus
+          (user) => getVerificationStatus(user) === filters.verificationStatus
         );
       }
 

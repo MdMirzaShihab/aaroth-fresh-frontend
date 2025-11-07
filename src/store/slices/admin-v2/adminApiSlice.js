@@ -1,6 +1,6 @@
 /**
  * Admin V2 API Slice - Comprehensive Admin Interface RTK Query Integration
- * Covers all 44 admin endpoints from ADMIN_INTERFACE_PLAN.md
+ * Covers all 53 admin endpoints
  *
  * Categories:
  * - Dashboard & Analytics (7 APIs)
@@ -9,7 +9,8 @@
  * - Restaurant Management (6 APIs)
  * - Product Management (5 APIs)
  * - Category Management (7 APIs)
- * - Listings Management (7 APIs)
+ * - Listings Management (9 APIs) ✅ NEW
+ * - System Settings (7 APIs)
  */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
@@ -44,7 +45,9 @@ const adminBaseQuery = fetchBaseQuery({
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
-    headers.set('content-type', 'application/json');
+    // Don't set content-type - let browser handle it automatically
+    // JSON requests will get 'application/json' by RTK Query
+    // FormData requests will get 'multipart/form-data' with boundary
     return headers;
   },
 });
@@ -203,23 +206,33 @@ export const adminApiV2Slice = createApi({
 
     // Get all users with advanced filtering and pagination
     getAdminUsersV2: builder.query({
-      query: (params = {}) => ({
-        url: 'users',
-        params: {
+      query: (params = {}) => {
+        // Backend only supports: page, limit, role, isActive, search
+        // Remove unsupported params: verificationStatus, isApproved, sortBy, sortOrder
+        const supportedParams = {
           page: params.page || 1,
           limit: params.limit || 20,
-          role: params.role,
-          verificationStatus: params.verificationStatus,
-          isApproved: params.isApproved,
-          search: params.search,
-          sortBy: params.sortBy || 'createdAt',
-          sortOrder: params.sortOrder || 'desc',
-          ...params,
-        },
-      }),
+        };
+
+        // Only add optional params if they have values
+        if (params.role && params.role !== 'all') {
+          supportedParams.role = params.role;
+        }
+        if (params.search) {
+          supportedParams.search = params.search;
+        }
+        if (typeof params.isActive === 'boolean') {
+          supportedParams.isActive = params.isActive;
+        }
+
+        return {
+          url: 'users',
+          params: supportedParams,
+        };
+      },
       providesTags: (result) => [
         { type: 'AdminUsers', id: 'LIST' },
-        ...(result?.data?.users || []).map(({ _id }) => ({
+        ...(Array.isArray(result?.data) ? result.data : []).map(({ _id }) => ({
           type: 'AdminUsers',
           id: _id,
         })),
@@ -254,9 +267,12 @@ export const adminApiV2Slice = createApi({
             'getAdminUsersV2',
             undefined,
             (draft) => {
-              const user = draft?.data?.users?.find((u) => u._id === id);
-              if (user) {
-                Object.assign(user, userData);
+              const users = draft?.data;
+              if (Array.isArray(users)) {
+                const user = users.find((u) => u._id === id);
+                if (user) {
+                  Object.assign(user, userData);
+                }
               }
             }
           )
@@ -704,8 +720,188 @@ export const adminApiV2Slice = createApi({
       invalidatesTags: ['AdminCategories'],
     }),
 
+    // ===========================================
+    // 7. LISTING MANAGEMENT ENDPOINTS (9 APIs)
+    // ===========================================
+
+    // Get all admin listings with advanced filtering
+    getAdminListings: builder.query({
+      query: (params = {}) => ({
+        url: 'listings',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          status: params.status, // active, inactive, out_of_stock, discontinued
+          featured: params.featured, // boolean
+          isFlagged: params.isFlagged, // boolean
+          vendorId: params.vendorId,
+          productId: params.productId,
+          search: params.search,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+          minPrice: params.minPrice,
+          maxPrice: params.maxPrice,
+          ...params,
+        },
+      }),
+      providesTags: (result) => [
+        { type: 'AdminListings', id: 'LIST' },
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'AdminListings',
+          id: _id,
+        })),
+      ],
+    }),
+
+    // Get featured listings for moderation
+    getFeaturedListings: builder.query({
+      query: (params = {}) => ({
+        url: 'listings/featured',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+          ...params,
+        },
+      }),
+      providesTags: ['AdminListings', 'ContentModeration'],
+    }),
+
+    // Get flagged listings for review
+    getFlaggedListings: builder.query({
+      query: (params = {}) => ({
+        url: 'listings/flagged',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+          ...params,
+        },
+      }),
+      providesTags: ['AdminListings', 'ContentModeration'],
+    }),
+
+    // Get single listing details with analytics
+    getAdminListingDetails: builder.query({
+      query: (id) => `listings/${id}`,
+      providesTags: (result, error, id) => [{ type: 'AdminListings', id }],
+    }),
+
+    // Update listing status (active, inactive, out_of_stock, discontinued)
+    updateListingStatus: builder.mutation({
+      query: ({ id, status, reason }) => ({
+        url: `listings/${id}/status`,
+        method: 'PUT',
+        body: { status, reason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'AdminListings', id },
+        { type: 'AdminListings', id: 'LIST' },
+        'ContentModeration',
+      ],
+      // Optimistic update for status change
+      onQueryStarted: async (
+        { id, status },
+        { dispatch, queryFulfilled }
+      ) => {
+        const patchResult = dispatch(
+          adminApiV2Slice.util.updateQueryData(
+            'getAdminListings',
+            undefined,
+            (draft) => {
+              const listing = draft?.data?.find((l) => l._id === id);
+              if (listing) {
+                listing.status = status;
+                listing.updatedAt = new Date().toISOString();
+              }
+            }
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+
+    // Toggle listing featured status
+    toggleListingFeatured: builder.mutation({
+      query: ({ id }) => ({
+        url: `listings/${id}/featured`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'AdminListings', id },
+        { type: 'AdminListings', id: 'LIST' },
+        'ContentModeration',
+      ],
+      // Optimistic update for featured toggle
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
+        const patchResult = dispatch(
+          adminApiV2Slice.util.updateQueryData(
+            'getAdminListings',
+            undefined,
+            (draft) => {
+              const listing = draft?.data?.find((l) => l._id === id);
+              if (listing) {
+                listing.featured = !listing.featured;
+              }
+            }
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+
+    // Update listing flag status
+    updateListingFlag: builder.mutation({
+      query: ({ id, isFlagged, flagReason }) => ({
+        url: `listings/${id}/flag`,
+        method: 'PUT',
+        body: { isFlagged, flagReason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'AdminListings', id },
+        { type: 'AdminListings', id: 'LIST' },
+        'ContentModeration',
+      ],
+    }),
+
+    // Soft delete listing
+    softDeleteListing: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `listings/${id}`,
+        method: 'DELETE',
+        body: { reason },
+      }),
+      invalidatesTags: ['AdminListings', 'ContentModeration'],
+    }),
+
+    // Bulk update listings (activate, deactivate, delete, approve, reject)
+    bulkUpdateListings: builder.mutation({
+      query: ({ ids, action, reason }) => ({
+        url: 'listings/bulk',
+        method: 'POST',
+        body: { ids, action, reason },
+      }),
+      invalidatesTags: [
+        'AdminListings',
+        'ContentModeration',
+        'AdminDashboard',
+      ],
+    }),
+
     // =========================================
-    // 7. BULK OPERATIONS & ADVANCED FEATURES
+    // 8. BULK OPERATIONS & ADVANCED FEATURES
     // =========================================
 
     // Bulk update verification status for multiple entities
@@ -1094,6 +1290,17 @@ export const {
   useUpdateAdminCategoryV2Mutation,
   useToggleCategoryAvailabilityV2Mutation,
   useSafeDeleteCategoryV2Mutation,
+
+  // Listing Management
+  useGetAdminListingsQuery,
+  useGetFeaturedListingsQuery,
+  useGetFlaggedListingsQuery,
+  useGetAdminListingDetailsQuery,
+  useUpdateListingStatusMutation,
+  useToggleListingFeaturedMutation,
+  useUpdateListingFlagMutation,
+  useSoftDeleteListingMutation,
+  useBulkUpdateListingsMutation,
 
   // Advanced Features
   useBulkUpdateVerificationStatusMutation,

@@ -69,21 +69,17 @@ const VendorBusinessCard = ({ vendor, onAction }) => {
   };
 
   // Helper functions for raw API data
-  const formatLocation = (address) => {
-    if (!address) return 'Location not provided';
-    const parts = [];
-    if (address.street) parts.push(address.street);
-    if (address.city) parts.push(address.city);
-    if (address.state) parts.push(address.state);
-    return parts.join(', ') || 'Location not provided';
+  const formatLocation = () => {
+    // Use the fullAddress virtual field from backend if available
+    return vendor.fullAddress || 'Location not provided';
   };
 
   const calculateRiskScore = () => {
     let score = 0;
-    if (!vendor.isVerified) score += 30;
+    if (vendor.verificationStatus !== 'approved') score += 30;
     if (vendor.verificationStatus === 'pending') score += 20;
     if (vendor.totalOrders === 0) score += 25;
-    if (!vendor.taxId) score += 15;
+    if (!vendor.tradeLicenseNo) score += 15;
     return Math.min(score, 100);
   };
 
@@ -103,7 +99,7 @@ const VendorBusinessCard = ({ vendor, onAction }) => {
 
   // Calculated values
   const riskScore = calculateRiskScore();
-  const location = formatLocation(vendor.address);
+  const location = formatLocation();
   const urgencyLevel = calculateUrgencyLevel();
 
   return (
@@ -218,10 +214,33 @@ const VendorBusinessCard = ({ vendor, onAction }) => {
             {vendor.businessName}
           </h3>
           <p className="text-sm text-text-muted">Owner: {vendor.createdBy?.name || 'Unknown Owner'}</p>
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center flex-wrap gap-2 mt-2">
             <span className="px-2 py-1 bg-dusty-cedar/10 text-dusty-cedar text-xs rounded-full font-medium">
               {vendor.businessType}
             </span>
+            {vendor.performanceScore > 0 && (
+              <span className="px-2 py-1 bg-sage-green/10 text-sage-green text-xs rounded-full font-medium flex items-center gap-1">
+                <Award className="w-3 h-3" />
+                {vendor.performanceScore}/100
+              </span>
+            )}
+            {vendor.specialties && vendor.specialties.length > 0 && (
+              <>
+                {vendor.specialties.slice(0, 3).map((specialty, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs rounded-full font-medium"
+                  >
+                    {specialty}
+                  </span>
+                ))}
+                {vendor.specialties.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full font-medium">
+                    +{vendor.specialties.length - 3}
+                  </span>
+                )}
+              </>
+            )}
             {riskScore > 0 && (
               <span
                 className={`px-2 py-1 text-xs rounded-full font-medium ${
@@ -253,6 +272,16 @@ const VendorBusinessCard = ({ vendor, onAction }) => {
               <MapPin className="w-4 h-4 text-muted-olive" />
               <span className="truncate">{location}</span>
             </div>
+            <div className="flex items-center gap-2 text-text-muted">
+              <TrendingUp className="w-4 h-4 text-muted-olive" />
+              <span>{vendor.deliveryRadius || 10} km radius</span>
+            </div>
+            {vendor.minimumOrderValue > 0 && (
+              <div className="flex items-center gap-2 text-text-muted">
+                <DollarSign className="w-4 h-4 text-muted-olive" />
+                <span>Min order: ${vendor.minimumOrderValue}</span>
+              </div>
+            )}
             <div className="flex items-center gap-2 text-text-muted">
               <Calendar className="w-4 h-4 text-muted-olive" />
               <span>Joined: {formatDate(vendor.createdAt)}</span>
@@ -325,30 +354,26 @@ const VendorBusinessCard = ({ vendor, onAction }) => {
   );
 };
 
-// List view component  
+// List view component
 const VendorListItem = ({ vendor, onAction }) => {
   const { isDarkMode } = useTheme();
-  
+
   // Calculate derived values for this vendor
-  const formatLocation = (address) => {
-    if (!address) return 'Location not provided';
-    const parts = [];
-    if (address.street) parts.push(address.street);
-    if (address.city) parts.push(address.city);
-    if (address.state) parts.push(address.state);
-    return parts.join(', ') || 'Location not provided';
+  const formatLocation = () => {
+    // Use the fullAddress virtual field from backend if available
+    return vendor.fullAddress || 'Location not provided';
   };
-  
+
   const calculateRiskScore = () => {
     let score = 0;
-    if (!vendor.isVerified) score += 30;
+    if (vendor.verificationStatus !== 'approved') score += 30;
     if (vendor.verificationStatus === 'pending') score += 20;
     if (vendor.totalOrders === 0) score += 25;
-    if (!vendor.taxId) score += 15;
+    if (!vendor.tradeLicenseNo) score += 15;
     return Math.min(score, 100);
   };
-  
-  const location = formatLocation(vendor.address);
+
+  const location = formatLocation();
   const metrics = {
     orders: vendor.totalOrders || 0,
     rating: vendor.rating?.average || 0,

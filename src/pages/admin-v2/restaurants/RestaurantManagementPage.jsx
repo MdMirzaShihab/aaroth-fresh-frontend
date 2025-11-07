@@ -87,15 +87,21 @@ const RestaurantManagementPage = () => {
     phone: restaurant.userId?.phone || restaurant.phone || 'Not provided',
     cuisineType: restaurant.cuisineTypes?.join(', ') || restaurant.cuisineType || 'Not specified',
   }));
-  const stats = statsData?.data || {
-    totalRestaurants: 0,
-    pendingVerification: 0,
-    activeRestaurants: 0,
-    totalManagers: 0,
-    averageOrderValue: 0,
-    monthlyGrowth: 0,
-    topCities: [],
-    verificationQueue: [],
+  // Map backend response to expected frontend structure
+  const backendStats = statsData?.data || {};
+  const stats = {
+    totalRestaurants: backendStats.totalRestaurants || 0,
+    pendingVerification: backendStats.pendingRestaurants || 0,
+    activeRestaurants: backendStats.activeRestaurants || 0,
+    inactiveRestaurants: backendStats.inactiveRestaurants || 0,
+    approvedRestaurants: backendStats.approvedRestaurants || 0,
+    rejectedRestaurants: backendStats.rejectedRestaurants || 0,
+    totalManagers: backendStats.totalManagers || 0,
+    avgManagersPerRestaurant: backendStats.avgManagersPerRestaurant || 0,
+    topCities: backendStats.topCities || [],
+    averageOrderValue: 0, // Not implemented yet
+    monthlyGrowth: 0, // Not implemented yet
+    verificationQueue: [], // Not implemented yet
   };
 
   // Tab configuration
@@ -117,9 +123,9 @@ const RestaurantManagementPage = () => {
     },
     {
       id: 'relations',
-      label: 'Owner Relations',
+      label: 'Owners & Managers',
       icon: Users,
-      description: 'Manage owner-manager relationships',
+      description: 'View restaurant ownership and manager assignments',
       badge: stats.totalManagers || 0,
     },
   ];

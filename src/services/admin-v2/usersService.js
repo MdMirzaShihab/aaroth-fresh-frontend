@@ -3,44 +3,43 @@
  * Business logic for user management and role operations
  */
 
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 
 /**
  * Transform user data for admin table display
+ * Backend returns { success, count, total, page, pages, data: [users array] }
  */
 export const transformUsersData = (rawData) => {
-  if (!rawData?.data?.users) return [];
+  // Backend returns data as array directly, not nested in data.users
+  if (!rawData?.data || !Array.isArray(rawData.data)) return [];
 
-  return rawData.data.users.map((user) => ({
+  return rawData.data.map((user) => ({
     id: user._id,
     name: user.name,
     email: user.email,
     phone: user.phone,
     role: user.role,
-    status: getUserStatus(user),
-    verificationStatus: user.verificationStatus || 'pending',
-    isApproved: user.isApproved,
+    status: getUserStatus(user), // Derived from vendor/restaurant verification
     isActive: user.isActive,
     lastLogin: user.lastLogin
-      ? format(new Date(user.lastLogin), 'PPp')
+      ? formatDistanceToNow(new Date(user.lastLogin), { addSuffix: true })
       : 'Never',
     createdAt: format(new Date(user.createdAt), 'PPp'),
     businessInfo: extractBusinessInfo(user),
-    riskScore: calculateUserRiskScore(user),
     actionsAvailable: getAvailableActions(user),
+    // Include populated vendor/restaurant for reference
+    vendorId: user.vendorId,
+    restaurantId: user.restaurantId,
   }));
 };
 
 /**
- * Determine user status based on multiple factors
+ * Determine user account status
+ * Simplified - just returns active/inactive based on isActive flag
+ * Verification status is now displayed separately in its own column
  */
 const getUserStatus = (user) => {
-  if (!user.isActive) return 'inactive';
-  if (user.isSuspended) return 'suspended';
-  if (!user.isApproved) return 'pending_approval';
-  if (user.verificationStatus === 'rejected') return 'rejected';
-  if (user.verificationStatus === 'pending') return 'pending_verification';
-  return 'active';
+  return user.isActive ? 'active' : 'inactive';
 };
 
 /**
@@ -67,43 +66,6 @@ const extractBusinessInfo = (user) => {
   }
 
   return info;
-};
-
-/**
- * Calculate user risk score based on various factors
- */
-const calculateUserRiskScore = (user) => {
-  let score = 0;
-
-  // Account age factor (newer accounts = higher risk)
-  const daysOld = Math.floor(
-    (Date.now() - new Date(user.createdAt)) / (1000 * 60 * 60 * 24)
-  );
-  if (daysOld < 7) score += 30;
-  else if (daysOld < 30) score += 15;
-
-  // Verification status factor
-  if (user.verificationStatus === 'pending') score += 20;
-  if (user.verificationStatus === 'rejected') score += 50;
-
-  // Activity factor
-  if (!user.lastLogin) score += 25;
-  else {
-    const daysSinceLogin = Math.floor(
-      (Date.now() - new Date(user.lastLogin)) / (1000 * 60 * 60 * 24)
-    );
-    if (daysSinceLogin > 30) score += 15;
-  }
-
-  // Business completion factor (for vendors/restaurants)
-  if (
-    (user.role === 'vendor' || user.role === 'restaurantOwner') &&
-    !user.profileComplete
-  ) {
-    score += 20;
-  }
-
-  return Math.min(score, 100); // Cap at 100
 };
 
 /**
@@ -151,35 +113,42 @@ const getAvailableActions = (user) => {
 };
 
 /**
- * Transform user creation form data
+ * Transform user creation form data to match backend validation
+ * Backend expects specific structure - DO NOT nest data in restaurantData
  */
 export const transformUserCreationData = (formData, userType) => {
   const baseData = {
     name: formData.name,
     email: formData.email,
     phone: formData.phone,
-    role: userType,
-    isApproved: formData.autoApprove || false,
+    password: formData.password, // Required by backend
   };
 
-  // Add role-specific data
+  // Restaurant Owner - backend validates: name, email, phone, password, restaurantName, address, tradeLicenseNo
   if (userType === 'restaurantOwner') {
-    baseData.restaurantData = {
-      businessName: formData.businessName,
-      cuisineType: formData.cuisineType,
-      address: formData.address,
-      businessLicense: formData.businessLicense,
-      contactInfo: {
-        businessPhone: formData.businessPhone,
-        businessEmail: formData.businessEmail,
+    return {
+      ...baseData,
+      restaurantName: formData.businessName || formData.restaurantName, // Backend expects 'restaurantName', not 'businessName'
+      address: {
+        street: formData.address?.street || formData.street,
+        city: formData.address?.city || formData.city,
+        area: formData.address?.area || formData.area,
       },
+      tradeLicenseNo: formData.businessLicense || formData.tradeLicenseNo, // Optional
+      // Note: cuisineType, contactInfo are NOT validated by backend and will be ignored
     };
-  } else if (userType === 'restaurantManager') {
-    baseData.restaurantId = formData.restaurantId;
-    baseData.permissions = formData.permissions || [];
-    baseData.accessLevel = formData.accessLevel || 'standard';
   }
 
+  // Restaurant Manager - backend validates: name, email, phone, password, restaurantId
+  if (userType === 'restaurantManager') {
+    return {
+      ...baseData,
+      restaurantId: formData.restaurantId, // Required
+      // Note: permissions and accessLevel are NOT validated by backend and will be ignored
+    };
+  }
+
+  // Other roles (admin, vendor)
   return baseData;
 };
 
@@ -303,6 +272,8 @@ export const validateUserForm = (formData, userType) => {
 
 /**
  * Generate user export data
+ * Note: verificationStatus and isApproved don't exist on User model
+ * They are derived from vendor/restaurant entities
  */
 export const generateUserExport = (users, format = 'csv') => {
   const exportData = users.map((user) => ({
@@ -311,14 +282,16 @@ export const generateUserExport = (users, format = 'csv') => {
     Email: user.email,
     Phone: user.phone,
     Role: user.role,
-    Status: user.status,
-    'Verification Status': user.verificationStatus,
-    'Is Approved': user.isApproved ? 'Yes' : 'No',
+    Status: user.status, // This is derived from getUserStatus()
     'Is Active': user.isActive ? 'Yes' : 'No',
     'Last Login': user.lastLogin,
     'Created At': user.createdAt,
     'Business Name': user.businessInfo?.businessName || '',
     'Risk Score': user.riskScore,
+    // Vendor-specific fields (only populated for vendors)
+    'Vendor Status': user.vendorId?.verificationStatus || 'N/A',
+    // Restaurant-specific fields (only populated for restaurant users)
+    'Restaurant Status': user.restaurantId?.verificationStatus || 'N/A',
   }));
 
   if (format === 'json') {

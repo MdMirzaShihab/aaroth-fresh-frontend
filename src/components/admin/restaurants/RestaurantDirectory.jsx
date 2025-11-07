@@ -26,9 +26,12 @@ import {
   MapIcon,
   Download,
   RefreshCw,
+  Trash2,
 } from 'lucide-react';
 import {
   useUpdateRestaurantStatusMutation,
+  useDeactivateRestaurantMutation,
+  useSafeDeleteRestaurantMutation,
   useFlagRestaurantMutation,
 } from '../../../store/slices/apiSlice';
 import { Card } from '../../ui/Card';
@@ -87,10 +90,20 @@ const RestaurantDirectory = ({
     isOpen: false,
     restaurant: null,
   });
+  const [deactivateModalData, setDeactivateModalData] = useState({
+    isOpen: false,
+    restaurant: null,
+  });
+  const [deleteModalData, setDeleteModalData] = useState({
+    isOpen: false,
+    restaurant: null,
+  });
   const [chainGrouping, setChainGrouping] = useState(false);
 
   // RTK Mutations
   const [updateRestaurantStatus] = useUpdateRestaurantStatusMutation();
+  const [deactivateRestaurant] = useDeactivateRestaurantMutation();
+  const [safeDeleteRestaurant] = useSafeDeleteRestaurantMutation();
   const [flagRestaurant] = useFlagRestaurantMutation();
 
   // Group restaurants by chains if enabled
@@ -146,6 +159,41 @@ const RestaurantDirectory = ({
   const handleFlagRestaurant = (restaurant) => {
     setFlagModalData({ isOpen: true, restaurant });
     setActionMenuOpen(null);
+  };
+
+  const handleDeactivateRestaurant = (restaurant) => {
+    setDeactivateModalData({ isOpen: true, restaurant });
+    setActionMenuOpen(null);
+  };
+
+  const handleDeactivateSubmit = async (deactivateData) => {
+    try {
+      await deactivateRestaurant({
+        id: deactivateData.restaurant._id || deactivateData.restaurant.id,
+        reason: deactivateData.reason,
+      }).unwrap();
+      setDeactivateModalData({ isOpen: false, restaurant: null });
+    } catch (error) {
+      console.error('Failed to deactivate restaurant:', error);
+    }
+  };
+
+  const handleDeleteRestaurant = (restaurant) => {
+    setDeleteModalData({ isOpen: true, restaurant });
+    setActionMenuOpen(null);
+  };
+
+  const handleDeleteSubmit = async (deleteData) => {
+    try {
+      await safeDeleteRestaurant({
+        id: deleteData.restaurant._id || deleteData.restaurant.id,
+        reason: deleteData.reason,
+      }).unwrap();
+      setDeleteModalData({ isOpen: false, restaurant: null });
+    } catch (error) {
+      console.error('Failed to delete restaurant:', error);
+      // Error will be shown in modal if backend returns dependency info
+    }
   };
 
   const handleFlagSubmit = async (flagData) => {
@@ -410,6 +458,22 @@ const RestaurantDirectory = ({
         restaurant={flagModalData.restaurant}
         onSubmit={handleFlagSubmit}
       />
+
+      {/* Deactivate Restaurant Modal */}
+      <DeactivateRestaurantModal
+        isOpen={deactivateModalData.isOpen}
+        onClose={() => setDeactivateModalData({ isOpen: false, restaurant: null })}
+        restaurant={deactivateModalData.restaurant}
+        onSubmit={handleDeactivateSubmit}
+      />
+
+      {/* Delete Restaurant Modal */}
+      <SafeDeleteRestaurantModal
+        isOpen={deleteModalData.isOpen}
+        onClose={() => setDeleteModalData({ isOpen: false, restaurant: null })}
+        restaurant={deleteModalData.restaurant}
+        onSubmit={handleDeleteSubmit}
+      />
     </div>
   );
 };
@@ -515,7 +579,7 @@ const RestaurantCard = ({
                 <hr className="my-2" />
                 {restaurant.isActive ? (
                   <button
-                    onClick={() => onStatusUpdate(restaurant.id, 'inactive')}
+                    onClick={() => handleDeactivateRestaurant(restaurant)}
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-amber-600"
                   >
                     <Ban className="w-4 h-4" />
@@ -536,6 +600,14 @@ const RestaurantCard = ({
                 >
                   <Flag className="w-4 h-4" />
                   Flag Restaurant
+                </button>
+                <hr className="my-2" />
+                <button
+                  onClick={() => handleDeleteRestaurant(restaurant)}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm text-tomato-red"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Restaurant
                 </button>
               </div>
             </div>
@@ -815,6 +887,157 @@ const FlagRestaurantModal = ({ isOpen, onClose, restaurant, onSubmit }) => {
             className="bg-tomato-red hover:bg-tomato-red/90 text-white"
           >
             Flag Restaurant
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+// Deactivate Restaurant Modal Component
+const DeactivateRestaurantModal = ({ isOpen, onClose, restaurant, onSubmit }) => {
+  const [deactivateData, setDeactivateData] = useState({
+    reason: '',
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit({ ...deactivateData, restaurant });
+    setDeactivateData({ reason: '' }); // Reset form
+  };
+
+  if (!isOpen || !restaurant) return null;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Deactivate Restaurant" size="md">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-amber-900 mb-1">
+                Deactivating {restaurant.name || restaurant.businessName}
+              </h4>
+              <p className="text-sm text-amber-800">
+                This restaurant will be temporarily deactivated and cannot accept new orders until reactivated.
+                Existing orders will continue to be processed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <FormField label="Reason for Deactivation" required>
+          <textarea
+            value={deactivateData.reason}
+            onChange={(e) =>
+              setDeactivateData({ ...deactivateData, reason: e.target.value })
+            }
+            placeholder="Explain why this restaurant is being deactivated..."
+            rows={4}
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-500/20 resize-none"
+            required
+            minLength={10}
+          />
+          <p className="text-xs text-text-muted mt-1">
+            Minimum 10 characters required
+          </p>
+        </FormField>
+
+        <div className="flex justify-end gap-3 pt-4">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+          >
+            Deactivate Restaurant
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+// Safe Delete Restaurant Modal Component
+const SafeDeleteRestaurantModal = ({ isOpen, onClose, restaurant, onSubmit }) => {
+  const [deleteData, setDeleteData] = useState({
+    reason: '',
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit({ ...deleteData, restaurant });
+    setDeleteData({ reason: '' }); // Reset form
+  };
+
+  if (!isOpen || !restaurant) return null;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Delete Restaurant" size="md">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-tomato-red/10 border border-tomato-red/30 rounded-2xl p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-tomato-red flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-tomato-red mb-1">
+                Permanently Delete {restaurant.name || restaurant.businessName}?
+              </h4>
+              <p className="text-sm text-tomato-red/80">
+                This action cannot be undone. The restaurant will be soft-deleted and can only be restored by system administrators.
+                This operation will fail if there are incomplete orders or active dependencies.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-4">
+          <h5 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+            <Shield className="w-4 h-4" />
+            Safety Checks
+          </h5>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-blue-600" />
+              Verifies no incomplete orders
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-blue-600" />
+              Checks for active dependencies
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-blue-600" />
+              Soft delete (data preserved)
+            </li>
+          </ul>
+        </div>
+
+        <FormField label="Reason for Deletion (Optional)">
+          <textarea
+            value={deleteData.reason}
+            onChange={(e) =>
+              setDeleteData({ ...deleteData, reason: e.target.value })
+            }
+            placeholder="Explain why this restaurant is being deleted..."
+            rows={4}
+            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-tomato-red/20 resize-none"
+            maxLength={500}
+          />
+          <p className="text-xs text-text-muted mt-1">
+            Optional: 3-500 characters
+          </p>
+        </FormField>
+
+        <div className="flex justify-end gap-3 pt-4">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="bg-tomato-red hover:bg-tomato-red/90 text-white"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Restaurant
           </Button>
         </div>
       </form>

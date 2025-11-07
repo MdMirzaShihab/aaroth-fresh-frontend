@@ -314,9 +314,7 @@ const Homepage = () => {
               <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <ShoppingCart className="w-8 h-8 text-white" />
               </div>
-              <div className="text-4xl font-bold text-muted-olive mb-2">
-                500+
-              </div>
+              <div className="text-4xl font-bold text-muted-olive mb-2">5+</div>
               <div className="text-text-muted">Restaurants</div>
             </div>
             <div className="glass rounded-3xl p-8">
@@ -324,7 +322,7 @@ const Homepage = () => {
                 <TrendingUp className="w-8 h-8 text-muted-olive" />
               </div>
               <div className="text-4xl font-bold text-muted-olive mb-2">
-                10k+
+                100+
               </div>
               <div className="text-text-muted">Orders Delivered</div>
             </div>

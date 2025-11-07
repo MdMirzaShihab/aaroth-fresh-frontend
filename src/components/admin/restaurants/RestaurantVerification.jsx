@@ -148,6 +148,29 @@ const RestaurantVerification = ({
     try {
       const restaurantId = selectedRestaurant.id;
 
+      // Validate required fields based on action type
+      if (modalType === 'reject') {
+        if (!actionData.reason || actionData.reason === '') {
+          alert('Please select a rejection reason');
+          return;
+        }
+        if (!actionData.notes || actionData.notes.trim().length < 5) {
+          alert('Please provide rejection notes (minimum 5 characters)');
+          return;
+        }
+      }
+
+      if (modalType === 'request_docs') {
+        if (!actionData.documents || actionData.documents.length === 0) {
+          alert('Please select at least one document to request');
+          return;
+        }
+        if (!actionData.message || actionData.message.trim().length < 5) {
+          alert('Please provide a message explaining why documents are needed (minimum 5 characters)');
+          return;
+        }
+      }
+
       switch (modalType) {
         case 'approve':
           await approveVerification({
@@ -159,14 +182,14 @@ const RestaurantVerification = ({
           await rejectVerification({
             id: restaurantId,
             reason: actionData.reason,
-            notes: actionData.notes || '',
+            notes: actionData.notes,
           }).unwrap();
           break;
         case 'request_docs':
           await requestDocuments({
             id: restaurantId,
-            requiredDocuments: actionData.documents || [],
-            message: actionData.message || '',
+            requiredDocuments: actionData.documents,
+            message: actionData.message,
           }).unwrap();
           break;
       }
@@ -178,6 +201,7 @@ const RestaurantVerification = ({
       onRefresh();
     } catch (error) {
       console.error('Action failed:', error);
+      alert(error?.data?.error || 'Action failed. Please try again.');
     }
   };
 
@@ -603,7 +627,6 @@ const VerificationCard = ({
                 size="sm"
                 onClick={() => onAction(restaurant, 'approve')}
                 className="bg-sage-green hover:bg-sage-green/90 text-white flex items-center gap-2"
-                disabled={completionRate < 80}
               >
                 <CheckCircle className="w-4 h-4" />
                 Approve
@@ -684,7 +707,7 @@ const ActionModal = ({
         </div>
 
         {type === 'reject' && (
-          <FormField label="Rejection Reason">
+          <FormField label="Rejection Reason (Required)">
             <select
               value={data.reason || ''}
               onChange={(e) => onChange({ ...data, reason: e.target.value })}
@@ -702,7 +725,7 @@ const ActionModal = ({
         )}
 
         {type === 'request_docs' && (
-          <FormField label="Required Documents">
+          <FormField label="Required Documents (Select at least one)">
             <div className="space-y-2">
               {[
                 'Business License',
@@ -738,8 +761,10 @@ const ActionModal = ({
         <FormField
           label={
             type === 'request_docs'
-              ? 'Message to Restaurant'
-              : 'Notes (Optional)'
+              ? 'Message to Restaurant (Required)'
+              : type === 'reject'
+                ? 'Rejection Notes (Required)'
+                : 'Notes (Optional)'
           }
         >
           <textarea
@@ -754,8 +779,8 @@ const ActionModal = ({
               type === 'approve'
                 ? 'Add any notes about the approval...'
                 : type === 'reject'
-                  ? 'Explain the reasons for rejection...'
-                  : 'Explain what documents are needed and why...'
+                  ? 'Explain the reasons for rejection (minimum 5 characters)...'
+                  : 'Explain what documents are needed and why (minimum 5 characters)...'
             }
             rows={4}
             className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
