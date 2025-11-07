@@ -25,7 +25,7 @@ import {
 import {
   useGetDashboardOverviewQuery,
   useGetRevenueAnalyticsQuery,
-  useGetProfitAnalyticsQuery,
+  // useGetProfitAnalyticsQuery,
   useGetCustomerAnalyticsQuery,
   useGetInventoryAnalyticsQuery,
 } from '../../store/slices/vendor/vendorDashboardApi';
@@ -720,7 +720,7 @@ const VendorAnalytics = () => {
                     High Margin Products
                   </p>
                   <p className="text-xs text-green-600 mt-1">
-                    > 30% margin
+                    {"> 30% margin"}
                   </p>
                 </div>
                 <div className="text-2xl font-bold text-green-600">

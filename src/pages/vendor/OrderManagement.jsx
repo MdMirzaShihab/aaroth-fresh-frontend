@@ -31,7 +31,7 @@ import {
   useExportOrdersMutation,
 } from '../../store/slices/vendor/vendorOrdersApi';
 import {
-  useGetNotificationsQuery,
+  useGetVendorNotificationsQuery,
 } from '../../store/slices/vendor/vendorDashboardApi';
 import { addNotification } from '../../store/slices/notificationSlice';
 
@@ -76,7 +76,7 @@ const OrderManagement = () => {
     });
 
   const { data: notificationsData, isLoading: notificationsLoading } =
-    useGetNotificationsQuery({
+    useGetVendorNotificationsQuery({
       limit: 10,
       unreadOnly: false,
     });
