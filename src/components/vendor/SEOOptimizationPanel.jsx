@@ -10,7 +10,6 @@ import {
   Lightbulb,
   BarChart3,
   ExternalLink,
-  Refresh,
 } from 'lucide-react';
 import { Card } from '../ui/Card';
 import Button from '../ui/Button';
