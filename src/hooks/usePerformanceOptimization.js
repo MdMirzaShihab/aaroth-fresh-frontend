@@ -1,7 +1,7 @@
 /**
  * usePerformanceOptimization - React Hook for Performance Optimization
  * Features: Virtual scrolling, memoization, lazy loading, memory management
- * Provides comprehensive performance optimization for admin-v2 components
+ * Provides comprehensive performance optimization for admin components
  */
 
 import React, {

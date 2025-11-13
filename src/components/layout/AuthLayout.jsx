@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Toast from '../ui/Toast';
-import AarothLogo from '../../assets/AarothLogo.png';
+import AarothLogo from '../../assets/AAROTH_ICON.png';
 
 /**
  * AuthLayout Component

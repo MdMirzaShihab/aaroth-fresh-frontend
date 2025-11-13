@@ -6,7 +6,7 @@ import themeReducer from './slices/themeSlice';
 import favoritesReducer from './slices/favoritesSlice';
 import comparisonReducer from './slices/comparisonSlice';
 import { apiSlice } from './slices/apiSlice';
-import { adminApiV2Slice } from './slices/admin-v2/adminApiSlice';
+import { adminApiV2Slice } from './slices/admin/adminApiSlice';
 import { authMiddlewareWithRetry } from './middleware/authMiddleware';
 
 // Vendor API Slices

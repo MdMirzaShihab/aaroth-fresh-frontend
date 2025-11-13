@@ -1,7 +1,7 @@
 /**
  * useMobileOptimization - React Hook for Mobile Optimization
  * Features: Device detection, touch target validation, gesture handling, responsive utilities
- * Provides comprehensive mobile optimization for admin-v2 components
+ * Provides comprehensive mobile optimization for admin components
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';

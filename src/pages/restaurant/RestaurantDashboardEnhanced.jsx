@@ -47,7 +47,7 @@ import { formatCurrency, formatDate, timeAgo } from '../../utils';
 // Business Verification Components
 import CapabilityGate from '../../components/verification/CapabilityGate';
 import { useBusinessVerification } from '../../hooks/useBusinessVerification';
-import VerificationStatusBadge from '../../components/admin/VerificationStatusBadge';
+import VerificationStatusBadge from '../../components/common/VerificationStatusBadge';
 
 // Dashboard Components
 import {
@@ -55,7 +55,7 @@ import {
   ChartContainer,
   FilterPanel,
 } from '../../components/dashboard';
-import { LineChart, BarChart, DoughnutChart } from '../../components/charts';
+import { LineChart, BarChart, DoughnutChart } from '../../components/ui/charts/ChartJS';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 

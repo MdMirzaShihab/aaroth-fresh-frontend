@@ -6,14 +6,13 @@ import { useGetCurrentUserQuery } from './store/slices/apiSlice';
 import { selectAuth } from './store/slices/authSlice';
 import { initializeTheme } from './store/slices/themeSlice';
 import authService from './services/authService';
-import AarothLogo from './assets/AarothLogo.png';
+import AarothLogo from './assets/AAROTH_ICON.png';
 
 // Removed debug component
 
 // Layout Components
 import AppLayout from './components/layout/AppLayout';
-import AdminLayout from './components/layout/AdminLayout';
-import AdminV2Layout from './components/admin-v2/layout/AdminLayout/AdminLayout';
+import AdminLayout from './components/admin/layout/AdminLayout/AdminLayout';
 
 // Route Protection Components
 import ProtectedRoute, {
@@ -42,79 +41,35 @@ const PendingApprovalPage = lazy(
 );
 
 // Admin Pages
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const ApprovalManagement = lazy(() => import('./pages/admin/ApprovalsPage'));
-const VerificationDashboard = lazy(
-  () => import('./pages/admin/VerificationDashboard')
+const AdminDashboardPage = lazy(
+  () => import('./pages/admin/dashboard/DashboardPage')
 );
-const UserManagement = lazy(() => import('./pages/admin/UserManagement'));
-const VendorManagement = lazy(() => import('./pages/admin/VendorManagement'));
-const RestaurantManagement = lazy(
-  () => import('./pages/admin/RestaurantManagement')
+const AdminUsersPage = lazy(
+  () => import('./pages/admin/users/UsersManagementPage')
 );
-const ProductList = lazy(() => import('./pages/admin/ProductList'));
-const ProductForm = lazy(() => import('./pages/admin/ProductForm'));
-const CategoryManagement = lazy(
-  () => import('./pages/admin/CategoryManagement')
+const AdminVendorsPage = lazy(
+  () => import('./pages/admin/vendors/VendorsManagementPage')
 );
-const ProductAnalytics = lazy(() => import('./pages/admin/ProductAnalytics'));
-const ProductApproval = lazy(() => import('./pages/admin/ProductApproval'));
-
-// Enhanced Restaurant & Catalog Management (Prompt 6)
 const RestaurantsManagementPage = lazy(
-  () => import('./pages/admin-v2/restaurants/RestaurantManagementPage')
+  () => import('./pages/admin/restaurants/RestaurantManagementPage')
 );
-const ProductsManagementPageV2 = lazy(
-  () => import('./pages/admin-v2/catalog/products/ProductsManagementPage')
+const ProductsManagementPage = lazy(
+  () => import('./pages/admin/catalog/products/ProductsManagementPage')
+);
+const CategoriesManagementPage = lazy(
+  () => import('./pages/admin/catalog/categories/CategoriesManagementPage')
 );
 const ListingsManagementPage = lazy(
-  () => import('./pages/admin-v2/listings/ListingManagementPage')
+  () => import('./pages/admin/listings/ListingManagementPage')
 );
-const CategoryManagementEnhanced = lazy(
-  () => import('./pages/admin/CategoryManagementEnhanced')
-);
-const AnalyticsDashboard = lazy(
-  () => import('./pages/admin/AnalyticsDashboard')
-);
-const CreateRestaurantOwner = lazy(
-  () => import('./pages/admin/CreateRestaurantOwner')
-);
-const CreateRestaurantManager = lazy(
-  () => import('./pages/admin/CreateRestaurantManager')
-);
-const CreateVendor = lazy(() => import('./pages/admin/CreateVendor'));
-const AdminProductManagement = lazy(
-  () => import('./pages/admin/AdminProductManagement')
-);
-const AdminListingsManagement = lazy(
-  () => import('./pages/admin/AdminListingsManagement')
-);
-const AdminSystemSettings = lazy(
-  () => import('./pages/admin/AdminSystemSettings')
-);
-
-// Admin V2 Pages
-const AdminV2DashboardPage = lazy(
-  () => import('./pages/admin-v2/dashboard/DashboardPage')
-);
-const AdminV2UsersPage = lazy(
-  () => import('./pages/admin-v2/users/UsersManagementPage')
-);
-const AdminV2VendorsPage = lazy(
-  () => import('./pages/admin-v2/vendors/VendorsManagementPage')
-);
-
-// Admin V2 Analytics & Performance Pages (Prompt 7)
 const BusinessAnalytics = lazy(
-  () => import('./pages/admin-v2/analytics/BusinessAnalytics')
+  () => import('./pages/admin/analytics/BusinessAnalytics')
 );
 const PerformanceMonitoring = lazy(
-  () => import('./pages/admin-v2/performance/PerformanceMonitoring')
+  () => import('./pages/admin/performance/PerformanceMonitoring')
 );
-
-// Admin V2 Settings Pages (Prompt 8)
 const SystemSettings = lazy(
-  () => import('./pages/admin-v2/settings/SystemSettings')
+  () => import('./pages/admin/settings/SystemSettings')
 );
 
 // Vendor Pages
@@ -230,7 +185,7 @@ const App = () => {
   const getRoleBasedRedirect = (userRole) => {
     switch (userRole) {
       case 'admin':
-        return '/admin-v2/dashboard'; // Updated to use new admin-v2 interface
+        return '/admin/dashboard'; // Updated to use new admin interface
       case 'vendor':
         return '/vendor/dashboard';
       case 'restaurantOwner':
@@ -293,7 +248,7 @@ const App = () => {
           <Route path="/account/suspended" element={<AccountSuspendedPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
 
-          {/* Admin Routes - Protected with AdminLayout */}
+          {/* Admin Routes - Enhanced Interface */}
           <Route
             path="/admin/*"
             element={
@@ -307,23 +262,7 @@ const App = () => {
               path="dashboard"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <AdminDashboard />
-                </Suspense>
-              }
-            />
-            <Route
-              path="approvals"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <ApprovalManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="verification-dashboard"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <VerificationDashboard />
+                  <AdminDashboardPage />
                 </Suspense>
               }
             />
@@ -331,195 +270,7 @@ const App = () => {
               path="users"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <UserManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="users/vendors"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <VendorManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="users/restaurants"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <RestaurantManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="restaurant-management"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <RestaurantManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="vendor-management"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <VendorManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="products"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminProductManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="products/list"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <ProductList />
-                </Suspense>
-              }
-            />
-            <Route
-              path="products/create"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <ProductForm />
-                </Suspense>
-              }
-            />
-            <Route
-              path="products/:id/edit"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <ProductForm />
-                </Suspense>
-              }
-            />
-            <Route
-              path="products/approval"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <ProductApproval />
-                </Suspense>
-              }
-            />
-            <Route
-              path="categories"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <CategoryManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="products/categories"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <CategoryManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="listings"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminListingsManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="products/listings"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminListingsManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="analytics"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AnalyticsDashboard />
-                </Suspense>
-              }
-            />
-            <Route
-              path="listing-management"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminListingsManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="analytics/products"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <ProductAnalytics />
-                </Suspense>
-              }
-            />
-            <Route
-              path="create-restaurant-owner"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <CreateRestaurantOwner />
-                </Suspense>
-              }
-            />
-            <Route
-              path="create-restaurant-manager"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <CreateRestaurantManager />
-                </Suspense>
-              }
-            />
-            <Route
-              path="create-vendor"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <CreateVendor />
-                </Suspense>
-              }
-            />
-            <Route
-              path="settings"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminSystemSettings />
-                </Suspense>
-              }
-            />
-          </Route>
-
-          {/* Admin V2 Routes - New Enhanced Interface (Development) */}
-          <Route
-            path="/admin-v2/*"
-            element={
-              <AdminRoute>
-                <AdminV2Layout />
-              </AdminRoute>
-            }
-          >
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route
-              path="dashboard"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminV2DashboardPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="users"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminV2UsersPage />
+                  <AdminUsersPage />
                 </Suspense>
               }
             />
@@ -527,12 +278,12 @@ const App = () => {
               path="vendors"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <AdminV2VendorsPage />
+                  <AdminVendorsPage />
                 </Suspense>
               }
             />
 
-            {/* Enhanced Restaurant & Catalog Management (Prompt 6) */}
+            {/* Restaurant & Catalog Management */}
             <Route
               path="restaurants"
               element={
@@ -545,7 +296,15 @@ const App = () => {
               path="products"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <ProductsManagementPageV2 />
+                  <ProductsManagementPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="categories"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <CategoriesManagementPage />
                 </Suspense>
               }
             />
@@ -554,14 +313,6 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <ListingsManagementPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="categories"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <CategoryManagementEnhanced />
                 </Suspense>
               }
             />
@@ -626,7 +377,7 @@ const App = () => {
               }
             />
 
-            {/* More admin-v2 routes will be added as pages are implemented */}
+            {/* More admin routes will be added as pages are implemented */}
           </Route>
 
           {/* Vendor Routes - Protected with AppLayout */}

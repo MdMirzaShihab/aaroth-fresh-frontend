@@ -9,7 +9,7 @@ import {
   Shield,
   Store,
 } from 'lucide-react';
-import AarothLogo from '../../assets/AarothLogo.png';
+import AarothLogo from '../../assets/AAROTH_ICON.png';
 import { selectAuth } from '../../store/slices/authSlice';
 import { selectCartItemCount } from '../../store/slices/cartSlice';
 import { selectUnreadNotificationCount } from '../../store/slices/notificationSlice';

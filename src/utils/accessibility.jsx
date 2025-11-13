@@ -1,7 +1,7 @@
 /**
  * Accessibility Utilities for WCAG 2.1 AA Compliance
  * Features: ARIA management, focus control, keyboard navigation, color contrast validation
- * Provides comprehensive accessibility helpers for admin-v2 components
+ * Provides comprehensive accessibility helpers for admin components
  */
 
 // ARIA role and label utilities

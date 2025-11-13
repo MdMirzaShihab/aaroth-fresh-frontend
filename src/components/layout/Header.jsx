@@ -12,7 +12,7 @@ import {
   User,
   Settings,
 } from 'lucide-react';
-import AarothLogo from '../../assets/AarothLogo.png';
+import AarothLogo from '../../assets/AAROTH_ICON.png';
 import { selectAuth } from '../../store/slices/authSlice';
 import { selectThemeMode, toggleTheme } from '../../store/slices/themeSlice';
 import authService from '../../services/authService';

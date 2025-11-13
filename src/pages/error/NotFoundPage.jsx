@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, ArrowLeft } from 'lucide-react';
-import AarothLogo from '../../assets/AarothLogo.png';
+import AarothLogo from '../../assets/AAROTH_ICON.png';
 
 const NotFoundPage = () => {
   return (

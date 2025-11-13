@@ -1,7 +1,7 @@
 /**
  * Mobile Optimization Utilities
  * Features: Touch target validation, gesture handling, viewport utilities
- * Provides comprehensive mobile optimization helpers for admin-v2 components
+ * Provides comprehensive mobile optimization helpers for admin components
  */
 
 // Touch target size constants (following accessibility guidelines)

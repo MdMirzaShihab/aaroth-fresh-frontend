@@ -1,7 +1,7 @@
 /**
  * useAccessibility - React Hook for Accessibility Features
  * Features: Focus management, keyboard navigation, ARIA support, screen reader integration
- * Provides comprehensive accessibility support for admin-v2 components
+ * Provides comprehensive accessibility support for admin components
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';

@@ -233,7 +233,7 @@ export const AdminErrorBoundary = ({ children, ...props }) => (
   <ErrorBoundary
     variant="admin"
     showHomeButton
-    homeUrl="/admin-v2/dashboard"
+    homeUrl="/admin/dashboard"
     {...props}
   >
     {children}
