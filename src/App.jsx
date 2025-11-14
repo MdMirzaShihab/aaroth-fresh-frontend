@@ -84,6 +84,17 @@ const EditListing = lazy(() => import('./pages/vendor/EditListing'));
 const VendorAnalytics = lazy(() => import('./pages/vendor/VendorAnalytics'));
 const OrderManagement = lazy(() => import('./pages/vendor/OrderManagement'));
 const OrderDetail = lazy(() => import('./pages/vendor/OrderDetail'));
+const VendorProfile = lazy(() => import('./pages/vendor/VendorProfile'));
+const VendorFinancialReports = lazy(
+  () => import('./pages/vendor/VendorFinancialReports')
+);
+const VendorCustomerManagement = lazy(
+  () => import('./pages/vendor/VendorCustomerManagement')
+);
+const VendorReviews = lazy(() => import('./pages/vendor/VendorReviews'));
+const VendorNotifications = lazy(
+  () => import('./pages/vendor/VendorNotifications')
+);
 
 // Restaurant Pages (to be created)
 const RestaurantDashboard = lazy(
@@ -446,6 +457,46 @@ const App = () => {
                 </Suspense>
               }
             />
+            <Route
+              path="profile"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorProfile />
+                </Suspense>
+              }
+            />
+            <Route
+              path="financial-reports"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorFinancialReports />
+                </Suspense>
+              }
+            />
+            <Route
+              path="customers"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorCustomerManagement />
+                </Suspense>
+              }
+            />
+            <Route
+              path="reviews"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorReviews />
+                </Suspense>
+              }
+            />
+            <Route
+              path="notifications"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <VendorNotifications />
+                </Suspense>
+              }
+            />
           </Route>
 
           {/* Restaurant Routes - Protected with AppLayout */}
@@ -492,14 +543,6 @@ const App = () => {
             />
             <Route
               path="cart"
-              element={
-                <Suspense fallback={<PageLoader />}>
-                  <PlaceOrder />
-                </Suspense>
-              }
-            />
-            <Route
-              path="order"
               element={
                 <Suspense fallback={<PageLoader />}>
                   <PlaceOrder />

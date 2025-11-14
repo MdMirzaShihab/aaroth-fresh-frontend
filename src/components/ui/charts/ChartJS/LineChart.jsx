@@ -16,6 +16,7 @@ import {
   Filler,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { TrendingUp } from 'lucide-react';
 // Theme now handled via CSS classes - no React state needed
 
 // Register Chart.js components
@@ -298,7 +299,7 @@ const LineChart = ({
               isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
             }`}
           >
-            <LineElement
+            <TrendingUp
               className={`w-6 h-6 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
             />
           </div>

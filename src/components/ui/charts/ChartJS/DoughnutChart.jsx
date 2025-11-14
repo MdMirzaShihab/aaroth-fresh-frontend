@@ -6,6 +6,7 @@
 import React, { useRef, useMemo } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { PieChart } from 'lucide-react';
 // Theme now handled via CSS classes - no React state needed
 
 // Register Chart.js components
@@ -254,7 +255,7 @@ const DoughnutChart = ({
               isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
             }`}
           >
-            <ArcElement
+            <PieChart
               className={`w-6 h-6 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
             />
           </div>

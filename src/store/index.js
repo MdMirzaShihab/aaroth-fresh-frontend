@@ -15,6 +15,7 @@ import vendorDashboardApi from './slices/vendor/vendorDashboardApi';
 import vendorInventoryApi from './slices/vendor/vendorInventoryApi';
 import vendorListingsApi from './slices/vendor/vendorListingsApi';
 import vendorOrdersApi from './slices/vendor/vendorOrdersApi';
+import vendorExtensionsApi from './slices/vendor/vendorExtensionsApi';
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     vendorInventoryApi: vendorInventoryApi.reducer,
     vendorListingsApi: vendorListingsApi.reducer,
     vendorOrdersApi: vendorOrdersApi.reducer,
+    vendorExtensionsApi: vendorExtensionsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -47,6 +49,7 @@ export const store = configureStore({
       vendorInventoryApi.middleware,
       vendorListingsApi.middleware,
       vendorOrdersApi.middleware,
+      vendorExtensionsApi.middleware,
       authMiddlewareWithRetry
     ),
   devTools: process.env.NODE_ENV !== 'production',

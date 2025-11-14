@@ -260,7 +260,7 @@ const RestaurantDashboardEnhanced = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <CapabilityGate capability="canPlaceOrders" showMessage={false}>
                 <Link
-                  to="/restaurant/place-order"
+                  to="/restaurant/cart"
                   className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-muted-olive/10 to-sage-green/10 dark:from-dark-sage-accent/20 dark:to-dark-olive-surface/20 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">

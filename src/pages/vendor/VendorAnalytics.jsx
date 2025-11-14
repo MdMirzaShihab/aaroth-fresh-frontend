@@ -25,7 +25,6 @@ import {
 import {
   useGetDashboardOverviewQuery,
   useGetRevenueAnalyticsQuery,
-  // useGetProfitAnalyticsQuery,
   useGetCustomerAnalyticsQuery,
 } from '../../store/slices/vendor/vendorDashboardApi';
 import {
@@ -78,10 +77,8 @@ const VendorAnalytics = () => {
     refetch: refetchRevenue,
   } = useGetRevenueAnalyticsQuery({ period: getPeriod(timeRange) });
 
-  const {
-    data: profitData,
-    isLoading: profitLoading,
-  } = useGetProfitAnalyticsQuery({ period: getPeriod(timeRange) });
+  // NOTE: Profit data is included in revenueData from backend
+  // No separate profit analytics endpoint needed
 
   const {
     data: customerData,
@@ -110,14 +107,14 @@ const VendorAnalytics = () => {
   } = useGetInventoryAnalyticsQueryAlt({ period: getPeriod(timeRange) });
 
   // Consolidated loading state
-  const analyticsLoading = dashboardLoading || revenueLoading || profitLoading || customerLoading;
+  const analyticsLoading = dashboardLoading || revenueLoading || customerLoading;
   const performanceLoading = orderAnalyticsLoading || orderPerformanceLoading || listingPerformanceLoading;
   const analyticsError = false; // Handle errors as needed
 
   // Consolidated data objects
   const analytics = {
     revenue: revenueData || {},
-    profit: profitData || {},
+    // Profit data is included in revenueData from backend
     customers: customerData || {},
     orders: orderAnalytics || {},
     inventory: inventoryAnalytics || {},

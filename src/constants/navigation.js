@@ -17,6 +17,9 @@ import {
   CheckCircle,
   Target,
   DollarSign,
+  FileText,
+  Star,
+  MessageSquare,
 } from 'lucide-react';
 
 // Navigation items configuration with role-based access
@@ -173,6 +176,34 @@ export const NAVIGATION_ITEMS = {
       roles: ['vendor'],
     },
     {
+      id: 'financial-reports',
+      label: 'Financial Reports',
+      icon: FileText,
+      path: '/vendor/financial-reports',
+      roles: ['vendor'],
+    },
+    {
+      id: 'customers',
+      label: 'Customer Management',
+      icon: Users,
+      path: '/vendor/customers',
+      roles: ['vendor'],
+    },
+    {
+      id: 'reviews',
+      label: 'Reviews & Ratings',
+      icon: Star,
+      path: '/vendor/reviews',
+      roles: ['vendor'],
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      icon: Bell,
+      path: '/vendor/notifications',
+      roles: ['vendor'],
+    },
+    {
       id: 'profile',
       label: 'Profile',
       icon: User,
@@ -324,6 +355,12 @@ export const MOBILE_BOTTOM_NAV = {
       label: 'Orders',
       icon: ClipboardList,
       path: '/vendor/orders',
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      icon: Bell,
+      path: '/vendor/notifications',
     },
     {
       id: 'profile',

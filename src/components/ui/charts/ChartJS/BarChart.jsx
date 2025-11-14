@@ -14,6 +14,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { BarChart2 } from 'lucide-react';
 // Theme now handled via CSS classes - no React state needed
 
 // Register Chart.js components
@@ -288,7 +289,7 @@ const BarChart = ({
               isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
             }`}
           >
-            <BarElement
+            <BarChart2
               className={`w-6 h-6 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
             />
           </div>

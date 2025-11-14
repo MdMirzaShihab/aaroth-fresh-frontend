@@ -88,11 +88,18 @@ const vendorDashboardApi = createApi({
     }),
 
     // Inventory Status and Alerts
+    // UPDATED v2.1: Now uses consolidated /inventory endpoint with summary=true parameter
     getInventoryStatus: builder.query({
-      query: (params = {}) => ({
-        url: '/inventory',
-        params,
-      }),
+      query: (params = {}) => {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL
+          ? `${import.meta.env.VITE_API_BASE_URL}/inventory`
+          : 'http://localhost:5000/api/v1/inventory';
+
+        return {
+          url: baseUrl,
+          params: { ...params, summary: 'true' }, // Summary mode for dashboard widgets
+        };
+      },
       transformResponse: (response) => response.data,
       providesTags: ['InventoryStatus'],
       pollingInterval: 180000, // 3 minutes for inventory updates
