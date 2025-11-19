@@ -89,21 +89,56 @@ const CategoryDirectoryTable = ({
   };
 
   const handleToggleAvailability = async (category) => {
-    try {
-      setTogglingId(category._id);
-      await toggleAvailability({
-        id: category._id,
-        isAvailable: !category.isAvailable,
-      }).unwrap();
-      toast.success(
-        `Category ${category.isAvailable ? 'flagged' : 'unflagged'} successfully`
+    const willBeFlagged = category.isAvailable; // Currently available -> will be flagged
+
+    // If flagging (disabling), require a reason
+    if (willBeFlagged) {
+      const flagReason = window.prompt(
+        `Please provide a reason for flagging "${category.name}":`,
+        ''
       );
-      onRefresh();
-    } catch (error) {
-      console.error('Toggle error:', error);
-      toast.error(error?.data?.message || 'Failed to toggle availability');
-    } finally {
-      setTogglingId(null);
+
+      if (flagReason === null) {
+        // User cancelled
+        return;
+      }
+
+      if (!flagReason || flagReason.trim() === '') {
+        toast.error('Flag reason is required when disabling availability');
+        return;
+      }
+
+      try {
+        setTogglingId(category._id);
+        await toggleAvailability({
+          id: category._id,
+          isAvailable: false,
+          flagReason: flagReason.trim(),
+        }).unwrap();
+        toast.success('Category flagged successfully');
+        onRefresh();
+      } catch (error) {
+        console.error('Toggle error:', error);
+        toast.error(error?.data?.message || 'Failed to flag category');
+      } finally {
+        setTogglingId(null);
+      }
+    } else {
+      // Unflagging (enabling) - no reason required
+      try {
+        setTogglingId(category._id);
+        await toggleAvailability({
+          id: category._id,
+          isAvailable: true,
+        }).unwrap();
+        toast.success('Category unflagged successfully');
+        onRefresh();
+      } catch (error) {
+        console.error('Toggle error:', error);
+        toast.error(error?.data?.message || 'Failed to unflag category');
+      } finally {
+        setTogglingId(null);
+      }
     }
   };
 
@@ -147,14 +182,14 @@ const CategoryDirectoryTable = ({
   const isSomeSelected = selectedCategories.length > 0 && !isAllSelected;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Desktop Table View */}
-      <Card className="overflow-hidden glass hidden md:block">
+      <Card className="overflow-hidden glass hidden md:block z-0 shadow-lg shadow-sage-green/5">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-muted-olive/5 to-sage-green/5">
+            <thead className="bg-gradient-to-r from-sage-green/10 to-muted-olive/10 border-b-2 border-sage-green/20">
               <tr>
-                <th className="px-4 py-4 text-left w-12">
+                <th className="px-6 py-4 text-left w-12">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
@@ -164,28 +199,28 @@ const CategoryDirectoryTable = ({
                       }
                     }}
                     onChange={handleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-muted-olive focus:ring-muted-olive"
+                    className="w-5 h-5 rounded border-gray-300 text-muted-olive focus:ring-muted-olive"
                   />
                 </th>
-                <th className="px-4 py-4 text-left w-20">
-                  <span className="text-sm font-semibold text-text-dark">Image</span>
+                <th className="px-6 py-4 text-left w-20">
+                  <span className="text-sm font-bold text-text-dark">Image</span>
                 </th>
-                <th className="px-4 py-4 text-left">
-                  <span className="text-sm font-semibold text-text-dark">Name</span>
+                <th className="px-6 py-4 text-left">
+                  <span className="text-sm font-bold text-text-dark">Name</span>
                 </th>
-                <th className="px-4 py-4 text-left">
-                  <span className="text-sm font-semibold text-text-dark">
+                <th className="px-6 py-4 text-left">
+                  <span className="text-sm font-bold text-text-dark">
                     Parent Category
                   </span>
                 </th>
-                <th className="px-4 py-4 text-left">
-                  <span className="text-sm font-semibold text-text-dark">Products</span>
+                <th className="px-6 py-4 text-left">
+                  <span className="text-sm font-bold text-text-dark">Products</span>
                 </th>
-                <th className="px-4 py-4 text-left">
-                  <span className="text-sm font-semibold text-text-dark">Status</span>
+                <th className="px-6 py-4 text-left">
+                  <span className="text-sm font-bold text-text-dark">Status</span>
                 </th>
-                <th className="px-4 py-4 text-right">
-                  <span className="text-sm font-semibold text-text-dark">Actions</span>
+                <th className="px-6 py-4 text-right">
+                  <span className="text-sm font-bold text-text-dark">Actions</span>
                 </th>
               </tr>
             </thead>
@@ -196,10 +231,10 @@ const CategoryDirectoryTable = ({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="hover:bg-muted-olive/5 transition-colors"
+                  className="hover:bg-sage-green/5 transition-all duration-200"
                 >
                   {/* Checkbox */}
-                  <td className="px-4 py-4">
+                  <td className="px-6 py-4">
                     <input
                       type="checkbox"
                       checked={selectedCategories.includes(category._id)}
@@ -209,9 +244,9 @@ const CategoryDirectoryTable = ({
                   </td>
 
                   {/* Image */}
-                  <td className="px-4 py-4">
+                  <td className="px-6 py-4">
                     {category.image ? (
-                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200">
+                      <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm">
                         <img
                           src={category.image.url || category.image}
                           alt={category.name}
@@ -219,20 +254,20 @@ const CategoryDirectoryTable = ({
                         />
                       </div>
                     ) : (
-                      <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
-                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                      <div className="w-14 h-14 rounded-xl bg-sage-green/10 flex items-center justify-center">
+                        <ImageIcon className="w-6 h-6 text-sage-green" />
                       </div>
                     )}
                   </td>
 
                   {/* Name & Description */}
-                  <td className="px-4 py-4">
+                  <td className="px-6 py-4">
                     <div>
-                      <p className="font-medium text-slate-800 dark:text-white">
+                      <p className="font-semibold text-text-dark dark:text-white">
                         {category.name}
                       </p>
                       {category.description && (
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-1">
+                        <p className="text-xs text-text-muted mt-1 line-clamp-1">
                           {category.description}
                         </p>
                       )}
@@ -240,7 +275,7 @@ const CategoryDirectoryTable = ({
                   </td>
 
                   {/* Parent Category */}
-                  <td className="px-4 py-4">
+                  <td className="px-6 py-4">
                     <p className="text-sm text-text-dark">
                       {category.parentCategory?.name || (
                         <span className="text-text-muted italic">Top-level</span>
@@ -249,17 +284,17 @@ const CategoryDirectoryTable = ({
                   </td>
 
                   {/* Products Count */}
-                  <td className="px-4 py-4">
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Package className="w-4 h-4 text-muted-olive" />
-                      <span className="text-sm font-medium text-text-dark">
+                      <span className="text-sm font-semibold text-text-dark">
                         {category.productCount || 0}
                       </span>
                     </div>
                   </td>
 
                   {/* Status */}
-                  <td className="px-4 py-4">
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       {category.isActive ? (
                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-sage-green/10 text-sage-green flex items-center gap-1">
@@ -281,8 +316,8 @@ const CategoryDirectoryTable = ({
                   </td>
 
                   {/* Actions */}
-                  <td className="px-4 py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-3">
                       <Button
                         size="sm"
                         variant="outline"
@@ -337,7 +372,7 @@ const CategoryDirectoryTable = ({
       </Card>
 
       {/* Mobile Card View */}
-      <div className="md:hidden space-y-3">
+      <div className="md:hidden space-y-4">
         {categories.map((category, index) => (
           <motion.div
             key={category._id}
@@ -345,8 +380,8 @@ const CategoryDirectoryTable = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
           >
-            <Card className="p-4 glass">
-              <div className="flex items-start gap-3">
+            <Card className="p-5 glass z-0 shadow-md shadow-sage-green/5">
+              <div className="flex items-start gap-4">
                 {/* Checkbox */}
                 <input
                   type="checkbox"
@@ -403,28 +438,29 @@ const CategoryDirectoryTable = ({
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 mt-3">
+                  <div className="flex items-center gap-3 mt-4">
                     <Button
-                      size="sm"
+                      size="md"
                       variant="outline"
                       onClick={() => onView(category)}
-                      className="flex-1"
+                      className="flex-1 touch-target"
                     >
                       View
                     </Button>
                     <Button
-                      size="sm"
+                      size="md"
                       variant="outline"
                       onClick={() => onEdit(category)}
-                      className="flex-1"
+                      className="flex-1 touch-target"
                     >
                       Edit
                     </Button>
                     <Button
-                      size="sm"
+                      size="md"
                       variant="destructive"
                       onClick={() => handleDeleteCategory(category)}
                       disabled={deletingId === category._id}
+                      className="touch-target"
                     >
                       {deletingId === category._id ? (
                         <LoadingSpinner size="sm" />

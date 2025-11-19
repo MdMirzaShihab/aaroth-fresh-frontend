@@ -14,5 +14,5 @@ export { default as BulkOperations } from './components/BulkOperations';
 export { default as UserAnalytics } from './components/UserAnalytics';
 
 // Role creation forms
-export { default as CreateRestaurantOwner } from './CreateRestaurantOwner';
-export { default as CreateRestaurantManager } from './CreateRestaurantManager';
+export { default as CreateBuyerOwner } from './CreateBuyerOwner';
+export { default as CreateBuyerManager } from './CreateBuyerManager';

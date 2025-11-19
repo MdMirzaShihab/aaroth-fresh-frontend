@@ -51,9 +51,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         return Crown;
       case 'vendor':
         return Store;
-      case 'restaurantOwner':
+      case 'buyerOwner':
         return Shield;
-      case 'restaurantManager':
+      case 'buyerManager':
         return Shield;
       default:
         return null;
@@ -67,10 +67,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         return 'Administrator';
       case 'vendor':
         return 'Vendor';
-      case 'restaurantOwner':
-        return 'Restaurant Owner';
-      case 'restaurantManager':
-        return 'Restaurant Manager';
+      case 'buyerOwner':
+        return 'Buyer Owner';
+      case 'buyerManager':
+        return 'Buyer Manager';
       default:
         return 'User';
     }

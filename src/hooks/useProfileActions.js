@@ -7,11 +7,11 @@ import { toast } from 'react-toastify';
 import {
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
-  useCreateRestaurantManagerMutation,
-  useUpdateRestaurantManagerMutation,
-  useGetRestaurantManagersQuery,
-  useDeactivateRestaurantManagerMutation,
-  useDeleteRestaurantManagerMutation,
+  useCreateBuyerManagerMutation,
+  useUpdateBuyerManagerMutation,
+  useGetBuyerManagersQuery,
+  useDeactivateBuyerManagerMutation,
+  useDeleteBuyerManagerMutation,
 } from '../store/slices/apiSlice';
 
 /**
@@ -67,22 +67,22 @@ export const useProfileActions = () => {
 };
 
 /**
- * Hook for restaurant manager management (Restaurant Owner Only)
+ * Hook for buyer manager management (Buyer Owner Only)
  */
 export const useManagerActions = () => {
   const [createManager, { isLoading: isCreatingManager }] =
-    useCreateRestaurantManagerMutation();
+    useCreateBuyerManagerMutation();
   const [updateManager, { isLoading: isUpdatingManager }] =
-    useUpdateRestaurantManagerMutation();
+    useUpdateBuyerManagerMutation();
   const [deactivateManager, { isLoading: isDeactivatingManager }] =
-    useDeactivateRestaurantManagerMutation();
+    useDeactivateBuyerManagerMutation();
   const [deleteManager, { isLoading: isDeletingManager }] =
-    useDeleteRestaurantManagerMutation();
+    useDeleteBuyerManagerMutation();
   const {
     data: managersData,
     isLoading: isLoadingManagers,
     refetch: refetchManagers,
-  } = useGetRestaurantManagersQuery();
+  } = useGetBuyerManagersQuery();
 
   const addManager = async (managerData) => {
     try {
@@ -204,7 +204,7 @@ export const useCompleteProfile = () => {
     isUpdatingProfile: profileActions.isUpdatingProfile,
     isChangingPassword: profileActions.isChangingPassword,
 
-    // Manager actions (for restaurant owners)
+    // Manager actions (for buyer owners)
     addManager: managerActions.addManager,
     updateManagerProfile: managerActions.updateManagerProfile,
     toggleManagerStatus: managerActions.toggleManagerStatus,

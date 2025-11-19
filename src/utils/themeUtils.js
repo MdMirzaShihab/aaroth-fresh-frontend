@@ -1,6 +1,6 @@
 /**
  * Simple Theme Toggle Utility for Admin-V2
- * Mimics Restaurant interface's superior performance approach
+ * Mimics Buyer interface's superior performance approach
  * Uses direct DOM manipulation without React state management
  */
 

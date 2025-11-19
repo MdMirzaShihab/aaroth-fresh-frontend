@@ -2,8 +2,8 @@
 export const USER_ROLES = {
   ADMIN: 'admin',
   VENDOR: 'vendor',
-  RESTAURANT_OWNER: 'restaurantOwner',
-  RESTAURANT_MANAGER: 'restaurantManager',
+  BUYER_OWNER: 'buyerOwner',
+  BUYER_MANAGER: 'buyerManager',
 };
 
 // Order statuses
@@ -127,11 +127,11 @@ export const ROUTES = {
     ORDERS: '/vendor/orders',
     PROFILE: '/vendor/profile',
   },
-  RESTAURANT: {
-    DASHBOARD: '/restaurant',
-    BROWSE: '/restaurant/browse',
-    ORDERS: '/restaurant/orders',
-    PROFILE: '/restaurant/profile',
+  BUYER: {
+    DASHBOARD: '/buyer',
+    BROWSE: '/buyer/browse',
+    ORDERS: '/buyer/orders',
+    PROFILE: '/buyer/profile',
   },
 };
 

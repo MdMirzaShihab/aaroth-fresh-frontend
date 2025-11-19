@@ -56,9 +56,9 @@ const UserAvatar = ({ user, size = 'sm' }) => {
       admin:
         'bg-gradient-to-br from-tomato-red via-earthy-yellow to-earthy-brown',
       vendor: 'bg-gradient-to-br from-muted-olive via-sage-green to-sage-green',
-      restaurantOwner:
+      buyerOwner:
         'bg-gradient-to-br from-earthy-brown via-dusty-cedar to-earthy-tan',
-      restaurantManager:
+      buyerManager:
         'bg-gradient-to-br from-muted-olive via-sage-green to-dusty-cedar',
     };
     return colors[role] || 'bg-gradient-to-br from-gray-400 to-gray-600';
@@ -78,8 +78,8 @@ const RoleBadge = ({ role, className = '' }) => {
   const roleConfig = {
     admin: { label: 'Admin', color: 'tomato-red', icon: Shield },
     vendor: { label: 'Vendor', color: 'muted-olive', icon: Store },
-    restaurantOwner: { label: 'Owner', color: 'earthy-brown', icon: Utensils },
-    restaurantManager: { label: 'Manager', color: 'muted-olive', icon: Users },
+    buyerOwner: { label: 'Owner', color: 'earthy-brown', icon: Utensils },
+    buyerManager: { label: 'Manager', color: 'muted-olive', icon: Users },
   };
 
   const config = roleConfig[role] || {
@@ -101,13 +101,13 @@ const RoleBadge = ({ role, className = '' }) => {
 // Business info component - displays actual backend data
 const BusinessInfo = ({ user }) => {
   // Get business name from actual backend data
-  const businessName = user.vendorId?.businessName || user.restaurantId?.name;
+  const businessName = user.vendorId?.businessName || user.buyerId?.name;
 
   // Get business type/cuisine from backend
-  const businessType = user.vendorId?.businessType || user.restaurantId?.cuisineType;
+  const businessType = user.vendorId?.businessType || user.buyerId?.cuisineType;
 
   // Get location from backend (if available)
-  const location = user.vendorId?.fullAddress || user.restaurantId?.fullAddress;
+  const location = user.vendorId?.fullAddress || user.buyerId?.fullAddress;
 
   if (!businessName) {
     return <span className="text-xs text-gray-400 dark:text-gray-500">No business</span>;
@@ -281,8 +281,8 @@ const UserDirectoryTable = memo(
         label: 'Verification',
         sortable: false,
         render: (_, user) => {
-          // Get verification status from vendor or restaurant
-          const verificationStatus = user.vendorId?.verificationStatus || user.restaurantId?.verificationStatus;
+          // Get verification status from vendor or buyer
+          const verificationStatus = user.vendorId?.verificationStatus || user.buyerId?.verificationStatus;
 
           if (!verificationStatus) {
             return <span className="text-xs text-gray-400 dark:text-gray-500">N/A</span>;
@@ -438,23 +438,23 @@ const UserDirectoryTable = memo(
         </div>
 
         {/* Desktop Table View */}
-        <div className="hidden lg:block">
-          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-border">
+        <div className="hidden lg:block z-0">
+          <div className="overflow-hidden rounded-xl border-2 border-sage-green/20 dark:border-dark-border shadow-lg shadow-sage-green/5">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-dark-surface">
+              <thead className="bg-gradient-to-r from-sage-green/10 to-muted-olive/10 border-b-2 border-sage-green/20 dark:bg-dark-surface">
                 <tr>
                   {columns.map((column) => (
                     <th key={column.key} className="px-6 py-4 text-left">
                       {column.sortable ? (
                         <button
                           onClick={() => handleSort(column.key)}
-                          className="flex items-center gap-2 text-sm font-medium text-text-dark dark:text-dark-text-primary hover:text-muted-olive transition-colors"
+                          className="flex items-center gap-2 text-sm font-bold text-text-dark dark:text-dark-text-primary hover:text-bottle-green transition-colors"
                         >
                           {column.label}
                           {renderSortIcon(column.key)}
                         </button>
                       ) : (
-                        <span className="text-sm font-medium text-text-dark dark:text-dark-text-primary">
+                        <span className="text-sm font-bold text-text-dark dark:text-dark-text-primary">
                           {column.label}
                         </span>
                       )}
@@ -533,11 +533,11 @@ const UserDirectoryTable = memo(
                       <span>{user.phone}</span>
                     </div>
                   )}
-                  {(user.vendorId?.businessName || user.restaurantId?.name) && (
+                  {(user.vendorId?.businessName || user.buyerId?.name) && (
                     <div className="flex items-center gap-2 text-text-muted">
                       <Store className="w-4 h-4" />
                       <span className="truncate">
-                        {user.vendorId?.businessName || user.restaurantId?.name}
+                        {user.vendorId?.businessName || user.buyerId?.name}
                       </span>
                     </div>
                   )}

@@ -104,7 +104,7 @@ describe('VendorCustomerManagement', () => {
 
       expect(screen.getByText('Customer Management')).toBeInTheDocument();
       expect(
-        screen.getByText(/manage relationships with your restaurant partners/i)
+        screen.getByText(/manage relationships with your buyer partners/i)
       ).toBeInTheDocument();
     });
 
@@ -206,7 +206,7 @@ describe('VendorCustomerManagement', () => {
         preloadedState: { auth: defaultAuthState },
       });
 
-      expect(screen.getByText('Golden Fork Restaurant')).toBeInTheDocument();
+      expect(screen.getByText('Golden Fork Buyer')).toBeInTheDocument();
       expect(screen.getByText('info@goldenfork.com')).toBeInTheDocument();
       expect(screen.getByText('48')).toBeInTheDocument();
       expect(screen.getByText(/125,000/)).toBeInTheDocument();
@@ -217,7 +217,7 @@ describe('VendorCustomerManagement', () => {
         preloadedState: { auth: defaultAuthState },
       });
 
-      // Golden Fork Restaurant -> G
+      // Golden Fork Buyer -> G
       expect(screen.getByText('G')).toBeInTheDocument();
       // Spice Garden -> S
       expect(screen.getByText('S')).toBeInTheDocument();

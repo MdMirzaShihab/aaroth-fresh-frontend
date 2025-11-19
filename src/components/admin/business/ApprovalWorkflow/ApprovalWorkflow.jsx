@@ -18,7 +18,7 @@ import { Button, Modal, FormField } from '../../../ui';
 import StatusBadge from '../../ui/StatusBadge/StatusBadge';
 import {
   useUpdateVendorVerificationV2Mutation,
-  useUpdateRestaurantVerificationV2Mutation,
+  useUpdateBuyerVerificationV2Mutation,
 } from '../../../../store/slices/admin/adminApiSlice';
 
 const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
@@ -30,17 +30,17 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
   // RTK Query mutations
   const [updateVendorVerification, { isLoading: isUpdatingVendor }] =
     useUpdateVendorVerificationV2Mutation();
-  const [updateRestaurantVerification, { isLoading: isUpdatingRestaurant }] =
-    useUpdateRestaurantVerificationV2Mutation();
+  const [updateBuyerVerification, { isLoading: isUpdatingBuyer }] =
+    useUpdateBuyerVerificationV2Mutation();
 
-  const isLoading = isUpdatingVendor || isUpdatingRestaurant;
+  const isLoading = isUpdatingVendor || isUpdatingBuyer;
 
   const handleApprove = async () => {
     try {
       const updateMutation =
         entityType === 'vendor'
           ? updateVendorVerification
-          : updateRestaurantVerification;
+          : updateBuyerVerification;
 
       await updateMutation({
         id: entity.id,
@@ -49,7 +49,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       }).unwrap();
 
       toast.success(
-        `${entityType === 'vendor' ? 'Vendor' : 'Restaurant'} approved successfully`
+        `${entityType === 'vendor' ? 'Vendor' : 'Buyer'} approved successfully`
       );
       setShowApprovalModal(false);
       setApprovalNotes('');
@@ -69,7 +69,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       const updateMutation =
         entityType === 'vendor'
           ? updateVendorVerification
-          : updateRestaurantVerification;
+          : updateBuyerVerification;
 
       await updateMutation({
         id: entity.id,
@@ -78,7 +78,7 @@ const ApprovalWorkflow = ({ entity, entityType, onUpdate }) => {
       }).unwrap();
 
       toast.success(
-        `${entityType === 'vendor' ? 'Vendor' : 'Restaurant'} rejected`
+        `${entityType === 'vendor' ? 'Vendor' : 'Buyer'} rejected`
       );
       setShowRejectionModal(false);
       setRejectionReason('');

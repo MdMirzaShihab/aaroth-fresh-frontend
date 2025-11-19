@@ -6,7 +6,7 @@
  * - Dashboard & Analytics (7 APIs)
  * - User Management (6 APIs)
  * - Vendor Management (6 APIs)
- * - Restaurant Management (6 APIs)
+ * - Buyer Management (6 APIs)
  * - Product Management (5 APIs)
  * - Category Management (7 APIs)
  * - Listings Management (9 APIs) ✅ NEW
@@ -74,14 +74,15 @@ export const adminApiV2Slice = createApi({
     'AdminAnalytics',
     'AdminUsers',
     'AdminVendors',
-    'AdminRestaurants',
+    'AdminBuyers',
     'AdminProducts',
     'AdminCategories',
+    'AdminMarkets',
     'AdminListings',
     // Specific workflow tags
     'UserManagement',
     'VendorVerification',
-    'RestaurantVerification',
+    'BuyerVerification',
     'BusinessVerification',
     'ContentModeration',
     'SystemSettings',
@@ -90,6 +91,7 @@ export const adminApiV2Slice = createApi({
     'UserAnalytics',
     'ProductAnalytics',
     'CategoryUsage',
+    'MarketUsage',
   ],
   endpoints: (builder) => ({
     // ============================================
@@ -299,24 +301,24 @@ export const adminApiV2Slice = createApi({
       ],
     }),
 
-    // Create restaurant owner with business entity
-    createRestaurantOwnerV2: builder.mutation({
+    // Create buyer owner with business entity
+    createBuyerOwnerV2: builder.mutation({
       query: (ownerData) => ({
-        url: 'restaurant-owners',
+        url: 'buyer-owners',
         method: 'POST',
         body: ownerData,
       }),
-      invalidatesTags: ['AdminUsers', 'AdminRestaurants', 'UserManagement'],
+      invalidatesTags: ['AdminUsers', 'AdminBuyers', 'UserManagement'],
     }),
 
-    // Create restaurant manager under existing restaurant
-    createRestaurantManagerV2: builder.mutation({
+    // Create buyer manager under existing buyer
+    createBuyerManagerV2: builder.mutation({
       query: (managerData) => ({
-        url: 'restaurant-managers',
+        url: 'buyer-managers',
         method: 'POST',
         body: managerData,
       }),
-      invalidatesTags: ['AdminUsers', 'AdminRestaurants', 'UserManagement'],
+      invalidatesTags: ['AdminUsers', 'AdminBuyers', 'UserManagement'],
     }),
 
     // ==========================================
@@ -436,13 +438,13 @@ export const adminApiV2Slice = createApi({
     }),
 
     // ===============================================
-    // 4. RESTAURANT MANAGEMENT ENDPOINTS (6 APIs)
+    // 4. BUYER MANAGEMENT ENDPOINTS (6 APIs)
     // ===============================================
 
-    // Get all restaurants with business information
-    getAdminRestaurantsV2: builder.query({
+    // Get all buyers with business information
+    getAdminBuyersV2: builder.query({
       query: (params = {}) => ({
-        url: 'restaurants',
+        url: 'buyers',
         params: {
           page: params.page || 1,
           limit: params.limit || 20,
@@ -457,44 +459,44 @@ export const adminApiV2Slice = createApi({
         },
       }),
       providesTags: (result) => [
-        { type: 'AdminRestaurants', id: 'LIST' },
+        { type: 'AdminBuyers', id: 'LIST' },
         ...(result?.data || []).map(({ _id }) => ({
-          type: 'AdminRestaurants',
+          type: 'AdminBuyers',
           id: _id,
         })),
       ],
     }),
 
-    // Get restaurant details with ordering history and metrics
-    getRestaurantDetailsV2: builder.query({
-      query: (id) => `restaurants/${id}`,
-      providesTags: (result, error, id) => [{ type: 'AdminRestaurants', id }],
+    // Get buyer details with ordering history and metrics
+    getBuyerDetailsV2: builder.query({
+      query: (id) => `buyers/${id}`,
+      providesTags: (result, error, id) => [{ type: 'AdminBuyers', id }],
     }),
 
-    // Update restaurant business information
-    updateRestaurantV2: builder.mutation({
-      query: ({ id, ...restaurantData }) => ({
-        url: `restaurants/${id}`,
+    // Update buyer business information
+    updateBuyerV2: builder.mutation({
+      query: ({ id, ...buyerData }) => ({
+        url: `buyers/${id}`,
         method: 'PUT',
-        body: restaurantData,
+        body: buyerData,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: 'AdminRestaurants', id },
-        { type: 'AdminRestaurants', id: 'LIST' },
-        'RestaurantVerification',
+        { type: 'AdminBuyers', id },
+        { type: 'AdminBuyers', id: 'LIST' },
+        'BuyerVerification',
       ],
     }),
 
-    // Update restaurant verification status
-    updateRestaurantVerificationV2: builder.mutation({
+    // Update buyer verification status
+    updateBuyerVerificationV2: builder.mutation({
       query: ({ id, status, reason }) => ({
-        url: `restaurants/${id}/verification`,
+        url: `buyers/${id}/verification`,
         method: 'PUT',
         body: { status, reason },
       }),
       invalidatesTags: [
-        'AdminRestaurants',
-        'RestaurantVerification',
+        'AdminBuyers',
+        'BuyerVerification',
         'BusinessVerification',
         'AdminDashboard',
       ],
@@ -505,14 +507,14 @@ export const adminApiV2Slice = createApi({
       ) => {
         const patchResult = dispatch(
           adminApiV2Slice.util.updateQueryData(
-            'getAdminRestaurantsV2',
+            'getAdminBuyersV2',
             undefined,
             (draft) => {
-              const restaurant = draft?.data?.find((r) => r._id === id);
-              if (restaurant) {
-                restaurant.verificationStatus = status;
-                restaurant.adminNotes = reason;
-                restaurant.verificationDate =
+              const buyer = draft?.data?.find((r) => r._id === id);
+              if (buyer) {
+                buyer.verificationStatus = status;
+                buyer.adminNotes = reason;
+                buyer.verificationDate =
                   status === 'approved' ? new Date().toISOString() : null;
               }
             }
@@ -527,28 +529,28 @@ export const adminApiV2Slice = createApi({
       },
     }),
 
-    // Deactivate restaurant with order impact analysis
-    deactivateRestaurantV2: builder.mutation({
+    // Deactivate buyer with order impact analysis
+    deactivateBuyerV2: builder.mutation({
       query: ({ id, reason }) => ({
-        url: `restaurants/${id}/deactivate`,
+        url: `buyers/${id}/deactivate`,
         method: 'PUT',
         body: { reason },
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: 'AdminRestaurants', id },
-        { type: 'AdminRestaurants', id: 'LIST' },
-        'RestaurantVerification',
+        { type: 'AdminBuyers', id },
+        { type: 'AdminBuyers', id: 'LIST' },
+        'BuyerVerification',
       ],
     }),
 
-    // Safe delete restaurant with dependency checking
-    safeDeleteRestaurantV2: builder.mutation({
+    // Safe delete buyer with dependency checking
+    safeDeleteBuyerV2: builder.mutation({
       query: ({ id, reason }) => ({
-        url: `restaurants/${id}/safe-delete`,
+        url: `buyers/${id}/safe-delete`,
         method: 'DELETE',
         body: { reason },
       }),
-      invalidatesTags: ['AdminRestaurants', 'RestaurantVerification'],
+      invalidatesTags: ['AdminBuyers', 'BuyerVerification'],
     }),
 
     // ==========================================
@@ -726,8 +728,101 @@ export const adminApiV2Slice = createApi({
       invalidatesTags: ['AdminCategories'],
     }),
 
+    // =============================================
+    // 7. MARKET MANAGEMENT ENDPOINTS (7 APIs)
+    // =============================================
+
+    // Get all markets with filtering and statistics
+    getAdminMarkets: builder.query({
+      query: (params = {}) => ({
+        url: 'markets',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 20,
+          search: params.search,
+          status: params.status, // active, inactive, flagged
+          city: params.city,
+          sortBy: params.sortBy || 'name',
+          sortOrder: params.sortOrder || 'asc',
+          ...params,
+        },
+      }),
+      providesTags: (result) => [
+        { type: 'AdminMarkets', id: 'LIST' },
+        ...(result?.data || []).map(({ _id }) => ({
+          type: 'AdminMarkets',
+          id: _id,
+        })),
+      ],
+    }),
+
+    // Get market details with usage statistics
+    getMarketDetails: builder.query({
+      query: (id) => `markets/${id}`,
+      providesTags: (result, error, id) => [{ type: 'AdminMarkets', id }],
+    }),
+
+    // Get market usage statistics
+    getMarketUsageStats: builder.query({
+      query: (id) => `markets/${id}/usage`,
+      providesTags: (result, error, id) => [{ type: 'MarketUsage', id }],
+      keepUnusedDataFor: 1800, // Cache for 30 minutes
+    }),
+
+    // Create new market with image
+    createMarket: builder.mutation({
+      query: (marketData) => ({
+        url: 'markets',
+        method: 'POST',
+        body: marketData, // FormData for image uploads
+      }),
+      invalidatesTags: [
+        { type: 'AdminMarkets', id: 'LIST' },
+        'AdminMarkets',
+      ],
+    }),
+
+    // Update market information
+    updateMarket: builder.mutation({
+      query: ({ id, formData }) => ({
+        url: `markets/${id}`,
+        method: 'PUT',
+        body: formData, // FormData for optional image updates
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'AdminMarkets', id },
+        { type: 'AdminMarkets', id: 'LIST' },
+        'AdminMarkets',
+        'AdminVendors', // Invalidate vendors since they reference markets
+      ],
+    }),
+
+    // Toggle market availability (flag/unflag system)
+    toggleMarketAvailability: builder.mutation({
+      query: ({ id, isAvailable, flagReason }) => ({
+        url: `markets/${id}/availability`,
+        method: 'PUT',
+        body: { isAvailable, flagReason },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'AdminMarkets', id },
+        { type: 'AdminMarkets', id: 'LIST' },
+        'ContentModeration',
+        'AdminVendors', // Vendors might be affected
+      ],
+    }),
+
+    // Safe delete market with vendor dependency checking
+    safeDeleteMarket: builder.mutation({
+      query: ({ id }) => ({
+        url: `markets/${id}/safe-delete`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['AdminMarkets', 'AdminVendors'],
+    }),
+
     // ===========================================
-    // 7. LISTING MANAGEMENT ENDPOINTS (9 APIs)
+    // 8. LISTING MANAGEMENT ENDPOINTS (9 APIs)
     // ===========================================
 
     // Get all admin listings with advanced filtering
@@ -919,9 +1014,9 @@ export const adminApiV2Slice = createApi({
       }),
       invalidatesTags: [
         'AdminVendors',
-        'AdminRestaurants',
+        'AdminBuyers',
         'VendorVerification',
-        'RestaurantVerification',
+        'BuyerVerification',
         'BusinessVerification',
         'AdminDashboard',
       ],
@@ -1262,8 +1357,8 @@ export const {
   useGetAdminUserDetailsQuery,
   useUpdateAdminUserV2Mutation,
   useDeleteAdminUserV2Mutation,
-  useCreateRestaurantOwnerV2Mutation,
-  useCreateRestaurantManagerV2Mutation,
+  useCreateBuyerOwnerV2Mutation,
+  useCreateBuyerManagerV2Mutation,
 
   // Vendor Management
   useGetAdminVendorsV2Query,
@@ -1273,13 +1368,13 @@ export const {
   useDeactivateVendorV2Mutation,
   useSafeDeleteVendorV2Mutation,
 
-  // Restaurant Management
-  useGetAdminRestaurantsV2Query,
-  useGetRestaurantDetailsV2Query,
-  useUpdateRestaurantV2Mutation,
-  useUpdateRestaurantVerificationV2Mutation,
-  useDeactivateRestaurantV2Mutation,
-  useSafeDeleteRestaurantV2Mutation,
+  // Buyer Management
+  useGetAdminBuyersV2Query,
+  useGetBuyerDetailsV2Query,
+  useUpdateBuyerV2Mutation,
+  useUpdateBuyerVerificationV2Mutation,
+  useDeactivateBuyerV2Mutation,
+  useSafeDeleteBuyerV2Mutation,
 
   // Product Management
   useGetAdminProductsV2Query,
@@ -1297,6 +1392,15 @@ export const {
   useUpdateAdminCategoryV2Mutation,
   useToggleCategoryAvailabilityV2Mutation,
   useSafeDeleteCategoryV2Mutation,
+
+  // Market Management
+  useGetAdminMarketsQuery,
+  useGetMarketDetailsQuery,
+  useGetMarketUsageStatsQuery,
+  useCreateMarketMutation,
+  useUpdateMarketMutation,
+  useToggleMarketAvailabilityMutation,
+  useSafeDeleteMarketMutation,
 
   // Listing Management
   useGetAdminListingsQuery,

@@ -83,12 +83,12 @@ const ListingDirectoryTable = ({
   const someSelected = selectedListings.length > 0 && !allSelected;
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden z-0 shadow-lg shadow-sage-green/5">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+          <thead className="bg-gradient-to-r from-sage-green/10 to-muted-olive/10 border-b-2 border-sage-green/20 dark:bg-slate-800 dark:border-slate-700">
             <tr>
-              <th className="px-4 py-3 text-left">
+              <th className="px-6 py-4 text-left">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -97,40 +97,40 @@ const ListingDirectoryTable = ({
                   className="rounded border-slate-300 text-bottle-green focus:ring-bottle-green"
                 />
               </th>
-              <th className="px-4 py-3 text-left">
+              <th className="px-6 py-4 text-left">
                 <button
                   onClick={() => onSort('productName')}
-                  className="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-300 hover:text-bottle-green"
+                  className="flex items-center gap-2 font-bold text-text-dark dark:text-dark-text-primary hover:text-bottle-green"
                 >
                   Product
                   <ArrowUpDown className="w-4 h-4" />
                 </button>
               </th>
-              <th className="px-4 py-3 text-left">
+              <th className="px-6 py-4 text-left">
                 <button
                   onClick={() => onSort('vendor')}
-                  className="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-300 hover:text-bottle-green"
+                  className="flex items-center gap-2 font-bold text-text-dark dark:text-dark-text-primary hover:text-bottle-green"
                 >
                   Vendor
                   <ArrowUpDown className="w-4 h-4" />
                 </button>
               </th>
-              <th className="px-4 py-3 text-left">
+              <th className="px-6 py-4 text-left">
                 <button
                   onClick={() => onSort('price')}
-                  className="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-300 hover:text-bottle-green"
+                  className="flex items-center gap-2 font-bold text-text-dark dark:text-dark-text-primary hover:text-bottle-green"
                 >
                   Price
                   <ArrowUpDown className="w-4 h-4" />
                 </button>
               </th>
-              <th className="px-4 py-3 text-left">Status</th>
+              <th className="px-6 py-4 text-left">Status</th>
               <th className="px-4 py-3 text-center">Featured</th>
               <th className="px-4 py-3 text-center">Flagged</th>
-              <th className="px-4 py-3 text-left">
+              <th className="px-6 py-4 text-left">
                 <button
                   onClick={() => onSort('createdAt')}
-                  className="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-300 hover:text-bottle-green"
+                  className="flex items-center gap-2 font-bold text-text-dark dark:text-dark-text-primary hover:text-bottle-green"
                 >
                   Created
                   <ArrowUpDown className="w-4 h-4" />
@@ -155,7 +155,7 @@ const ListingDirectoryTable = ({
                     isSelected ? 'bg-mint-fresh/5' : ''
                   }`}
                 >
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <input
                       type="checkbox"
                       checked={isSelected}
@@ -165,7 +165,7 @@ const ListingDirectoryTable = ({
                       className="rounded border-slate-300 text-bottle-green focus:ring-bottle-green"
                     />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       {(listing.images?.[0]?.url || listing.images?.[0] || listing.primaryImage?.url || listing.primaryImage) ? (
                         <img
@@ -188,7 +188,7 @@ const ListingDirectoryTable = ({
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <p className="text-slate-800 dark:text-white">
                       {listing.vendorId?.businessName || listing.vendor?.businessName || 'Unknown Vendor'}
                     </p>
@@ -196,7 +196,7 @@ const ListingDirectoryTable = ({
                       {listing.vendorId?.email || listing.vendor?.email || ''}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     {listing.pricing && listing.pricing.length > 0 ? (
                       <div>
                         <p className="font-medium text-slate-800 dark:text-white">
@@ -214,14 +214,14 @@ const ListingDirectoryTable = ({
                       </p>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border ${statusBadge.color}`}
                     >
                       {statusBadge.label}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => onFeaturedToggle(listing._id)}
                       className={`p-1 rounded-lg transition-colors ${
@@ -236,17 +236,17 @@ const ListingDirectoryTable = ({
                       />
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-6 py-4 text-center">
                     {listing.isFlagged ? (
                       <Flag className="w-5 h-5 text-tomato-red mx-auto" />
                     ) : (
                       <span className="text-slate-300 dark:text-slate-600">-</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                     {formatListingDate(listing.createdAt)}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-6 py-4 text-center">
                     <Button
                       variant="ghost"
                       size="sm"

@@ -37,9 +37,9 @@ vi.mock('../../../store/slices/notificationSlice', () => ({
 const mockOrderData = {
   data: {
     id: 'order_123',
-    restaurant: {
-      name: 'Test Restaurant',
-      email: 'test@restaurant.com',
+    buyer: {
+      name: 'Test Buyer',
+      email: 'test@buyer.com',
       phone: '+1234567890',
       address: '123 Test Street',
     },
@@ -299,14 +299,14 @@ describe('OrderDetail', () => {
   });
 
   describe('Customer Information', () => {
-    it('displays restaurant details correctly', async () => {
+    it('displays buyer details correctly', async () => {
       renderWithProviders(<OrderDetail />, {
         preloadedState: { auth: defaultAuthState },
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-        expect(screen.getByText('test@restaurant.com')).toBeInTheDocument();
+        expect(screen.getByText('Test Buyer')).toBeInTheDocument();
+        expect(screen.getByText('test@buyer.com')).toBeInTheDocument();
         expect(screen.getByText('+1234567890')).toBeInTheDocument();
       });
     });

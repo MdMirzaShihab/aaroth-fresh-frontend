@@ -1,6 +1,6 @@
 /**
  * StatusBadge - Enhanced UI Component
- * Business-specific status indicators for all dashboards (admin, vendor, restaurant)
+ * Business-specific status indicators for all dashboards (admin, vendor, buyer)
  * Supports verification, approval, risk, urgency, and business status types
  */
 
@@ -27,7 +27,7 @@ const StatusBadge = ({
 }) => {
   const getStatusConfig = () => {
     const configs = {
-      // Verification statuses (admin, vendor, restaurant)
+      // Verification statuses (admin, vendor, buyer)
       verification: {
         pending: {
           label: 'Pending',
@@ -174,7 +174,7 @@ const StatusBadge = ({
         },
       },
 
-      // Order statuses (restaurant, vendor dashboards)
+      // Order statuses (buyer, vendor dashboards)
       order: {
         pending: {
           label: 'Pending',

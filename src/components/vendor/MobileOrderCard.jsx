@@ -163,14 +163,14 @@ const MobileOrderCard = ({
           </div>
         </div>
 
-        {/* Restaurant Info */}
+        {/* Buyer Info */}
         <div className="flex items-start gap-3 mb-3">
           <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
             <User className="w-5 h-5 text-text-muted" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-text-dark truncate">
-              {order.restaurant.name}
+              {order.buyer.name}
             </h3>
             <div className="flex items-center gap-4 text-sm text-text-muted mt-1">
               <span>{order.items.length} items</span>
@@ -245,7 +245,7 @@ const MobileOrderCard = ({
             <div className="flex items-center gap-3 text-sm">
               <div className="flex items-center gap-1 text-text-muted">
                 <Phone className="w-4 h-4" />
-                <span>{order.restaurant.phone}</span>
+                <span>{order.buyer.phone}</span>
               </div>
               <div className="flex items-center gap-1 text-text-muted">
                 <MessageSquare className="w-4 h-4" />

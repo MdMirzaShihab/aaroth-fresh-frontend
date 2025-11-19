@@ -35,7 +35,7 @@ const VendorCustomerManagement = () => {
   const mockCustomers = [
     {
       id: 1,
-      name: 'Golden Fork Restaurant',
+      name: 'Golden Fork Buyer',
       email: 'info@goldenfork.com',
       phone: '+880 1712 345678',
       totalOrders: 48,
@@ -140,7 +140,7 @@ const VendorCustomerManagement = () => {
           <div>
             <h1 className="text-3xl font-bold text-text-dark">Customer Management</h1>
             <p className="text-text-muted mt-2">
-              Manage relationships with your restaurant partners
+              Manage relationships with your buyer partners
             </p>
           </div>
           <button

@@ -13,13 +13,9 @@ import {
   UtensilsCrossed,
   Package,
   FolderOpen,
-  BarChart3,
   Settings,
   X,
   ChevronRight,
-  Activity,
-  TrendingUp,
-  Shield,
   Database,
 } from 'lucide-react';
 
@@ -58,10 +54,10 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           badge: { type: 'urgent', count: 3 },
         },
         {
-          label: 'Restaurants Management',
+          label: 'Buyers Management',
           icon: UtensilsCrossed,
-          path: '/admin/restaurants',
-          description: 'Restaurant Operations',
+          path: '/admin/buyers',
+          description: 'Buyer Operations',
           badge: { type: 'info', count: 7 },
         },
       ],
@@ -90,43 +86,6 @@ const AdminSidebar = ({ isOpen, onClose }) => {
       ],
     },
     {
-      section: 'Analytics & Insights',
-      items: [
-        {
-          label: 'Business Analytics',
-          icon: TrendingUp,
-          path: '/admin/analytics/business',
-          description: 'Performance Metrics',
-          children: [
-            {
-              label: 'Sales Performance',
-              path: '/admin/analytics/business/sales',
-            },
-            {
-              label: 'User Growth',
-              path: '/admin/analytics/business/users',
-            },
-            {
-              label: 'Product Performance',
-              path: '/admin/analytics/business/products',
-            },
-          ],
-        },
-        {
-          label: 'Performance Monitoring',
-          icon: BarChart3,
-          path: '/admin/analytics/performance',
-          description: 'SLA & Team Performance',
-        },
-        {
-          label: 'Activity Monitoring',
-          icon: Activity,
-          path: '/admin/analytics/activity',
-          description: 'System Audit Trail',
-        },
-      ],
-    },
-    {
       section: 'System Management',
       items: [
         {
@@ -139,12 +98,6 @@ const AdminSidebar = ({ isOpen, onClose }) => {
             { label: 'Business Rules', path: '/admin/settings/business' },
             { label: 'Security Policies', path: '/admin/settings/security' },
           ],
-        },
-        {
-          label: 'System Monitoring',
-          icon: Shield,
-          path: '/admin/system',
-          description: 'Health & Performance',
         },
       ],
     },
@@ -176,10 +129,10 @@ const AdminSidebar = ({ isOpen, onClose }) => {
     <>
       {/* Enhanced Glassmorphic Sidebar */}
       <div
-        className={`fixed top-0 left-0 z-50 h-full w-80 glass-layer-3 dark:glass-3-dark border-r border-sage-green/20 dark:border-dark-olive-border text-text-dark dark:text-dark-text-primary shadow-organic dark:shadow-dark-glass transform transition-all duration-500 ease-out hover:shadow-organic-lg dark:hover:shadow-dark-glass ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 animate-fade-in`}
+        className={`fixed top-0 left-0 z-50 h-full w-80 glass-2 dark:glass-2-dark border-r border-sage-green/30 dark:border-dark-olive-border/80 text-text-dark dark:text-dark-text-primary shadow-xl shadow-sage-green/10 dark:shadow-dark-glass transform transition-all duration-500 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 animate-fade-in`}
       >
         {/* Professional Header */}
-        <div className="flex items-center justify-between p-6 border-b border-sage-green/20 dark:border-dark-olive-border glass-layer-1 dark:glass-1-dark">
+        <div className="flex items-center justify-between p-6 border-b border-sage-green/30 dark:border-dark-olive-border glass-1 dark:glass-1-dark">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-glow-olive">
               <span className="text-white font-bold text-lg">A</span>
@@ -231,9 +184,9 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                             }
                             if (window.innerWidth < 1024) onClose();
                           }}
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group animate-fade-in ${isActive 
-                            ? 'glass-layer-2 dark:glass-2-dark text-muted-olive dark:text-dark-sage-accent border border-sage-green/30 dark:border-dark-sage-accent/30 shadow-glow-green/20 dark:shadow-dark-glow-olive/20' 
-                            : 'text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:glass-layer-1 dark:hover:glass-1-dark hover:-translate-y-1 hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15'}`}
+                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group animate-fade-in ${isActive
+                            ? 'bg-sage-green/20 dark:bg-dark-sage-accent/20 text-bottle-green dark:text-dark-sage-accent font-semibold border-2 border-sage-green/40 dark:border-dark-sage-accent/40 shadow-lg shadow-sage-green/20 dark:shadow-dark-glow-olive/20'
+                            : 'text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 hover:-translate-y-0.5 hover:shadow-md'}`}
                         >
                           <item.icon className="w-5 h-5 flex-shrink-0" />
 

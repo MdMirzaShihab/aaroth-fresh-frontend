@@ -42,7 +42,7 @@ export const useBusinessVerification = () => {
     capabilities: status?.capabilities || {
       canCreateListings: false,
       canPlaceOrders: false,
-      canManageRestaurant: false,
+      canManageBuyer: false,
       canAccessDashboard: false,
       canUpdateProfile: true,
     },
@@ -63,7 +63,7 @@ export const useBusinessVerification = () => {
     // Helper functions for UI decisions
     canCreateListings: status?.capabilities?.canCreateListings || false,
     canPlaceOrders: status?.capabilities?.canPlaceOrders || false,
-    canManageRestaurant: status?.capabilities?.canManageRestaurant || false,
+    canManageBuyer: status?.capabilities?.canManageBuyer || false,
     canAccessDashboard: status?.capabilities?.canAccessDashboard || false,
     canUpdateProfile: status?.capabilities?.canUpdateProfile || true,
 
@@ -72,15 +72,15 @@ export const useBusinessVerification = () => {
     showVerificationRejected: isRejected,
     showVerificationApproved: isApproved,
     isVendor: status?.user?.role === 'vendor',
-    isRestaurantOwner: status?.user?.role === 'restaurantOwner',
-    isRestaurantManager: status?.user?.role === 'restaurantManager',
+    isBuyerOwner: status?.user?.role === 'buyerOwner',
+    isBuyerManager: status?.user?.role === 'buyerManager',
     isAdmin: status?.user?.role === 'admin',
 
     // Business entity helpers
     getBusinessEntity: () => {
       if (status?.businessInfo?.vendor) return status.businessInfo.vendor;
-      if (status?.businessInfo?.restaurant)
-        return status.businessInfo.restaurant;
+      if (status?.businessInfo?.buyer)
+        return status.businessInfo.buyer;
       return null;
     },
 
@@ -136,8 +136,8 @@ export const useBusinessVerification = () => {
       const userRole = status?.user?.role;
       return (
         (userRole === 'vendor' ||
-          userRole === 'restaurantOwner' ||
-          userRole === 'restaurantManager') &&
+          userRole === 'buyerOwner' ||
+          userRole === 'buyerManager') &&
         verificationStatus !== 'approved'
       );
     },
@@ -147,7 +147,7 @@ export const useBusinessVerification = () => {
       if (verificationStatus === 'approved') return 100;
       if (verificationStatus === 'rejected') return 25; // Needs resubmission
       if (verificationStatus === 'pending') {
-        if (status?.businessInfo?.vendor || status?.businessInfo?.restaurant)
+        if (status?.businessInfo?.vendor || status?.businessInfo?.buyer)
           return 75; // Under review
         return 50; // Basic info submitted
       }

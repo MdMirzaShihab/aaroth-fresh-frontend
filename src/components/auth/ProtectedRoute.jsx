@@ -106,9 +106,9 @@ const getRoleBasedRedirect = (role) => {
       return '/admin/dashboard';
     case 'vendor':
       return '/vendor/dashboard';
-    case 'restaurantOwner':
-    case 'restaurantManager':
-      return '/restaurant/dashboard';
+    case 'buyerOwner':
+    case 'buyerManager':
+      return '/buyer/dashboard';
     default:
       return '/dashboard';
   }
@@ -148,24 +148,24 @@ export const VendorRoute = ({ children, requireApproval = true, ...props }) => (
   </ProtectedRoute>
 );
 
-export const RestaurantRoute = ({ children, ...props }) => {
-  // console.log('RestaurantRoute: Wrapping with restaurant roles protection');
+export const BuyerRoute = ({ children, ...props }) => {
+  // console.log('BuyerRoute: Wrapping with buyer roles protection');
   return (
-    <ProtectedRoute roles={['restaurantOwner', 'restaurantManager']} {...props}>
+    <ProtectedRoute roles={['buyerOwner', 'buyerManager']} {...props}>
       {children}
     </ProtectedRoute>
   );
 };
 
-export const RestaurantOwnerRoute = ({ children, ...props }) => (
-  <ProtectedRoute roles={['restaurantOwner']} {...props}>
+export const BuyerOwnerRoute = ({ children, ...props }) => (
+  <ProtectedRoute roles={['buyerOwner']} {...props}>
     {children}
   </ProtectedRoute>
 );
 
 export const BusinessRoute = ({ children, ...props }) => (
   <ProtectedRoute
-    roles={['vendor', 'restaurantOwner', 'restaurantManager']}
+    roles={['vendor', 'buyerOwner', 'buyerManager']}
     {...props}
   >
     {children}

@@ -394,7 +394,7 @@ const ProductCatalog = () => {
             </h1>
             <p className="text-xl text-text-muted mb-8 max-w-3xl mx-auto">
               Discover premium quality produce from local vendors. Join
-              thousands of restaurants sourcing the freshest ingredients for
+              thousands of buyers sourcing the freshest ingredients for
               their kitchens.
             </p>
 

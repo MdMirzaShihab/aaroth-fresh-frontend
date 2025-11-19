@@ -4,7 +4,7 @@ import { AlertTriangle, RefreshCcw, Home, Mail } from 'lucide-react';
 /**
  * Enhanced ErrorBoundary - UI Component
  * Comprehensive error boundary for all dashboards with enhanced error reporting
- * Supports admin, vendor, and restaurant dashboard contexts
+ * Supports admin, vendor, and buyer dashboard contexts
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -67,7 +67,7 @@ class ErrorBoundary extends React.Component {
         showHomeButton = false,
         supportEmail,
         maxRetries = 3,
-        variant = 'default', // 'default' | 'admin' | 'vendor' | 'restaurant'
+        variant = 'default', // 'default' | 'admin' | 'vendor' | 'buyer'
       } = this.props;
 
       const getVariantTitle = () => {
@@ -76,8 +76,8 @@ class ErrorBoundary extends React.Component {
             return 'Admin Panel Error';
           case 'vendor':
             return 'Vendor Dashboard Error';
-          case 'restaurant':
-            return 'Restaurant Dashboard Error';
+          case 'buyer':
+            return 'Buyer Dashboard Error';
           default:
             return title;
         }
@@ -91,8 +91,8 @@ class ErrorBoundary extends React.Component {
             return 'Something went wrong in the admin interface. This error has been logged and our team will investigate the issue.';
           case 'vendor':
             return 'We encountered an issue with your vendor dashboard. Please try again or contact support if the problem persists.';
-          case 'restaurant':
-            return 'There was a problem with your restaurant dashboard. Please refresh or contact support for assistance.';
+          case 'buyer':
+            return 'There was a problem with your buyer dashboard. Please refresh or contact support for assistance.';
           default:
             return 'We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.';
         }
@@ -251,11 +251,11 @@ export const VendorErrorBoundary = ({ children, ...props }) => (
   </ErrorBoundary>
 );
 
-export const RestaurantErrorBoundary = ({ children, ...props }) => (
+export const BuyerErrorBoundary = ({ children, ...props }) => (
   <ErrorBoundary
-    variant="restaurant"
+    variant="buyer"
     showHomeButton
-    homeUrl="/restaurant/dashboard"
+    homeUrl="/buyer/dashboard"
     {...props}
   >
     {children}

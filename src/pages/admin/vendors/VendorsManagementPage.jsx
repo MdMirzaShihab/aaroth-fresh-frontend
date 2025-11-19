@@ -37,6 +37,7 @@ import VendorDirectory from './components/VendorDirectory';
 import VendorFilters from './components/VendorFilters';
 import VendorDetailsModal from './components/VendorDetailsModal';
 import VendorEditModal from './components/VendorEditModal';
+import CreatePlatformVendor from './components/CreatePlatformVendor';
 
 const VendorsManagementPage = () => {
   const { isDarkMode } = useTheme();
@@ -57,6 +58,7 @@ const VendorsManagementPage = () => {
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [showVendorDetails, setShowVendorDetails] = useState(false);
   const [showVendorEdit, setShowVendorEdit] = useState(false);
+  const [showCreatePlatformVendor, setShowCreatePlatformVendor] = useState(false);
   const [isModalLoading, setIsModalLoading] = useState(false);
 
   // API queries
@@ -79,7 +81,7 @@ const VendorsManagementPage = () => {
   const [deactivateVendor] = useDeactivateVendorMutation();
   const [safeDeleteVendor] = useSafeDeleteVendorMutation();
 
-  // Follow RestaurantsManagementPage pattern - direct data access
+  // Follow BuyersManagementPage pattern - direct data access
   const vendors = vendorsData?.data || [];
   const totalVendors = vendorsData?.total || 0;
   const totalPages = vendorsData?.pages || Math.ceil(totalVendors / pageSize);
@@ -305,193 +307,183 @@ const VendorsManagementPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-earthy-beige/30 via-white to-sage-green/20 dark:from-dark-bg dark:via-dark-bg-alt dark:to-dark-surface">
-      {/* Header */}
-      <div className="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-dark-bg/80 border-b border-sage-green/20 dark:border-dark-border">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-glow-olive">
-                <Store className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1
-                  className={`text-2xl font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                >
-                  Vendor Management
-                </h1>
-                <p
-                  className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                >
-                  Comprehensive business directory with verification workflows
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleExport('csv')}
-                className="hidden sm:flex"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() =>
-                  toast.info('Vendor registration handled by public portal')
-                }
-                className="hidden sm:flex"
-              >
-                <Building2 className="w-4 h-4 mr-2" />
-                View Portal
-              </Button>
-            </div>
+    <div className="min-h-screen p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* ===== HEADER ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
+          <div>
+            <h1 className="text-3xl font-bold text-text-dark dark:text-dark-text-primary flex items-center gap-3">
+              <Store className="w-8 h-8 text-muted-olive" />
+              Vendor Management
+            </h1>
+            <p className="text-text-muted dark:text-dark-text-muted mt-2">
+              Comprehensive business directory with verification workflows
+            </p>
           </div>
 
-          {/* Quick Stats */}
-          {quickStats && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
-                      Total Vendors
-                    </p>
-                    <p
-                      className={`text-lg font-bold ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                    >
-                      {quickStats.totalVendors.toLocaleString()}
-                    </p>
-                  </div>
-                  <Store
-                    className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
-                  />
-                </div>
-              </Card>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setShowCreatePlatformVendor(true)}
+              className="flex items-center gap-2 bg-gradient-secondary"
+            >
+              <Store className="w-4 h-4" />
+              Create Platform Vendor
+            </Button>
 
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
-                      Verified
-                    </p>
-                    <p
-                      className={`text-lg font-bold ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
-                    >
-                      {quickStats.verifiedVendors.toLocaleString()}
-                    </p>
-                  </div>
-                  <CheckCircle
-                    className={`w-4 h-4 ${isDarkMode ? 'text-sage-green' : 'text-muted-olive'}`}
-                  />
-                </div>
-              </Card>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+            </Button>
 
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
-                      Pending Verification
-                    </p>
-                    <p
-                      className={`text-lg font-bold ${quickStats.pendingVerification > 0 ? 'text-earthy-yellow' : isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                    >
-                      {quickStats.pendingVerification.toLocaleString()}
-                    </p>
-                  </div>
-                  <Clock
-                    className={`w-4 h-4 ${quickStats.pendingVerification > 0 ? 'text-earthy-yellow' : 'text-gray-300'}`}
-                  />
-                </div>
-              </Card>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={refetchVendors}
+              disabled={vendorsLoading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${vendorsLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
 
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p
-                      className={`text-xs font-medium ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'}`}
-                    >
-                      Rejected
-                    </p>
-                    <p
-                      className={`text-lg font-bold ${quickStats.rejectedVendors > 0 ? 'text-tomato-red' : isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
-                    >
-                      {quickStats.rejectedVendors.toLocaleString()}
-                    </p>
-                  </div>
-                  <XCircle
-                    className={`w-4 h-4 ${quickStats.rejectedVendors > 0 ? 'text-tomato-red' : 'text-gray-300'}`}
-                  />
-                </div>
-              </Card>
-            </div>
-          )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport('csv')}
+              className="flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
+          </div>
+        </motion.div>
 
-          {/* Status Filter Tabs */}
-          <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-dark-surface rounded-2xl">
-            {statusTabs.map((tab) => {
-              const IconComponent = tab.icon;
-              const isActive = activeFilters.status === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleFilterChange({...activeFilters, status: tab.id})}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+        {/* ===== STATISTICS DASHBOARD ===== */}
+        {quickStats && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {/* Total Vendors */}
+            <Card className="p-4 glass glow-green">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center">
+                  <Store className="w-6 h-6 text-muted-olive" />
+                </div>
+                <div>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted">Total Vendors</p>
+                  <p className="text-2xl font-bold text-muted-olive">
+                    {quickStats.totalVendors.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Verified Vendors */}
+            <Card className="p-4 glass glow-green">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-sage-green" />
+                </div>
+                <div>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted">Verified</p>
+                  <p className="text-2xl font-bold text-sage-green">
+                    {quickStats.verifiedVendors.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Pending Verification */}
+            <Card className="p-4 glass glow-green">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-earthy-yellow/10 rounded-2xl flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-earthy-yellow" />
+                </div>
+                <div>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted">Pending</p>
+                  <p className="text-2xl font-bold text-earthy-yellow">
+                    {quickStats.pendingVerification.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Rejected Vendors */}
+            <Card className="p-4 glass glow-green">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-tomato-red/10 rounded-2xl flex items-center justify-center">
+                  <XCircle className="w-6 h-6 text-tomato-red" />
+                </div>
+                <div>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted">Rejected</p>
+                  <p className="text-2xl font-bold text-tomato-red">
+                    {quickStats.rejectedVendors.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* ===== STATUS FILTER TABS ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex flex-wrap items-center gap-2"
+        >
+          {statusTabs.map((tab) => {
+            const IconComponent = tab.icon;
+            const isActive = activeFilters.status === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleFilterChange({...activeFilters, status: tab.id})}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  isActive
+                    ? 'bg-gradient-secondary text-white shadow-md'
+                    : 'glass hover:glass-2 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent'
+                }`}
+              >
+                <IconComponent className="w-4 h-4" />
+                <span>{tab.label}</span>
+                {tab.count > 0 && (
+                  <span className={`px-2 py-0.5 rounded-full text-xs ${
                     isActive
-                      ? 'bg-white dark:bg-dark-bg text-muted-olive shadow-sm'
-                      : 'text-text-muted hover:text-text-dark dark:hover:text-dark-text-primary'
-                  }`}
-                >
-                  <IconComponent className="w-4 h-4" />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                  {tab.count > 0 && (
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      isActive 
-                        ? 'bg-muted-olive/10 text-muted-olive'
-                        : tab.urgent
-                          ? 'bg-earthy-yellow/20 text-earthy-yellow'
-                          : 'bg-gray-200 text-gray-600'
-                    }`}>
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+                      ? 'bg-white/20'
+                      : tab.urgent
+                        ? 'bg-earthy-yellow/20'
+                        : 'bg-muted-olive/20'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </motion.div>
 
-      {/* Main Content */}
-      <div className="px-6 py-6 space-y-6">
-        {/* Filters Panel */}
+        {/* ===== FILTERS PANEL ===== */}
         {showFilters && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ delay: 0.3 }}
           >
             <VendorFilters
               filters={activeFilters}
@@ -504,54 +496,46 @@ const VendorsManagementPage = () => {
           </motion.div>
         )}
 
-        {/* Search and Bulk Operations */}
-        <Card className="p-6">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search vendors by business name, owner, location, or type..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            {/* View Controls */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={refetchVendors}
-                disabled={vendorsLoading}
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${vendorsLoading ? 'animate-spin' : ''}`}
+        {/* ===== SEARCH & VENDOR DIRECTORY ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card className="p-6 glass">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted dark:text-dark-text-muted" />
+                <Input
+                  placeholder="Search vendors by business name, owner, location, or type..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10 glass"
                 />
-              </Button>
+              </div>
             </div>
-          </div>
 
-          {/* Vendor Directory */}
-          <VendorDirectory
-            vendors={vendors}
-            loading={vendorsLoading}
-            error={vendorsError}
-            selectedVendors={selectedVendors}
-            sortConfig={sortConfig}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalPages={totalPages}
-            totalVendors={totalVendors}
-            onVendorSelect={handleVendorSelect}
-            onSelectAll={handleSelectAll}
-            onSort={handleSort}
-            onPageChange={setCurrentPage}
-            onPageSizeChange={setPageSize}
-            onVendorAction={handleVendorAction}
-          />
-        </Card>
+            {/* Vendor Directory */}
+            <VendorDirectory
+              vendors={vendors}
+              loading={vendorsLoading}
+              error={vendorsError}
+              selectedVendors={selectedVendors}
+              sortConfig={sortConfig}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              totalPages={totalPages}
+              totalVendors={totalVendors}
+              onVendorSelect={handleVendorSelect}
+              onSelectAll={handleSelectAll}
+              onSort={handleSort}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+              onVendorAction={handleVendorAction}
+            />
+          </Card>
+        </motion.div>
       </div>
 
       {/* Vendor Details Modal */}
@@ -593,6 +577,16 @@ const VendorsManagementPage = () => {
           isLoading={isModalLoading}
         />
       )}
+
+      {/* Create Platform Vendor Modal */}
+      <CreatePlatformVendor
+        isOpen={showCreatePlatformVendor}
+        onClose={() => setShowCreatePlatformVendor(false)}
+        onSuccess={() => {
+          refetchVendors();
+          setShowCreatePlatformVendor(false);
+        }}
+      />
     </div>
   );
 };

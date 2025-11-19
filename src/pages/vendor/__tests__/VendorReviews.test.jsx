@@ -184,7 +184,7 @@ describe('VendorReviews', () => {
         preloadedState: { auth: defaultAuthState },
       });
 
-      expect(screen.getByText(/golden fork restaurant/i)).toBeInTheDocument();
+      expect(screen.getByText(/golden fork buyer/i)).toBeInTheDocument();
       expect(screen.getByText(/spice garden/i)).toBeInTheDocument();
       expect(screen.getByText(/ocean blue bistro/i)).toBeInTheDocument();
       expect(screen.getByText(/sunrise cafe/i)).toBeInTheDocument();

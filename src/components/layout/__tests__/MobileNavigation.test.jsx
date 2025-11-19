@@ -68,11 +68,11 @@ describe('MobileNavigation', () => {
     expect(screen.getByLabelText('Profile')).toBeInTheDocument();
   });
 
-  it('renders restaurant navigation for restaurant users', () => {
+  it('renders buyer navigation for buyer users', () => {
     const preloadedState = {
       auth: {
         isAuthenticated: true,
-        user: { name: 'Restaurant User', role: 'restaurantOwner' },
+        user: { name: 'Buyer User', role: 'buyerOwner' },
         token: 'test-token',
       },
     };
@@ -191,18 +191,18 @@ describe('MobileNavigation', () => {
     expect(icon.querySelector('.animate-scale-in')).toBeInTheDocument();
   });
 
-  it('handles restaurant manager role correctly', () => {
+  it('handles buyer manager role correctly', () => {
     const preloadedState = {
       auth: {
         isAuthenticated: true,
-        user: { name: 'Restaurant Manager', role: 'restaurantManager' },
+        user: { name: 'Buyer Manager', role: 'buyerManager' },
         token: 'test-token',
       },
     };
 
     renderWithProviders(<MobileNavigation />, { preloadedState });
 
-    // Should show same navigation as restaurant owner
+    // Should show same navigation as buyer owner
     expect(screen.getByLabelText('Dashboard')).toBeInTheDocument();
     expect(screen.getByLabelText('Browse')).toBeInTheDocument();
     expect(screen.getByLabelText('Cart')).toBeInTheDocument();

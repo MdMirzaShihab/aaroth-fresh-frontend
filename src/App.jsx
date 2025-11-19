@@ -18,8 +18,8 @@ import AdminLayout from './components/admin/layout/AdminLayout/AdminLayout';
 import ProtectedRoute, {
   AdminRoute,
   VendorRoute,
-  RestaurantRoute,
-  RestaurantOwnerRoute,
+  BuyerRoute,
+  BuyerOwnerRoute,
   GuestRoute,
 } from './components/auth/ProtectedRoute';
 
@@ -50,8 +50,8 @@ const AdminUsersPage = lazy(
 const AdminVendorsPage = lazy(
   () => import('./pages/admin/vendors/VendorsManagementPage')
 );
-const RestaurantsManagementPage = lazy(
-  () => import('./pages/admin/restaurants/RestaurantManagementPage')
+const BuyersManagementPage = lazy(
+  () => import('./pages/admin/buyers/BuyerManagementPage')
 );
 const ProductsManagementPage = lazy(
   () => import('./pages/admin/catalog/products/ProductsManagementPage')
@@ -96,27 +96,27 @@ const VendorNotifications = lazy(
   () => import('./pages/vendor/VendorNotifications')
 );
 
-// Restaurant Pages (to be created)
-const RestaurantDashboard = lazy(
-  () => import('./pages/restaurant/RestaurantDashboardEnhanced')
+// Buyer Pages (to be created)
+const BuyerDashboard = lazy(
+  () => import('./pages/buyer/BuyerDashboard')
 );
 const ProductBrowsing = lazy(
-  () => import('./pages/restaurant/ProductBrowsing')
+  () => import('./pages/buyer/ProductBrowsing')
 );
 const ProductComparison = lazy(
-  () => import('./pages/restaurant/ProductComparison')
+  () => import('./pages/buyer/ProductComparison')
 );
-const ProductDetail = lazy(() => import('./pages/restaurant/ProductDetail'));
-const PlaceOrder = lazy(() => import('./pages/restaurant/PlaceOrder'));
-const OrderHistory = lazy(() => import('./pages/restaurant/OrderHistory'));
-const RestaurantProfile = lazy(
-  () => import('./pages/restaurant/RestaurantProfile')
+const ProductDetail = lazy(() => import('./pages/buyer/ProductDetail'));
+const PlaceOrder = lazy(() => import('./pages/buyer/PlaceOrder'));
+const OrderHistory = lazy(() => import('./pages/buyer/OrderHistory'));
+const BuyerProfile = lazy(
+  () => import('./pages/buyer/BuyerProfile')
 );
 const ManagerManagement = lazy(
-  () => import('./pages/restaurant/ManagerManagement')
+  () => import('./pages/buyer/ManagerManagement')
 );
 const BudgetManagement = lazy(
-  () => import('./pages/restaurant/BudgetManagement')
+  () => import('./pages/buyer/BudgetManagement')
 );
 
 // Shared Pages
@@ -199,9 +199,9 @@ const App = () => {
         return '/admin/dashboard'; // Updated to use new admin interface
       case 'vendor':
         return '/vendor/dashboard';
-      case 'restaurantOwner':
-      case 'restaurantManager':
-        return '/restaurant/dashboard';
+      case 'buyerOwner':
+      case 'buyerManager':
+        return '/buyer/dashboard';
       default:
         return '/';
     }
@@ -294,12 +294,12 @@ const App = () => {
               }
             />
 
-            {/* Restaurant & Catalog Management */}
+            {/* Buyer & Catalog Management */}
             <Route
-              path="restaurants"
+              path="buyers"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <RestaurantsManagementPage />
+                  <BuyersManagementPage />
                 </Suspense>
               }
             />
@@ -499,13 +499,13 @@ const App = () => {
             />
           </Route>
 
-          {/* Restaurant Routes - Protected with AppLayout */}
+          {/* Buyer Routes - Protected with AppLayout */}
           <Route
-            path="/restaurant"
+            path="/buyer"
             element={
-              <RestaurantRoute>
+              <BuyerRoute>
                 <AppLayout />
-              </RestaurantRoute>
+              </BuyerRoute>
             }
           >
             <Route index element={<Navigate to="dashboard" replace />} />
@@ -513,7 +513,7 @@ const App = () => {
               path="dashboard"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <RestaurantDashboard />
+                  <BuyerDashboard />
                 </Suspense>
               }
             />
@@ -577,29 +577,29 @@ const App = () => {
               path="profile"
               element={
                 <Suspense fallback={<PageLoader />}>
-                  <RestaurantProfile />
+                  <BuyerProfile />
                 </Suspense>
               }
             />
             <Route
               path="managers"
               element={
-                <RestaurantOwnerRoute>
+                <BuyerOwnerRoute>
                   <Suspense fallback={<PageLoader />}>
                     <ManagerManagement />
                   </Suspense>
-                </RestaurantOwnerRoute>
+                </BuyerOwnerRoute>
               }
             />
-            {/* Restaurant Management Routes */}
+            {/* Buyer Management Routes */}
             <Route
               path="manage/managers"
               element={
-                <RestaurantOwnerRoute>
+                <BuyerOwnerRoute>
                   <Suspense fallback={<PageLoader />}>
                     <ManagerManagement />
                   </Suspense>
-                </RestaurantOwnerRoute>
+                </BuyerOwnerRoute>
               }
             />
           </Route>

@@ -139,8 +139,8 @@ const Profile = () => {
     const roleNames = {
       admin: 'System Administrator',
       vendor: 'Vendor',
-      restaurantOwner: 'Restaurant Owner',
-      restaurantManager: 'Restaurant Manager',
+      buyerOwner: 'Buyer Owner',
+      buyerManager: 'Buyer Manager',
     };
     return roleNames[role] || role;
   };
@@ -149,8 +149,8 @@ const Profile = () => {
     const colors = {
       admin: 'bg-purple-100 text-purple-800 border-purple-200',
       vendor: 'bg-green-100 text-green-800 border-green-200',
-      restaurantOwner: 'bg-blue-100 text-blue-800 border-blue-200',
-      restaurantManager: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+      buyerOwner: 'bg-blue-100 text-blue-800 border-blue-200',
+      buyerManager: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     };
     return colors[role] || 'bg-gray-100 text-gray-800 border-gray-200';
   };
@@ -369,31 +369,31 @@ const Profile = () => {
               </div>
             )}
 
-            {['restaurantOwner', 'restaurantManager'].includes(user?.role) &&
-              user?.restaurant && (
+            {['buyerOwner', 'buyerManager'].includes(user?.role) &&
+              user?.buyer && (
                 <div>
                   <h4 className="text-lg font-semibold text-text-dark mb-4">
-                    Restaurant Information
+                    Buyer Information
                   </h4>
                   <div className="bg-white/50 border border-gray-100 rounded-2xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Building className="w-4 h-4 text-gray-400" />
                       <span className="font-medium text-text-dark">
-                        {user.restaurant.restaurantName}
+                        {user.buyer.buyerName}
                       </span>
                     </div>
-                    {user.restaurant.restaurantAddress && (
+                    {user.buyer.buyerAddress && (
                       <p className="text-text-muted text-sm">
-                        {user.restaurant.restaurantAddress.street},{' '}
-                        {user.restaurant.restaurantAddress.city}
+                        {user.buyer.buyerAddress.street},{' '}
+                        {user.buyer.buyerAddress.city}
                       </p>
                     )}
                     <p className="text-xs text-text-muted mt-2">
                       <span className="font-medium">Note:</span> To update
-                      restaurant details,
-                      {user.role === 'restaurantOwner'
-                        ? ' visit the Restaurant Profile page.'
-                        : ' contact your restaurant owner.'}
+                      buyer details,
+                      {user.role === 'buyerOwner'
+                        ? ' visit the Buyer Profile page.'
+                        : ' contact your buyer owner.'}
                     </p>
                   </div>
                 </div>

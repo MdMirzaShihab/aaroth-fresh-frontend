@@ -26,20 +26,20 @@ import {
   PieChart,
 } from 'lucide-react';
 import {
-  useGetRestaurantDashboardOverviewQuery,
-  useGetRestaurantSpendingQuery,
-  useGetRestaurantBudgetQuery,
-  useGetRestaurantVendorInsightsQuery,
-  useGetRestaurantOrderHistoryQuery,
-  useGetRestaurantNotificationsQuery,
-  useGetRestaurantInventoryPlanningQuery,
-  useGetRestaurantReorderSuggestionsQuery,
-  useGetRestaurantCostAnalysisQuery,
-  useGetRestaurantPriceAnalyticsQuery,
-  useGetRestaurantPurchasePatternsQuery,
-  useGetRestaurantDeliveryTrackingQuery,
-  useGetRestaurantTeamActivityQuery,
-  useGetRestaurantFavoriteVendorsQuery,
+  useGetBuyerDashboardOverviewQuery,
+  useGetBuyerSpendingQuery,
+  useGetBuyerBudgetQuery,
+  useGetBuyerVendorInsightsQuery,
+  useGetBuyerOrderHistoryQuery,
+  useGetBuyerNotificationsQuery,
+  useGetBuyerInventoryPlanningQuery,
+  useGetBuyerReorderSuggestionsQuery,
+  useGetBuyerCostAnalysisQuery,
+  useGetBuyerPriceAnalyticsQuery,
+  useGetBuyerPurchasePatternsQuery,
+  useGetBuyerDeliveryTrackingQuery,
+  useGetBuyerTeamActivityQuery,
+  useGetBuyerFavoriteVendorsQuery,
 } from '../../store/slices/apiSlice';
 import { selectAuth } from '../../store/slices/authSlice';
 import { formatCurrency, formatDate, timeAgo } from '../../utils';
@@ -82,7 +82,7 @@ const transformFiltersForAPI = (filters) => {
   return apiParams;
 };
 
-const RestaurantDashboardEnhanced = () => {
+const BuyerDashboardEnhanced = () => {
   const { user, isAuthenticated, token } = useSelector(selectAuth);
   const [filters, setFilters] = useState({
     dateRange: { type: 'month' },
@@ -113,7 +113,7 @@ const RestaurantDashboardEnhanced = () => {
     isAuthenticated &&
     user &&
     token &&
-    (user.role === 'restaurantOwner' || user.role === 'restaurantManager');
+    (user.role === 'buyerOwner' || user.role === 'buyerManager');
 
   // Get status display information
   const statusDisplay = getStatusDisplay();
@@ -123,27 +123,27 @@ const RestaurantDashboardEnhanced = () => {
     data: overview = {},
     isLoading: overviewLoading,
     error: overviewError,
-  } = useGetRestaurantDashboardOverviewQuery(transformFiltersForAPI(filters), {
+  } = useGetBuyerDashboardOverviewQuery(transformFiltersForAPI(filters), {
     skip: !isValidUser || !canAccessDashboard,
   });
 
   const { data: spending = {}, isLoading: spendingLoading } =
-    useGetRestaurantSpendingQuery(transformFiltersForAPI(filters), {
+    useGetBuyerSpendingQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: budget = {}, isLoading: budgetLoading } =
-    useGetRestaurantBudgetQuery(transformFiltersForAPI(filters), {
+    useGetBuyerBudgetQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: vendorInsights = {}, isLoading: vendorInsightsLoading } =
-    useGetRestaurantVendorInsightsQuery(transformFiltersForAPI(filters), {
+    useGetBuyerVendorInsightsQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: orderHistory = {}, isLoading: orderHistoryLoading } =
-    useGetRestaurantOrderHistoryQuery(
+    useGetBuyerOrderHistoryQuery(
       { ...transformFiltersForAPI(filters), limit: 5 },
       {
         skip: !isValidUser || !canAccessDashboard,
@@ -151,7 +151,7 @@ const RestaurantDashboardEnhanced = () => {
     );
 
   const { data: notifications = {}, isLoading: notificationsLoading } =
-    useGetRestaurantNotificationsQuery(
+    useGetBuyerNotificationsQuery(
       { limit: 5 },
       {
         skip: !isValidUser || !canAccessDashboard,
@@ -160,42 +160,42 @@ const RestaurantDashboardEnhanced = () => {
 
   // New API integrations
   const { data: inventoryPlanning = {}, isLoading: inventoryLoading } =
-    useGetRestaurantInventoryPlanningQuery(transformFiltersForAPI(filters), {
+    useGetBuyerInventoryPlanningQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: reorderSuggestions = {}, isLoading: reorderLoading } =
-    useGetRestaurantReorderSuggestionsQuery({ limit: 10 }, {
+    useGetBuyerReorderSuggestionsQuery({ limit: 10 }, {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: costAnalysis = {}, isLoading: costAnalysisLoading } =
-    useGetRestaurantCostAnalysisQuery(transformFiltersForAPI(filters), {
+    useGetBuyerCostAnalysisQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: priceAnalytics = {}, isLoading: priceAnalyticsLoading } =
-    useGetRestaurantPriceAnalyticsQuery(transformFiltersForAPI(filters), {
+    useGetBuyerPriceAnalyticsQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: purchasePatterns = {}, isLoading: patternsLoading } =
-    useGetRestaurantPurchasePatternsQuery(transformFiltersForAPI(filters), {
+    useGetBuyerPurchasePatternsQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: deliveryTracking = {}, isLoading: deliveryLoading } =
-    useGetRestaurantDeliveryTrackingQuery(transformFiltersForAPI(filters), {
+    useGetBuyerDeliveryTrackingQuery(transformFiltersForAPI(filters), {
       skip: !isValidUser || !canAccessDashboard,
     });
 
   const { data: teamActivity = {}, isLoading: teamActivityLoading } =
-    useGetRestaurantTeamActivityQuery(transformFiltersForAPI(filters), {
-      skip: !isValidUser || !canAccessDashboard || user?.role !== 'restaurantOwner',
+    useGetBuyerTeamActivityQuery(transformFiltersForAPI(filters), {
+      skip: !isValidUser || !canAccessDashboard || user?.role !== 'buyerOwner',
     });
 
   const { data: favoriteVendors = {}, isLoading: favoriteVendorsLoading } =
-    useGetRestaurantFavoriteVendorsQuery({ limit: 5 }, {
+    useGetBuyerFavoriteVendorsQuery({ limit: 5 }, {
       skip: !isValidUser || !canAccessDashboard,
     });
 
@@ -207,7 +207,7 @@ const RestaurantDashboardEnhanced = () => {
             Access Denied
           </h1>
           <p className="text-text-muted">
-            You need to be logged in as a restaurant user to access this
+            You need to be logged in as a buyer user to access this
             dashboard.
           </p>
         </div>
@@ -224,12 +224,12 @@ const RestaurantDashboardEnhanced = () => {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-light text-text-dark mb-2 tracking-wide">
-                  Restaurant Dashboard
+                  Buyer Dashboard
                 </h1>
                 <p className="text-text-muted font-light">
                   {businessName
                     ? `Welcome back, ${businessName}`
-                    : 'Manage your restaurant operations'}
+                    : 'Manage your buyer operations'}
                 </p>
               </div>
 
@@ -260,7 +260,7 @@ const RestaurantDashboardEnhanced = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <CapabilityGate capability="canPlaceOrders" showMessage={false}>
                 <Link
-                  to="/restaurant/cart"
+                  to="/buyer/cart"
                   className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-muted-olive/10 to-sage-green/10 dark:from-dark-sage-accent/20 dark:to-dark-olive-surface/20 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
@@ -277,7 +277,7 @@ const RestaurantDashboardEnhanced = () => {
 
               <CapabilityGate capability="canPlaceOrders" showMessage={false}>
                 <Link
-                  to="/restaurant/orders"
+                  to="/buyer/orders"
                   className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-dusty-cedar/10 to-earthy-brown/10 dark:from-dark-cedar-warm/20 dark:to-dusty-cedar/20 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
@@ -291,7 +291,7 @@ const RestaurantDashboardEnhanced = () => {
               </CapabilityGate>
 
               <Link
-                to="/restaurant/profile"
+                to="/buyer/profile"
                 className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-sage-green/10 to-muted-olive/10 dark:from-dark-sage-accent/20 dark:to-muted-olive/20 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
@@ -299,7 +299,7 @@ const RestaurantDashboardEnhanced = () => {
                 </div>
                 <div>
                   <p className="font-medium text-text-dark dark:text-dark-text-primary group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors duration-200">Profile</p>
-                  <p className="text-sm text-text-muted dark:text-dark-text-muted group-hover:text-muted-olive/70 dark:group-hover:text-dark-sage-accent/70 transition-colors duration-200">Restaurant details</p>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted group-hover:text-muted-olive/70 dark:group-hover:text-dark-sage-accent/70 transition-colors duration-200">Buyer details</p>
                 </div>
               </Link>
 
@@ -308,7 +308,7 @@ const RestaurantDashboardEnhanced = () => {
                 showMessage={false}
               >
                 <Link
-                  to="/restaurant/budget"
+                  to="/buyer/budget"
                   className="flex items-center gap-3 p-4 rounded-2xl glass-layer-1 dark:glass-1-dark hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-glow-green/20 dark:hover:shadow-dark-glow-olive transition-all duration-300 group border-0 animate-fade-in"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-sage-green/10 to-bottle-green/10 dark:from-dark-sage-accent/20 dark:to-dark-sage-accent/30 rounded-2xl flex items-center justify-center group-hover:shadow-glow-green/30 dark:group-hover:shadow-dark-glow-olive transition-all duration-300 shadow-soft dark:shadow-dark-glass">
@@ -460,7 +460,7 @@ const RestaurantDashboardEnhanced = () => {
                     Recent Orders
                   </h3>
                   <Link
-                    to="/restaurant/orders"
+                    to="/buyer/orders"
                     className="text-muted-olive dark:text-dark-sage-accent hover:text-sage-green dark:hover:text-dark-sage-accent/80 text-sm font-medium transition-colors duration-200"
                   >
                     View All
@@ -851,7 +851,7 @@ const RestaurantDashboardEnhanced = () => {
               </div>
 
               {/* Team Activity (Owner Only) */}
-              {user?.role === 'restaurantOwner' && (
+              {user?.role === 'buyerOwner' && (
                 <div className="glass-layer-2 dark:glass-2-dark rounded-3xl p-6 shadow-organic dark:shadow-dark-glass animate-fade-in">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
@@ -859,7 +859,7 @@ const RestaurantDashboardEnhanced = () => {
                       Team Activity
                     </h3>
                     <Link
-                      to="/restaurant/manage/managers"
+                      to="/buyer/manage/managers"
                       className="text-muted-olive dark:text-dark-sage-accent hover:text-sage-green text-sm font-medium transition-colors duration-200"
                     >
                       Manage
@@ -910,4 +910,4 @@ const RestaurantDashboardEnhanced = () => {
   );
 };
 
-export default RestaurantDashboardEnhanced;
+export default BuyerDashboardEnhanced;

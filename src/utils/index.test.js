@@ -107,7 +107,7 @@ describe('Utils', () => {
       expect(hasPermission('admin', 'admin')).toBe(true);
       expect(hasPermission('vendor', 'admin')).toBe(false);
       expect(hasPermission('admin', ['admin', 'vendor'])).toBe(true);
-      expect(hasPermission('restaurant', ['admin', 'vendor'])).toBe(false);
+      expect(hasPermission('buyer', ['admin', 'vendor'])).toBe(false);
     });
 
     it('should handle invalid input', () => {
@@ -245,18 +245,18 @@ describe('Utils', () => {
     it('should identify roles correctly', () => {
       expect(roleUtils.isAdmin('admin')).toBe(true);
       expect(roleUtils.isVendor('vendor')).toBe(true);
-      expect(roleUtils.isRestaurantOwner('restaurantOwner')).toBe(true);
-      expect(roleUtils.isRestaurantManager('restaurantManager')).toBe(true);
-      expect(roleUtils.isRestaurantUser('restaurantOwner')).toBe(true);
-      expect(roleUtils.isRestaurantUser('restaurantManager')).toBe(true);
+      expect(roleUtils.isBuyerOwner('buyerOwner')).toBe(true);
+      expect(roleUtils.isBuyerManager('buyerManager')).toBe(true);
+      expect(roleUtils.isBuyerUser('buyerOwner')).toBe(true);
+      expect(roleUtils.isBuyerUser('buyerManager')).toBe(true);
     });
 
     it('should check permissions correctly', () => {
       expect(roleUtils.canManageListings('admin')).toBe(true);
       expect(roleUtils.canManageListings('vendor')).toBe(true);
-      expect(roleUtils.canManageListings('restaurantOwner')).toBe(false);
+      expect(roleUtils.canManageListings('buyerOwner')).toBe(false);
 
-      expect(roleUtils.canPlaceOrders('restaurantOwner')).toBe(true);
+      expect(roleUtils.canPlaceOrders('buyerOwner')).toBe(true);
       expect(roleUtils.canPlaceOrders('vendor')).toBe(false);
 
       expect(roleUtils.canManageUsers('admin')).toBe(true);

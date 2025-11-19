@@ -50,9 +50,9 @@ const UserProfileAvatar = ({ user, size = 'lg' }) => {
       admin:
         'bg-gradient-to-br from-tomato-red via-earthy-yellow to-earthy-brown',
       vendor: 'bg-gradient-to-br from-muted-olive via-sage-green to-sage-green',
-      restaurantOwner:
+      buyerOwner:
         'bg-gradient-to-br from-earthy-brown via-dusty-cedar to-earthy-tan',
-      restaurantManager:
+      buyerManager:
         'bg-gradient-to-br from-muted-olive via-sage-green to-dusty-cedar',
     };
     return gradients[role] || 'bg-gradient-to-br from-gray-400 to-gray-600';
@@ -63,8 +63,8 @@ const UserProfileAvatar = ({ user, size = 'lg' }) => {
       className={`${sizeClasses[size]} rounded-3xl ${getRoleGradient(user.role)} flex items-center justify-center shadow-xl text-white font-bold relative`}
     >
       {user.name?.charAt(0)?.toUpperCase() || 'U'}
-      {/* Check verification status from vendor or restaurant, not user */}
-      {(user.vendorId?.verificationStatus === 'approved' || user.restaurantId?.verificationStatus === 'approved') && (
+      {/* Check verification status from vendor or buyer, not user */}
+      {(user.vendorId?.verificationStatus === 'approved' || user.buyerId?.verificationStatus === 'approved') && (
         <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-sage-green rounded-full flex items-center justify-center border-2 border-white">
           <CheckCircle className="w-3 h-3 text-white" />
         </div>
@@ -98,10 +98,10 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
           <p
             className={`text-sm ${isDarkMode ? 'text-dark-text-muted' : 'text-text-muted'} mb-1`}
           >
-            {user.role === 'restaurantOwner'
-              ? 'Restaurant Owner'
-              : user.role === 'restaurantManager'
-                ? 'Restaurant Manager'
+            {user.role === 'buyerOwner'
+              ? 'Buyer Owner'
+              : user.role === 'buyerManager'
+                ? 'Buyer Manager'
                 : user.role === 'vendor'
                   ? 'Vendor'
                   : 'Administrator'}
@@ -255,8 +255,8 @@ const BasicInfoTab = ({ user, isEditing, editedData, onDataChange }) => {
 
           <div className="text-center p-3 bg-gray-50 dark:bg-dark-surface rounded-xl">
             {(() => {
-              // Get verification status from vendor or restaurant, not user
-              const verificationStatus = user.vendorId?.verificationStatus || user.restaurantId?.verificationStatus || 'N/A';
+              // Get verification status from vendor or buyer, not user
+              const verificationStatus = user.vendorId?.verificationStatus || user.buyerId?.verificationStatus || 'N/A';
               const isApproved = verificationStatus === 'approved';
               const isPending = verificationStatus === 'pending';
               const isRejected = verificationStatus === 'rejected';

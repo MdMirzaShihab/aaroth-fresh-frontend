@@ -389,17 +389,17 @@ const OrderDetail = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-semibold text-text-dark mb-3">
-                  Restaurant Details
+                  Buyer Details
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <User className="w-5 h-5 text-text-muted mt-0.5" />
                     <div>
                       <div className="font-medium text-text-dark">
-                        {order.restaurant.name}
+                        {order.buyer.name}
                       </div>
                       <div className="text-sm text-text-muted">
-                        {order.restaurant.email}
+                        {order.buyer.email}
                       </div>
                     </div>
                   </div>
@@ -408,7 +408,7 @@ const OrderDetail = () => {
                     <Phone className="w-5 h-5 text-text-muted mt-0.5" />
                     <div>
                       <div className="font-medium text-text-dark">
-                        {order.restaurant.phone}
+                        {order.buyer.phone}
                       </div>
                       <div className="text-sm text-text-muted">
                         Primary contact

@@ -112,7 +112,7 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
     activeOrders = 0,
     totalRevenue = 0,
     activeListings = 0,
-    connectedRestaurants = 0,
+    connectedBuyers = 0,
     dependencies = [],
     riskLevel = 'low',
   } = impactData;
@@ -178,9 +178,9 @@ const ImpactAnalysis = ({ vendorId, onImpactData }) => {
             <Users className="w-5 h-5 text-earthy-yellow" />
           </div>
           <p className="text-2xl font-bold text-text-dark">
-            {connectedRestaurants}
+            {connectedBuyers}
           </p>
-          <p className="text-xs text-text-muted">Connected Restaurants</p>
+          <p className="text-xs text-text-muted">Connected Buyers</p>
         </Card>
       </div>
 

@@ -164,7 +164,7 @@ export {
   default as ErrorBoundary,
   AdminErrorBoundary,
   VendorErrorBoundary,
-  RestaurantErrorBoundary,
+  BuyerErrorBoundary,
   useErrorHandler,
 } from '../common/ErrorBoundary';
 

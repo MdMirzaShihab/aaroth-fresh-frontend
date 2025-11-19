@@ -6,7 +6,7 @@
 export { default as dashboardService } from './dashboardService';
 export { default as usersService } from './usersService';
 export { default as vendorsService } from './vendorsService';
-export { default as restaurantsService } from './restaurantsService';
+export { default as buyersService } from './buyersService';
 export { default as catalogService } from './catalogService';
 export { default as analyticsService } from './analyticsService';
 export { default as performanceService } from './performanceService';

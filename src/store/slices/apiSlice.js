@@ -65,7 +65,7 @@ export const apiSlice = createApi({
     'Listing',
     'Category',
     'Vendor',
-    'Restaurant',
+    'Buyer',
     'Admin',
     'SystemHealth',
     'Approvals',
@@ -141,22 +141,22 @@ export const apiSlice = createApi({
       invalidatesTags: ['Approvals', 'User', 'Vendor'],
     }),
 
-    approveRestaurant: builder.mutation({
+    approveBuyer: builder.mutation({
       query: ({ id, approvalNotes }) => ({
-        url: `/admin/approvals/restaurant/${id}/approve`,
+        url: `/admin/approvals/buyer/${id}/approve`,
         method: 'PUT',
         body: { approvalNotes },
       }),
-      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
+      invalidatesTags: ['Approvals', 'User', 'Buyer'],
     }),
 
-    rejectRestaurant: builder.mutation({
+    rejectBuyer: builder.mutation({
       query: ({ id, rejectionReason }) => ({
-        url: `/admin/approvals/restaurant/${id}/reject`,
+        url: `/admin/approvals/buyer/${id}/reject`,
         method: 'PUT',
         body: { rejectionReason },
       }),
-      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
+      invalidatesTags: ['Approvals', 'User', 'Buyer'],
     }),
 
     // Profile management endpoints
@@ -179,7 +179,7 @@ export const apiSlice = createApi({
       invalidatesTags: ['User'],
     }),
 
-    // Restaurant Manager endpoints (Restaurant Owner Only)
+    // Buyer Manager endpoints (Buyer Owner Only)
     createManager: builder.mutation({
       query: (managerData) => ({
         url: '/auth/create-manager',
@@ -699,22 +699,22 @@ export const apiSlice = createApi({
       invalidatesTags: ['Approvals', 'User', 'Vendor'],
     }),
 
-    approveRestaurant: builder.mutation({
+    approveBuyer: builder.mutation({
       query: ({ id, approvalNotes }) => ({
-        url: `/admin/approvals/restaurant/${id}/approve`,
+        url: `/admin/approvals/buyer/${id}/approve`,
         method: 'PUT',
         body: { approvalNotes },
       }),
-      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
+      invalidatesTags: ['Approvals', 'User', 'Buyer'],
     }),
 
-    rejectRestaurant: builder.mutation({
+    rejectBuyer: builder.mutation({
       query: ({ id, rejectionReason }) => ({
-        url: `/admin/approvals/restaurant/${id}/reject`,
+        url: `/admin/approvals/buyer/${id}/reject`,
         method: 'PUT',
         body: { rejectionReason },
       }),
-      invalidatesTags: ['Approvals', 'User', 'Restaurant'],
+      invalidatesTags: ['Approvals', 'User', 'Buyer'],
     }),
 
     // ====================================================
@@ -766,20 +766,20 @@ export const apiSlice = createApi({
       },
     }),
 
-    // Update restaurant verification status (pending, approved, rejected)
-    updateRestaurantVerificationStatus: builder.mutation({
+    // Update buyer verification status (pending, approved, rejected)
+    updateBuyerVerificationStatus: builder.mutation({
       query: ({ id, status, reason }) => ({
-        url: `/admin/restaurants/${id}/verification`,
+        url: `/admin/buyers/${id}/verification`,
         method: 'PUT',
         body: { status, reason },
       }),
       invalidatesTags: [
         'Approvals',
-        'Restaurant',
+        'Buyer',
         'User',
-        'PendingRestaurants',
-        'ApprovedRestaurants',
-        'RejectedRestaurants',
+        'PendingBuyers',
+        'ApprovedBuyers',
+        'RejectedBuyers',
       ],
       onQueryStarted: async (
         { id, status, reason },
@@ -792,11 +792,11 @@ export const apiSlice = createApi({
             undefined,
             (draft) => {
               const approval = draft?.data?.find((a) => a._id === id);
-              if (approval && approval.restaurantId) {
-                approval.restaurantId.verificationStatus = status;
-                approval.restaurantId.adminNotes =
+              if (approval && approval.buyerId) {
+                approval.buyerId.verificationStatus = status;
+                approval.buyerId.adminNotes =
                   status === 'rejected' ? reason : null;
-                approval.restaurantId.verificationDate =
+                approval.buyerId.verificationDate =
                   status === 'approved' ? new Date().toISOString() : null;
               }
             }
@@ -827,9 +827,9 @@ export const apiSlice = createApi({
       providesTags: ['Vendor', 'Approvals'],
     }),
 
-    getAdminRestaurantsUnified: builder.query({
+    getAdminBuyersUnified: builder.query({
       query: (params = {}) => ({
-        url: '/admin/restaurants',
+        url: '/admin/buyers',
         params: {
           page: params.page || 1,
           limit: params.limit || 20,
@@ -839,7 +839,7 @@ export const apiSlice = createApi({
           sortOrder: params.sortOrder || 'desc',
         },
       }),
-      providesTags: ['Restaurant', 'Approvals'],
+      providesTags: ['Buyer', 'Approvals'],
     }),
 
     // Bulk verification operations (updated for three-state)
@@ -852,14 +852,14 @@ export const apiSlice = createApi({
       invalidatesTags: [
         'Approvals',
         'Vendor',
-        'Restaurant',
+        'Buyer',
         'User',
         'PendingVendors',
         'ApprovedVendors',
         'RejectedVendors',
-        'PendingRestaurants',
-        'ApprovedRestaurants',
-        'RejectedRestaurants',
+        'PendingBuyers',
+        'ApprovedBuyers',
+        'RejectedBuyers',
       ],
     }),
 
@@ -1005,21 +1005,21 @@ export const apiSlice = createApi({
       invalidatesTags: ['Vendor'],
     }),
 
-    getRestaurants: builder.query({
+    getBuyers: builder.query({
       query: (filters = {}) => ({
-        url: '/admin/restaurants',
+        url: '/admin/buyers',
         params: filters,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
     }),
 
-    toggleRestaurantStatus: builder.mutation({
+    toggleBuyerStatus: builder.mutation({
       query: ({ id, isActive, reason }) => ({
-        url: `/admin/restaurants/${id}/toggle-status`,
+        url: `/admin/buyers/${id}/toggle-status`,
         method: 'PUT',
         body: { isActive, reason },
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: ['Buyer'],
     }),
 
     // Additional User Management Endpoints
@@ -1043,10 +1043,10 @@ export const apiSlice = createApi({
       providesTags: ['Vendor'],
     }),
 
-    // New Unified Restaurant Management Endpoints
-    getAdminRestaurantsUnified: builder.query({
+    // New Unified Buyer Management Endpoints
+    getAdminBuyersUnified: builder.query({
       query: (params = {}) => ({
-        url: '/admin/restaurants',
+        url: '/admin/buyers',
         params: {
           page: params.page || 1,
           limit: params.limit || 20,
@@ -1056,13 +1056,13 @@ export const apiSlice = createApi({
           sortOrder: params.sortOrder || 'desc',
         },
       }),
-      providesTags: ['Restaurant', 'Approvals'],
+      providesTags: ['Buyer', 'Approvals'],
     }),
 
-    // Get single restaurant with full details
-    getRestaurantDetails: builder.query({
-      query: (id) => `/admin/restaurants/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Restaurant', id }],
+    // Get single buyer with full details
+    getBuyerDetails: builder.query({
+      query: (id) => `/admin/buyers/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Buyer', id }],
     }),
 
     updateVendorStatus: builder.mutation({
@@ -1074,31 +1074,31 @@ export const apiSlice = createApi({
       invalidatesTags: ['Vendor'],
     }),
 
-    // Update restaurant details
-    updateRestaurant: builder.mutation({
+    // Update buyer details
+    updateBuyer: builder.mutation({
       query: ({ id, ...data }) => ({
-        url: `/admin/restaurants/${id}`,
+        url: `/admin/buyers/${id}`,
         method: 'PUT',
         body: data,
       }),
       invalidatesTags: (result, error, { id }) => [
-        'Restaurant',
+        'Buyer',
         'Approvals',
-        { type: 'Restaurant', id },
+        { type: 'Buyer', id },
       ],
     }),
 
-    // Safe deactivate restaurant with dependency check
-    deactivateRestaurant: builder.mutation({
+    // Safe deactivate buyer with dependency check
+    deactivateBuyer: builder.mutation({
       query: ({ id, reason }) => ({
-        url: `/admin/restaurants/${id}/deactivate`,
+        url: `/admin/buyers/${id}/deactivate`,
         method: 'PUT',
         body: { reason },
       }),
       invalidatesTags: (result, error, { id }) => [
-        'Restaurant',
+        'Buyer',
         'Approvals',
-        { type: 'Restaurant', id },
+        { type: 'Buyer', id },
       ],
     }),
 
@@ -1110,14 +1110,14 @@ export const apiSlice = createApi({
       invalidatesTags: ['Vendor'],
     }),
 
-    // Safe delete restaurant with dependency check
-    safeDeleteRestaurant: builder.mutation({
+    // Safe delete buyer with dependency check
+    safeDeleteBuyer: builder.mutation({
       query: ({ id, reason }) => ({
-        url: `/admin/restaurants/${id}/safe-delete`,
+        url: `/admin/buyers/${id}/safe-delete`,
         method: 'DELETE',
         body: { reason },
       }),
-      invalidatesTags: ['Restaurant', 'Approvals'],
+      invalidatesTags: ['Buyer', 'Approvals'],
     }),
 
     // ================================
@@ -1197,24 +1197,24 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Create restaurant owner and restaurant
-    createRestaurantOwner: builder.mutation({
+    // Create buyer owner and buyer
+    createBuyerOwner: builder.mutation({
       query: (data) => ({
-        url: '/admin/restaurant-owners',
+        url: '/admin/buyer-owners',
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
-    // Create restaurant manager
-    createRestaurantManager: builder.mutation({
+    // Create buyer manager
+    createBuyerManager: builder.mutation({
       query: (data) => ({
-        url: '/admin/restaurant-managers',
+        url: '/admin/buyer-managers',
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     // Enhanced Analytics Endpoint
@@ -1423,77 +1423,77 @@ export const apiSlice = createApi({
       providesTags: (result, error, id) => [{ type: 'CategoryUsage', id }],
     }),
 
-    // ===== RESTAURANT MANAGEMENT SYSTEM (PROMPT 6) =====
-    // Restaurant statistics and analytics
-    getAdminRestaurantsStats: builder.query({
-      query: () => '/admin/restaurants/stats',
-      providesTags: ['Restaurant'],
+    // ===== BUYER MANAGEMENT SYSTEM (PROMPT 6) =====
+    // Buyer statistics and analytics
+    getAdminBuyersStats: builder.query({
+      query: () => '/admin/buyers/stats',
+      providesTags: ['Buyer'],
     }),
 
-    // Restaurant status management
-    updateRestaurantStatus: builder.mutation({
+    // Buyer status management
+    updateBuyerStatus: builder.mutation({
       query: ({ id, status, reason }) => ({
-        url: `/admin/restaurants/${id}/status`,
+        url: `/admin/buyers/${id}/status`,
         method: 'PUT',
         body: { status, reason },
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: ['Buyer'],
     }),
 
-    // Flag restaurant for review
-    flagRestaurant: builder.mutation({
+    // Flag buyer for review
+    flagBuyer: builder.mutation({
       query: ({ id, reason, details, severity }) => ({
-        url: `/admin/restaurants/${id}/flag`,
+        url: `/admin/buyers/${id}/flag`,
         method: 'PUT',
         body: { reason, details, severity },
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: ['Buyer'],
     }),
 
-    // Restaurant verification workflow
-    approveRestaurantVerification: builder.mutation({
+    // Buyer verification workflow
+    approveBuyerVerification: builder.mutation({
       query: ({ id, notes }) => ({
-        url: `/admin/restaurants/${id}/verification`,
+        url: `/admin/buyers/${id}/verification`,
         method: 'PUT',
         body: { status: 'approved', reason: notes },
       }),
-      invalidatesTags: ['Restaurant', 'Approvals'],
+      invalidatesTags: ['Buyer', 'Approvals'],
     }),
 
-    rejectRestaurantVerification: builder.mutation({
+    rejectBuyerVerification: builder.mutation({
       query: ({ id, reason }) => ({
-        url: `/admin/restaurants/${id}/verification`,
+        url: `/admin/buyers/${id}/verification`,
         method: 'PUT',
         body: { status: 'rejected', reason },
       }),
-      invalidatesTags: ['Restaurant', 'Approvals'],
+      invalidatesTags: ['Buyer', 'Approvals'],
     }),
 
     requestAdditionalDocuments: builder.mutation({
       query: ({ id, documentTypes, message, deadline }) => ({
-        url: `/admin/restaurants/${id}/request-documents`,
+        url: `/admin/buyers/${id}/request-documents`,
         method: 'PUT',
         body: { documentTypes, message, deadline },
       }),
-      invalidatesTags: ['Restaurant'],
+      invalidatesTags: ['Buyer'],
     }),
 
     // Manager relationship management
-    getRestaurantManagers: builder.query({
-      query: (restaurantId) => `/admin/restaurants/${restaurantId}/managers`,
-      providesTags: (result, error, restaurantId) => [
-        { type: 'Restaurant', id: restaurantId },
+    getBuyerManagers: builder.query({
+      query: (buyerId) => `/admin/buyers/${buyerId}/managers`,
+      providesTags: (result, error, buyerId) => [
+        { type: 'Buyer', id: buyerId },
         'User',
       ],
     }),
 
-    createRestaurantManager: builder.mutation({
-      query: ({ restaurantId, ...managerData }) => ({
-        url: `/admin/restaurants/${restaurantId}/managers`,
+    createBuyerManager: builder.mutation({
+      query: ({ buyerId, ...managerData }) => ({
+        url: `/admin/buyers/${buyerId}/managers`,
         method: 'POST',
         body: managerData,
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     updateManagerPermissions: builder.mutation({
@@ -1502,7 +1502,7 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: { permissions },
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     deactivateManager: builder.mutation({
@@ -1511,16 +1511,16 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: { reason },
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     transferOwnership: builder.mutation({
-      query: ({ restaurantId, newOwnerId, reason }) => ({
-        url: `/admin/restaurants/${restaurantId}/transfer-ownership`,
+      query: ({ buyerId, newOwnerId, reason }) => ({
+        url: `/admin/buyers/${buyerId}/transfer-ownership`,
         method: 'POST',
         body: { newOwnerId, reason },
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     // ===== CATALOG MANAGEMENT SYSTEM (PROMPT 6) =====
@@ -2024,14 +2024,14 @@ export const apiSlice = createApi({
       keepUnusedDataFor: 300,
     }),
 
-    // Restaurant-specific endpoints
-    getRestaurantOrders: builder.query({
+    // Buyer-specific endpoints
+    getBuyerOrders: builder.query({
       query: (params = {}) => ({
         url: '/orders',
         params,
       }),
       providesTags: (result) => [
-        { type: 'Order', id: 'RESTAURANT_LIST' },
+        { type: 'Order', id: 'BUYER_LIST' },
         ...(result?.data || []).map(({ _id }) => ({
           type: 'Order',
           id: _id,
@@ -2039,12 +2039,12 @@ export const apiSlice = createApi({
       ],
     }),
 
-    getRestaurantAnalytics: builder.query({
+    getBuyerAnalytics: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant/analytics',
+        url: '/buyer/analytics',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       // Polling disabled for MVP
     }),
 
@@ -2172,196 +2172,196 @@ export const apiSlice = createApi({
       keepUnusedDataFor: 900,
     }),
 
-    // ===== RESTAURANT DASHBOARD ENDPOINTS =====
+    // ===== BUYER DASHBOARD ENDPOINTS =====
 
-    // Restaurant Dashboard Overview - Main spending and order KPIs
-    getRestaurantDashboardOverview: builder.query({
+    // Buyer Dashboard Overview - Main spending and order KPIs
+    getBuyerDashboardOverview: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/overview',
+        url: '/buyer-dashboard/overview',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       pollingInterval: 300000, // 5-minute refresh
       // Auto-refetch disabled for MVP
     }),
 
-    // Restaurant Spending Analytics - Spending trends by vendor/category
-    getRestaurantSpending: builder.query({
+    // Buyer Spending Analytics - Spending trends by vendor/category
+    getBuyerSpending: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/spending',
+        url: '/buyer-dashboard/spending',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 900,
     }),
 
-    // Restaurant Vendor Insights - Vendor performance and reliability
-    getRestaurantVendorInsights: builder.query({
+    // Buyer Vendor Insights - Vendor performance and reliability
+    getBuyerVendorInsights: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/vendors',
+        url: '/buyer-dashboard/vendors',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Budget Tracking - Budget limits and alerts
-    getRestaurantBudget: builder.query({
+    // Buyer Budget Tracking - Budget limits and alerts
+    getBuyerBudget: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/budget',
+        url: '/buyer-dashboard/budget',
         params,
       }),
-      providesTags: ['Restaurant', 'Budget'],
+      providesTags: ['Buyer', 'Budget'],
       // Polling disabled for MVP
     }),
 
-    // Create Restaurant Budget - Create a new monthly/quarterly budget
-    createRestaurantBudget: builder.mutation({
+    // Create Buyer Budget - Create a new monthly/quarterly budget
+    createBuyerBudget: builder.mutation({
       query: (budgetData) => ({
-        url: '/restaurant-dashboard/budget',
+        url: '/buyer-dashboard/budget',
         method: 'POST',
         body: budgetData,
       }),
-      invalidatesTags: ['Restaurant', 'Budget'],
+      invalidatesTags: ['Buyer', 'Budget'],
     }),
 
-    // Update Restaurant Budget - Update an existing budget
-    updateRestaurantBudget: builder.mutation({
+    // Update Buyer Budget - Update an existing budget
+    updateBuyerBudget: builder.mutation({
       query: ({ budgetId, ...budgetData }) => ({
-        url: `/restaurant-dashboard/budget/${budgetId}`,
+        url: `/buyer-dashboard/budget/${budgetId}`,
         method: 'PUT',
         body: budgetData,
       }),
-      invalidatesTags: ['Restaurant', 'Budget'],
+      invalidatesTags: ['Buyer', 'Budget'],
     }),
 
-    // Restaurant Order History - Complete order history with filtering
-    getRestaurantOrderHistory: builder.query({
+    // Buyer Order History - Complete order history with filtering
+    getBuyerOrderHistory: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/order-history',
+        url: '/buyer-dashboard/order-history',
         params,
       }),
-      providesTags: ['Order', 'Restaurant'],
+      providesTags: ['Order', 'Buyer'],
       keepUnusedDataFor: 600,
     }),
 
-    // Restaurant Inventory Planning - Consumption and reorder suggestions
-    getRestaurantInventoryPlanning: builder.query({
+    // Buyer Inventory Planning - Consumption and reorder suggestions
+    getBuyerInventoryPlanning: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/inventory-planning',
+        url: '/buyer-dashboard/inventory-planning',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Favorite Vendors - Frequently used vendors for quick reorder
-    getRestaurantFavoriteVendors: builder.query({
+    // Buyer Favorite Vendors - Frequently used vendors for quick reorder
+    getBuyerFavoriteVendors: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/favorite-vendors',
+        url: '/buyer-dashboard/favorite-vendors',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Notifications - Budget alerts and order updates
-    getRestaurantNotifications: builder.query({
+    // Buyer Notifications - Budget alerts and order updates
+    getBuyerNotifications: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/notifications',
+        url: '/buyer-dashboard/notifications',
         params,
       }),
       providesTags: ['Notification'],
       // Polling disabled for MVP
     }),
 
-    // Restaurant Cost Analysis - Cost optimization and savings tracking
-    getRestaurantCostAnalysis: builder.query({
+    // Buyer Cost Analysis - Cost optimization and savings tracking
+    getBuyerCostAnalysis: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/cost-analysis',
+        url: '/buyer-dashboard/cost-analysis',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Purchase Patterns - Purchase behavior and forecasting
-    getRestaurantPurchasePatterns: builder.query({
+    // Buyer Purchase Patterns - Purchase behavior and forecasting
+    getBuyerPurchasePatterns: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/purchase-patterns',
+        url: '/buyer-dashboard/purchase-patterns',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Delivery Tracking - Delivery performance and timing
-    getRestaurantDeliveryTracking: builder.query({
+    // Buyer Delivery Tracking - Delivery performance and timing
+    getBuyerDeliveryTracking: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/delivery-tracking',
+        url: '/buyer-dashboard/delivery-tracking',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 900,
     }),
 
-    // Restaurant Price Analytics - Average price tracking and trends
-    getRestaurantPriceAnalytics: builder.query({
+    // Buyer Price Analytics - Average price tracking and trends
+    getBuyerPriceAnalytics: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/price-analytics',
+        url: '/buyer-dashboard/price-analytics',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Team Activity - Team member activity and order management (Owner only)
-    getRestaurantTeamActivity: builder.query({
+    // Buyer Team Activity - Team member activity and order management (Owner only)
+    getBuyerTeamActivity: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/team-activity',
+        url: '/buyer-dashboard/team-activity',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 900,
     }),
 
-    // Restaurant Reorder Suggestions - Smart reorder suggestions based on patterns
-    getRestaurantReorderSuggestions: builder.query({
+    // Buyer Reorder Suggestions - Smart reorder suggestions based on patterns
+    getBuyerReorderSuggestions: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/reorder-suggestions',
+        url: '/buyer-dashboard/reorder-suggestions',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Seasonal Insights - Seasonal purchasing trends
-    getRestaurantSeasonalInsights: builder.query({
+    // Buyer Seasonal Insights - Seasonal purchasing trends
+    getBuyerSeasonalInsights: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/seasonal-insights',
+        url: '/buyer-dashboard/seasonal-insights',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Vendor Comparison - Side-by-side vendor performance
-    getRestaurantVendorComparison: builder.query({
+    // Buyer Vendor Comparison - Side-by-side vendor performance
+    getBuyerVendorComparison: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/vendor-comparison',
+        url: '/buyer-dashboard/vendor-comparison',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
-    // Restaurant Procurement Insights - Procurement optimization recommendations
-    getRestaurantProcurementInsights: builder.query({
+    // Buyer Procurement Insights - Procurement optimization recommendations
+    getBuyerProcurementInsights: builder.query({
       query: (params = {}) => ({
-        url: '/restaurant-dashboard/procurement-insights',
+        url: '/buyer-dashboard/procurement-insights',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
       keepUnusedDataFor: 1800,
     }),
 
@@ -2386,21 +2386,21 @@ export const apiSlice = createApi({
       invalidatesTags: ['Notification'],
     }),
 
-    updateRestaurantProfile: builder.mutation({
+    updateBuyerProfile: builder.mutation({
       query: (profileData) => ({
         url: '/auth/me',
         method: 'PUT',
         body: profileData,
       }),
-      invalidatesTags: ['User', 'Restaurant'],
+      invalidatesTags: ['User', 'Buyer'],
     }),
 
-    getRestaurantManagers: builder.query({
+    getBuyerManagers: builder.query({
       query: () => '/auth/managers',
       providesTags: ['User'],
     }),
 
-    createRestaurantManager: builder.mutation({
+    createBuyerManager: builder.mutation({
       query: (managerData) => ({
         url: '/auth/create-manager',
         method: 'POST',
@@ -2409,7 +2409,7 @@ export const apiSlice = createApi({
       invalidatesTags: ['User'],
     }),
 
-    updateRestaurantManager: builder.mutation({
+    updateBuyerManager: builder.mutation({
       query: ({ id, ...managerData }) => ({
         url: `/auth/managers/${id}`,
         method: 'PUT',
@@ -2418,7 +2418,7 @@ export const apiSlice = createApi({
       invalidatesTags: ['User'],
     }),
 
-    deactivateRestaurantManager: builder.mutation({
+    deactivateBuyerManager: builder.mutation({
       query: ({ id, isActive }) => ({
         url: `/auth/managers/${id}/deactivate`,
         method: 'PUT',
@@ -2427,7 +2427,7 @@ export const apiSlice = createApi({
       invalidatesTags: ['User'],
     }),
 
-    deleteRestaurantManager: builder.mutation({
+    deleteBuyerManager: builder.mutation({
       query: ({ id }) => ({
         url: `/auth/managers/${id}`,
         method: 'DELETE',
@@ -2435,23 +2435,23 @@ export const apiSlice = createApi({
       invalidatesTags: ['User'],
     }),
 
-    // Admin Restaurant Management Endpoints
-    createAdminRestaurantOwner: builder.mutation({
+    // Admin Buyer Management Endpoints
+    createAdminBuyerOwner: builder.mutation({
       query: (ownerData) => ({
-        url: '/admin/restaurant-owners',
+        url: '/admin/buyer-owners',
         method: 'POST',
         body: ownerData,
       }),
-      invalidatesTags: ['User', 'Restaurant'],
+      invalidatesTags: ['User', 'Buyer'],
     }),
 
-    createAdminRestaurantManager: builder.mutation({
+    createAdminBuyerManager: builder.mutation({
       query: (managerData) => ({
-        url: '/admin/restaurant-managers',
+        url: '/admin/buyer-managers',
         method: 'POST',
         body: managerData,
       }),
-      invalidatesTags: ['User', 'Restaurant'],
+      invalidatesTags: ['User', 'Buyer'],
     }),
 
     // Vendor creation - creates vendor entity and associated user with role='vendor'
@@ -2464,12 +2464,12 @@ export const apiSlice = createApi({
       invalidatesTags: ['User', 'Vendor'],
     }),
 
-    getRestaurantsList: builder.query({
+    getBuyersList: builder.query({
       query: (params = {}) => ({
-        url: '/admin/restaurants',
+        url: '/admin/buyers',
         params,
       }),
-      providesTags: ['Restaurant'],
+      providesTags: ['Buyer'],
     }),
 
     // Admin - User Management
@@ -2573,22 +2573,22 @@ export const apiSlice = createApi({
 
     // Legacy verifyVendor removed - replaced by unified approval system
 
-    // Admin - Restaurant Management
-    getAdminRestaurants: builder.query({
+    // Admin - Buyer Management
+    getAdminBuyers: builder.query({
       query: (params = {}) => ({
-        url: '/admin/restaurants',
+        url: '/admin/buyers',
         params,
       }),
       providesTags: (result) => [
-        { type: 'Restaurant', id: 'ADMIN_LIST' },
+        { type: 'Buyer', id: 'ADMIN_LIST' },
         ...(result?.data || []).map(({ _id }) => ({
-          type: 'Restaurant',
+          type: 'Buyer',
           id: _id,
         })),
       ],
     }),
 
-    // Legacy verifyRestaurant removed - replaced by unified approval system
+    // Legacy verifyBuyer removed - replaced by unified approval system
 
     // Admin - Listings Management (Updated to match backend routes)
     getAdminListings: builder.query({
@@ -2746,16 +2746,16 @@ export const apiSlice = createApi({
       ],
     }),
 
-    // Get all restaurants for admin management
-    getAllRestaurantsAdmin: builder.query({
+    // Get all buyers for admin management
+    getAllBuyersAdmin: builder.query({
       query: (params = {}) => ({
-        url: '/admin/restaurants',
+        url: '/admin/buyers',
         params,
       }),
       providesTags: (result) => [
-        { type: 'Restaurant', id: 'ADMIN_ALL_LIST' },
+        { type: 'Buyer', id: 'ADMIN_ALL_LIST' },
         ...(result?.data || []).map(({ _id }) => ({
-          type: 'Restaurant',
+          type: 'Buyer',
           id: _id,
         })),
       ],
@@ -2768,32 +2768,32 @@ export const apiSlice = createApi({
       // Polling disabled for MVP
     }),
 
-    // Restaurant Manager Operations
+    // Buyer Manager Operations
     updateManagerPermissions: builder.mutation({
       query: ({ managerId, permissions }) => ({
-        url: `/admin/restaurants/managers/${managerId}/permissions`,
+        url: `/admin/buyers/managers/${managerId}/permissions`,
         method: 'PUT',
         body: { permissions },
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     deactivateManager: builder.mutation({
       query: ({ managerId, reason }) => ({
-        url: `/admin/restaurants/managers/${managerId}/deactivate`,
+        url: `/admin/buyers/managers/${managerId}/deactivate`,
         method: 'PUT',
         body: { reason },
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     transferOwnership: builder.mutation({
-      query: ({ restaurantId, newOwnerId, reason }) => ({
-        url: `/admin/restaurants/${restaurantId}/transfer-ownership`,
+      query: ({ buyerId, newOwnerId, reason }) => ({
+        url: `/admin/buyers/${buyerId}/transfer-ownership`,
         method: 'PUT',
         body: { newOwnerId, reason },
       }),
-      invalidatesTags: ['Restaurant', 'User'],
+      invalidatesTags: ['Buyer', 'User'],
     }),
 
     // Product Management Operations
@@ -2851,14 +2851,14 @@ export const {
   useGetAllApprovalsQuery,
   useApproveVendorMutation,
   useRejectVendorMutation,
-  useApproveRestaurantMutation,
-  useRejectRestaurantMutation,
+  useApproveBuyerMutation,
+  useRejectBuyerMutation,
 
   // Profile Management
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
 
-  // Manager Management (Restaurant Owner Only) - replaced by restaurant-specific ones below
+  // Manager Management (Buyer Owner Only) - replaced by buyer-specific ones below
 
   // Public endpoints
   useGetCategoriesQuery,
@@ -2960,59 +2960,59 @@ export const {
   useGetOrderWorkflowStepsQuery,
   useUpdateOrderFulfillmentStepMutation,
 
-  // Restaurant - Dashboard & Analytics
-  useGetRestaurantOrdersQuery,
-  useGetRestaurantAnalyticsQuery,
+  // Buyer - Dashboard & Analytics
+  useGetBuyerOrdersQuery,
+  useGetBuyerAnalyticsQuery,
   useGetProductListingsQuery,
 
-  // Restaurant - Advanced Dashboard Endpoints
-  useGetRestaurantDashboardOverviewQuery,
-  useGetRestaurantSpendingQuery,
-  useGetRestaurantVendorInsightsQuery,
-  useGetRestaurantBudgetQuery,
-  useCreateRestaurantBudgetMutation,
-  useUpdateRestaurantBudgetMutation,
-  useGetRestaurantOrderHistoryQuery,
-  useGetRestaurantInventoryPlanningQuery,
-  useGetRestaurantFavoriteVendorsQuery,
-  useGetRestaurantNotificationsQuery,
-  useGetRestaurantCostAnalysisQuery,
-  useGetRestaurantPurchasePatternsQuery,
-  useGetRestaurantDeliveryTrackingQuery,
-  useGetRestaurantPriceAnalyticsQuery,
-  useGetRestaurantTeamActivityQuery,
-  useGetRestaurantReorderSuggestionsQuery,
-  useGetRestaurantSeasonalInsightsQuery,
-  useGetRestaurantVendorComparisonQuery,
-  useGetRestaurantProcurementInsightsQuery,
+  // Buyer - Advanced Dashboard Endpoints
+  useGetBuyerDashboardOverviewQuery,
+  useGetBuyerSpendingQuery,
+  useGetBuyerVendorInsightsQuery,
+  useGetBuyerBudgetQuery,
+  useCreateBuyerBudgetMutation,
+  useUpdateBuyerBudgetMutation,
+  useGetBuyerOrderHistoryQuery,
+  useGetBuyerInventoryPlanningQuery,
+  useGetBuyerFavoriteVendorsQuery,
+  useGetBuyerNotificationsQuery,
+  useGetBuyerCostAnalysisQuery,
+  useGetBuyerPurchasePatternsQuery,
+  useGetBuyerDeliveryTrackingQuery,
+  useGetBuyerPriceAnalyticsQuery,
+  useGetBuyerTeamActivityQuery,
+  useGetBuyerReorderSuggestionsQuery,
+  useGetBuyerSeasonalInsightsQuery,
+  useGetBuyerVendorComparisonQuery,
+  useGetBuyerProcurementInsightsQuery,
 
   // Shared Notification Management
   useMarkNotificationsAsReadMutation,
   useMarkAllNotificationsAsReadMutation,
 
-  // Restaurant - Profile Management
-  useUpdateRestaurantProfileMutation,
+  // Buyer - Profile Management
+  useUpdateBuyerProfileMutation,
 
-  // Restaurant - Manager Management
-  useGetRestaurantManagersQuery,
-  useCreateRestaurantManagerMutation,
-  useUpdateRestaurantManagerMutation,
-  useDeactivateRestaurantManagerMutation,
-  useDeleteRestaurantManagerMutation,
+  // Buyer - Manager Management
+  useGetBuyerManagersQuery,
+  useCreateBuyerManagerMutation,
+  useUpdateBuyerManagerMutation,
+  useDeactivateBuyerManagerMutation,
+  useDeleteBuyerManagerMutation,
 
-  // Admin - Restaurant Management
-  useCreateAdminRestaurantOwnerMutation,
-  useCreateAdminRestaurantManagerMutation,
+  // Admin - Buyer Management
+  useCreateAdminBuyerOwnerMutation,
+  useCreateAdminBuyerManagerMutation,
   useCreateAdminVendorMutation,
-  useGetRestaurantsListQuery,
+  useGetBuyersListQuery,
 
   // Admin - Vendor Management
   useGetAdminVendorsQuery,
   // Legacy useVerifyVendorMutation removed - use unified approval system
 
-  // Admin - Restaurant Management (Extended)
-  useGetAdminRestaurantsQuery,
-  // Legacy useVerifyRestaurantMutation removed - use unified approval system
+  // Admin - Buyer Management (Extended)
+  useGetAdminBuyersQuery,
+  // Legacy useVerifyBuyerMutation removed - use unified approval system
 
   // Admin - Listings Management
   useGetAdminFeaturedListingsQuery,
@@ -3026,19 +3026,19 @@ export const {
 
   // Three-State Verification Management (NEW)
   useUpdateVendorVerificationStatusMutation,
-  useUpdateRestaurantVerificationStatusMutation,
+  useUpdateBuyerVerificationStatusMutation,
   useBulkUpdateVerificationStatusMutation,
 
   // New Unified Admin Endpoints
   useGetAdminVendorsUnifiedQuery,
-  useGetAdminRestaurantsUnifiedQuery,
+  useGetAdminBuyersUnifiedQuery,
 
-  // New Restaurant Management Endpoints
-  useGetRestaurantDetailsQuery,
-  useUpdateRestaurantMutation,
-  useDeactivateRestaurantMutation,
-  useSafeDeleteRestaurantMutation,
-  useCreateRestaurantOwnerMutation,
+  // New Buyer Management Endpoints
+  useGetBuyerDetailsQuery,
+  useUpdateBuyerMutation,
+  useDeactivateBuyerMutation,
+  useSafeDeleteBuyerMutation,
+  useCreateBuyerOwnerMutation,
 
   // New Unified Vendor Management Endpoints
   useGetVendorDetailsQuery,
@@ -3071,8 +3071,8 @@ export const {
 
   // Enhanced User Management
   useGetVendorsQuery,
-  useGetRestaurantsQuery,
-  useToggleRestaurantStatusMutation,
+  useGetBuyersQuery,
+  useToggleBuyerStatusMutation,
 
   // Additional User Management
   useGetAllVendorsQuery,
@@ -3093,15 +3093,15 @@ export const {
   // Business Verification System (Updated)
   useGetUserBusinessStatusQuery,
   useGetAllVendorsAdminQuery,
-  useGetAllRestaurantsAdminQuery,
+  useGetAllBuyersAdminQuery,
   useGetVerificationStatsQuery,
 
-  // Restaurant Management System (Prompt 6)
-  useGetAdminRestaurantsStatsQuery,
-  useUpdateRestaurantStatusMutation,
-  useFlagRestaurantMutation,
-  useApproveRestaurantVerificationMutation,
-  useRejectRestaurantVerificationMutation,
+  // Buyer Management System (Prompt 6)
+  useGetAdminBuyersStatsQuery,
+  useUpdateBuyerStatusMutation,
+  useFlagBuyerMutation,
+  useApproveBuyerVerificationMutation,
+  useRejectBuyerVerificationMutation,
   useRequestAdditionalDocumentsMutation,
   useFlagProductMutation,
   useReorderCategoriesMutation,
@@ -3117,7 +3117,7 @@ export const {
   useBulkModerateMutation,
   useDeleteListingMutation,
 
-  // Restaurant Manager Operations
+  // Buyer Manager Operations
   useUpdateManagerPermissionsMutation,
   useDeactivateManagerMutation,
   useTransferOwnershipMutation,

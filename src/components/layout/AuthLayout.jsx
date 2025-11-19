@@ -28,7 +28,7 @@ const AuthLayout = ({
     switch (backgroundVariant) {
       case 'vendor':
         return 'bg-gradient-to-br from-earthy-beige via-white to-earthy-yellow/10';
-      case 'restaurant':
+      case 'buyer':
         return 'bg-gradient-to-br from-sage-green/10 via-white to-earthy-beige/20';
       case 'admin':
         return 'bg-gradient-to-br from-muted-olive/5 via-white to-earthy-beige/10';
@@ -168,14 +168,14 @@ export const VendorRegisterLayout = ({ children }) => (
   </AuthLayout>
 );
 
-export const RestaurantRegisterLayout = ({ children }) => (
+export const BuyerRegisterLayout = ({ children }) => (
   <AuthLayout
-    title="Join as Restaurant"
-    subtitle="Access fresh ingredients for your restaurant"
+    title="Join as Buyer"
+    subtitle="Access fresh ingredients for your buyer"
     showBackButton
     backButtonText="Back to Registration"
     backButtonPath="/register"
-    backgroundVariant="restaurant"
+    backgroundVariant="buyer"
   >
     {children}
   </AuthLayout>

@@ -504,9 +504,9 @@ export const useManualNotificationFetch = () => {
         case 'vendor':
           endpoint = '/vendor-dashboard/notifications';
           break;
-        case 'restaurantOwner':
-        case 'restaurantManager':
-          endpoint = '/restaurant-dashboard/notifications';
+        case 'buyerOwner':
+        case 'buyerManager':
+          endpoint = '/buyer-dashboard/notifications';
           break;
         case 'admin':
           endpoint = '/admin/notifications';

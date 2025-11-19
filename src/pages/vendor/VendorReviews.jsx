@@ -26,7 +26,7 @@ const VendorReviews = () => {
     {
       id: 1,
       productName: 'Fresh Tomatoes',
-      customerName: 'Golden Fork Restaurant',
+      customerName: 'Golden Fork Buyer',
       rating: 5,
       comment: 'Excellent quality! Always fresh and delivered on time.',
       date: '2025-11-12',

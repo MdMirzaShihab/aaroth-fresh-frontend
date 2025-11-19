@@ -488,14 +488,14 @@ export const phoneInputUtils = {
 export const roleUtils = {
   isAdmin: (userRole) => userRole === 'admin',
   isVendor: (userRole) => userRole === 'vendor',
-  isRestaurantOwner: (userRole) => userRole === 'restaurantOwner',
-  isRestaurantManager: (userRole) => userRole === 'restaurantManager',
-  isRestaurantUser: (userRole) =>
-    ['restaurantOwner', 'restaurantManager'].includes(userRole),
+  isBuyerOwner: (userRole) => userRole === 'buyerOwner',
+  isBuyerManager: (userRole) => userRole === 'buyerManager',
+  isBuyerUser: (userRole) =>
+    ['buyerOwner', 'buyerManager'].includes(userRole),
 
   canManageListings: (userRole) => ['admin', 'vendor'].includes(userRole),
   canPlaceOrders: (userRole) =>
-    ['restaurantOwner', 'restaurantManager'].includes(userRole),
+    ['buyerOwner', 'buyerManager'].includes(userRole),
   canManageUsers: (userRole) => userRole === 'admin',
   canViewAnalytics: (userRole) => userRole === 'admin',
   canApproveVendors: (userRole) => userRole === 'admin',

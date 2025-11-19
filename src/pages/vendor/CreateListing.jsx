@@ -50,8 +50,13 @@ const CreateListing = () => {
     defaultValues: {
       pricing: [
         {
-          pricePerUnit: '',
+          pricePerBaseUnit: '',
           unit: 'kg',
+          enablePackSelling: false,
+          packSize: '',
+          packUnit: 'pack',
+          minimumPacks: 1,
+          maximumPacks: '',
           bulkDiscount: {
             minQuantity: '',
             discountPercentage: '',
@@ -393,16 +398,17 @@ const CreateListing = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <FormField
-                    label="Price per Unit"
-                    error={errors.pricing?.[index]?.pricePerUnit?.message}
+                    label="Price per Base Unit"
+                    error={errors.pricing?.[index]?.pricePerBaseUnit?.message}
                     required
+                    hint="Price per kg, piece, etc."
                   >
                     <input
                       type="number"
                       step="0.01"
-                      {...register(`pricing.${index}.pricePerUnit`, {
+                      {...register(`pricing.${index}.pricePerBaseUnit`, {
                         required: 'Price is required',
                         min: {
                           value: 0.01,
@@ -415,7 +421,7 @@ const CreateListing = () => {
                   </FormField>
 
                   <FormField
-                    label="Unit"
+                    label="Base Unit"
                     error={errors.pricing?.[index]?.unit?.message}
                     required
                   >
@@ -425,13 +431,155 @@ const CreateListing = () => {
                       })}
                       className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
                     >
-                      {unitOptions.map((option) => (
+                      {unitOptions.filter(opt => opt.value !== 'pack').map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
                       ))}
                     </select>
                   </FormField>
+                </div>
+
+                {/* Pack-Based Selling */}
+                <div className="bg-mint-fresh/5 border border-mint-fresh/20 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h4 className="font-medium text-text-dark flex items-center gap-2">
+                        <Package className="w-4 h-4 text-bottle-green" />
+                        Pack-Based Selling
+                      </h4>
+                      <p className="text-sm text-text-muted mt-1">
+                        Sell products in fixed pack sizes (e.g., 60kg packs)
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        {...register(`pricing.${index}.enablePackSelling`)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-mint-fresh/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-mint-fresh"></div>
+                    </label>
+                  </div>
+
+                  {watch(`pricing.${index}.enablePackSelling`) && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          label="Pack Size"
+                          error={errors.pricing?.[index]?.packSize?.message}
+                          required
+                          hint={`How many ${watch(`pricing.${index}.unit`) || 'units'} per pack`}
+                        >
+                          <input
+                            type="number"
+                            step="0.01"
+                            {...register(`pricing.${index}.packSize`, {
+                              required: watch(`pricing.${index}.enablePackSelling`)
+                                ? 'Pack size is required when pack selling is enabled'
+                                : false,
+                              min: {
+                                value: 0.01,
+                                message: 'Pack size must be greater than 0',
+                              },
+                            })}
+                            placeholder="60"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-mint-fresh/20"
+                          />
+                        </FormField>
+
+                        <FormField label="Pack Unit Name">
+                          <select
+                            {...register(`pricing.${index}.packUnit`)}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-mint-fresh/20 bg-white"
+                          >
+                            <option value="pack">Pack</option>
+                            <option value="bundle">Bundle</option>
+                            <option value="box">Box</option>
+                            <option value="crate">Crate</option>
+                            <option value="bag">Bag</option>
+                          </select>
+                        </FormField>
+                      </div>
+
+                      {/* Calculated Pack Price Display */}
+                      {watch(`pricing.${index}.pricePerBaseUnit`) && watch(`pricing.${index}.packSize`) && (
+                        <div className="bg-white border border-mint-fresh/30 rounded-xl p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-text-muted">Calculated Price per Pack</p>
+                              <p className="text-2xl font-semibold text-bottle-green mt-1">
+                                ৳{(
+                                  parseFloat(watch(`pricing.${index}.pricePerBaseUnit`) || 0) *
+                                  parseFloat(watch(`pricing.${index}.packSize`) || 0)
+                                ).toFixed(2)}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-text-muted">
+                                {watch(`pricing.${index}.packSize`)} {watch(`pricing.${index}.unit`)} × ৳{watch(`pricing.${index}.pricePerBaseUnit`)}
+                              </p>
+                              <p className="text-xs text-text-muted mt-1">
+                                per {watch(`pricing.${index}.packUnit`) || 'pack'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          label="Minimum Packs"
+                          error={errors.pricing?.[index]?.minimumPacks?.message}
+                          hint="Minimum order in number of packs"
+                        >
+                          <input
+                            type="number"
+                            step="1"
+                            {...register(`pricing.${index}.minimumPacks`, {
+                              min: {
+                                value: 1,
+                                message: 'Minimum must be at least 1 pack',
+                              },
+                              validate: value => !value || Number.isInteger(parseFloat(value)) || 'Must be a whole number'
+                            })}
+                            placeholder="1"
+                            defaultValue="1"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-mint-fresh/20"
+                          />
+                        </FormField>
+
+                        <FormField
+                          label="Maximum Packs (Optional)"
+                          error={errors.pricing?.[index]?.maximumPacks?.message}
+                          hint="Maximum order in number of packs"
+                        >
+                          <input
+                            type="number"
+                            step="1"
+                            {...register(`pricing.${index}.maximumPacks`, {
+                              validate: value => {
+                                if (!value) return true;
+                                if (!Number.isInteger(parseFloat(value))) return 'Must be a whole number';
+                                const minPacks = parseInt(watch(`pricing.${index}.minimumPacks`) || 1);
+                                return parseInt(value) >= minPacks || `Must be at least ${minPacks}`;
+                              }
+                            })}
+                            placeholder="10"
+                            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-mint-fresh/20"
+                          />
+                        </FormField>
+                      </div>
+
+                      <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-3">
+                        <p className="text-sm text-blue-800 flex items-center gap-2">
+                          <Info className="w-4 h-4 flex-shrink-0" />
+                          Buyers will only be able to purchase in multiples of {watch(`pricing.${index}.packSize`) || 0} {watch(`pricing.${index}.unit`)}.
+                          {watch(`pricing.${index}.minimumPacks`) && ` Minimum order: ${watch(`pricing.${index}.minimumPacks`)} ${watch(`pricing.${index}.packUnit`) || 'pack'}(s).`}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bulk Discount */}
@@ -474,8 +622,13 @@ const CreateListing = () => {
               variant="outline"
               onClick={() =>
                 appendPricing({
-                  pricePerUnit: '',
+                  pricePerBaseUnit: '',
                   unit: 'kg',
+                  enablePackSelling: false,
+                  packSize: '',
+                  packUnit: 'pack',
+                  minimumPacks: 1,
+                  maximumPacks: '',
                   bulkDiscount: { minQuantity: '', discountPercentage: '' },
                 })
               }

@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Building2, Save, Upload, Mail, Phone, MapPin } from 'lucide-react';
+import { X, Building2, Save, Upload, Mail, Phone, MapPin, AlertCircle } from 'lucide-react';
 import { Card } from '../../../../components/ui/Card';
 import Button from '../../../../components/ui/Button';
 import { useUpdateVendorMutation } from '../../../../services/admin/vendorsService';
+import { useGetAdminMarketsQuery } from '../../../../store/slices/admin/adminApiSlice';
 import toast from 'react-hot-toast';
 
 const VendorEditModal = ({
@@ -30,7 +31,27 @@ const VendorEditModal = ({
     yearsInBusiness: vendor?.yearsInBusiness || '',
   });
 
+  const [selectedMarkets, setSelectedMarkets] = useState([]);
+
   const [updateVendor, { isLoading: isUpdating }] = useUpdateVendorMutation();
+
+  // Fetch active markets
+  const { data: marketsData } = useGetAdminMarketsQuery({
+    status: 'active',
+    limit: 100,
+  });
+
+  const availableMarkets = marketsData?.data || [];
+
+  // Initialize selected markets when vendor changes
+  useEffect(() => {
+    if (vendor?.markets) {
+      const marketIds = vendor.markets.map(m =>
+        typeof m === 'string' ? m : m._id
+      );
+      setSelectedMarkets(marketIds);
+    }
+  }, [vendor]);
 
   const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({
@@ -49,13 +70,27 @@ const VendorEditModal = ({
     }));
   }, []);
 
+  const handleMarketToggle = (marketId) => {
+    setSelectedMarkets((prev) =>
+      prev.includes(marketId)
+        ? prev.filter((id) => id !== marketId)
+        : [...prev, marketId]
+    );
+  };
+
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    
+
+    // Validate markets
+    if (selectedMarkets.length === 0) {
+      toast.error('Please select at least one market');
+      return;
+    }
+
     try {
       // Create FormData for potential file uploads
       const formDataToSend = new FormData();
-      
+
       // Append all form fields
       Object.keys(formData).forEach(key => {
         if (key === 'address') {
@@ -64,6 +99,9 @@ const VendorEditModal = ({
           formDataToSend.append(key, formData[key]);
         }
       });
+
+      // Append markets
+      formDataToSend.append('markets', JSON.stringify(selectedMarkets));
 
       await updateVendor({
         vendorId: vendor._id,
@@ -76,7 +114,7 @@ const VendorEditModal = ({
     } catch (error) {
       toast.error(`Failed to update vendor: ${error.message}`);
     }
-  }, [formData, vendor?._id, updateVendor, onVendorUpdate, onClose]);
+  }, [formData, selectedMarkets, vendor?._id, updateVendor, onVendorUpdate, onClose]);
 
   if (!vendor) return null;
 
@@ -290,6 +328,70 @@ const VendorEditModal = ({
                         />
                       </div>
                     </div>
+                  </div>
+
+                  {/* Market Selection */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
+                      <Building2 className="w-5 h-5 text-muted-olive" />
+                      Operating Markets *
+                    </h3>
+                    <p className="text-sm text-text-muted mb-4">
+                      Select the markets where this vendor operates (minimum 1 required)
+                    </p>
+
+                    {availableMarkets.length === 0 ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                        <p className="text-sm text-amber-800">
+                          No active markets available. Please create markets first.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-[300px] overflow-y-auto border border-white/20 rounded-2xl p-4 bg-white/5 backdrop-blur-sm">
+                        {availableMarkets.map((market) => (
+                          <label
+                            key={market._id}
+                            className="flex items-center gap-3 p-3 border border-white/20 rounded-xl cursor-pointer hover:bg-mint-fresh/5 transition-colors min-h-[44px]"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedMarkets.includes(market._id)}
+                              onChange={() => handleMarketToggle(market._id)}
+                              className="w-5 h-5 rounded border-gray-300 text-bottle-green focus:ring-bottle-green touch-target"
+                            />
+                            <div className="flex-1">
+                              <p className="font-medium text-text-dark">
+                                {market.name}
+                              </p>
+                              <p className="text-sm text-text-muted">
+                                {market.location?.city || 'N/A'}
+                              </p>
+                            </div>
+                            {market.image && (
+                              <img
+                                src={market.image}
+                                alt={market.name}
+                                className="w-12 h-10 object-cover rounded-lg"
+                              />
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedMarkets.length === 0 && (
+                      <p className="text-tomato-red text-sm mt-2 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        Please select at least one market
+                      </p>
+                    )}
+
+                    {selectedMarkets.length > 0 && (
+                      <p className="text-mint-fresh text-sm mt-2 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        {selectedMarkets.length} market(s) selected
+                      </p>
+                    )}
                   </div>
 
                   {/* Actions */}

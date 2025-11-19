@@ -36,9 +36,6 @@ import {
   useGetAllListingsQuery,
   useGetListingPerformanceQuery,
 } from '../../store/slices/vendor/vendorListingsApi';
-import {
-  useGetInventoryAnalyticsQuery as useGetInventoryAnalyticsQueryAlt,
-} from '../../store/slices/vendor/vendorInventoryApi';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -101,11 +98,6 @@ const VendorAnalytics = () => {
     refetch: refetchListingPerformance,
   } = useGetListingPerformanceQuery({ period: getPeriod(timeRange) });
 
-  const {
-    data: inventoryAnalytics,
-    isLoading: inventoryAnalyticsLoading,
-  } = useGetInventoryAnalyticsQueryAlt({ period: getPeriod(timeRange) });
-
   // Consolidated loading state
   const analyticsLoading = dashboardLoading || revenueLoading || customerLoading;
   const performanceLoading = orderAnalyticsLoading || orderPerformanceLoading || listingPerformanceLoading;
@@ -117,7 +109,6 @@ const VendorAnalytics = () => {
     // Profit data is included in revenueData from backend
     customers: customerData || {},
     orders: orderAnalytics || {},
-    inventory: inventoryAnalytics || {},
     ...dashboardData,
   };
   

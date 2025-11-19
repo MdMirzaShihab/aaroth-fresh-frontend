@@ -12,7 +12,6 @@ import { authMiddlewareWithRetry } from './middleware/authMiddleware';
 // Vendor API Slices
 import vendorAuthApi from './slices/vendor/vendorAuthApi';
 import vendorDashboardApi from './slices/vendor/vendorDashboardApi';
-import vendorInventoryApi from './slices/vendor/vendorInventoryApi';
 import vendorListingsApi from './slices/vendor/vendorListingsApi';
 import vendorOrdersApi from './slices/vendor/vendorOrdersApi';
 import vendorExtensionsApi from './slices/vendor/vendorExtensionsApi';
@@ -30,7 +29,6 @@ export const store = configureStore({
     // Vendor API reducers
     vendorAuthApi: vendorAuthApi.reducer,
     vendorDashboardApi: vendorDashboardApi.reducer,
-    vendorInventoryApi: vendorInventoryApi.reducer,
     vendorListingsApi: vendorListingsApi.reducer,
     vendorOrdersApi: vendorOrdersApi.reducer,
     vendorExtensionsApi: vendorExtensionsApi.reducer,
@@ -46,7 +44,6 @@ export const store = configureStore({
       // Vendor API middlewares
       vendorAuthApi.middleware,
       vendorDashboardApi.middleware,
-      vendorInventoryApi.middleware,
       vendorListingsApi.middleware,
       vendorOrdersApi.middleware,
       vendorExtensionsApi.middleware,

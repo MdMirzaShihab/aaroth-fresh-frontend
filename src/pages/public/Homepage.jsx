@@ -70,7 +70,7 @@ const Homepage = () => {
             </h1>
             <p className="text-xl text-text-muted mb-8 max-w-2xl mx-auto">
               Connect with local vegetable vendors and get the freshest produce
-              delivered to your restaurant. Quality guaranteed.
+              delivered to your buyer. Quality guaranteed.
             </p>
           </div>
 
@@ -100,7 +100,7 @@ const Homepage = () => {
               Why Choose Aaroth Fresh?
             </h2>
             <p className="text-xl text-text-muted max-w-2xl mx-auto">
-              We connect restaurants with local farmers for the freshest
+              We connect buyers with local farmers for the freshest
               ingredients
             </p>
           </div>
@@ -140,7 +140,7 @@ const Homepage = () => {
               </h3>
               <p className="text-text-muted">
                 Simple ordering process with reliable delivery to your
-                restaurant.
+                buyer.
               </p>
             </div>
           </div>
@@ -315,7 +315,7 @@ const Homepage = () => {
                 <ShoppingCart className="w-8 h-8 text-white" />
               </div>
               <div className="text-4xl font-bold text-muted-olive mb-2">5+</div>
-              <div className="text-text-muted">Restaurants</div>
+              <div className="text-text-muted">Buyers</div>
             </div>
             <div className="glass rounded-3xl p-8">
               <div className="w-16 h-16 bg-sage-green/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -350,7 +350,7 @@ const Homepage = () => {
               Ready to Get Fresh?
             </h2>
             <p className="text-xl text-text-muted mb-8">
-              Join hundreds of restaurants already using Aaroth Fresh
+              Join hundreds of buyers already using Aaroth Fresh
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

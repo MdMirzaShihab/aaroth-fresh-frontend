@@ -33,13 +33,13 @@ const AboutPage = () => {
       icon: Heart,
       title: 'Quality First',
       description:
-        'Ensuring only the freshest, highest-quality produce reaches restaurant kitchens across the nation.',
+        'Ensuring only the freshest, highest-quality produce reaches buyer kitchens across the nation.',
     },
     {
       icon: Users,
       title: 'Community',
       description:
-        'Building lasting relationships between local vendors and restaurant owners for mutual growth.',
+        'Building lasting relationships between local vendors and buyer owners for mutual growth.',
     },
     {
       icon: Shield,
@@ -77,7 +77,7 @@ const AboutPage = () => {
 
   const stats = [
     { number: '500+', label: 'Verified Vendors' },
-    { number: '2,000+', label: 'Restaurant Partners' },
+    { number: '2,000+', label: 'Buyer Partners' },
     { number: '10M+', label: 'Pounds Delivered' },
     { number: '99.2%', label: 'On-time Delivery' },
   ];
@@ -95,7 +95,7 @@ const AboutPage = () => {
             <h1 className="text-5xl md:text-6xl font-bold text-text-dark mb-8">
               Revolutionizing
               <span className="text-muted-olive block">
-                Restaurant Sourcing
+                Buyer Sourcing
               </span>
             </h1>
             <p className="text-xl text-text-muted mb-12 max-w-3xl mx-auto leading-relaxed">
@@ -148,7 +148,7 @@ const AboutPage = () => {
             </h2>
             <div className="max-w-4xl mx-auto">
               <p className="text-xl text-text-muted leading-relaxed mb-8">
-                To transform how restaurants source their ingredients by
+                To transform how buyers source their ingredients by
                 creating transparent, sustainable connections between local
                 producers and professional kitchens.
               </p>
@@ -156,7 +156,7 @@ const AboutPage = () => {
                 <p className="text-lg text-text-dark leading-relaxed">
                   "We believe that great food starts with great ingredients. By
                   eliminating the middleman and fostering direct relationships,
-                  we ensure restaurants get the freshest produce while
+                  we ensure buyers get the freshest produce while
                   supporting local farming communities. Every order placed on
                   Aaroth Fresh is a step towards a more sustainable and
                   connected food ecosystem."
@@ -252,7 +252,7 @@ const AboutPage = () => {
               How It Works
             </h2>
             <p className="text-xl text-text-muted max-w-3xl mx-auto">
-              Simple, streamlined process designed for busy restaurant
+              Simple, streamlined process designed for busy buyer
               professionals.
             </p>
           </div>

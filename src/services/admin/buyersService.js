@@ -1,46 +1,46 @@
 /**
- * Restaurants Service - Admin V2
- * Business logic for restaurant management and verification workflows
+ * Buyers Service - Admin V2
+ * Business logic for buyer management and verification workflows
  */
 
 import { format } from 'date-fns';
 
 /**
- * Transform restaurant data for admin management
+ * Transform buyer data for admin management
  */
-export const transformRestaurantsData = (rawData) => {
+export const transformBuyersData = (rawData) => {
   if (!rawData?.data) return [];
 
-  return rawData.data.map((restaurant) => ({
-    id: restaurant._id,
-    businessName: restaurant.businessName,
-    ownerName: restaurant.userId?.name || 'Unknown',
-    email: restaurant.userId?.email,
-    phone: restaurant.userId?.phone,
-    cuisineType: restaurant.cuisineType || 'Not specified',
-    verificationStatus: restaurant.verificationStatus || 'pending',
-    isActive: restaurant.isActive,
-    location: formatAddress(restaurant.address),
-    businessLicense: restaurant.businessLicense,
-    totalOrders: restaurant.totalOrders || 0,
-    totalSpent: restaurant.totalSpent || 0,
-    averageOrderValue: calculateAverageOrderValue(restaurant),
-    lastOrderDate: restaurant.lastOrderDate
-      ? format(new Date(restaurant.lastOrderDate), 'PPp')
+  return rawData.data.map((buyer) => ({
+    id: buyer._id,
+    businessName: buyer.businessName,
+    ownerName: buyer.userId?.name || 'Unknown',
+    email: buyer.userId?.email,
+    phone: buyer.userId?.phone,
+    cuisineType: buyer.cuisineType || 'Not specified',
+    verificationStatus: buyer.verificationStatus || 'pending',
+    isActive: buyer.isActive,
+    location: formatAddress(buyer.address),
+    businessLicense: buyer.businessLicense,
+    totalOrders: buyer.totalOrders || 0,
+    totalSpent: buyer.totalSpent || 0,
+    averageOrderValue: calculateAverageOrderValue(buyer),
+    lastOrderDate: buyer.lastOrderDate
+      ? format(new Date(buyer.lastOrderDate), 'PPp')
       : 'Never',
-    createdAt: format(new Date(restaurant.createdAt), 'PPp'),
-    verificationDate: restaurant.verificationDate
-      ? format(new Date(restaurant.verificationDate), 'PPp')
+    createdAt: format(new Date(buyer.createdAt), 'PPp'),
+    verificationDate: buyer.verificationDate
+      ? format(new Date(buyer.verificationDate), 'PPp')
       : null,
     urgencyLevel: calculateVerificationUrgency(
-      restaurant.createdAt,
-      restaurant.verificationStatus
+      buyer.createdAt,
+      buyer.verificationStatus
     ),
-    riskScore: calculateRestaurantRiskScore(restaurant),
-    orderingMetrics: calculateOrderingMetrics(restaurant),
-    complianceStatus: assessComplianceStatus(restaurant),
-    managersCount: restaurant.managersCount || 0,
-    availableActions: getRestaurantActions(restaurant),
+    riskScore: calculateBuyerRiskScore(buyer),
+    orderingMetrics: calculateOrderingMetrics(buyer),
+    complianceStatus: assessComplianceStatus(buyer),
+    managersCount: buyer.managersCount || 0,
+    availableActions: getBuyerActions(buyer),
   }));
 };
 
@@ -70,9 +70,9 @@ export const formatDate = (dateString) => {
 /**
  * Calculate average order value
  */
-const calculateAverageOrderValue = (restaurant) => {
-  if (!restaurant.totalOrders || restaurant.totalOrders === 0) return 0;
-  return (restaurant.totalSpent / restaurant.totalOrders).toFixed(2);
+const calculateAverageOrderValue = (buyer) => {
+  if (!buyer.totalOrders || buyer.totalOrders === 0) return 0;
+  return (buyer.totalSpent / buyer.totalOrders).toFixed(2);
 };
 
 /**
@@ -92,28 +92,28 @@ export const calculateVerificationUrgency = (createdAt, verificationStatus) => {
 };
 
 /**
- * Calculate restaurant risk score
+ * Calculate buyer risk score
  */
-const calculateRestaurantRiskScore = (restaurant) => {
+const calculateBuyerRiskScore = (buyer) => {
   let score = 0;
 
   // Business completion factor
-  if (!restaurant.businessLicense) score += 25;
-  if (!restaurant.address || !restaurant.address.street) score += 20;
-  if (!restaurant.cuisineType) score += 10;
+  if (!buyer.businessLicense) score += 25;
+  if (!buyer.address || !buyer.address.street) score += 20;
+  if (!buyer.cuisineType) score += 10;
 
   // Verification status factor
-  if (restaurant.verificationStatus === 'pending') score += 20;
-  if (restaurant.verificationStatus === 'rejected') score += 50;
+  if (buyer.verificationStatus === 'pending') score += 20;
+  if (buyer.verificationStatus === 'rejected') score += 50;
 
   // Ordering activity factor
-  if (restaurant.totalOrders === 0) score += 30;
-  else if (restaurant.totalOrders < 5) score += 15;
+  if (buyer.totalOrders === 0) score += 30;
+  else if (buyer.totalOrders < 5) score += 15;
 
   // Recent activity factor
-  if (restaurant.lastOrderDate) {
+  if (buyer.lastOrderDate) {
     const daysSinceOrder = Math.floor(
-      (Date.now() - new Date(restaurant.lastOrderDate)) / (1000 * 60 * 60 * 24)
+      (Date.now() - new Date(buyer.lastOrderDate)) / (1000 * 60 * 60 * 24)
     );
     if (daysSinceOrder > 90) score += 25;
     else if (daysSinceOrder > 30) score += 15;
@@ -125,54 +125,54 @@ const calculateRestaurantRiskScore = (restaurant) => {
 /**
  * Calculate ordering performance metrics
  */
-const calculateOrderingMetrics = (restaurant) => {
+const calculateOrderingMetrics = (buyer) => {
   const now = Date.now();
   const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
   return {
-    averageOrderValue: calculateAverageOrderValue(restaurant),
+    averageOrderValue: calculateAverageOrderValue(buyer),
     orderFrequency:
-      restaurant.totalOrders > 0 && restaurant.createdAt
+      buyer.totalOrders > 0 && buyer.createdAt
         ? (
-            restaurant.totalOrders /
+            buyer.totalOrders /
             Math.max(
               1,
               Math.floor(
-                (now - new Date(restaurant.createdAt)) /
+                (now - new Date(buyer.createdAt)) /
                   (1000 * 60 * 60 * 24 * 30)
               )
             )
           ).toFixed(2)
         : 0,
-    monthlySpend: restaurant.monthlySpend || 0,
-    preferredVendors: restaurant.preferredVendors || [],
-    loyaltyScore: calculateLoyaltyScore(restaurant),
+    monthlySpend: buyer.monthlySpend || 0,
+    preferredVendors: buyer.preferredVendors || [],
+    loyaltyScore: calculateLoyaltyScore(buyer),
   };
 };
 
 /**
  * Calculate customer loyalty score
  */
-const calculateLoyaltyScore = (restaurant) => {
+const calculateLoyaltyScore = (buyer) => {
   let score = 0;
 
   // Order frequency
-  if (restaurant.totalOrders > 50) score += 30;
-  else if (restaurant.totalOrders > 20) score += 20;
-  else if (restaurant.totalOrders > 5) score += 10;
+  if (buyer.totalOrders > 50) score += 30;
+  else if (buyer.totalOrders > 20) score += 20;
+  else if (buyer.totalOrders > 5) score += 10;
 
   // Account age
   const monthsActive = Math.floor(
-    (Date.now() - new Date(restaurant.createdAt)) / (1000 * 60 * 60 * 24 * 30)
+    (Date.now() - new Date(buyer.createdAt)) / (1000 * 60 * 60 * 24 * 30)
   );
   if (monthsActive > 12) score += 25;
   else if (monthsActive > 6) score += 15;
   else if (monthsActive > 1) score += 5;
 
   // Recent activity
-  if (restaurant.lastOrderDate) {
+  if (buyer.lastOrderDate) {
     const daysSinceOrder = Math.floor(
-      (Date.now() - new Date(restaurant.lastOrderDate)) / (1000 * 60 * 60 * 24)
+      (Date.now() - new Date(buyer.lastOrderDate)) / (1000 * 60 * 60 * 24)
     );
     if (daysSinceOrder < 7) score += 20;
     else if (daysSinceOrder < 30) score += 15;
@@ -180,9 +180,9 @@ const calculateLoyaltyScore = (restaurant) => {
   }
 
   // Spending consistency
-  if (restaurant.averageMonthlySpend > 1000) score += 25;
-  else if (restaurant.averageMonthlySpend > 500) score += 15;
-  else if (restaurant.averageMonthlySpend > 100) score += 5;
+  if (buyer.averageMonthlySpend > 1000) score += 25;
+  else if (buyer.averageMonthlySpend > 500) score += 15;
+  else if (buyer.averageMonthlySpend > 100) score += 5;
 
   return Math.min(score, 100);
 };
@@ -190,22 +190,22 @@ const calculateLoyaltyScore = (restaurant) => {
 /**
  * Assess compliance status
  */
-const assessComplianceStatus = (restaurant) => {
+const assessComplianceStatus = (buyer) => {
   const issues = [];
 
   // Required documentation
-  if (!restaurant.businessLicense) issues.push('Missing business license');
-  if (!restaurant.taxId) issues.push('Missing tax ID');
-  if (!restaurant.operatingPermit) issues.push('Missing operating permit');
+  if (!buyer.businessLicense) issues.push('Missing business license');
+  if (!buyer.taxId) issues.push('Missing tax ID');
+  if (!buyer.operatingPermit) issues.push('Missing operating permit');
 
   // Business information completeness
-  if (!restaurant.cuisineType) issues.push('Missing cuisine type');
-  if (!restaurant.address || !restaurant.address.street)
+  if (!buyer.cuisineType) issues.push('Missing cuisine type');
+  if (!buyer.address || !buyer.address.street)
     issues.push('Missing complete address');
-  if (!restaurant.businessHours) issues.push('Missing business hours');
+  if (!buyer.businessHours) issues.push('Missing business hours');
 
   // Activity requirements
-  if (restaurant.totalOrders === 0) issues.push('No order history');
+  if (buyer.totalOrders === 0) issues.push('No order history');
 
   return {
     status:
@@ -220,34 +220,34 @@ const assessComplianceStatus = (restaurant) => {
 };
 
 /**
- * Get available actions for restaurant management
+ * Get available actions for buyer management
  */
-const getRestaurantActions = (restaurant) => {
+const getBuyerActions = (buyer) => {
   const actions = [];
 
   // Always available
   actions.push('view_details', 'edit_profile', 'view_orders', 'view_managers');
 
   // Verification actions
-  if (restaurant.verificationStatus === 'pending') {
+  if (buyer.verificationStatus === 'pending') {
     actions.push(
       'approve_verification',
       'reject_verification',
       'request_documents'
     );
-  } else if (restaurant.verificationStatus === 'rejected') {
+  } else if (buyer.verificationStatus === 'rejected') {
     actions.push('reconsider_verification');
   }
 
   // Status management
-  if (restaurant.isActive) {
+  if (buyer.isActive) {
     actions.push('deactivate');
   } else {
     actions.push('activate');
   }
 
   // Business management
-  if (restaurant.totalOrders > 0) {
+  if (buyer.totalOrders > 0) {
     actions.push('view_analytics', 'export_data');
   }
 
@@ -258,7 +258,7 @@ const getRestaurantActions = (restaurant) => {
   actions.push('send_message', 'send_notification');
 
   // Risk management
-  if (restaurant.riskScore > 70) {
+  if (buyer.riskScore > 70) {
     actions.push('security_review', 'require_reverification');
   }
 
@@ -269,9 +269,9 @@ const getRestaurantActions = (restaurant) => {
 };
 
 /**
- * Generate restaurant filters
+ * Generate buyer filters
  */
-export const getRestaurantFilters = () => {
+export const getBuyerFilters = () => {
   return {
     verificationStatus: [
       { value: 'all', label: 'All Verification Status' },
@@ -305,9 +305,9 @@ export const getRestaurantFilters = () => {
   };
 };
 
-const restaurantsService = {
-  transformRestaurantsData,
-  getRestaurantFilters,
+const buyersService = {
+  transformBuyersData,
+  getBuyerFilters,
 };
 
-export default restaurantsService;
+export default buyersService;

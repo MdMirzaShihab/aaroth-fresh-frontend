@@ -301,8 +301,8 @@ const UserAnalytics = ({
         retention: 78.2,
       },
       {
-        id: 'restaurant-owners',
-        name: 'Restaurant Owners',
+        id: 'buyer-owners',
+        name: 'Buyer Owners',
         icon: UserCheck,
         count: 1891,
         percentage: 44.6,
@@ -311,8 +311,8 @@ const UserAnalytics = ({
         retention: 82.4,
       },
       {
-        id: 'restaurant-managers',
-        name: 'Restaurant Managers',
+        id: 'buyer-managers',
+        name: 'Buyer Managers',
         icon: UserPlus,
         count: 743,
         percentage: 17.5,

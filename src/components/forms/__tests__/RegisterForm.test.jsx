@@ -81,12 +81,12 @@ describe('RegisterForm', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByRole('option', {
-          name: /restaurant owner.*purchase fresh ingredients/i,
+          name: /buyer owner.*purchase fresh ingredients/i,
         })
       ).toBeInTheDocument();
       expect(
         screen.getByRole('option', {
-          name: /restaurant manager.*manage restaurant orders/i,
+          name: /buyer manager.*manage buyer orders/i,
         })
       ).toBeInTheDocument();
     });
@@ -106,32 +106,32 @@ describe('RegisterForm', () => {
       });
     });
 
-    it('shows restaurant fields for restaurant owner role', async () => {
+    it('shows buyer fields for buyer owner role', async () => {
       const user = userEvent.setup();
       renderRegisterForm();
 
       const roleSelect = screen.getByLabelText(/account type/i);
-      await user.selectOptions(roleSelect, 'restaurantOwner');
+      await user.selectOptions(roleSelect, 'buyerOwner');
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/restaurant name/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/buyer name/i)).toBeInTheDocument();
         expect(
-          screen.getByLabelText(/restaurant address/i)
+          screen.getByLabelText(/buyer address/i)
         ).toBeInTheDocument();
       });
     });
 
-    it('shows restaurant fields for restaurant manager role', async () => {
+    it('shows buyer fields for buyer manager role', async () => {
       const user = userEvent.setup();
       renderRegisterForm();
 
       const roleSelect = screen.getByLabelText(/account type/i);
-      await user.selectOptions(roleSelect, 'restaurantManager');
+      await user.selectOptions(roleSelect, 'buyerManager');
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/restaurant name/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/buyer name/i)).toBeInTheDocument();
         expect(
-          screen.getByLabelText(/restaurant address/i)
+          screen.getByLabelText(/buyer address/i)
         ).toBeInTheDocument();
       });
     });

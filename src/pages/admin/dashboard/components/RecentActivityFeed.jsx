@@ -66,12 +66,12 @@ const RecentActivityFeed = ({
       iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
       label: 'Vendor Verified',
     },
-    restaurant_approved: {
+    buyer_approved: {
       icon: Store,
       color: 'green',
       bgColor: isDarkMode ? 'bg-sage-green/20' : 'bg-sage-green/10',
       iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
-      label: 'Restaurant Approved',
+      label: 'Buyer Approved',
     },
     product_created: {
       icon: Package,

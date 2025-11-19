@@ -49,10 +49,10 @@ const Breadcrumb = () => {
       icon: Store,
       description: 'Vendor Operations',
     },
-    restaurants: {
-      label: 'Restaurants Management',
+    buyers: {
+      label: 'Buyers Management',
       icon: UtensilsCrossed,
-      description: 'Restaurant Operations',
+      description: 'Buyer Operations',
     },
     catalog: {
       label: 'Catalog Management',
@@ -181,7 +181,7 @@ const Breadcrumb = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="glass-layer-1 dark:glass-1-dark border border-sage-green/20 dark:border-dark-olive-border/50 rounded-2xl p-4 mb-6 shadow-organic dark:shadow-dark-glass hover:glass-layer-2 dark:hover:glass-2-dark hover:shadow-organic-lg dark:hover:shadow-dark-glass transition-all duration-300 animate-fade-in"
+      className="glass-1 dark:glass-1-dark border border-sage-green/30 dark:border-dark-olive-border rounded-2xl p-4 mb-6 shadow-md shadow-sage-green/5 dark:shadow-dark-glass transition-all duration-300 animate-fade-in"
       aria-label="Breadcrumb navigation"
     >
       <ol className="flex items-center space-x-2">
@@ -196,28 +196,28 @@ const Breadcrumb = () => {
             >
               {index > 0 && (
                 <ChevronRight
-                  className="w-4 h-4 mx-2 flex-shrink-0 text-text-muted/60 dark:text-dark-text-muted/60"
+                  className="w-4 h-4 mx-2 flex-shrink-0 text-sage-green/40 dark:text-dark-sage-accent/40"
                   aria-hidden="true"
                 />
               )}
 
               {crumb.isLast ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-sage-green/15 dark:bg-dark-sage-accent/15 border border-sage-green/30 dark:border-dark-sage-accent/30">
                   <div
-                    className="p-2 rounded-xl bg-sage-green/10 dark:bg-dark-sage-accent/10"
+                    className="p-2 rounded-lg bg-sage-green/20 dark:bg-dark-sage-accent/20"
                   >
                     <IconComponent
-                      className="w-4 h-4 text-muted-olive dark:text-dark-sage-accent"
+                      className="w-4 h-4 text-bottle-green dark:text-dark-sage-accent"
                     />
                   </div>
                   <div>
                     <div
-                      className="text-sm font-semibold text-text-dark dark:text-dark-text-primary"
+                      className="text-sm font-bold text-text-dark dark:text-dark-text-primary"
                     >
                       {crumb.label}
                     </div>
                     <div
-                      className="text-xs text-text-muted dark:text-dark-text-muted"
+                      className="text-xs text-text-muted dark:text-dark-text-muted/80"
                     >
                       {crumb.description}
                     </div>
@@ -226,11 +226,11 @@ const Breadcrumb = () => {
               ) : (
                 <Link
                   to={crumb.path}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent hover:glass-layer-1 dark:hover:glass-1-dark hover:scale-105 hover:-translate-y-0.5 hover:shadow-glow-green/15 dark:hover:shadow-dark-glow-olive/15 group"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 text-text-muted dark:text-dark-text-muted hover:text-bottle-green dark:hover:text-dark-sage-accent hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 hover:shadow-md group"
                   title={crumb.description}
                 >
-                  <IconComponent className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm font-medium">{crumb.label}</span>
+                  <IconComponent className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-semibold">{crumb.label}</span>
                 </Link>
               )}
             </motion.li>

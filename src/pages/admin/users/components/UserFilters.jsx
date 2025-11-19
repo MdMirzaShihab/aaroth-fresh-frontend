@@ -237,8 +237,8 @@ const UserFilters = ({
     { key: 'role', value: 'vendor', label: 'Vendors', icon: Store, count: 142 },
     {
       key: 'role',
-      value: 'restaurantOwner',
-      label: 'Restaurant Owners',
+      value: 'buyerOwner',
+      label: 'Buyer Owners',
       icon: Utensils,
       count: 89,
     },

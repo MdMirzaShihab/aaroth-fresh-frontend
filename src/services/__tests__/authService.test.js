@@ -123,7 +123,7 @@ describe('AuthService', () => {
 
     it('checks if user has any of multiple roles', () => {
       expect(authService.hasAnyRole(['vendor', 'admin'])).toBe(true);
-      expect(authService.hasAnyRole(['admin', 'restaurantOwner'])).toBe(false);
+      expect(authService.hasAnyRole(['admin', 'buyerOwner'])).toBe(false);
     });
 
     it('returns false for role checks with no user', () => {
@@ -165,35 +165,35 @@ describe('AuthService', () => {
       expect(authService.isAdmin()).toBe(false);
     });
 
-    it('correctly identifies restaurant users', () => {
-      const restaurantOwner = { id: 1, role: 'restaurantOwner' };
+    it('correctly identifies buyer users', () => {
+      const buyerOwner = { id: 1, role: 'buyerOwner' };
       mockStore = createMockStore({
         auth: {
-          user: restaurantOwner,
+          user: buyerOwner,
           isAuthenticated: true,
           token: 'test-token',
         },
       });
       vi.doMock('../../store', () => ({ store: mockStore }));
 
-      expect(authService.isRestaurantOwner()).toBe(true);
-      expect(authService.isRestaurantUser()).toBe(true);
+      expect(authService.isBuyerOwner()).toBe(true);
+      expect(authService.isBuyerUser()).toBe(true);
       expect(authService.isBusinessUser()).toBe(true);
     });
 
-    it('correctly identifies restaurant managers', () => {
-      const restaurantManager = { id: 1, role: 'restaurantManager' };
+    it('correctly identifies buyer managers', () => {
+      const buyerManager = { id: 1, role: 'buyerManager' };
       mockStore = createMockStore({
         auth: {
-          user: restaurantManager,
+          user: buyerManager,
           isAuthenticated: true,
           token: 'test-token',
         },
       });
       vi.doMock('../../store', () => ({ store: mockStore }));
 
-      expect(authService.isRestaurantManager()).toBe(true);
-      expect(authService.isRestaurantUser()).toBe(true);
+      expect(authService.isBuyerManager()).toBe(true);
+      expect(authService.isBuyerUser()).toBe(true);
       expect(authService.isBusinessUser()).toBe(true);
     });
 
@@ -314,18 +314,18 @@ describe('AuthService', () => {
       expect(authService.getDashboardPath()).toBe('/vendor/pending-approval');
     });
 
-    it('returns restaurant dashboard for restaurant roles', () => {
-      const restaurantOwner = { id: 1, role: 'restaurantOwner' };
+    it('returns buyer dashboard for buyer roles', () => {
+      const buyerOwner = { id: 1, role: 'buyerOwner' };
       mockStore = createMockStore({
         auth: {
-          user: restaurantOwner,
+          user: buyerOwner,
           isAuthenticated: true,
           token: 'test-token',
         },
       });
       vi.doMock('../../store', () => ({ store: mockStore }));
 
-      expect(authService.getDashboardPath()).toBe('/restaurant/dashboard');
+      expect(authService.getDashboardPath()).toBe('/buyer/dashboard');
     });
 
     it('returns login path when no user', () => {

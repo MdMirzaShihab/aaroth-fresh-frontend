@@ -24,13 +24,13 @@ const Breadcrumb = ({ customItems = null }) => {
       const roleBasedHome = {
         admin: { label: 'Admin Dashboard', path: '/admin/dashboard' },
         vendor: { label: 'Vendor Dashboard', path: '/vendor/dashboard' },
-        restaurantOwner: {
-          label: 'Restaurant Dashboard',
-          path: '/restaurant/dashboard',
+        buyerOwner: {
+          label: 'Buyer Dashboard',
+          path: '/buyer/dashboard',
         },
-        restaurantManager: {
-          label: 'Restaurant Dashboard',
-          path: '/restaurant/dashboard',
+        buyerManager: {
+          label: 'Buyer Dashboard',
+          path: '/buyer/dashboard',
         },
       };
 
@@ -43,8 +43,8 @@ const Breadcrumb = ({ customItems = null }) => {
     pathSegments.forEach((segment, index) => {
       currentPath += `/${segment}`;
 
-      // Skip the first segment if it's the role prefix (admin, vendor, restaurant)
-      if (index === 0 && ['admin', 'vendor', 'restaurant'].includes(segment)) {
+      // Skip the first segment if it's the role prefix (admin, vendor, buyer)
+      if (index === 0 && ['admin', 'vendor', 'buyer'].includes(segment)) {
         return;
       }
 

@@ -52,7 +52,7 @@ const initialState = {
   badgeCounts: {
     pendingUsers: 12,
     urgentVendors: 3,
-    infoRestaurants: 7,
+    infoBuyers: 7,
     systemAlerts: 2,
   },
 };
@@ -289,7 +289,7 @@ export const AdminLayoutProvider = ({ children }) => {
       const randomUpdates = {
         pendingUsers: Math.floor(Math.random() * 20) + 5,
         urgentVendors: Math.floor(Math.random() * 10),
-        infoRestaurants: Math.floor(Math.random() * 15) + 2,
+        infoBuyers: Math.floor(Math.random() * 15) + 2,
         systemAlerts: Math.floor(Math.random() * 5),
       };
 

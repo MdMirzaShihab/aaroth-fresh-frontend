@@ -40,10 +40,10 @@ import {
 } from '../../utils/performance';
 import { Button, LoadingSpinner } from '../ui';
 
-// Helper: Get verification status from vendor or restaurant, not user
-// User model doesn't have verificationStatus - it's on vendor/restaurant entities
+// Helper: Get verification status from vendor or buyer, not user
+// User model doesn't have verificationStatus - it's on vendor/buyer entities
 const getVerificationStatus = (user) => {
-  return user.vendorId?.verificationStatus || user.restaurantId?.verificationStatus || user.status || 'active';
+  return user.vendorId?.verificationStatus || user.buyerId?.verificationStatus || user.status || 'active';
 };
 
 // Memoized user row component for optimal performance
@@ -56,7 +56,7 @@ const UserRow = memo(
       onSelect(user._id, !isSelected);
     }, [user._id, isSelected, onSelect]);
 
-    // Get verification status from vendor/restaurant, not user
+    // Get verification status from vendor/buyer, not user
     const verificationStatus = useMemo(() => getVerificationStatus(user), [user]);
 
     const getStatusColor = useMemo(() => {
@@ -472,9 +472,9 @@ const UserListControls = memo(
                     <option value="">All Roles</option>
                     <option value="admin">Admin</option>
                     <option value="vendor">Vendor</option>
-                    <option value="restaurantOwner">Restaurant Owner</option>
-                    <option value="restaurantManager">
-                      Restaurant Manager
+                    <option value="buyerOwner">Buyer Owner</option>
+                    <option value="buyerManager">
+                      Buyer Manager
                     </option>
                   </select>
                 </div>
@@ -593,7 +593,7 @@ const OptimizedUserList = memo(
         result = result.filter((user) => user.role === filters.role);
       }
       if (filters.verificationStatus) {
-        // Use helper to get verification status from vendor/restaurant
+        // Use helper to get verification status from vendor/buyer
         result = result.filter(
           (user) => getVerificationStatus(user) === filters.verificationStatus
         );

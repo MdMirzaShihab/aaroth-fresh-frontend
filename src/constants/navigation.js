@@ -39,7 +39,7 @@ export const NAVIGATION_ITEMS = {
       icon: CheckCircle,
       path: '/admin/approvals',
       roles: ['admin'],
-      description: 'Review and approve vendor/restaurant applications',
+      description: 'Review and approve vendor/buyer applications',
     },
     {
       id: 'users',
@@ -54,9 +54,9 @@ export const NAVIGATION_ITEMS = {
           path: '/admin/users/vendors',
         },
         {
-          id: 'restaurants',
-          label: 'All Restaurants',
-          path: '/admin/users/restaurants',
+          id: 'buyers',
+          label: 'All Buyers',
+          path: '/admin/users/buyers',
         },
         {
           id: 'approvals',
@@ -66,21 +66,21 @@ export const NAVIGATION_ITEMS = {
       ],
     },
     {
-      id: 'restaurant-management',
-      label: 'Restaurant Management',
+      id: 'buyer-management',
+      label: 'Buyer Management',
       icon: Utensils,
-      path: '/admin/restaurants',
+      path: '/admin/buyers',
       roles: ['admin'],
       children: [
         {
           id: 'create-owner',
-          label: 'Create Restaurant Owner',
-          path: '/admin/create-restaurant-owner',
+          label: 'Create Buyer Owner',
+          path: '/admin/create-buyer-owner',
         },
         {
           id: 'create-manager',
-          label: 'Create Restaurant Manager',
-          path: '/admin/create-restaurant-manager',
+          label: 'Create Buyer Manager',
+          path: '/admin/create-buyer-manager',
         },
       ],
     },
@@ -212,45 +212,45 @@ export const NAVIGATION_ITEMS = {
     },
   ],
 
-  // Restaurant Owner/Manager Navigation
-  restaurant: [
+  // Buyer Owner/Manager Navigation
+  buyer: [
     {
       id: 'dashboard',
       label: 'Dashboard',
       icon: Home,
-      path: '/restaurant/dashboard',
-      roles: ['restaurantOwner', 'restaurantManager'],
+      path: '/buyer/dashboard',
+      roles: ['buyerOwner', 'buyerManager'],
     },
     {
       id: 'browse',
       label: 'Browse Products',
       icon: Package,
-      path: '/restaurant/browse',
-      roles: ['restaurantOwner', 'restaurantManager'],
+      path: '/buyer/browse',
+      roles: ['buyerOwner', 'buyerManager'],
     },
     {
       id: 'cart',
       label: 'Shopping Cart',
       icon: ShoppingCart,
-      path: '/restaurant/cart',
-      roles: ['restaurantOwner', 'restaurantManager'],
+      path: '/buyer/cart',
+      roles: ['buyerOwner', 'buyerManager'],
     },
     {
       id: 'orders',
       label: 'My Orders',
       icon: ClipboardList,
-      path: '/restaurant/orders',
-      roles: ['restaurantOwner', 'restaurantManager'],
+      path: '/buyer/orders',
+      roles: ['buyerOwner', 'buyerManager'],
       children: [
         {
           id: 'current',
           label: 'Current Orders',
-          path: '/restaurant/orders?filter=current',
+          path: '/buyer/orders?filter=current',
         },
         {
           id: 'history',
           label: 'Order History',
-          path: '/restaurant/orders?filter=history',
+          path: '/buyer/orders?filter=history',
         },
       ],
     },
@@ -258,33 +258,33 @@ export const NAVIGATION_ITEMS = {
       id: 'budget',
       label: 'Budget Management',
       icon: Target,
-      path: '/restaurant/budget',
-      roles: ['restaurantOwner', 'restaurantManager'],
+      path: '/buyer/budget',
+      roles: ['buyerOwner', 'buyerManager'],
     },
     {
-      id: 'restaurant-management',
-      label: 'Restaurant',
+      id: 'buyer-management',
+      label: 'Buyer Business',
       icon: Utensils,
-      path: '/restaurant/manage',
-      roles: ['restaurantOwner', 'restaurantManager'],
+      path: '/buyer/manage',
+      roles: ['buyerOwner', 'buyerManager'],
       children: [
         {
           id: 'profile',
-          label: 'Restaurant Profile',
-          path: '/restaurant/profile', // Use the simpler path that both roles can access
-          roles: ['restaurantOwner', 'restaurantManager'],
+          label: 'Business Profile',
+          path: '/buyer/profile', // Use the simpler path that both roles can access
+          roles: ['buyerOwner', 'buyerManager'],
         },
         {
           id: 'locations',
           label: 'Locations',
-          path: '/restaurant/manage/locations',
-          roles: ['restaurantOwner'], // Only owners can manage locations
+          path: '/buyer/manage/locations',
+          roles: ['buyerOwner'], // Only owners can manage locations
         },
         {
           id: 'managers',
           label: 'Managers',
-          path: '/restaurant/manage/managers',
-          roles: ['restaurantOwner'], // Only owners can manage managers
+          path: '/buyer/manage/managers',
+          roles: ['buyerOwner'], // Only owners can manage managers
         },
       ],
     },
@@ -369,30 +369,30 @@ export const MOBILE_BOTTOM_NAV = {
       path: '/vendor/profile',
     },
   ],
-  restaurant: [
+  buyer: [
     {
       id: 'dashboard',
       label: 'Dashboard',
       icon: Home,
-      path: '/restaurant/dashboard',
+      path: '/buyer/dashboard',
     },
     {
       id: 'browse',
       label: 'Browse',
       icon: Package,
-      path: '/restaurant/browse',
+      path: '/buyer/browse',
     },
     {
       id: 'cart',
       label: 'Cart',
       icon: ShoppingCart,
-      path: '/restaurant/cart',
+      path: '/buyer/cart',
     },
     {
       id: 'orders',
       label: 'Orders',
       icon: ClipboardList,
-      path: '/restaurant/orders',
+      path: '/buyer/orders',
     },
   ],
   public: [
@@ -452,9 +452,9 @@ export const getNavigationForRole = (role) => {
       return NAVIGATION_ITEMS.admin;
     case 'vendor':
       return NAVIGATION_ITEMS.vendor;
-    case 'restaurantOwner':
-    case 'restaurantManager':
-      return NAVIGATION_ITEMS.restaurant;
+    case 'buyerOwner':
+    case 'buyerManager':
+      return NAVIGATION_ITEMS.buyer;
     default:
       return NAVIGATION_ITEMS.public;
   }
@@ -469,9 +469,9 @@ export const getMobileNavigationForRole = (role) => {
       return MOBILE_BOTTOM_NAV.admin;
     case 'vendor':
       return MOBILE_BOTTOM_NAV.vendor;
-    case 'restaurantOwner':
-    case 'restaurantManager':
-      return MOBILE_BOTTOM_NAV.restaurant;
+    case 'buyerOwner':
+    case 'buyerManager':
+      return MOBILE_BOTTOM_NAV.buyer;
     default:
       return MOBILE_BOTTOM_NAV.public;
   }

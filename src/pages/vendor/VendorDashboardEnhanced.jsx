@@ -19,7 +19,6 @@ import {
   useGetRevenueAnalyticsQuery,
   useGetOrderAnalyticsQuery,
   useGetCustomerAnalyticsQuery,
-  useGetInventoryStatusQuery,
   useGetOrderManagementQuery,
   useGetVendorNotificationsQuery,
 } from '../../store/slices/vendor/vendorDashboardApi';
@@ -110,14 +109,6 @@ const VendorDashboardEnhanced = () => {
         status: 'active',
         limit: 10,
       },
-      {
-        skip: !canAccessDashboard,
-      }
-    );
-
-  const { data: inventory = {}, isLoading: inventoryLoading } =
-    useGetInventoryStatusQuery(
-      {},
       {
         skip: !canAccessDashboard,
       }
@@ -403,124 +394,11 @@ const VendorDashboardEnhanced = () => {
                   </div>
                 )}
               </Card>
-
-              {/* Inventory Health */}
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-text-dark">
-                    Inventory Health
-                  </h3>
-                  <Package className="w-5 h-5 text-text-muted" />
-                </div>
-                
-                {overviewLoading ? (
-                  <div className="animate-pulse space-y-3">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-4 bg-gray-200 rounded"></div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-text-muted">Health Score</span>
-                      <span className="font-semibold text-blue-600">
-                        {overview?.inventoryHealth?.healthScore || 0}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-text-muted">Total Items</span>
-                      <span className="font-semibold">
-                        {overview?.inventoryHealth?.totalItems || 0}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-text-muted">Low Stock</span>
-                      <span className={`font-semibold ${
-                        (overview?.inventoryHealth?.lowStockItems || 0) > 0 
-                          ? 'text-amber-600' : 'text-green-600'
-                      }`}>
-                        {overview?.inventoryHealth?.lowStockItems || 0}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-text-muted">Critical Alerts</span>
-                      <span className={`font-semibold ${
-                        (overview?.inventoryHealth?.criticalAlerts || 0) > 0 
-                          ? 'text-red-600' : 'text-green-600'
-                      }`}>
-                        {overview?.inventoryHealth?.criticalAlerts || 0}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </Card>
             </div>
 
-            {/* Inventory Alerts & Recent Orders */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              {/* Inventory Alerts - Updated for new backend structure */}
+            {/* Recent Orders */}
+            <div className="mb-8">
               <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-text-dark">
-                    Stock Alerts
-                  </h3>
-                  <Package className="w-5 h-5 text-text-muted" />
-                </div>
-
-                {inventoryLoading ? (
-                  <div className="animate-pulse space-y-3">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-4 bg-gray-200 rounded"></div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {inventory?.stockAlerts
-                      ?.slice(0, 5)
-                      .map((alert, index) => (
-                        <div
-                          key={index}
-                          className={`flex items-center justify-between p-3 rounded-xl border ${
-                            alert.status === 'out_of_stock'
-                              ? 'bg-red-50/80 border-red-200/50'
-                              : 'bg-amber-50/80 border-amber-200/50'
-                          }`}
-                        >
-                          <div>
-                            <p className={`text-sm font-medium ${
-                              alert.status === 'out_of_stock'
-                                ? 'text-red-800'
-                                : 'text-amber-800'
-                            }`}>
-                              {alert.productName}
-                            </p>
-                            <p className={`text-xs ${
-                              alert.status === 'out_of_stock'
-                                ? 'text-red-600'
-                                : 'text-amber-600'
-                            }`}>
-                              {alert.currentStock} units • Reorder at {alert.reorderLevel}
-                            </p>
-                          </div>
-                          <div className={`text-xs font-medium ${
-                            alert.status === 'out_of_stock'
-                              ? 'text-red-700'
-                              : 'text-amber-700'
-                          }`}>
-                            {alert.status === 'out_of_stock' ? 'Out of Stock' : 'Low Stock'}
-                          </div>
-                        </div>
-                      )) || (
-                      <div className="text-center py-4 text-text-muted text-sm">
-                        All inventory levels are healthy
-                      </div>
-                    )}
-                  </div>
-                )}
-              </Card>
-
-              {/* Recent Orders - Updated for new backend structure */}
-              <Card className="lg:col-span-2 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-text-dark">
                     Recent Orders
@@ -574,7 +452,7 @@ const VendorDashboardEnhanced = () => {
                                 Order #{order.orderNumber}
                               </p>
                               <p className="text-sm text-text-muted">
-                                {order.restaurant?.name || order.customerName} •{' '}
+                                {order.buyer?.name || order.customerName} •{' '}
                                 {timeAgo(order.createdAt || order.orderDate)}
                               </p>
                             </div>

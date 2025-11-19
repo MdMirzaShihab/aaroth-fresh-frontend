@@ -333,75 +333,156 @@ const ListingManagementPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-earthy-beige/30 via-white to-mint-fresh/10 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Header Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-30 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-slate-200/50 dark:border-slate-700/50"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-earthy-yellow/20 to-mint-fresh/20 rounded-2xl">
-                <Package className="w-6 h-6 text-bottle-green" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-semibold text-slate-800 dark:text-white">
-                  Listing Management
-                </h1>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Moderate product listings, manage featured items, and handle flags
-                </p>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={handleRefresh}
-                disabled={listingsLoading}
-                className="flex items-center gap-2"
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${listingsLoading ? 'animate-spin' : ''}`}
-                />
-                Refresh
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleExport}
-                disabled={listings.length === 0}
-                className="flex items-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Export
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2"
-              >
-                <Filter className="w-4 h-4" />
-                Filters
-              </Button>
-            </div>
+    <div className="min-h-screen p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* ===== HEADER ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
+          <div>
+            <h1 className="text-3xl font-bold text-text-dark dark:text-dark-text-primary flex items-center gap-3">
+              <Package className="w-8 h-8 text-muted-olive" />
+              Listing Management
+            </h1>
+            <p className="text-text-muted dark:text-dark-text-muted mt-2">
+              Moderate product listings, manage featured items, and handle flags
+            </p>
           </div>
 
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={listingsLoading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${listingsLoading ? 'animate-spin' : ''}`}
+              />
+              Refresh
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              disabled={listings.length === 0}
+              className="flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* ===== STATISTICS DASHBOARD ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+        >
+          {/* Total Listings */}
+          <Card className="p-4 glass glow-green">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-muted-olive/10 rounded-2xl flex items-center justify-center">
+                <Package className="w-6 h-6 text-muted-olive" />
+              </div>
+              <div>
+                <p className="text-sm text-text-muted dark:text-dark-text-muted">Total Listings</p>
+                <p className="text-2xl font-bold text-muted-olive">{statistics.total}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Active Listings */}
+          <Card className="p-4 glass glow-green">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-sage-green/10 rounded-2xl flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-sage-green" />
+              </div>
+              <div>
+                <p className="text-sm text-text-muted dark:text-dark-text-muted">Active</p>
+                <p className="text-2xl font-bold text-sage-green">{statistics.active}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Featured Listings */}
+          <Card className="p-4 glass glow-green">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-earthy-yellow/10 rounded-2xl flex items-center justify-center">
+                <Star className="w-6 h-6 text-earthy-yellow" />
+              </div>
+              <div>
+                <p className="text-sm text-text-muted dark:text-dark-text-muted">Featured</p>
+                <p className="text-2xl font-bold text-earthy-yellow">{statistics.featured}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Flagged Listings */}
+          <Card className="p-4 glass glow-green">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-tomato-red/10 rounded-2xl flex items-center justify-center">
+                <Flag className="w-6 h-6 text-tomato-red" />
+              </div>
+              <div>
+                <p className="text-sm text-text-muted dark:text-dark-text-muted">Flagged</p>
+                <p className="text-2xl font-bold text-tomato-red">{statistics.flagged}</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Out of Stock */}
+          <Card className="p-4 glass glow-green">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm text-text-muted dark:text-dark-text-muted">Out of Stock</p>
+                <p className="text-2xl font-bold text-amber-600">{statistics.outOfStock}</p>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* ===== VIEW TABS & SEARCH ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-4"
+        >
           {/* View Tabs */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => handleViewChange('all')}
               className={`px-4 py-2 rounded-xl font-medium transition-all ${
                 currentView === 'all'
-                  ? 'bg-mint-fresh text-bottle-green shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                  ? 'bg-gradient-secondary text-white shadow-md'
+                  : 'glass hover:glass-2 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent'
               }`}
             >
               <Package className="w-4 h-4 inline mr-2" />
               All Listings
-              <span className="ml-2 px-2 py-0.5 bg-bottle-green/20 rounded-full text-xs">
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                currentView === 'all' ? 'bg-white/20' : 'bg-muted-olive/20'
+              }`}>
                 {statistics.total}
               </span>
             </button>
@@ -409,13 +490,15 @@ const ListingManagementPage = () => {
               onClick={() => handleViewChange('featured')}
               className={`px-4 py-2 rounded-xl font-medium transition-all ${
                 currentView === 'featured'
-                  ? 'bg-earthy-yellow text-earthy-brown shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                  ? 'bg-gradient-to-r from-earthy-yellow to-amber-500 text-white shadow-md'
+                  : 'glass hover:glass-2 text-text-muted dark:text-dark-text-muted hover:text-earthy-yellow'
               }`}
             >
               <Star className="w-4 h-4 inline mr-2" />
               Featured
-              <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-xs">
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                currentView === 'featured' ? 'bg-white/20' : 'bg-earthy-yellow/20'
+              }`}>
                 {statistics.featured}
               </span>
             </button>
@@ -424,93 +507,46 @@ const ListingManagementPage = () => {
               className={`px-4 py-2 rounded-xl font-medium transition-all ${
                 currentView === 'flagged'
                   ? 'bg-tomato-red text-white shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                  : 'glass hover:glass-2 text-text-muted dark:text-dark-text-muted hover:text-tomato-red'
               }`}
             >
               <Flag className="w-4 h-4 inline mr-2" />
               Flagged
-              <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-xs">
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                currentView === 'flagged' ? 'bg-white/20' : 'bg-tomato-red/20'
+              }`}>
                 {statistics.flagged}
               </span>
             </button>
           </div>
 
           {/* Search Bar */}
-          <div className="mt-4 relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted dark:text-dark-text-muted" />
             <Input
               type="text"
               placeholder="Search by product name, vendor, or status..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-12 pr-4 py-3 w-full rounded-xl border-slate-200 dark:border-slate-700"
+              className="pl-12 pr-4 py-3 w-full rounded-xl glass"
             />
           </div>
+        </motion.div>
 
-          {/* Statistics Bar */}
-          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="p-3 bg-mint-fresh/10 rounded-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-600 dark:text-slate-400">
-                  Active
-                </span>
-                <CheckCircle className="w-4 h-4 text-mint-fresh" />
-              </div>
-              <p className="text-lg font-semibold text-slate-800 dark:text-white">
-                {statistics.active}
-              </p>
-            </div>
-            <div className="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-600 dark:text-slate-400">
-                  Inactive
-                </span>
-                <XCircle className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-              </div>
-              <p className="text-lg font-semibold text-slate-800 dark:text-white">
-                {statistics.inactive}
-              </p>
-            </div>
-            <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-600 dark:text-slate-400">
-                  Out of Stock
-                </span>
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-              </div>
-              <p className="text-lg font-semibold text-slate-800 dark:text-white">
-                {statistics.outOfStock}
-              </p>
-            </div>
-            <div className="p-3 bg-tomato-red/10 rounded-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-600 dark:text-slate-400">
-                  Discontinued
-                </span>
-                <XCircle className="w-4 h-4 text-tomato-red" />
-              </div>
-              <p className="text-lg font-semibold text-slate-800 dark:text-white">
-                {statistics.discontinued}
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Filters Panel */}
+        {/* ===== FILTERS PANEL ===== */}
         {showFilters && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-6"
+            transition={{ delay: 0.3 }}
           >
             <React.Suspense
               fallback={
-                <Card className="p-4">
-                  <p className="text-center text-slate-600">Loading filters...</p>
+                <Card className="p-4 glass">
+                  <p className="text-center text-text-muted dark:text-dark-text-muted">
+                    Loading filters...
+                  </p>
                 </Card>
               }
             >
@@ -523,12 +559,12 @@ const ListingManagementPage = () => {
           </motion.div>
         )}
 
-        {/* Bulk Operations */}
+        {/* ===== BULK OPERATIONS ===== */}
         {selectedListings.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
+            transition={{ delay: 0.4 }}
           >
             <React.Suspense fallback={<div>Loading...</div>}>
               <BulkListingOperations
@@ -540,36 +576,44 @@ const ListingManagementPage = () => {
           </motion.div>
         )}
 
-        {/* Listing Directory Table */}
-        <React.Suspense
-          fallback={
-            <Card className="p-8">
-              <div className="flex items-center justify-center">
-                <RefreshCw className="w-8 h-8 animate-spin text-bottle-green" />
-                <span className="ml-3 text-slate-600">Loading listings...</span>
-              </div>
-            </Card>
-          }
+        {/* ===== LISTING DIRECTORY TABLE ===== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
         >
-          <ListingDirectoryTable
-            listings={listings}
-            isLoading={listingsLoading}
-            error={listingsError}
-            selectedListings={selectedListings}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-            onSelect={handleListingSelect}
-            onSelectAll={handleSelectAll}
-            onViewDetails={handleViewDetails}
-            onStatusUpdate={handleStatusUpdate}
-            onFeaturedToggle={handleFeaturedToggle}
-            onFlagUpdate={handleFlagUpdate}
-            onDelete={handleDeleteListing}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </React.Suspense>
+          <React.Suspense
+            fallback={
+              <Card className="p-8 glass">
+                <div className="flex items-center justify-center">
+                  <RefreshCw className="w-8 h-8 animate-spin text-muted-olive" />
+                  <span className="ml-3 text-text-muted dark:text-dark-text-muted">
+                    Loading listings...
+                  </span>
+                </div>
+              </Card>
+            }
+          >
+            <ListingDirectoryTable
+              listings={listings}
+              isLoading={listingsLoading}
+              error={listingsError}
+              selectedListings={selectedListings}
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              onSelect={handleListingSelect}
+              onSelectAll={handleSelectAll}
+              onViewDetails={handleViewDetails}
+              onStatusUpdate={handleStatusUpdate}
+              onFeaturedToggle={handleFeaturedToggle}
+              onFlagUpdate={handleFlagUpdate}
+              onDelete={handleDeleteListing}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </React.Suspense>
+        </motion.div>
       </div>
 
       {/* Listing Details Modal */}

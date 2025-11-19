@@ -1,7 +1,7 @@
 /**
  * VerificationPipeline - Verification Workflow Visualization Component
  * Features: Workflow pipeline, batch processing, urgency indicators, quick actions
- * Displays vendor and restaurant verification queues with processing capabilities
+ * Displays vendor and buyer verification queues with processing capabilities
  */
 
 import React, { useState, useCallback } from 'react';
@@ -88,7 +88,7 @@ const VerificationPipeline = ({
   const filterOptions = [
     { value: 'all', label: 'All Items' },
     { value: 'vendor', label: 'Vendors Only' },
-    { value: 'restaurant', label: 'Restaurants Only' },
+    { value: 'buyer', label: 'Buyers Only' },
     { value: 'urgent', label: 'Urgent (7+ days)' },
     { value: 'pending_info', label: 'Needs Information' },
   ];
@@ -110,8 +110,8 @@ const VerificationPipeline = ({
       case 'vendor':
         filtered = filtered.filter((item) => item.type === 'vendor');
         break;
-      case 'restaurant':
-        filtered = filtered.filter((item) => item.type === 'restaurant');
+      case 'buyer':
+        filtered = filtered.filter((item) => item.type === 'buyer');
         break;
       case 'urgent':
         filtered = filtered.filter((item) => {

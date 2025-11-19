@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Card, Button, Input } from '../../../../components/ui';
+import { useGetAdminMarketsQuery } from '../../../../store/slices/admin/adminApiSlice';
 
 // Filter preset configurations
 const FILTER_PRESETS = {
@@ -146,10 +147,22 @@ const VendorFilters = ({
   const [expandedSections, setExpandedSections] = useState({
     status: true,
     business: false,
+    markets: false,
     location: false,
     performance: false,
     dates: false,
   });
+
+  // Fetch active markets
+  const { data: marketsData } = useGetAdminMarketsQuery({
+    status: 'active',
+    limit: 100,
+  });
+
+  const availableMarkets = (marketsData?.data || []).map(market => ({
+    value: market._id,
+    label: `${market.name} (${market.location?.city || 'N/A'})`,
+  }));
 
   // Update local filters when prop changes
   useEffect(() => {
@@ -357,6 +370,33 @@ const VendorFilters = ({
                 values={localFilters.businessType || []}
                 onChange={(values) => updateFilter('businessType', values)}
               />
+            </div>
+          </div>
+        </FilterSection>
+
+        {/* Market Filters */}
+        <FilterSection
+          title="Markets"
+          isOpen={expandedSections.markets}
+          onToggle={() => toggleSection('markets')}
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-text-dark mb-2 block">
+                Operating Markets
+              </label>
+              {availableMarkets.length === 0 ? (
+                <p className="text-sm text-text-muted">No markets available</p>
+              ) : (
+                <CheckboxGroup
+                  options={availableMarkets}
+                  values={localFilters.markets || []}
+                  onChange={(values) => updateFilter('markets', values)}
+                />
+              )}
+              <p className="text-xs text-text-muted mt-2">
+                Show vendors operating in selected markets
+              </p>
             </div>
           </div>
         </FilterSection>

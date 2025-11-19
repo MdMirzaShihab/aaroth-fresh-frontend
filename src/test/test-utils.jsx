@@ -98,7 +98,7 @@ export const createMockOrder = (overrides = {}) => ({
   total: 100.0,
   status: 'pending',
   vendorId: '1',
-  restaurantId: '2',
+  buyerId: '2',
   createdAt: '2024-01-01T00:00:00.000Z',
   ...overrides,
 });

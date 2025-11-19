@@ -60,8 +60,8 @@ export const transformUserAnalytics = (rawData) => {
         color: '#10B981',
       },
       {
-        role: 'Restaurants',
-        count: rawData.data.restaurantCount || 0,
+        role: 'Buyers',
+        count: rawData.data.buyerCount || 0,
         color: '#3B82F6',
       },
       {

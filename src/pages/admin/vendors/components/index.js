@@ -11,3 +11,4 @@ export { default as VendorPerformance } from './VendorPerformance';
 export { default as VendorFilters } from './VendorFilters';
 export { default as BulkVendorOperations } from './BulkVendorOperations';
 export { default as VendorAnalytics } from './VendorAnalytics';
+export { default as CreatePlatformVendor } from './CreatePlatformVendor';

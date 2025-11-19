@@ -71,7 +71,7 @@ const CapabilityGate = ({
     const capabilityMessages = {
       canCreateListings: 'create listings',
       canPlaceOrders: 'place orders',
-      canManageRestaurant: 'manage restaurant',
+      canManageBuyer: 'manage buyer',
       canAccessDashboard: 'access dashboard',
       canUpdateProfile: 'update profile',
     };

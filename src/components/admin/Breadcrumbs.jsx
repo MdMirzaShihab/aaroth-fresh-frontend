@@ -18,7 +18,7 @@ const BREADCRUMB_MAP = {
   dashboard: { label: 'Dashboard', icon: Home },
   users: { label: 'Users', icon: Users },
   vendors: { label: 'Vendors', icon: Users },
-  restaurants: { label: 'Restaurants', icon: Users },
+  buyers: { label: 'Buyers', icon: Users },
   products: { label: 'Products', icon: Users },
   listings: { label: 'Listings', icon: Users },
   categories: { label: 'Categories', icon: Users },

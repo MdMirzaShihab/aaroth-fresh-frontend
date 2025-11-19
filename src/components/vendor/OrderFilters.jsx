@@ -24,7 +24,7 @@ const initialFiltersState = {
   amountMax: '',
   sortBy: 'createdAt',
   sortOrder: 'desc',
-  restaurantId: '',
+  buyerId: '',
   paymentMethod: 'all',
   deliveryArea: 'all',
 };
@@ -33,7 +33,7 @@ const OrderFilters = ({
   onFiltersChange,
   totalResults = 0,
   isLoading = false,
-  availableRestaurants = [],
+  availableBuyers = [],
   availableAreas = [],
 }) => {
   const dispatch = useDispatch();
@@ -87,7 +87,7 @@ const OrderFilters = ({
     { value: 'createdAt', label: 'Order Date' },
     { value: 'totalAmount', label: 'Amount' },
     { value: 'status', label: 'Status' },
-    { value: 'restaurant', label: 'Restaurant' },
+    { value: 'buyer', label: 'Buyer' },
     { value: 'deliveryDate', label: 'Delivery Date' },
   ];
 
@@ -166,7 +166,7 @@ const OrderFilters = ({
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
             <input
               type="text"
-              placeholder="Search orders by restaurant name, order ID, customer..."
+              placeholder="Search orders by buyer name, order ID, customer..."
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
@@ -306,23 +306,23 @@ const OrderFilters = ({
               </div>
             </div>
 
-            {/* Restaurant Filter */}
+            {/* Buyer Filter */}
             <div>
               <label className="block text-sm font-medium text-text-dark mb-3 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-muted-olive" />
-                Restaurant
+                Buyer
               </label>
               <select
-                value={filters.restaurantId}
+                value={filters.buyerId}
                 onChange={(e) =>
-                  handleFilterChange('restaurantId', e.target.value)
+                  handleFilterChange('buyerId', e.target.value)
                 }
                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-text-dark focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive/30 transition-all duration-200"
               >
-                <option value="">All Restaurants</option>
-                {availableRestaurants.map((restaurant) => (
-                  <option key={restaurant.id} value={restaurant.id}>
-                    {restaurant.name}
+                <option value="">All Buyers</option>
+                {availableBuyers.map((buyer) => (
+                  <option key={buyer.id} value={buyer.id}>
+                    {buyer.name}
                   </option>
                 ))}
               </select>

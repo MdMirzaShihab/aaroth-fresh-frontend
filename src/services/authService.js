@@ -103,16 +103,16 @@ class AuthService {
     return this.hasRole('vendor');
   }
 
-  isRestaurantOwner() {
-    return this.hasRole('restaurantOwner');
+  isBuyerOwner() {
+    return this.hasRole('buyerOwner');
   }
 
-  isRestaurantManager() {
-    return this.hasRole('restaurantManager');
+  isBuyerManager() {
+    return this.hasRole('buyerManager');
   }
 
-  canManageRestaurant() {
-    return this.hasAnyRole(['restaurantOwner', 'restaurantManager']);
+  canManageBuyer() {
+    return this.hasAnyRole(['buyerOwner', 'buyerManager']);
   }
 
   /**
@@ -177,9 +177,9 @@ class AuthService {
           default:
             return '/vendor/pending-approval';
         }
-      case 'restaurantOwner':
-      case 'restaurantManager':
-        return '/restaurant/dashboard';
+      case 'buyerOwner':
+      case 'buyerManager':
+        return '/buyer/dashboard';
       default:
         return '/dashboard';
     }

@@ -94,25 +94,25 @@ describe('Role-Based Navigation', () => {
     });
   });
 
-  describe('Restaurant Owner Role Navigation', () => {
-    const restaurantOwnerState = {
+  describe('Buyer Owner Role Navigation', () => {
+    const buyerOwnerState = {
       auth: {
         isAuthenticated: true,
-        user: { name: 'Restaurant Owner', role: 'restaurantOwner' },
+        user: { name: 'Buyer Owner', role: 'buyerOwner' },
         token: 'test-token',
       },
     };
 
-    it('shows restaurant owner-specific navigation items in sidebar', () => {
+    it('shows buyer owner-specific navigation items in sidebar', () => {
       renderWithProviders(<Sidebar isOpen onClose={vi.fn()} />, {
-        preloadedState: restaurantOwnerState,
+        preloadedState: buyerOwnerState,
       });
 
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
       expect(screen.getByText('Browse Products')).toBeInTheDocument();
       expect(screen.getByText('Shopping Cart')).toBeInTheDocument();
       expect(screen.getByText('My Orders')).toBeInTheDocument();
-      expect(screen.getByText('Restaurant')).toBeInTheDocument();
+      expect(screen.getByText('Buyer')).toBeInTheDocument();
       expect(screen.getByText('Profile')).toBeInTheDocument();
 
       // Should not show admin or vendor items
@@ -120,9 +120,9 @@ describe('Role-Based Navigation', () => {
       expect(screen.queryByText('My Listings')).not.toBeInTheDocument();
     });
 
-    it('shows restaurant navigation in mobile bottom tabs', () => {
+    it('shows buyer navigation in mobile bottom tabs', () => {
       renderWithProviders(<MobileNavigation />, {
-        preloadedState: restaurantOwnerState,
+        preloadedState: buyerOwnerState,
       });
 
       expect(screen.getByLabelText('Dashboard')).toBeInTheDocument();
@@ -132,18 +132,18 @@ describe('Role-Based Navigation', () => {
     });
   });
 
-  describe('Restaurant Manager Role Navigation', () => {
-    const restaurantManagerState = {
+  describe('Buyer Manager Role Navigation', () => {
+    const buyerManagerState = {
       auth: {
         isAuthenticated: true,
-        user: { name: 'Restaurant Manager', role: 'restaurantManager' },
+        user: { name: 'Buyer Manager', role: 'buyerManager' },
         token: 'test-token',
       },
     };
 
-    it('shows limited navigation compared to restaurant owner', () => {
+    it('shows limited navigation compared to buyer owner', () => {
       renderWithProviders(<Sidebar isOpen onClose={vi.fn()} />, {
-        preloadedState: restaurantManagerState,
+        preloadedState: buyerManagerState,
       });
 
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
@@ -152,8 +152,8 @@ describe('Role-Based Navigation', () => {
       expect(screen.getByText('My Orders')).toBeInTheDocument();
       expect(screen.getByText('Profile')).toBeInTheDocument();
 
-      // Restaurant management should NOT be available to managers
-      expect(screen.queryByText('Restaurant')).not.toBeInTheDocument();
+      // Buyer management should NOT be available to managers
+      expect(screen.queryByText('Buyer')).not.toBeInTheDocument();
     });
   });
 
@@ -200,7 +200,7 @@ describe('Role-Based Navigation', () => {
 
       // Initially children should not be visible (not expanded)
       expect(screen.queryByText('Vendors')).not.toBeInTheDocument();
-      expect(screen.queryByText('Restaurants')).not.toBeInTheDocument();
+      expect(screen.queryByText('Buyers')).not.toBeInTheDocument();
     });
   });
 
@@ -223,20 +223,20 @@ describe('Role-Based Navigation', () => {
       expect(screen.queryByText('System Settings')).not.toBeInTheDocument();
     });
 
-    it('restaurant user cannot see vendor or admin items', () => {
-      const restaurantState = {
+    it('buyer user cannot see vendor or admin items', () => {
+      const buyerState = {
         auth: {
           isAuthenticated: true,
-          user: { name: 'Restaurant User', role: 'restaurantOwner' },
+          user: { name: 'Buyer User', role: 'buyerOwner' },
           token: 'test-token',
         },
       };
 
       renderWithProviders(<Sidebar isOpen onClose={vi.fn()} />, {
-        preloadedState: restaurantState,
+        preloadedState: buyerState,
       });
 
-      // Restaurant user should not see vendor or admin items
+      // Buyer user should not see vendor or admin items
       expect(screen.queryByText('User Management')).not.toBeInTheDocument();
       expect(screen.queryByText('My Listings')).not.toBeInTheDocument();
       expect(screen.queryByText('System Settings')).not.toBeInTheDocument();

@@ -19,7 +19,7 @@ export const transformUsersData = (rawData) => {
     email: user.email,
     phone: user.phone,
     role: user.role,
-    status: getUserStatus(user), // Derived from vendor/restaurant verification
+    status: getUserStatus(user), // Derived from vendor/buyer verification
     isActive: user.isActive,
     lastLogin: user.lastLogin
       ? formatDistanceToNow(new Date(user.lastLogin), { addSuffix: true })
@@ -27,9 +27,9 @@ export const transformUsersData = (rawData) => {
     createdAt: format(new Date(user.createdAt), 'PPp'),
     businessInfo: extractBusinessInfo(user),
     actionsAvailable: getAvailableActions(user),
-    // Include populated vendor/restaurant for reference
+    // Include populated vendor/buyer for reference
     vendorId: user.vendorId,
-    restaurantId: user.restaurantId,
+    buyerId: user.buyerId,
   }));
 };
 
@@ -54,14 +54,14 @@ const extractBusinessInfo = (user) => {
     info.location = user.vendorId.address;
     info.totalListings = user.vendorId.totalListings || 0;
     info.totalOrders = user.vendorId.totalOrders || 0;
-  } else if (user.role === 'restaurantOwner' && user.restaurantId) {
-    info.businessName = user.restaurantId.businessName;
-    info.cuisineType = user.restaurantId.cuisineType;
-    info.location = user.restaurantId.address;
-    info.totalOrders = user.restaurantId.totalOrders || 0;
-    info.totalSpent = user.restaurantId.totalSpent || 0;
-  } else if (user.role === 'restaurantManager') {
-    info.restaurantName = user.restaurantId?.businessName;
+  } else if (user.role === 'buyerOwner' && user.buyerId) {
+    info.businessName = user.buyerId.businessName;
+    info.cuisineType = user.buyerId.cuisineType;
+    info.location = user.buyerId.address;
+    info.totalOrders = user.buyerId.totalOrders || 0;
+    info.totalSpent = user.buyerId.totalSpent || 0;
+  } else if (user.role === 'buyerManager') {
+    info.buyerName = user.buyerId?.businessName;
     info.permissions = user.permissions || [];
   }
 
@@ -97,7 +97,7 @@ const getAvailableActions = (user) => {
   // Role-specific actions
   if (user.role === 'vendor') {
     actions.push('view_listings', 'view_orders');
-  } else if (user.role === 'restaurantOwner') {
+  } else if (user.role === 'buyerOwner') {
     actions.push('view_orders', 'view_managers');
   }
 
@@ -114,7 +114,7 @@ const getAvailableActions = (user) => {
 
 /**
  * Transform user creation form data to match backend validation
- * Backend expects specific structure - DO NOT nest data in restaurantData
+ * Backend expects specific structure - DO NOT nest data in buyerData
  */
 export const transformUserCreationData = (formData, userType) => {
   const baseData = {
@@ -124,11 +124,11 @@ export const transformUserCreationData = (formData, userType) => {
     password: formData.password, // Required by backend
   };
 
-  // Restaurant Owner - backend validates: name, email, phone, password, restaurantName, address, tradeLicenseNo
-  if (userType === 'restaurantOwner') {
+  // Buyer Owner - backend validates: name, email, phone, password, buyerName, address, tradeLicenseNo
+  if (userType === 'buyerOwner') {
     return {
       ...baseData,
-      restaurantName: formData.businessName || formData.restaurantName, // Backend expects 'restaurantName', not 'businessName'
+      buyerName: formData.businessName || formData.buyerName, // Backend expects 'buyerName', not 'businessName'
       address: {
         street: formData.address?.street || formData.street,
         city: formData.address?.city || formData.city,
@@ -139,11 +139,11 @@ export const transformUserCreationData = (formData, userType) => {
     };
   }
 
-  // Restaurant Manager - backend validates: name, email, phone, password, restaurantId
-  if (userType === 'restaurantManager') {
+  // Buyer Manager - backend validates: name, email, phone, password, buyerId
+  if (userType === 'buyerManager') {
     return {
       ...baseData,
-      restaurantId: formData.restaurantId, // Required
+      buyerId: formData.buyerId, // Required
       // Note: permissions and accessLevel are NOT validated by backend and will be ignored
     };
   }
@@ -161,8 +161,8 @@ export const getUserFilters = () => {
       { value: 'all', label: 'All Roles' },
       { value: 'admin', label: 'Admin' },
       { value: 'vendor', label: 'Vendor' },
-      { value: 'restaurantOwner', label: 'Restaurant Owner' },
-      { value: 'restaurantManager', label: 'Restaurant Manager' },
+      { value: 'buyerOwner', label: 'Buyer Owner' },
+      { value: 'buyerManager', label: 'Buyer Manager' },
     ],
     status: [
       { value: 'all', label: 'All Statuses' },
@@ -250,16 +250,16 @@ export const validateUserForm = (formData, userType) => {
   }
 
   // Role-specific validation
-  if (userType === 'restaurantOwner') {
+  if (userType === 'buyerOwner') {
     if (!formData.businessName?.trim())
       errors.businessName = 'Business name is required';
     if (!formData.cuisineType?.trim())
       errors.cuisineType = 'Cuisine type is required';
     if (!formData.address?.trim())
       errors.address = 'Business address is required';
-  } else if (userType === 'restaurantManager') {
-    if (!formData.restaurantId)
-      errors.restaurantId = 'Restaurant selection is required';
+  } else if (userType === 'buyerManager') {
+    if (!formData.buyerId)
+      errors.buyerId = 'Buyer selection is required';
     if (!formData.permissions?.length)
       errors.permissions = 'At least one permission is required';
   }
@@ -273,7 +273,7 @@ export const validateUserForm = (formData, userType) => {
 /**
  * Generate user export data
  * Note: verificationStatus and isApproved don't exist on User model
- * They are derived from vendor/restaurant entities
+ * They are derived from vendor/buyer entities
  */
 export const generateUserExport = (users, format = 'csv') => {
   const exportData = users.map((user) => ({
@@ -290,8 +290,8 @@ export const generateUserExport = (users, format = 'csv') => {
     'Risk Score': user.riskScore,
     // Vendor-specific fields (only populated for vendors)
     'Vendor Status': user.vendorId?.verificationStatus || 'N/A',
-    // Restaurant-specific fields (only populated for restaurant users)
-    'Restaurant Status': user.restaurantId?.verificationStatus || 'N/A',
+    // Buyer-specific fields (only populated for buyer users)
+    'Buyer Status': user.buyerId?.verificationStatus || 'N/A',
   }));
 
   if (format === 'json') {
@@ -316,8 +316,8 @@ export {
   useGetAdminUserDetailsQuery as useGetUserDetailsQuery,
   useUpdateAdminUserV2Mutation as useUpdateUserMutation,
   useDeleteAdminUserV2Mutation as useDeleteUserMutation,
-  useCreateRestaurantOwnerV2Mutation as useCreateRestaurantOwnerMutation,
-  useCreateRestaurantManagerV2Mutation as useCreateRestaurantManagerMutation,
+  useCreateBuyerOwnerV2Mutation as useCreateBuyerOwnerMutation,
+  useCreateBuyerManagerV2Mutation as useCreateBuyerManagerMutation,
   useGetUserAnalyticsQuery,
 } from '../../store/slices/admin/adminApiSlice';
 

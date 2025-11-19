@@ -5,7 +5,7 @@ import { renderWithProviders } from '../../../test/test-utils';
 import ProtectedRoute, {
   AdminRoute,
   VendorRoute,
-  RestaurantRoute,
+  BuyerRoute,
   PublicRoute,
   GuestRoute,
 } from '../ProtectedRoute';
@@ -139,7 +139,7 @@ describe('ProtectedRoute', () => {
       const preloadedState = {
         auth: {
           isAuthenticated: true,
-          user: { id: 1, role: 'restaurantOwner', status: 'active' },
+          user: { id: 1, role: 'buyerOwner', status: 'active' },
           token: 'valid-token',
           loading: false,
           error: null,
@@ -148,7 +148,7 @@ describe('ProtectedRoute', () => {
 
       renderWithProviders(
         <BrowserRouter>
-          <ProtectedRoute roles={['restaurantOwner', 'restaurantManager']}>
+          <ProtectedRoute roles={['buyerOwner', 'buyerManager']}>
             <TestComponent />
           </ProtectedRoute>
         </BrowserRouter>,
@@ -210,7 +210,7 @@ describe('ProtectedRoute', () => {
       const preloadedState = {
         auth: {
           isAuthenticated: true,
-          user: { id: 1, role: 'restaurantOwner', status: 'active' },
+          user: { id: 1, role: 'buyerOwner', status: 'active' },
           token: 'valid-token',
           loading: false,
           error: null,
@@ -348,11 +348,11 @@ describe('ProtectedRoute', () => {
       expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
     });
 
-    it('RestaurantRoute allows both restaurant roles', () => {
+    it('BuyerRoute allows both buyer roles', () => {
       const preloadedState = {
         auth: {
           isAuthenticated: true,
-          user: { id: 1, role: 'restaurantManager', status: 'active' },
+          user: { id: 1, role: 'buyerManager', status: 'active' },
           token: 'valid-token',
           loading: false,
           error: null,
@@ -361,9 +361,9 @@ describe('ProtectedRoute', () => {
 
       renderWithProviders(
         <BrowserRouter>
-          <RestaurantRoute>
+          <BuyerRoute>
             <TestComponent />
-          </RestaurantRoute>
+          </BuyerRoute>
         </BrowserRouter>,
         { preloadedState }
       );

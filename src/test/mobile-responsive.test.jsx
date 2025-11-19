@@ -3,9 +3,9 @@ import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { renderWithProviders } from './test-utils';
-import ProductBrowsing from '../pages/restaurant/ProductBrowsing';
-import ProductDetail from '../pages/restaurant/ProductDetail';
-import ProductComparison from '../pages/restaurant/ProductComparison';
+import ProductBrowsing from '../pages/buyer/ProductBrowsing';
+import ProductDetail from '../pages/buyer/ProductDetail';
+import ProductComparison from '../pages/buyer/ProductComparison';
 
 // Mock the API slice
 vi.mock('../store/slices/apiSlice', () => ({
@@ -28,7 +28,7 @@ vi.mock('../utils', () => ({
 }));
 
 // Mock BulkOrderModal
-vi.mock('../components/restaurant/BulkOrderModal', () => ({
+vi.mock('../components/buyer/BulkOrderModal', () => ({
   default: ({ isOpen, onClose }) =>
     isOpen ? (
       <div data-testid="bulk-order-modal">
@@ -287,7 +287,7 @@ describe('Mobile Responsiveness and Touch Interactions', () => {
       fireEvent.touchEnd(productCard);
 
       await user.click(productCard);
-      expect(mockNavigate).toHaveBeenCalledWith('/restaurant/browse/1');
+      expect(mockNavigate).toHaveBeenCalledWith('/buyer/browse/1');
     });
 
     it('supports swipe gestures on image gallery', async () => {

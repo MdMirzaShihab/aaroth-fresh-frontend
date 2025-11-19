@@ -17,10 +17,17 @@ const cartSlice = createSlice({
 
       if (existingItem) {
         existingItem.quantity += item.quantity || 1;
+
+        // Update pack information for pack-based items
+        if (item.isPackBased && existingItem.isPackBased) {
+          existingItem.numberOfPacks = (existingItem.numberOfPacks || 0) + (item.numberOfPacks || 1);
+        }
       } else {
         state.items.push({
           ...item,
           quantity: item.quantity || 1,
+          // Preserve pack-based information
+          numberOfPacks: item.numberOfPacks || (item.isPackBased ? 1 : undefined),
         });
       }
 
@@ -39,10 +46,17 @@ const cartSlice = createSlice({
 
         if (existingItem) {
           existingItem.quantity += item.quantity || 1;
+
+          // Update pack information for pack-based items
+          if (item.isPackBased && existingItem.isPackBased) {
+            existingItem.numberOfPacks = (existingItem.numberOfPacks || 0) + (item.numberOfPacks || 1);
+          }
         } else {
           state.items.push({
             ...item,
             quantity: item.quantity || 1,
+            // Preserve pack-based information
+            numberOfPacks: item.numberOfPacks || (item.isPackBased ? 1 : undefined),
           });
         }
       });
@@ -122,8 +136,22 @@ const cartSlice = createSlice({
       let itemCount = 0;
 
       state.items.forEach((item) => {
-        total += item.price * item.quantity;
-        itemCount += item.quantity;
+        // Calculate item total based on pack-based selling or regular pricing
+        let itemTotal = 0;
+
+        if (item.isPackBased) {
+          // Pack-based: use pricePerPack × numberOfPacks
+          const pricePerPack = item.pricePerPack || (item.pricePerBaseUnit * item.packSize);
+          const packs = item.numberOfPacks || 1;
+          itemTotal = pricePerPack * packs;
+        } else {
+          // Regular: use pricePerBaseUnit (or legacy price field) × quantity
+          const price = item.pricePerBaseUnit || item.price || 0;
+          itemTotal = price * item.quantity;
+        }
+
+        total += itemTotal;
+        itemCount += item.quantity; // Count base units for total item count
       });
 
       state.total = Math.round(total * 100) / 100; // Round to 2 decimal places

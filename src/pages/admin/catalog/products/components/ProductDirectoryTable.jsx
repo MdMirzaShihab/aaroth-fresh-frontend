@@ -154,12 +154,12 @@ const ProductDirectoryTable = ({
           }
         />
       ) : viewMode === 'table' ? (
-        <Card className="glass overflow-hidden">
+        <Card className="glass overflow-hidden z-0 shadow-lg shadow-sage-green/5">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-earthy-beige/20">
+              <thead className="bg-gradient-to-r from-sage-green/10 to-muted-olive/10 border-b-2 border-sage-green/20">
                 <tr>
-                  <th className="p-4 text-left">
+                  <th className="px-6 py-4 text-left">
                     <input
                       type="checkbox"
                       checked={
@@ -167,25 +167,25 @@ const ProductDirectoryTable = ({
                         products.length > 0
                       }
                       onChange={handleSelectAll}
-                      className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
+                      className="w-5 h-5 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                     />
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-text-dark">
+                  <th className="px-6 py-4 text-left text-sm font-bold text-text-dark">
                     Product
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-text-dark">
+                  <th className="px-6 py-4 text-left text-sm font-bold text-text-dark">
                     Category
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-text-dark">
+                  <th className="px-6 py-4 text-left text-sm font-bold text-text-dark">
                     Status
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-text-dark">
+                  <th className="px-6 py-4 text-left text-sm font-bold text-text-dark">
                     Performance
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-text-dark">
+                  <th className="px-6 py-4 text-left text-sm font-bold text-text-dark">
                     Created
                   </th>
-                  <th className="p-4 text-right text-sm font-semibold text-text-dark">
+                  <th className="px-6 py-4 text-right text-sm font-bold text-text-dark">
                     Actions
                   </th>
                 </tr>
@@ -206,7 +206,7 @@ const ProductDirectoryTable = ({
                       transition={{ delay: index * 0.05 }}
                       className="border-t border-gray-100 hover:bg-earthy-beige/10 transition-colors"
                     >
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <input
                           type="checkbox"
                           checked={selectedProducts.includes(product._id)}
@@ -214,7 +214,7 @@ const ProductDirectoryTable = ({
                           className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
                         />
                       </td>
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden">
                             {product.images && product.images.length > 0 ? (
@@ -237,7 +237,7 @@ const ProductDirectoryTable = ({
                           </div>
                         </div>
                       </td>
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-text-dark">
                             {product.category?.name || 'Uncategorized'}
@@ -262,7 +262,7 @@ const ProductDirectoryTable = ({
                           )}
                         </div>
                       </td>
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusBadge.color}`}
                         >
@@ -270,7 +270,7 @@ const ProductDirectoryTable = ({
                           {statusBadge.label}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <TrendingUp
                             className={`w-4 h-4 ${getPerformanceColor(product.performanceScore || 0)}`}
@@ -282,12 +282,12 @@ const ProductDirectoryTable = ({
                           </span>
                         </div>
                       </td>
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <span className="text-sm text-text-muted">
                           {format(new Date(product.createdAt), 'MMM dd, yyyy')}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <Button
                             size="sm"
@@ -330,7 +330,7 @@ const ProductDirectoryTable = ({
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="glass overflow-hidden hover:shadow-lg transition-shadow">
+                <Card className="glass overflow-hidden z-0 shadow-md shadow-sage-green/5 hover:shadow-lg transition-shadow">
                   <div className="relative">
                     <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                       {product.images && product.images.length > 0 ? (

@@ -63,9 +63,16 @@ const HeroKPICards = ({
   const getCardColorScheme = (color, urgent = false) => {
     if (urgent) {
       return {
+        cardBg: isDarkMode
+          ? 'bg-tomato-red/10 backdrop-blur-sm'
+          : 'bg-tomato-red/5 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-tomato-red/30'
+          : 'border-2 border-tomato-red/20',
+        cardShadow: 'hover:shadow-tomato-red/20',
         iconBg: isDarkMode
-          ? 'bg-tomato-red/20 border border-tomato-red/30'
-          : 'bg-tomato-red/10 border border-tomato-red/20',
+          ? 'bg-tomato-red/30 border-2 border-tomato-red/50'
+          : 'bg-tomato-red/20 border-2 border-tomato-red/40',
         iconColor: 'text-tomato-red',
         pulseColor: 'animate-pulse',
       };
@@ -73,27 +80,107 @@ const HeroKPICards = ({
 
     const colorSchemes = {
       blue: {
+        cardBg: isDarkMode
+          ? 'bg-blue-500/10 backdrop-blur-sm'
+          : 'bg-blue-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-blue-500/30'
+          : 'border-2 border-blue-200/50',
+        cardShadow: 'hover:shadow-blue-500/20',
         iconBg: isDarkMode
-          ? 'bg-blue-500/20 border border-blue-500/30'
-          : 'bg-blue-100 border border-blue-200',
+          ? 'bg-blue-500/30 border-2 border-blue-500/50'
+          : 'bg-blue-100 border-2 border-blue-300',
         iconColor: isDarkMode ? 'text-blue-400' : 'text-blue-600',
       },
       green: {
+        cardBg: isDarkMode
+          ? 'bg-emerald-500/10 backdrop-blur-sm'
+          : 'bg-emerald-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-emerald-500/30'
+          : 'border-2 border-emerald-200/50',
+        cardShadow: 'hover:shadow-emerald-500/20',
         iconBg: isDarkMode
-          ? 'bg-sage-green/20 border border-sage-green/30'
-          : 'bg-sage-green/10 border border-sage-green/20',
-        iconColor: isDarkMode ? 'text-sage-green' : 'text-muted-olive',
+          ? 'bg-emerald-500/30 border-2 border-emerald-500/50'
+          : 'bg-emerald-100 border-2 border-emerald-300',
+        iconColor: isDarkMode ? 'text-emerald-400' : 'text-emerald-600',
       },
       amber: {
+        cardBg: isDarkMode
+          ? 'bg-amber-500/10 backdrop-blur-sm'
+          : 'bg-amber-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-amber-500/30'
+          : 'border-2 border-amber-200/50',
+        cardShadow: 'hover:shadow-amber-500/20',
         iconBg: isDarkMode
-          ? 'bg-earthy-yellow/20 border border-earthy-yellow/30'
-          : 'bg-earthy-yellow/10 border border-earthy-yellow/20',
-        iconColor: isDarkMode ? 'text-earthy-yellow' : 'text-earthy-brown',
+          ? 'bg-amber-500/30 border-2 border-amber-500/50'
+          : 'bg-amber-100 border-2 border-amber-300',
+        iconColor: isDarkMode ? 'text-amber-400' : 'text-amber-600',
+      },
+      purple: {
+        cardBg: isDarkMode
+          ? 'bg-purple-500/10 backdrop-blur-sm'
+          : 'bg-purple-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-purple-500/30'
+          : 'border-2 border-purple-200/50',
+        cardShadow: 'hover:shadow-purple-500/20',
+        iconBg: isDarkMode
+          ? 'bg-purple-500/30 border-2 border-purple-500/50'
+          : 'bg-purple-100 border-2 border-purple-300',
+        iconColor: isDarkMode ? 'text-purple-400' : 'text-purple-600',
+      },
+      teal: {
+        cardBg: isDarkMode
+          ? 'bg-teal-500/10 backdrop-blur-sm'
+          : 'bg-teal-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-teal-500/30'
+          : 'border-2 border-teal-200/50',
+        cardShadow: 'hover:shadow-teal-500/20',
+        iconBg: isDarkMode
+          ? 'bg-teal-500/30 border-2 border-teal-500/50'
+          : 'bg-teal-100 border-2 border-teal-300',
+        iconColor: isDarkMode ? 'text-teal-400' : 'text-teal-600',
+      },
+      rose: {
+        cardBg: isDarkMode
+          ? 'bg-rose-500/10 backdrop-blur-sm'
+          : 'bg-rose-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-rose-500/30'
+          : 'border-2 border-rose-200/50',
+        cardShadow: 'hover:shadow-rose-500/20',
+        iconBg: isDarkMode
+          ? 'bg-rose-500/30 border-2 border-rose-500/50'
+          : 'bg-rose-100 border-2 border-rose-300',
+        iconColor: isDarkMode ? 'text-rose-400' : 'text-rose-600',
+      },
+      indigo: {
+        cardBg: isDarkMode
+          ? 'bg-indigo-500/10 backdrop-blur-sm'
+          : 'bg-indigo-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-indigo-500/30'
+          : 'border-2 border-indigo-200/50',
+        cardShadow: 'hover:shadow-indigo-500/20',
+        iconBg: isDarkMode
+          ? 'bg-indigo-500/30 border-2 border-indigo-500/50'
+          : 'bg-indigo-100 border-2 border-indigo-300',
+        iconColor: isDarkMode ? 'text-indigo-400' : 'text-indigo-600',
       },
       gray: {
+        cardBg: isDarkMode
+          ? 'bg-gray-600/10 backdrop-blur-sm'
+          : 'bg-gray-50/80 backdrop-blur-sm',
+        cardBorder: isDarkMode
+          ? 'border-2 border-gray-600/30'
+          : 'border-2 border-gray-200/50',
+        cardShadow: 'hover:shadow-gray-500/20',
         iconBg: isDarkMode
-          ? 'bg-gray-600/20 border border-gray-600/30'
-          : 'bg-gray-100 border border-gray-200',
+          ? 'bg-gray-600/30 border-2 border-gray-600/50'
+          : 'bg-gray-200 border-2 border-gray-300',
         iconColor: isDarkMode ? 'text-gray-400' : 'text-gray-600',
       },
     };
@@ -164,8 +251,9 @@ const HeroKPICards = ({
             <Card
               className={`
                 p-6 cursor-pointer transition-all duration-300 group
-                hover:shadow-xl hover:shadow-sage-green/10
-                ${isDarkMode ? 'glass-2-dark border-dark-olive-border' : 'glass-2 border-sage-green/20'}
+                hover:shadow-xl ${colorScheme.cardShadow}
+                ${colorScheme.cardBg}
+                ${colorScheme.cardBorder}
                 ${kpi.urgent ? 'ring-2 ring-tomato-red/20' : ''}
                 touch-target
               `}

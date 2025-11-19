@@ -34,9 +34,9 @@ const mockOrdersData = {
     orders: [
       {
         id: 'order_1',
-        restaurant: {
-          name: 'Test Restaurant',
-          email: 'test@restaurant.com',
+        buyer: {
+          name: 'Test Buyer',
+          email: 'test@buyer.com',
           phone: '+1234567890',
           address: '123 Test St',
         },
@@ -64,9 +64,9 @@ const mockOrdersData = {
       },
       {
         id: 'order_2',
-        restaurant: {
-          name: 'Another Restaurant',
-          email: 'another@restaurant.com',
+        buyer: {
+          name: 'Another Buyer',
+          email: 'another@buyer.com',
           phone: '+0987654321',
           address: '456 Another St',
         },
@@ -121,7 +121,7 @@ const mockNotificationsData = {
         id: 'notif_1',
         type: 'new_order',
         title: 'New Order Received',
-        message: 'Order #12345 has been placed by Test Restaurant',
+        message: 'Order #12345 has been placed by Test Buyer',
         read: false,
         createdAt: '2024-01-15T12:00:00.000Z',
       },
@@ -289,7 +289,7 @@ describe('OrderManagement', () => {
       });
 
       const searchInput = screen.getByPlaceholderText(
-        'Search orders by restaurant name, order ID...'
+        'Search orders by buyer name, order ID...'
       );
       expect(searchInput).toBeInTheDocument();
     });
@@ -302,11 +302,11 @@ describe('OrderManagement', () => {
       });
 
       const searchInput = screen.getByPlaceholderText(
-        'Search orders by restaurant name, order ID...'
+        'Search orders by buyer name, order ID...'
       );
-      await user.type(searchInput, 'test restaurant');
+      await user.type(searchInput, 'test buyer');
 
-      expect(searchInput.value).toBe('test restaurant');
+      expect(searchInput.value).toBe('test buyer');
     });
 
     it('shows/hides filters when toggle is clicked', async () => {
@@ -365,7 +365,7 @@ describe('OrderManagement', () => {
       await waitFor(() => {
         // Check table headers
         expect(screen.getByText('Order ID')).toBeInTheDocument();
-        expect(screen.getByText('Restaurant')).toBeInTheDocument();
+        expect(screen.getByText('Buyer')).toBeInTheDocument();
         expect(screen.getByText('Items')).toBeInTheDocument();
         expect(screen.getByText('Amount')).toBeInTheDocument();
         expect(screen.getByText('Status')).toBeInTheDocument();
@@ -373,8 +373,8 @@ describe('OrderManagement', () => {
         expect(screen.getByText('Actions')).toBeInTheDocument();
 
         // Check order data
-        expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-        expect(screen.getByText('Another Restaurant')).toBeInTheDocument();
+        expect(screen.getByText('Test Buyer')).toBeInTheDocument();
+        expect(screen.getByText('Another Buyer')).toBeInTheDocument();
         expect(screen.getByText('৳51')).toBeInTheDocument();
         expect(screen.getByText('৳30')).toBeInTheDocument();
         expect(screen.getByText('2 items')).toBeInTheDocument();
@@ -666,7 +666,7 @@ describe('OrderManagement', () => {
 
       // Perform search
       const searchInput = screen.getByPlaceholderText(
-        'Search orders by restaurant name, order ID...'
+        'Search orders by buyer name, order ID...'
       );
       await user.type(searchInput, 'nonexistent');
 

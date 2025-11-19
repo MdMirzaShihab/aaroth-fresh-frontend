@@ -87,7 +87,7 @@ export const exportDashboardDataToCSV = (data, type, userRole) => {
       processedData = data.map((order) => ({
         orderNumber: order.orderNumber || order._id?.slice(-6),
         date: formatDate(order.createdAt),
-        customer: order.customer?.name || order.restaurant?.name || 'N/A',
+        customer: order.customer?.name || order.buyer?.name || 'N/A',
         status: order.status,
         totalAmount: formatCurrency(order.totalAmount),
         items: order.items?.length || 0,
@@ -455,7 +455,7 @@ const generateOrdersHTML = (data) => {
         <tr>
           <td>${order.orderNumber || order._id?.slice(-6)}</td>
           <td>${formatDate(order.createdAt)}</td>
-          <td>${order.customer?.name || order.restaurant?.name || 'N/A'}</td>
+          <td>${order.customer?.name || order.buyer?.name || 'N/A'}</td>
           <td>${order.status}</td>
           <td>${formatCurrency(order.totalAmount)}</td>
         </tr>

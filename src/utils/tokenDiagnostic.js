@@ -1,7 +1,7 @@
 /**
  * Frontend Token Diagnostic Utility
  *
- * Use this utility to diagnose restaurant owner authentication issues
+ * Use this utility to diagnose buyer owner authentication issues
  * Run these functions in browser console or add temporary logging
  */
 
@@ -105,7 +105,7 @@ export const checkReduxAuthState = () => {
 
   if (authState.user) {
     console.log('👥 User role:', authState.user.role);
-    console.log('🏢 Restaurant ID:', authState.user.restaurantId);
+    console.log('🏢 Buyer ID:', authState.user.buyerId);
     console.log('📋 User status:', authState.user.status);
     console.log('✅ Is approved:', authState.user.isApproved);
   }
@@ -263,7 +263,7 @@ export const simulateLoginResponseCheck = () => {
 
   console.log('💡 To check login response manually, run this after login:');
   console.log(`
-    // After restaurant owner login, check the response
+    // After buyer owner login, check the response
     const loginResponse = await authService.login(credentials);
     console.log('Login response:', loginResponse);
     console.log('Token from response:', loginResponse.token);
@@ -291,11 +291,11 @@ export const simulateLoginResponseCheck = () => {
     console.log('   Role:', authState.user.role);
     console.log('   Status:', authState.user.status);
     console.log('   Is Approved:', authState.user.isApproved);
-    console.log('   Restaurant ID:', authState.user.restaurantId);
+    console.log('   Buyer ID:', authState.user.buyerId);
 
-    if (authState.user.restaurantId) {
-      console.log('🏢 Restaurant Details:');
-      console.log('   Restaurant Object:', authState.user.restaurantId);
+    if (authState.user.buyerId) {
+      console.log('🏢 Buyer Details:');
+      console.log('   Buyer Object:', authState.user.buyerId);
     }
   }
 
@@ -305,7 +305,7 @@ export const simulateLoginResponseCheck = () => {
     hasToken: !!authState.token,
     isAuthenticated: authState.isAuthenticated,
     userRole: authState.user?.role,
-    restaurantData: authState.user?.restaurantId,
+    buyerData: authState.user?.buyerId,
   };
 };
 

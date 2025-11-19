@@ -64,9 +64,9 @@ const LoginForm = () => {
           case 'vendor':
             navigate('/vendor/dashboard');
             break;
-          case 'restaurantOwner':
-          case 'restaurantManager':
-            navigate('/restaurant/dashboard');
+          case 'buyerOwner':
+          case 'buyerManager':
+            navigate('/buyer/dashboard');
             break;
           default:
             navigate('/dashboard');

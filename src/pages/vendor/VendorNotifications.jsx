@@ -58,7 +58,7 @@ const VendorNotifications = () => {
       id: 1,
       type: 'orders',
       title: 'New Order Received',
-      message: 'Golden Fork Restaurant placed an order for Fresh Tomatoes (20kg)',
+      message: 'Golden Fork Buyer placed an order for Fresh Tomatoes (20kg)',
       timestamp: '2025-11-14T10:30:00',
       read: false,
       priority: 'high',

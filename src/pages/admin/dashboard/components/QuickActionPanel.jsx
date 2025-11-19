@@ -46,7 +46,7 @@ const QuickActionPanel = ({
     {
       id: 'pending-verifications',
       title: 'Review Pending Verifications',
-      description: 'Process vendor and restaurant verifications',
+      description: 'Process vendor and buyer verifications',
       icon: Clock,
       count: pendingCounts.verifications || 0,
       urgentThreshold: 5,

@@ -304,8 +304,8 @@ const UserAnalytics = ({ data, loading = false }) => {
       ],
       roleDistribution: [
         { role: 'vendor', count: 567, percentage: 45.5 },
-        { role: 'restaurantOwner', count: 378, percentage: 30.3 },
-        { role: 'restaurantManager', count: 289, percentage: 23.2 },
+        { role: 'buyerOwner', count: 378, percentage: 30.3 },
+        { role: 'buyerManager', count: 289, percentage: 23.2 },
         { role: 'admin', count: 13, percentage: 1.0 },
       ],
       verificationStats: {
@@ -443,10 +443,10 @@ const UserAnalytics = ({ data, loading = false }) => {
                       <span
                         className={`text-sm capitalize ${isDarkMode ? 'text-dark-text-primary' : 'text-text-dark'}`}
                       >
-                        {role.role === 'restaurantOwner'
-                          ? 'Restaurant Owner'
-                          : role.role === 'restaurantManager'
-                            ? 'Restaurant Manager'
+                        {role.role === 'buyerOwner'
+                          ? 'Buyer Owner'
+                          : role.role === 'buyerManager'
+                            ? 'Buyer Manager'
                             : role.role}
                       </span>
                     </div>

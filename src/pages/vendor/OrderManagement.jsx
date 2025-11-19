@@ -329,7 +329,7 @@ const OrderManagement = () => {
   const handleLegacyExport = () => {
     const csvData = ordersData?.orders?.map((order) => ({
       'Order ID': order.id,
-      Restaurant: order.restaurant.name,
+      Buyer: order.buyer.name,
       Items: order.items.length,
       'Total Amount': order.totalAmount,
       Status: order.status,
@@ -514,7 +514,7 @@ const OrderManagement = () => {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
             <input
               type="text"
-              placeholder="Search orders by restaurant name, order ID..."
+              placeholder="Search orders by buyer name, order ID..."
               value={searchTerm}
               onChange={handleSearch}
               className="w-full pl-12 pr-4 py-3 bg-gray-50 border-0 rounded-2xl text-text-dark placeholder-text-muted focus:ring-2 focus:ring-muted-olive/20 focus:bg-white transition-all duration-200"
@@ -600,7 +600,7 @@ const OrderManagement = () => {
                   <option value="createdAt">Order Date</option>
                   <option value="totalAmount">Amount</option>
                   <option value="status">Status</option>
-                  <option value="restaurant">Restaurant</option>
+                  <option value="buyer">Buyer</option>
                 </select>
               </div>
 
@@ -676,7 +676,7 @@ const OrderManagement = () => {
                   </th>
                   {[
                     { key: 'id', label: 'Order ID', sortable: true },
-                    { key: 'restaurant', label: 'Restaurant', sortable: true },
+                    { key: 'buyer', label: 'Buyer', sortable: true },
                     { key: 'items', label: 'Items', sortable: false },
                     { key: 'totalAmount', label: 'Amount', sortable: true },
                     { key: 'status', label: 'Status', sortable: true },
@@ -723,10 +723,10 @@ const OrderManagement = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="font-medium text-text-dark">
-                        {order.restaurant.name}
+                        {order.buyer.name}
                       </div>
                       <div className="text-sm text-text-muted">
-                        {order.restaurant.address}
+                        {order.buyer.address}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -793,7 +793,7 @@ const OrderManagement = () => {
                       #{order.id.slice(-8)}
                     </div>
                     <div className="text-sm text-text-muted">
-                      {order.restaurant.name}
+                      {order.buyer.name}
                     </div>
                   </div>
                 </div>

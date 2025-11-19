@@ -20,12 +20,14 @@ import {
   useGetListingsQuery,
   useGetCategoriesQuery,
 } from '../../store/slices/apiSlice';
+import { useGetAdminMarketsQuery } from '../../store/slices/admin/adminApiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const VendorDirectory = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedMarket, setSelectedMarket] = useState('all');
 
   // Fetch listings to extract vendor information
   const {
@@ -37,8 +39,15 @@ const VendorDirectory = () => {
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoriesQuery();
 
+  // Fetch active markets
+  const { data: marketsData } = useGetAdminMarketsQuery({
+    status: 'active',
+    limit: 100,
+  });
+
   const categories = categoriesData?.data || [];
   const listings = listingsData?.data || [];
+  const markets = marketsData?.data || [];
 
   // Extract unique vendors from listings
   const vendors = useMemo(() => {
@@ -87,7 +96,7 @@ const VendorDirectory = () => {
     }));
   }, [listings]);
 
-  // Filter vendors based on search and category
+  // Filter vendors based on search, category, and market
   const filteredVendors = useMemo(() => {
     return vendors.filter((vendor) => {
       const matchesSearch =
@@ -101,9 +110,13 @@ const VendorDirectory = () => {
         selectedCategory === 'all' ||
         vendor.categories.includes(selectedCategory);
 
-      return matchesSearch && matchesCategory;
+      const matchesMarket =
+        selectedMarket === 'all' ||
+        (vendor.markets && vendor.markets.includes(selectedMarket));
+
+      return matchesSearch && matchesCategory && matchesMarket;
     });
-  }, [vendors, searchTerm, selectedCategory]);
+  }, [vendors, searchTerm, selectedCategory, selectedMarket]);
 
   // Get stats from real data
   const stats = useMemo(() => {
@@ -142,7 +155,7 @@ const VendorDirectory = () => {
             </h1>
             <p className="text-xl text-text-muted mb-8 max-w-3xl mx-auto">
               Connect with verified farms and suppliers committed to quality,
-              sustainability, and reliable delivery for your restaurant needs.
+              sustainability, and reliable delivery for your buyer needs.
             </p>
 
             {/* Search and Filter Bar */}
@@ -167,6 +180,18 @@ const VendorDirectory = () => {
                   {categories.map((category) => (
                     <option key={category.id} value={category.name}>
                       {category.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="px-4 py-4 text-lg rounded-2xl border-0 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-muted-olive/20 min-w-[180px]"
+                  value={selectedMarket}
+                  onChange={(e) => setSelectedMarket(e.target.value)}
+                >
+                  <option value="all">All Markets</option>
+                  {markets.map((market) => (
+                    <option key={market._id} value={market._id}>
+                      {market.name}
                     </option>
                   ))}
                 </select>
@@ -254,7 +279,7 @@ const VendorDirectory = () => {
                       ? 'No vendors found'
                       : searchTerm || selectedCategory !== 'all'
                         ? `${filteredVendors.length} vendors found`
-                        : 'Quality suppliers serving restaurants nationwide'}
+                        : 'Quality suppliers serving buyers nationwide'}
                   </p>
                 </div>
               </div>
@@ -395,7 +420,7 @@ const VendorDirectory = () => {
             <p className="text-text-muted mb-8 max-w-2xl mx-auto">
               Join our network to access detailed vendor profiles, direct
               communication tools, and start sourcing fresh produce for your
-              restaurant.
+              buyer.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button

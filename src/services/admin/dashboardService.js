@@ -21,7 +21,7 @@ export const transformDashboardMetrics = (combinedData) => {
   const data = combinedData.data || overviewData || combinedData;
 
   // Calculate total users from backend nested structure
-  const totalUsers = (data.users?.totalVendors || 0) + (data.users?.totalRestaurants || 0) + (data.users?.activeUsers || 0);
+  const totalUsers = (data.users?.totalVendors || 0) + (data.users?.totalBuyers || 0) + (data.users?.activeUsers || 0);
   
   // Extract analytics for growth calculations
   const userGrowth = calculateGrowthFromAnalytics(analyticsData?.userGrowth);
@@ -36,7 +36,7 @@ export const transformDashboardMetrics = (combinedData) => {
         change: userGrowth,
         trend: userGrowth >= 0 ? 'up' : 'down',
         icon: 'Users',
-        color: 'blue',
+        color: 'indigo',
       },
       {
         id: 'pending-verifications',
@@ -64,7 +64,7 @@ export const transformDashboardMetrics = (combinedData) => {
         change: revenueGrowth,
         trend: revenueGrowth >= 0 ? 'up' : 'down',
         icon: 'DollarSign',
-        color: 'green',
+        color: 'teal',
       },
       {
         id: 'active-listings',
@@ -337,7 +337,7 @@ const getActivityIcon = (type) => {
   const iconMap = {
     user_registered: 'UserPlus',
     vendor_verified: 'CheckCircle',
-    restaurant_approved: 'Store',
+    buyer_approved: 'Store',
     product_created: 'Package',
     order_placed: 'Package', // Changed from ShoppingCart to Package since it's imported
     listing_flagged: 'Flag',
@@ -356,7 +356,7 @@ const getActivityColor = (type) => {
   const colorMap = {
     user_registered: 'blue',
     vendor_verified: 'green',
-    restaurant_approved: 'green',
+    buyer_approved: 'green',
     product_created: 'purple',
     order_placed: 'blue',
     listing_flagged: 'red',

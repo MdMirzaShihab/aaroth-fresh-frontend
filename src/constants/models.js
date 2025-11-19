@@ -10,13 +10,13 @@ export const createUser = (userData = {}) => ({
   id: userData.id || null,
   phone: userData.phone || '', // with country code +8801234567890
   name: userData.name || '',
-  role: userData.role || 'restaurantOwner', // 'admin' | 'vendor' | 'restaurantOwner' | 'restaurantManager'
+  role: userData.role || 'buyerOwner', // 'admin' | 'vendor' | 'buyerOwner' | 'buyerManager'
   isActive: userData.isActive ?? true,
   isApproved: userData.isApproved ?? true, // for vendors
   createdAt: userData.createdAt || null,
   updatedAt: userData.updatedAt || null,
   // Role-specific fields
-  restaurant: userData.restaurant || null, // For restaurant users
+  buyer: userData.buyer || null, // For buyer users
   vendor: userData.vendor || null, // For vendors
   ...userData,
 });
@@ -64,7 +64,7 @@ export const createListing = (listingData = {}) => ({
  */
 export const createOrder = (orderData = {}) => ({
   id: orderData.id || null,
-  restaurant: orderData.restaurant || createUser(),
+  buyer: orderData.buyer || createUser(),
   items: orderData.items || [],
   status: orderData.status || 'pending', // 'pending' | 'confirmed' | 'prepared' | 'delivered' | 'cancelled'
   totalAmount: orderData.totalAmount || 0,
@@ -126,8 +126,8 @@ export const createApiResponse = (responseData = {}) => ({
 export const USER_ROLES = {
   ADMIN: 'admin',
   VENDOR: 'vendor',
-  RESTAURANT_OWNER: 'restaurantOwner',
-  RESTAURANT_MANAGER: 'restaurantManager',
+  BUYER_OWNER: 'buyerOwner',
+  BUYER_MANAGER: 'buyerManager',
 };
 
 // Order Status Constants

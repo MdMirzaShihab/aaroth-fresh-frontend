@@ -12,17 +12,26 @@ import {
   Building2,
   ChevronDown,
   MapPin,
+  AlertCircle,
 } from 'lucide-react';
 import { useRegisterMutation } from '../../store/slices/apiSlice';
+import { useGetAdminMarketsQuery } from '../../store/slices/admin/adminApiSlice';
 import { validateBangladeshPhone, formatPhoneForDisplay } from '../../utils';
 import { addNotification } from '../../store/slices/notificationSlice';
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [selectedMarkets, setSelectedMarkets] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
+
+  // Fetch active markets for vendor registration
+  const { data: marketsData } = useGetAdminMarketsQuery({
+    status: 'active',
+    limit: 100,
+  });
 
   const {
     register: registerField,
@@ -38,9 +47,10 @@ const RegisterForm = () => {
       email: '',
       password: '',
       confirmPassword: '',
-      role: 'restaurantOwner',
+      role: 'buyerOwner',
       businessName: '',
-      tradeLicenseNo: '', // Required for both vendors and restaurants
+      buyerType: 'restaurant', // Required for buyer owners
+      tradeLicenseNo: '', // Required for both vendors and buyers
       // Structured address fields
       address: {
         street: '',
@@ -85,11 +95,11 @@ const RegisterForm = () => {
     {
       value: 'vendor',
       label: 'Vendor',
-      description: 'Sell fresh produce to restaurants',
+      description: 'Sell fresh produce to buyers',
     },
     {
-      value: 'restaurantOwner',
-      label: 'Restaurant Owner',
+      value: 'buyerOwner',
+      label: 'Buyer Owner',
       description: 'Purchase fresh ingredients',
     },
   ];
@@ -99,6 +109,16 @@ const RegisterForm = () => {
     const formatted = formatPhoneForDisplay(value);
     setValue('phone', formatted, { shouldValidate: true });
   };
+
+  const handleMarketToggle = (marketId) => {
+    setSelectedMarkets((prev) =>
+      prev.includes(marketId)
+        ? prev.filter((id) => id !== marketId)
+        : [...prev, marketId]
+    );
+  };
+
+  const availableMarkets = marketsData?.data || [];
 
   const onSubmit = async (data) => {
     try {
@@ -116,8 +136,8 @@ const RegisterForm = () => {
         role: data.role,
       };
 
-      // Add business details for vendors and restaurant owners
-      if (data.role === 'vendor' || data.role === 'restaurantOwner') {
+      // Add business details for vendors and buyer owners
+      if (data.role === 'vendor' || data.role === 'buyerOwner') {
         registerData.address = {
           street: data.address.street.trim(),
           city: data.address.city.trim(),
@@ -129,8 +149,20 @@ const RegisterForm = () => {
         // Map field names based on role
         if (data.role === 'vendor') {
           registerData.businessName = data.businessName.trim();
-        } else if (data.role === 'restaurantOwner') {
-          registerData.restaurantName = data.businessName.trim(); // Map businessName to restaurantName for restaurants
+          // Add selected markets for vendors (required)
+          if (selectedMarkets.length === 0) {
+            dispatch(
+              addNotification({
+                type: 'error',
+                message: 'Please select at least one market',
+              })
+            );
+            return;
+          }
+          registerData.markets = selectedMarkets;
+        } else if (data.role === 'buyerOwner') {
+          registerData.businessName = data.businessName.trim(); // Backend expects businessName for buyers too
+          registerData.buyerType = data.buyerType; // Required field for buyer owners
         }
       }
 
@@ -152,8 +184,8 @@ const RegisterForm = () => {
             case 'vendor':
               navigate('/vendor/dashboard');
               break;
-            case 'restaurantOwner':
-              navigate('/restaurant/dashboard');
+            case 'buyerOwner':
+              navigate('/buyer/dashboard');
               break;
             default:
               navigate('/dashboard');
@@ -365,9 +397,9 @@ const RegisterForm = () => {
             )}
           </div>
 
-          {/* Business Information - Show for vendors and restaurant owners */}
+          {/* Business Information - Show for vendors and buyer owners */}
           {(selectedRole === 'vendor' ||
-            selectedRole === 'restaurantOwner') && (
+            selectedRole === 'buyerOwner') && (
             <>
               {/* Business Name */}
               <div className="space-y-3">
@@ -377,7 +409,7 @@ const RegisterForm = () => {
                 >
                   {selectedRole === 'vendor'
                     ? 'Business Name'
-                    : 'Restaurant Name'}
+                    : 'Buyer Name'}
                 </label>
                 <div className="relative">
                   <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-text-muted/60">
@@ -386,17 +418,17 @@ const RegisterForm = () => {
                   <input
                     id="businessName"
                     type="text"
-                    placeholder={`Enter your ${selectedRole === 'vendor' ? 'business' : 'restaurant'} name`}
+                    placeholder={`Enter your ${selectedRole === 'vendor' ? 'business' : 'buyer'} name`}
                     className={`w-full pl-14 pr-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 placeholder:text-text-muted/60 min-h-[44px] focus:outline-none ${
                       errors.businessName
                         ? 'border-2 border-tomato-red/30 bg-tomato-red/5 focus:border-tomato-red/50 focus:ring-2 focus:ring-tomato-red/10'
                         : ''
                     }`}
                     {...registerField('businessName', {
-                      required: `${selectedRole === 'vendor' ? 'Business' : 'Restaurant'} name is required`,
+                      required: `${selectedRole === 'vendor' ? 'Business' : 'Buyer'} name is required`,
                       validate: (value) => {
                         if (!value.trim()) {
-                          return `${selectedRole === 'vendor' ? 'Business' : 'Restaurant'} name is required`;
+                          return `${selectedRole === 'vendor' ? 'Business' : 'Buyer'} name is required`;
                         }
                         if (value.trim().length < 2) {
                           return 'Name must be at least 2 characters';
@@ -417,12 +449,116 @@ const RegisterForm = () => {
                 )}
               </div>
 
+              {/* Market Selection - Only show for vendors */}
+              {selectedRole === 'vendor' && (
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-text-dark/80 tracking-wide">
+                    Operating Markets *
+                  </label>
+                  <p className="text-text-muted/70 text-xs mb-3">
+                    Select the markets where you operate (minimum 1 required)
+                  </p>
+
+                  {availableMarkets.length === 0 ? (
+                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                      <p className="text-sm text-amber-800">
+                        No active markets available. Please contact support.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto border border-gray-200 rounded-2xl p-4 bg-white/50">
+                      {availableMarkets.map((market) => (
+                        <label
+                          key={market._id}
+                          className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-mint-fresh/5 transition-colors min-h-[44px]"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedMarkets.includes(market._id)}
+                            onChange={() => handleMarketToggle(market._id)}
+                            className="w-5 h-5 rounded border-gray-300 text-bottle-green focus:ring-bottle-green touch-target"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-text-dark">
+                              {market.name}
+                            </p>
+                            <p className="text-sm text-text-muted">
+                              {market.location?.city || 'N/A'}
+                            </p>
+                          </div>
+                          {market.image && (
+                            <img
+                              src={market.image}
+                              alt={market.name}
+                              className="w-12 h-10 object-cover rounded-lg"
+                            />
+                          )}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
+                  {selectedMarkets.length === 0 && (
+                    <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
+                      <AlertCircle className="w-4 h-4" />
+                      Please select at least one market
+                    </p>
+                  )}
+
+                  {selectedMarkets.length > 0 && (
+                    <p className="text-mint-fresh text-sm mt-2 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      {selectedMarkets.length} market(s) selected
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Buyer Type Selection - Only show for buyerOwner */}
+              {selectedRole === 'buyerOwner' && (
+                <div className="space-y-3">
+                  <label
+                    htmlFor="buyerType"
+                    className="block text-sm font-medium text-text-dark/80 tracking-wide"
+                  >
+                    Business Type
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="buyerType"
+                      className="w-full px-6 py-4 rounded-2xl bg-earthy-beige/30 border-0 focus:bg-white focus:shadow-lg focus:shadow-glow-green transition-all duration-300 min-h-[44px] focus:outline-none appearance-none cursor-pointer pr-12"
+                      {...registerField('buyerType', {
+                        required:
+                          selectedRole === 'buyerOwner'
+                            ? 'Please select a business type'
+                            : false,
+                      })}
+                    >
+                      <option value="restaurant">Restaurant</option>
+                      <option value="corporate">Corporate Company</option>
+                      <option value="supershop">Supershop</option>
+                      <option value="catering">Catering Service</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-text-muted/60 pointer-events-none" />
+                  </div>
+                  {errors.buyerType && (
+                    <p className="text-tomato-red/80 text-sm mt-2 flex items-center gap-2 animate-fade-in">
+                      <span className="w-4 h-4 text-tomato-red/60">⚠</span>
+                      {errors.buyerType.message}
+                    </p>
+                  )}
+                  <p className="text-text-muted/70 text-xs mt-1">
+                    Select the type of business you operate
+                  </p>
+                </div>
+              )}
+
               {/* Address Information */}
               <div className="space-y-4">
                 <h3 className="text-sm font-medium text-text-dark/80 tracking-wide border-b border-earthy-beige/50 pb-2">
                   {selectedRole === 'vendor'
                     ? 'Business Address'
-                    : 'Restaurant Address'}
+                    : 'Buyer Address'}
                 </h3>
 
                 {/* Street Address */}

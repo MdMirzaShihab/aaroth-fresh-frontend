@@ -8,15 +8,15 @@ export { default as DashboardPage } from './dashboard/DashboardPage';
 
 // User Management
 export { default as UsersManagementPage } from './users/UsersManagementPage';
-export { default as CreateRestaurantOwner } from './users/CreateRestaurantOwner';
-export { default as CreateRestaurantManager } from './users/CreateRestaurantManager';
+export { default as CreateBuyerOwner } from './users/CreateBuyerOwner';
+export { default as CreateBuyerManager } from './users/CreateBuyerManager';
 
 // Vendor Management
 export { default as VendorsManagementPage } from './vendors/VendorsManagementPage';
 export { default as VerificationQueue } from './vendors/VerificationQueue';
 
-// Restaurant Management
-export { default as RestaurantsManagementPage } from './restaurants/RestaurantsManagementPage';
+// Buyer Management
+export { default as BuyersManagementPage } from './buyers/BuyersManagementPage';
 
 // Catalog Management
 export { default as ProductsManagementPage } from './catalog/products/ProductsManagementPage';

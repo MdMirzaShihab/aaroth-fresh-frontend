@@ -18,7 +18,7 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
     isLoading,
     user,
     isVendor,
-    isRestaurantOwner,
+    isBuyerOwner,
   } = useBusinessVerification();
 
   if (isLoading) {
@@ -59,24 +59,24 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
           'Create your first product listing',
           'Set up your vendor profile completely',
           'Configure your delivery preferences',
-          'Start receiving orders from restaurants',
+          'Start receiving orders from buyers',
         ],
         ctaText: 'Go to Vendor Dashboard',
         ctaLink: '/vendor/dashboard',
       };
-    } else if (isRestaurantOwner) {
+    } else if (isBuyerOwner) {
       return {
         title: '🎉 Welcome to Aaroth Fresh!',
-        subtitle: 'Your restaurant account is now verified and ready',
+        subtitle: 'Your buyer account is now verified and ready',
         capabilities: [
           {
             key: 'canPlaceOrders',
             label: 'Place orders with verified vendors',
           },
-          { key: 'canAccessDashboard', label: 'Access restaurant dashboard' },
+          { key: 'canAccessDashboard', label: 'Access buyer dashboard' },
           {
-            key: 'canManageRestaurant',
-            label: 'Manage restaurant profile and settings',
+            key: 'canManageBuyer',
+            label: 'Manage buyer profile and settings',
           },
           {
             key: 'canTrackSpending',
@@ -85,12 +85,12 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
         ],
         nextSteps: [
           'Browse fresh produce from local vendors',
-          'Set up your restaurant profile',
+          'Set up your buyer profile',
           'Configure your ordering preferences',
           'Place your first order',
         ],
-        ctaText: 'Go to Restaurant Dashboard',
-        ctaLink: '/restaurant/dashboard',
+        ctaText: 'Go to Buyer Dashboard',
+        ctaLink: '/buyer/dashboard',
       };
     }
 
@@ -287,7 +287,7 @@ const ApprovedStatusScreen = ({ showCelebration = true }) => {
                 <p className="font-medium text-text-dark mb-1">
                   Leave Reviews:
                 </p>
-                <p>Help other restaurants by reviewing vendors</p>
+                <p>Help other buyers by reviewing vendors</p>
               </div>
             </>
           )}

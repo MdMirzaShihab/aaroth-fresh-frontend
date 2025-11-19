@@ -83,7 +83,7 @@ const SETTINGS_CATEGORIES = [
         description: 'Brief description shown in search results and metadata',
         validation: { maxLength: 200 },
         defaultValue:
-          'Fresh produce marketplace connecting local vendors with restaurants',
+          'Fresh produce marketplace connecting local vendors with buyers',
       },
       {
         key: 'supportEmail',

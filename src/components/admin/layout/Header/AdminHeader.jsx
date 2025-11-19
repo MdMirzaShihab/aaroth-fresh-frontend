@@ -103,7 +103,7 @@ const AdminHeader = ({ onMenuClick }) => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="sticky top-0 z-40  glass-3 dark:glass-3-dark border-b border-sage-green/20 dark:border-dark-olive-border shadow-organic dark:shadow-dark-glass hover:shadow-organic-lg dark:hover:shadow-dark-glass transition-all duration-500"
+      className="sticky top-0 z-40 glass-2 dark:glass-2-dark border-b border-sage-green/30 dark:border-dark-olive-border shadow-lg shadow-sage-green/5 dark:shadow-dark-glass transition-all duration-500"
     >
       <div className="px-4 lg:px-8 py-4">
         <div className="flex items-center justify-between">
@@ -200,14 +200,14 @@ const AdminHeader = ({ onMenuClick }) => {
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-12 w-80 z-50 glass-3 dark:glass-3-dark rounded-2xl"
+                  className="absolute right-0 top-12 w-screen max-w-sm sm:w-96 z-50"
                 >
-                  <div className="p-4 rounded-2xl bg-sage-green/50 dark:bg-dark-olive-surface/70 border-2 border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass">
+                  <div className="p-4 rounded-2xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-2 border-sage-green/30 dark:border-gray-700/50 shadow-2xl shadow-sage-green/10 dark:shadow-black/30">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-text-dark dark:text-dark-text-primary">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
                         Notifications
                       </h3>
-                      <div className="text-xs text-text-muted dark:text-dark-text-muted">
+                      <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                         {notifications.length} new
                       </div>
                     </div>
@@ -216,7 +216,7 @@ const AdminHeader = ({ onMenuClick }) => {
                         <div
                           key={notification.id}
                           onClick={() => handleNotificationClick(notification)}
-                          className="p-3 rounded-xl cursor-pointer transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-dark-olive-surface/70 border border-sage-green/10 dark:border-dark-olive-border/50"
+                          className="p-3 rounded-xl cursor-pointer transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-gray-700/70 border border-gray-200/50 dark:border-gray-700/50 hover:border-sage-green/30 dark:hover:border-sage-green/30"
                         >
                           <div className="flex items-start gap-3">
                             <div
@@ -227,18 +227,18 @@ const AdminHeader = ({ onMenuClick }) => {
                                   ? 'bg-tomato-red animate-pulse'
                                   : notification.type === 'success'
                                     ? 'bg-sage-green'
-                                    : 'bg-sage-green'
+                                    : 'bg-blue-500'
                               }
                             `}
                             />
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm text-text-dark dark:text-dark-text-primary">
+                              <p className="font-medium text-sm text-gray-900 dark:text-white">
                                 {notification.title}
                               </p>
-                              <p className="text-xs mt-1 text-text-muted dark:text-dark-text-muted">
+                              <p className="text-xs mt-1 text-gray-600 dark:text-gray-300">
                                 {notification.message}
                               </p>
-                              <p className="text-xs mt-1 text-muted-olive dark:text-dark-sage-accent">
+                              <p className="text-xs mt-1 text-muted-olive dark:text-sage-green font-medium">
                                 {notification.time}
                               </p>
                             </div>
@@ -300,39 +300,39 @@ const AdminHeader = ({ onMenuClick }) => {
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-16 w-64 z-50 rounded-2xl glass-5 dark:glass-5-dark"
+                  className="absolute right-0 top-16 w-72 sm:w-80 z-50"
                 >
-                  <div className="p-4 bg-sage-green/50 dark:bg-dark-olive-surface/70 rounded-2xl border-2 border-sage-green/20 dark:border-dark-olive-border shadow-organic-lg dark:shadow-dark-glass">
-                    <div className="flex items-center gap-3 pb-3 border-b border-sage-green/20 dark:border-dark-olive-border">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center">
+                  <div className="p-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl border-2 border-sage-green/30 dark:border-gray-700/50 shadow-2xl shadow-sage-green/10 dark:shadow-black/30">
+                    <div className="flex items-center gap-3 pb-3 border-b border-sage-green/30 dark:border-gray-700">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-muted-olive via-sage-green to-sage-green flex items-center justify-center shadow-lg">
                         <User className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="font-semibold text-text-dark dark:text-dark-text-primary">
+                        <div className="font-semibold text-gray-900 dark:text-white">
                           Admin User
                         </div>
-                        <div className="text-sm text-text-muted dark:text-dark-text-muted">
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
                           admin@aarothfresh.com
                         </div>
                       </div>
                     </div>
                     <div className="py-2 space-y-1">
-                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent">
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-gray-700/70 text-gray-700 dark:text-gray-200 hover:text-muted-olive dark:hover:text-sage-green font-medium">
                         <Settings className="w-4 h-4" />
                         <span>Account Settings</span>
                       </button>
-                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent">
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-gray-700/70 text-gray-700 dark:text-gray-200 hover:text-muted-olive dark:hover:text-sage-green font-medium">
                         <BarChart3 className="w-4 h-4" />
                         <span>Admin Analytics</span>
                       </button>
-                      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 text-text-muted dark:text-dark-text-muted hover:text-muted-olive dark:hover:text-dark-sage-accent">
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-gray-700/70 text-gray-700 dark:text-gray-200 hover:text-muted-olive dark:hover:text-sage-green font-medium">
                         <Shield className="w-4 h-4" />
                         <span>Security</span>
                       </button>
-                      <hr className="my-2 border-sage-green/20 dark:border-dark-olive-border" />
+                      <hr className="my-2 border-sage-green/30 dark:border-gray-700" />
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-colors hover:bg-tomato-red/10 text-text-muted dark:text-dark-text-muted hover:text-tomato-red"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 hover:bg-tomato-red/10 text-gray-700 dark:text-gray-200 hover:text-tomato-red font-medium"
                       >
                         <LogOut className="w-4 h-4" />
                         <span>Sign Out</span>
@@ -349,7 +349,7 @@ const AdminHeader = ({ onMenuClick }) => {
       {/* Click outside to close dropdowns */}
       {(profileDropdownOpen || notificationsOpen) && (
         <div
-          className="fixed inset-0 z-50"
+          className="fixed inset-0 z-30"
           onClick={() => {
             setProfileDropdownOpen(false);
             setNotificationsOpen(false);

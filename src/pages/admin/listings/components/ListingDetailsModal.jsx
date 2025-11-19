@@ -608,7 +608,7 @@ const ListingDetailsModal = ({
                           </div>
                           <div>
                             <p className="font-medium text-slate-800 dark:text-white">
-                              {order.restaurantId?.name || 'Unknown Restaurant'}
+                              {order.buyerId?.name || 'Unknown Buyer'}
                             </p>
                             <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 mt-1">
                               <span className="flex items-center gap-1">
