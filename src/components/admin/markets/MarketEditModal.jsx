@@ -1,32 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  Upload,
-  X,
-  Image as ImageIcon,
-  MapPin,
-  AlertCircle,
-  Check,
-} from 'lucide-react';
+/**
+ * MarketEditModal - Enhanced Design V2
+ * Beautiful modal for creating and editing market locations
+ * Features: Glassmorphism, smooth animations, enhanced UX
+ */
+
+import React, { useState, useEffect } from 'react';
+import { MapPin, Info, Settings, Check, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 // UI Components
 import { Modal } from '../../ui/Modal';
 import Button from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import FormField from '../../ui/FormField';
-import LoadingSpinner from '../../ui/LoadingSpinner';
+import ImageUploadZone from '../../ui/ImageUploadZone';
+import FormSection from '../../ui/FormSection';
 
 // API Hooks
 import {
   useCreateMarketMutation,
   useUpdateMarketMutation,
 } from '../../../store/slices/admin/adminApiSlice';
-
-// Helper functions
-import {
-  validateMarketData,
-  prepareMarketFormData,
-} from '../../../constants/markets';
 
 // Cities list
 const CITIES = [
@@ -43,7 +38,6 @@ const CITIES = [
 
 const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
   const isEditMode = Boolean(market);
-  const fileInputRef = useRef(null);
 
   // ========================================
   // FORM STATE
@@ -60,9 +54,8 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
   });
 
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [existingImage, setExistingImage] = useState(null);
   const [errors, setErrors] = useState({});
-  const [isDragActive, setIsDragActive] = useState(false);
 
   // ========================================
   // RTK MUTATIONS
@@ -91,7 +84,7 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
           : '',
         isActive: market.isActive !== false,
       });
-      setImagePreview(market.image || null);
+      setExistingImage(market.image || null);
       setImageFile(null);
     } else {
       // Reset form for create mode
@@ -104,7 +97,7 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
         coordinates: '',
         isActive: true,
       });
-      setImagePreview(null);
+      setExistingImage(null);
       setImageFile(null);
     }
     setErrors({});
@@ -127,96 +120,41 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
     }
   };
 
-  const handleImageSelect = (file) => {
-    if (!file) return;
+  const validateForm = () => {
+    const newErrors = {};
 
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    if (!validTypes.includes(file.type)) {
-      toast.error('Please select a valid image file (JPG, PNG, or GIF)');
-      return;
+    if (!formData.name.trim()) {
+      newErrors.name = 'Market name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Market name must be at least 2 characters';
+    } else if (formData.name.length > 50) {
+      newErrors.name = 'Market name must not exceed 50 characters';
     }
 
-    // Validate file size (max 1MB)
-    const maxSize = 1 * 1024 * 1024; // 1MB
-    if (file.size > maxSize) {
-      toast.error('Image size must be less than 1MB');
-      return;
+    if (formData.description && formData.description.length > 500) {
+      newErrors.description = 'Description cannot exceed 500 characters';
     }
 
-    setImageFile(file);
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
-
-    // Clear image error
-    if (errors.image) {
-      setErrors((prev) => ({ ...prev, image: null }));
+    if (!imageFile && !existingImage) {
+      newErrors.image = 'Market image is required';
     }
-  };
 
-  const handleFileInputChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleImageSelect(file);
+    if (!formData.address) {
+      newErrors.address = 'Market address is required';
     }
-  };
 
-  const handleDragEnter = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragActive(true);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragActive(false);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragActive(false);
-
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleImageSelect(file);
+    if (!formData.city) {
+      newErrors.city = 'City is required';
     }
-  };
 
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(isEditMode ? market.image : null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form data
-    const validationData = {
-      ...formData,
-      image: imageFile,
-      existingImage: isEditMode ? market.image : null,
-    };
-
-    const { isValid, errors: validationErrors } =
-      validateMarketData(validationData);
-
-    if (!isValid) {
-      setErrors(validationErrors);
+    if (!validateForm()) {
       toast.error('Please fix the errors in the form');
       return;
     }
@@ -233,38 +171,53 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
         }
       }
 
-      // Prepare form data
-      const submitData = {
-        name: formData.name.trim(),
-        description: formData.description.trim(),
-        address: formData.address.trim(),
-        city: formData.city,
-        district: formData.district.trim(),
-        isActive: formData.isActive,
-      };
+      // Create FormData object
+      const apiFormData = new FormData();
+      apiFormData.append('name', formData.name.trim());
+      apiFormData.append('description', formData.description.trim());
+      apiFormData.append('address', formData.address.trim());
+      apiFormData.append('city', formData.city);
+      apiFormData.append('district', formData.district.trim());
+      apiFormData.append('isActive', formData.isActive);
 
       if (coordinates) {
-        submitData.coordinates = coordinates;
+        apiFormData.append('coordinates', JSON.stringify(coordinates));
       }
 
-      // Create FormData object
-      const apiFormData = prepareMarketFormData(submitData, imageFile);
+      if (imageFile) {
+        apiFormData.append('image', imageFile);
+      }
 
       // Submit to API
       if (isEditMode) {
         await updateMarket({ id: market._id, formData: apiFormData }).unwrap();
-        toast.success('Market updated successfully');
+        toast.success('Market updated successfully! 🎉');
       } else {
         await createMarket(apiFormData).unwrap();
-        toast.success('Market created successfully');
+        toast.success('Market created successfully! 🎉');
       }
 
       // Call success callback and close
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      console.error('Submit error:', error);
-      toast.error(error?.data?.message || 'Failed to save market');
+      // Extract error message from different possible locations
+      let errorMessage = `Failed to ${isEditMode ? 'update' : 'create'} market`;
+
+      if (error?.data?.error) {
+        errorMessage = error.data.error;
+        // Check for duplicate key error
+        if (error.data.error.includes('Duplicate') || error.data.stack?.includes('E11000')) {
+          errorMessage = `A market with the name "${formData.name}" already exists. Please use a different name.`;
+          setErrors({ name: 'This market name is already in use' });
+        }
+      } else if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage);
     }
   };
 
@@ -272,141 +225,128 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
   // RENDER
   // ========================================
 
+  const displayImage = imageFile || existingImage;
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditMode ? 'Edit Market' : 'Create New Market'}
+      title={
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive to-sage-green flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-text-dark">
+              {isEditMode ? 'Edit Market' : 'Create New Market'}
+            </h2>
+            <p className="text-sm text-text-muted">
+              {isEditMode
+                ? 'Update market location and details'
+                : 'Add a new market location for vendors'}
+            </p>
+          </div>
+        </div>
+      }
       size="lg"
     >
-      <form onSubmit={handleSubmit} className="space-y-6 pb-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Image Upload Section */}
-        <div>
-          <label className="block text-sm font-medium text-text-dark mb-2">
-            Market Image *
-          </label>
-
-          {/* Image Preview */}
-          {imagePreview && (
-            <div className="relative mb-4">
-              <img
-                src={imagePreview}
-                alt="Market preview"
-                className="w-full h-48 object-cover rounded-2xl"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Drag and Drop Area */}
-          {!imagePreview && (
-            <div
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              className={`
-                border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all
-                ${
-                  isDragActive
-                    ? 'border-bottle-green bg-mint-fresh/10'
-                    : 'border-gray-300 hover:border-bottle-green hover:bg-mint-fresh/5'
-                }
-              `}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="w-12 h-12 text-bottle-green mx-auto mb-3" />
-              <p className="text-sm font-medium text-text-dark mb-1">
-                Drop image here or click to upload
-              </p>
-              <p className="text-xs text-text-muted">
-                JPG, PNG, or GIF (max 1MB)
-              </p>
-            </div>
-          )}
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/gif"
-            onChange={handleFileInputChange}
-            className="hidden"
+        <FormSection
+          title="Market Image"
+          description="Upload a photo of the market location"
+          icon={null}
+          variant="glass"
+        >
+          <ImageUploadZone
+            value={displayImage}
+            onChange={setImageFile}
+            onRemove={() => {
+              setImageFile(null);
+              if (!isEditMode) setExistingImage(null);
+            }}
+            required
+            label=""
+            maxSize={1 * 1024 * 1024}
           />
-
           {errors.image && (
-            <p className="text-sm text-red-600 mt-2 flex items-center gap-1">
-              <AlertCircle className="w-4 h-4" />
-              {errors.image}
-            </p>
+            <p className="text-sm text-tomato-red mt-2">{errors.image}</p>
           )}
-        </div>
+        </FormSection>
 
         {/* Basic Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Name */}
-          <FormField label="Market Name" required error={errors.name}>
-            <Input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="Enter market name"
-              maxLength={50}
-            />
-            <p className="text-xs text-text-muted mt-1">
-              {formData.name.length}/50 characters
-            </p>
-          </FormField>
+        <FormSection
+          title="Basic Information"
+          description="Market name and description"
+          icon={Info}
+          variant="glass"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Name */}
+            <FormField label="Market Name" required error={errors.name}>
+              <Input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="e.g., Karwan Bazar, Shyambazar"
+                maxLength={50}
+              />
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-xs text-text-muted">Must be unique</p>
+                <p className="text-xs text-text-muted">
+                  {formData.name.length}/50
+                </p>
+              </div>
+            </FormField>
 
-          {/* City */}
-          <FormField label="City" required error={errors.city}>
-            <select
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green"
-            >
-              <option value="">Select City</option>
-              {CITIES.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
-          </FormField>
-        </div>
-
-        {/* Description */}
-        <FormField label="Description" error={errors.description}>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Enter market description (optional)"
-            rows={3}
-            maxLength={500}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green resize-none"
-          />
-          <p className="text-xs text-text-muted mt-1">
-            {formData.description.length}/500 characters
-          </p>
-        </FormField>
-
-        {/* Location Details */}
-        <div className="bg-mint-fresh/5 rounded-2xl p-6 border border-mint-fresh/20">
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin className="w-5 h-5 text-bottle-green" />
-            <h3 className="text-lg font-semibold text-text-dark">
-              Location Details
-            </h3>
+            {/* City */}
+            <FormField label="City" required error={errors.city}>
+              <select
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all"
+              >
+                <option value="">Select City</option>
+                {CITIES.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </FormField>
           </div>
 
+          {/* Description */}
+          <FormField label="Description (Optional)">
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Brief description of the market..."
+              rows={3}
+              maxLength={500}
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive resize-none transition-all"
+            />
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-text-muted">
+                What makes this market unique?
+              </p>
+              <p className="text-xs text-text-muted">
+                {formData.description.length}/500
+              </p>
+            </div>
+          </FormField>
+        </FormSection>
+
+        {/* Location Details */}
+        <FormSection
+          title="Location Details"
+          description="Precise location information"
+          icon={MapPin}
+          variant="glass"
+        >
           <div className="space-y-4">
             {/* Address */}
             <FormField label="Address" required error={errors.address}>
@@ -442,43 +382,61 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
                 onChange={handleInputChange}
                 placeholder="e.g., 90.4152, 23.7104"
               />
+              <p className="text-xs text-text-muted mt-1">
+                GPS coordinates for map integration
+              </p>
             </FormField>
           </div>
-        </div>
+        </FormSection>
 
-        {/* Active Status */}
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="isActive"
-            name="isActive"
-            checked={formData.isActive}
-            onChange={handleInputChange}
-            className="w-5 h-5 rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
-          />
-          <label htmlFor="isActive" className="text-sm text-text-dark">
-            Mark this market as active
-          </label>
-        </div>
+        {/* Settings */}
+        <FormSection
+          title="Market Status"
+          description="Configure market availability"
+          icon={Settings}
+          variant="glass"
+        >
+          <div className="flex items-start gap-3 p-4 rounded-xl border border-sage-green/20 bg-mint-fresh/5">
+            <input
+              type="checkbox"
+              id="isActive"
+              name="isActive"
+              checked={formData.isActive}
+              onChange={handleInputChange}
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
+            />
+            <label htmlFor="isActive" className="flex-1 cursor-pointer">
+              <div className="font-medium text-text-dark">Active Market</div>
+              <p className="text-sm text-text-muted">
+                Active markets are available for vendor selection
+              </p>
+            </label>
+          </div>
+        </FormSection>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200"
+        >
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
             disabled={isSubmitting}
+            className="min-w-[120px]"
           >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-gradient-secondary text-white flex items-center gap-2"
+            className="bg-gradient-secondary text-white min-w-[120px] flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
-                <LoadingSpinner size="sm" />
+                <Loader className="w-4 h-4 animate-spin" />
                 {isEditMode ? 'Updating...' : 'Creating...'}
               </>
             ) : (
@@ -488,7 +446,7 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
               </>
             )}
           </Button>
-        </div>
+        </motion.div>
       </form>
     </Modal>
   );

@@ -1,16 +1,44 @@
+/**
+ * ProductEditModal - Enhanced Design V2
+ * Beautiful modal for creating and editing products
+ * Features: Multiple images, glassmorphism, smooth animations, enhanced UX
+ */
+
 import React, { useState, useEffect } from 'react';
-import { Save, X, Upload, Image as ImageIcon, Star, Trash2, AlertTriangle } from 'lucide-react';
+import {
+  Package,
+  Info,
+  Image as ImageIcon,
+  Settings,
+  Check,
+  Loader,
+  AlertTriangle,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// UI Components
 import { Modal } from '../../../../../components/ui/Modal';
 import Button from '../../../../../components/ui/Button';
 import { Input } from '../../../../../components/ui/Input';
 import FormField from '../../../../../components/ui/FormField';
+import ImageUploadZone from '../../../../../components/ui/ImageUploadZone';
+import FormSection from '../../../../../components/ui/FormSection';
+
+// API Slices
 import {
   useCreateAdminProductV2Mutation,
   useUpdateAdminProductV2Mutation,
   useGetAdminCategoriesV2Query,
 } from '../../../../../store/slices/admin/adminApiSlice';
 
-const ProductEditModal = ({ product, isOpen, onClose }) => {
+const ProductEditModal = ({ product, isOpen, onClose, onSuccess }) => {
+  const isEdit = !!product;
+
+  // ========================================
+  // STATE MANAGEMENT
+  // ========================================
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -19,14 +47,18 @@ const ProductEditModal = ({ product, isOpen, onClose }) => {
   });
 
   const [images, setImages] = useState([]); // Array of { file, url, isPrimary }
-  const [existingImages, setExistingImages] = useState([]); // For edit mode
+  const [existingImages, setExistingImages] = useState([]);
+  const [errors, setErrors] = useState({});
+
+  // ========================================
+  // RTK QUERY HOOKS
+  // ========================================
 
   const [createProduct, { isLoading: isCreating }] = useCreateAdminProductV2Mutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateAdminProductV2Mutation();
   const { data: categoriesData } = useGetAdminCategoriesV2Query({ limit: 100 });
 
   const categories = categoriesData?.data || [];
-  const isEdit = !!product;
   const isSaving = isCreating || isUpdating;
 
   // Check if selected category is available
@@ -35,8 +67,12 @@ const ProductEditModal = ({ product, isOpen, onClose }) => {
   const isCategoryUnavailable = selectedCategory && selectedCategory.isAvailable === false;
   const hasCategoryIssue = isCategoryInactive || isCategoryUnavailable;
 
+  // ========================================
+  // INITIALIZE FORM
+  // ========================================
+
   useEffect(() => {
-    if (product) {
+    if (product && isOpen) {
       setFormData({
         name: product.name || '',
         description: product.description || '',
@@ -44,8 +80,8 @@ const ProductEditModal = ({ product, isOpen, onClose }) => {
         isActive: product.isActive !== undefined ? product.isActive : true,
       });
       setExistingImages(product.images || []);
-      setImages([]); // Clear new images
-    } else {
+      setImages([]);
+    } else if (!product && isOpen) {
       setFormData({
         name: '',
         description: '',
@@ -55,71 +91,73 @@ const ProductEditModal = ({ product, isOpen, onClose }) => {
       setExistingImages([]);
       setImages([]);
     }
+    setErrors({});
   }, [product, isOpen]);
 
-  // Handle image file selection
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const totalImages = images.length + existingImages.length + files.length;
+  // ========================================
+  // EVENT HANDLERS
+  // ========================================
 
-    if (totalImages > 5) {
-      alert('You can upload a maximum of 5 images');
-      return;
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
+  };
 
-    const newImages = files.map((file, index) => ({
-      file,
-      url: URL.createObjectURL(file),
-      isPrimary: images.length === 0 && existingImages.length === 0 && index === 0,
+  // Combine existing and new images for the component
+  const allImages = [...existingImages, ...images];
+
+  const handleImagesChange = (updatedImages) => {
+    // Separate existing and new images
+    const existingCount = existingImages.length;
+    const updatedExisting = updatedImages.slice(0, existingCount);
+    const updatedNew = updatedImages.slice(existingCount).map((img, index) => ({
+      ...img,
+      file: img.file || images[index]?.file,
     }));
 
-    setImages([...images, ...newImages]);
+    setExistingImages(updatedExisting);
+    setImages(updatedNew);
   };
 
-  // Remove image
-  const handleRemoveImage = (index, isExisting = false) => {
-    if (isExisting) {
-      setExistingImages(existingImages.filter((_, i) => i !== index));
-    } else {
-      const updatedImages = images.filter((_, i) => i !== index);
-      // If removed image was primary, make first image primary
-      if (images[index].isPrimary && updatedImages.length > 0) {
-        updatedImages[0].isPrimary = true;
-      }
-      setImages(updatedImages);
-    }
-  };
+  const validateForm = () => {
+    const newErrors = {};
 
-  // Set primary image
-  const handleSetPrimary = (index, isExisting = false) => {
-    if (isExisting) {
-      setExistingImages(
-        existingImages.map((img, i) => ({
-          ...img,
-          isPrimary: i === index,
-        }))
-      );
-    } else {
-      setImages(
-        images.map((img, i) => ({
-          ...img,
-          isPrimary: i === index,
-        }))
-      );
-      // Unmark existing images
-      setExistingImages(
-        existingImages.map((img) => ({ ...img, isPrimary: false }))
-      );
+    if (!formData.name.trim()) {
+      newErrors.name = 'Product name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Product name must be at least 2 characters';
     }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Product description is required';
+    } else if (formData.description.trim().length < 10) {
+      newErrors.description = 'Description must be at least 10 characters';
+    }
+
+    if (!formData.category) {
+      newErrors.category = 'Please select a category';
+    }
+
+    const totalImages = existingImages.length + images.length;
+    if (totalImages === 0) {
+      newErrors.images = 'At least one product image is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate images - at least one image required
-    const totalImages = existingImages.length + images.length;
-    if (totalImages === 0) {
-      alert('Please upload at least one product image');
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
       return;
     }
 
@@ -127,14 +165,16 @@ const ProductEditModal = ({ product, isOpen, onClose }) => {
       const formDataToSend = new FormData();
 
       // Append form fields
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('description', formData.description);
+      formDataToSend.append('name', formData.name.trim());
+      formDataToSend.append('description', formData.description.trim());
       formDataToSend.append('category', formData.category);
       formDataToSend.append('isActive', formData.isActive);
 
       // Append new images
       images.forEach((img) => {
-        formDataToSend.append('images', img.file);
+        if (img.file) {
+          formDataToSend.append('images', img.file);
+        }
       });
 
       if (isEdit) {
@@ -147,275 +187,303 @@ const ProductEditModal = ({ product, isOpen, onClose }) => {
           id: product._id,
           formData: formDataToSend,
         }).unwrap();
+        toast.success('Product updated successfully! 🎉');
       } else {
         await createProduct(formDataToSend).unwrap();
+        toast.success('Product created successfully! 🎉');
       }
 
       // Clean up object URLs
-      images.forEach((img) => URL.revokeObjectURL(img.url));
+      images.forEach((img) => {
+        if (img.file) {
+          URL.revokeObjectURL(img.url);
+        }
+      });
 
+      if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
       console.error('Failed to save product:', error);
-      alert(error?.data?.error || 'Failed to save product');
+
+      let errorMessage = `Failed to ${isEdit ? 'update' : 'create'} product`;
+
+      if (error?.data?.error) {
+        errorMessage = error.data.error;
+        if (error.data.error.includes('Duplicate') || error.data.stack?.includes('E11000')) {
+          errorMessage = `A product with the name "${formData.name}" already exists. Please use a different name.`;
+          setErrors({ name: 'This product name is already in use' });
+        }
+      } else if (error?.data?.message) {
+        errorMessage = error.data.message;
+      }
+
+      toast.error(errorMessage);
     }
   };
 
-  if (!isOpen) return null;
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? 'Edit Product' : 'Create Product'}
+      title={
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive to-sage-green flex items-center justify-center">
+            <Package className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-text-dark">
+              {isEdit ? 'Edit Product' : 'Create New Product'}
+            </h2>
+            <p className="text-sm text-text-muted">
+              {isEdit
+                ? 'Update product details and images'
+                : 'Add a new product to your catalog'}
+            </p>
+          </div>
+        </div>
+      }
       size="lg"
+      contentClassName="!px-0"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <FormField label="Product Name (Required)">
-          <Input
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Enter product name"
-            required
-            minLength={2}
-            maxLength={100}
-          />
-        </FormField>
-
-        <FormField label="Description (Required)">
-          <textarea
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            placeholder="Enter product description..."
-            rows={4}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 resize-none"
-            required
-            minLength={10}
-            maxLength={500}
-          />
-        </FormField>
-
-        <FormField label="Category (Required)">
-          <select
-            value={formData.category}
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-            className={`w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-muted-olive/20 ${
-              hasCategoryIssue
-                ? 'border-earthy-yellow bg-earthy-yellow/5'
-                : 'border-gray-200'
-            }`}
-            required
-          >
-            <option value="">Select a category</option>
-            {categories.map((cat) => {
-              const isInactive = !cat.isActive;
-              const isUnavailable = cat.isAvailable === false;
-              const statusLabel = isInactive
-                ? ' (Inactive)'
-                : isUnavailable
-                ? ' (Flagged)'
-                : '';
-
-              return (
-                <option
-                  key={cat._id}
-                  value={cat._id}
-                  style={{
-                    color: isInactive || isUnavailable ? '#9CA3AF' : 'inherit',
-                  }}
-                >
-                  {cat.name}
-                  {statusLabel}
-                </option>
-              );
-            })}
-          </select>
-
-          {/* Category Status Warning */}
-          {hasCategoryIssue && (
-            <div className="mt-2 flex items-start gap-2 p-3 bg-earthy-yellow/10 border border-earthy-yellow/30 rounded-xl">
-              <AlertTriangle className="w-4 h-4 text-earthy-yellow flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-earthy-brown">
-                {isCategoryInactive && (
-                  <p>
-                    <strong>Warning:</strong> This category is currently inactive. Products
-                    in inactive categories may not be visible to vendors.
-                  </p>
-                )}
-                {isCategoryUnavailable && (
-                  <p className="mt-1">
-                    <strong>Warning:</strong> This category has been flagged as unavailable.
-                    It may have restrictions or issues.
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </FormField>
-
+      <form onSubmit={handleSubmit} className="space-y-6 px-6">
         {/* Image Upload Section */}
-        <FormField label={`Product Images ${!isEdit ? '(Required)' : '(Optional)'}`}>
+        <FormSection
+          title="Product Images"
+          description="Upload up to 5 images - first image will be the primary"
+          icon={ImageIcon}
+          variant="glass"
+        >
+          <ImageUploadZone
+            values={allImages}
+            onMultipleChange={handleImagesChange}
+            multiple
+            maxFiles={5}
+            required
+            label=""
+          />
+          {errors.images && (
+            <p className="text-sm text-tomato-red mt-2">{errors.images}</p>
+          )}
+        </FormSection>
+
+        {/* Basic Information */}
+        <FormSection
+          title="Basic Information"
+          description="Product name and description"
+          icon={Info}
+          variant="glass"
+        >
           <div className="space-y-4">
-            {/* Existing and New Images Display */}
-            {(existingImages.length > 0 || images.length > 0) && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {/* Existing Images */}
-                {existingImages.map((img, index) => (
-                  <div key={`existing-${index}`} className="relative group">
-                    <div className="aspect-square rounded-xl overflow-hidden border-2 border-gray-200">
-                      <img
-                        src={img.url}
-                        alt={img.alt || `Product ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    {img.isPrimary && (
-                      <div className="absolute top-2 left-2">
-                        <span className="bg-earthy-yellow text-earthy-brown text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-current" />
-                          Primary
-                        </span>
-                      </div>
-                    )}
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                      {!img.isPrimary && (
-                        <button
-                          type="button"
-                          onClick={() => handleSetPrimary(index, true)}
-                          className="bg-earthy-yellow text-earthy-brown p-1.5 rounded-full hover:bg-earthy-yellow/80"
-                          title="Set as primary"
-                        >
-                          <Star className="w-3 h-3" />
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index, true)}
-                        className="bg-tomato-red text-white p-1.5 rounded-full hover:bg-tomato-red/80"
-                        title="Remove image"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {/* New Images */}
-                {images.map((img, index) => (
-                  <div key={`new-${index}`} className="relative group">
-                    <div className="aspect-square rounded-xl overflow-hidden border-2 border-muted-olive/30">
-                      <img
-                        src={img.url}
-                        alt={`New ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    {img.isPrimary && (
-                      <div className="absolute top-2 left-2">
-                        <span className="bg-earthy-yellow text-earthy-brown text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-current" />
-                          Primary
-                        </span>
-                      </div>
-                    )}
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                      {!img.isPrimary && (
-                        <button
-                          type="button"
-                          onClick={() => handleSetPrimary(index, false)}
-                          className="bg-earthy-yellow text-earthy-brown p-1.5 rounded-full hover:bg-earthy-yellow/80"
-                          title="Set as primary"
-                        >
-                          <Star className="w-3 h-3" />
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index, false)}
-                        className="bg-tomato-red text-white p-1.5 rounded-full hover:bg-tomato-red/80"
-                        title="Remove image"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            {/* Product Name */}
+            <FormField label="Product Name" required error={errors.name}>
+              <Input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="e.g., Fresh Organic Tomatoes, Red Onions"
+                minLength={2}
+                maxLength={100}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-sage-green/20 focus:border-sage-green transition-all bg-white/50"
+              />
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-text-muted">
+                  Clear and descriptive product name
+                </p>
+                <p className={`text-xs font-medium ${formData.name.length > 90 ? 'text-earthy-yellow' : 'text-text-muted'}`}>
+                  {formData.name.length}/100
+                </p>
               </div>
-            )}
+            </FormField>
 
-            {/* Upload Button */}
-            {(existingImages.length + images.length) < 5 && (
-              <label className="block">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-                <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-muted-olive transition-colors cursor-pointer">
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-text-muted mb-1">
-                    Click to upload images
-                  </p>
-                  <p className="text-sm text-text-muted">
-                    PNG, JPG, WebP up to 1MB (max 5 images)
-                  </p>
+            {/* Description */}
+            <FormField label="Description" required error={errors.description}>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Describe the product, its quality, origin, or unique features..."
+                rows={4}
+                minLength={10}
+                maxLength={500}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-sage-green/20 focus:border-sage-green resize-none transition-all bg-white/50 leading-relaxed"
+              />
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-text-muted">
+                  Help vendors understand what they're selling
+                </p>
+                <p className={`text-xs font-medium ${formData.description.length > 450 ? 'text-earthy-yellow' : 'text-text-muted'}`}>
+                  {formData.description.length}/500
+                </p>
+              </div>
+            </FormField>
+          </div>
+        </FormSection>
+
+        {/* Classification */}
+        <FormSection
+          title="Classification"
+          description="Categorize and configure product availability"
+          icon={Settings}
+          variant="glass"
+        >
+          <div className="space-y-4">
+            {/* Category */}
+            <FormField label="Category" required error={errors.category}>
+              <div className="relative">
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-sage-green/20 transition-all appearance-none bg-white/50 cursor-pointer ${
+                    hasCategoryIssue
+                      ? 'border-earthy-yellow/50 bg-earthy-yellow/5 focus:border-earthy-yellow'
+                      : 'border-gray-200 focus:border-sage-green'
+                  }`}
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((cat) => {
+                    const isInactive = !cat.isActive;
+                    const isUnavailable = cat.isAvailable === false;
+                    let statusLabel = '';
+                    if (isInactive) {
+                      statusLabel = ' (Inactive)';
+                    } else if (isUnavailable) {
+                      statusLabel = ' (Flagged)';
+                    }
+
+                    return (
+                      <option
+                        key={cat._id}
+                        value={cat._id}
+                        style={{
+                          color:
+                            isInactive || isUnavailable ? '#9CA3AF' : 'inherit',
+                        }}
+                      >
+                        {cat.name}
+                        {statusLabel}
+                      </option>
+                    );
+                  })}
+                </select>
+                {/* Custom dropdown arrow */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-text-muted"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
-              </label>
-            )}
+              </div>
 
-            {(existingImages.length + images.length) === 0 && !isEdit && (
-              <p className="text-sm text-tomato-red/80">
-                At least one image is required for new products
-              </p>
-            )}
-          </div>
-        </FormField>
+              {/* Category Status Warning */}
+              <AnimatePresence>
+                {hasCategoryIssue && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-3 flex items-start gap-3 p-4 bg-amber-50/80 backdrop-blur-sm border-2 border-amber-200/50 rounded-2xl"
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div className="text-sm text-amber-900 leading-relaxed">
+                      {isCategoryInactive && (
+                        <p>
+                          <strong className="font-semibold">Warning:</strong>
+                          {' '}
+                          This category is currently inactive. Products in
+                          inactive categories may not be visible to vendors.
+                        </p>
+                      )}
+                      {isCategoryUnavailable && (
+                        <p className={isCategoryInactive ? 'mt-2' : ''}>
+                          <strong className="font-semibold">Warning:</strong>
+                          {' '}
+                          This category has been flagged as unavailable. It may
+                          have restrictions or issues.
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </FormField>
 
-        <FormField label="Status">
-          <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 cursor-pointer">
+            {/* Active Status */}
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              className="flex items-start gap-4 p-5 rounded-2xl border-2 border-sage-green/30 bg-gradient-to-br from-mint-fresh/10 to-sage-green/5 cursor-pointer transition-all hover:shadow-glow-green/10"
+            >
               <input
-                type="radio"
+                type="checkbox"
+                id="isActive"
                 name="isActive"
-                checked={formData.isActive === true}
-                onChange={() => setFormData({ ...formData, isActive: true })}
-                className="w-4 h-4 text-muted-olive border-gray-300 focus:ring-muted-olive"
+                checked={formData.isActive}
+                onChange={handleInputChange}
+                className="mt-1 w-5 h-5 rounded-lg border-2 border-sage-green/50 text-bottle-green focus:ring-2 focus:ring-bottle-green/20 cursor-pointer transition-all"
               />
-              <span className="text-sm text-text-dark">Active</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="isActive"
-                checked={formData.isActive === false}
-                onChange={() => setFormData({ ...formData, isActive: false })}
-                className="w-4 h-4 text-muted-olive border-gray-300 focus:ring-muted-olive"
-              />
-              <span className="text-sm text-text-dark">Inactive</span>
-            </label>
+              <div className="flex-1">
+                <label htmlFor="isActive" className="font-semibold text-text-dark mb-1 cursor-pointer block">
+                  Active Product
+                </label>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  Active products are available for vendors to create listings.
+                  Inactive products will be hidden from the marketplace.
+                </p>
+              </div>
+            </motion.div>
           </div>
-        </FormField>
+        </FormSection>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t">
-          <Button type="button" variant="outline" onClick={onClose}>
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-gray-200"
+        >
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={isSaving}
+            className="min-w-[120px]"
+          >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isSaving}
-            className="flex items-center gap-2"
+            className="bg-gradient-secondary text-white min-w-[120px] flex items-center justify-center gap-2"
           >
-            <Save className="w-4 h-4" />
-            {isSaving ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
+            {isSaving ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                {isEdit ? 'Updating...' : 'Creating...'}
+              </>
+            ) : (
+              <>
+                <Check className="w-4 h-4" />
+                {isEdit ? 'Update Product' : 'Create Product'}
+              </>
+            )}
           </Button>
-        </div>
+        </motion.div>
       </form>
     </Modal>
   );

@@ -1,12 +1,21 @@
+/**
+ * CategoryEditModal - Enhanced Design V2
+ * Beautiful modal for creating and editing product categories
+ * Features: Glassmorphism, smooth animations, enhanced UX
+ */
+
 import React, { useState, useEffect } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { FolderOpen, Info, Settings, Check, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 // UI Components
 import { Modal } from '../../../../../components/ui/Modal';
 import Button from '../../../../../components/ui/Button';
 import { Input } from '../../../../../components/ui/Input';
 import FormField from '../../../../../components/ui/FormField';
+import ImageUploadZone from '../../../../../components/ui/ImageUploadZone';
+import FormSection from '../../../../../components/ui/FormSection';
 
 // API Slices
 import {
@@ -30,8 +39,8 @@ const CategoryEditModal = ({ category, isOpen, onClose, onSuccess }) => {
   });
 
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
   const [existingImage, setExistingImage] = useState('');
+  const [errors, setErrors] = useState({});
 
   // ========================================
   // RTK QUERY HOOKS
@@ -53,7 +62,6 @@ const CategoryEditModal = ({ category, isOpen, onClose, onSuccess }) => {
   // Filter out current category and its descendants for parent selection
   const availableParents = categories.filter((cat) => {
     if (!isEdit) return true;
-    // Don't allow selecting itself or its children as parent
     return cat._id !== category?._id;
   });
 
@@ -70,7 +78,6 @@ const CategoryEditModal = ({ category, isOpen, onClose, onSuccess }) => {
         isActive: category.isActive !== false,
       });
       setExistingImage(category.image?.url || category.image || '');
-      setImagePreview('');
       setImageFile(null);
     } else if (!category && isOpen) {
       // Reset for create mode
@@ -81,54 +88,51 @@ const CategoryEditModal = ({ category, isOpen, onClose, onSuccess }) => {
         isActive: true,
       });
       setExistingImage('');
-      setImagePreview('');
       setImageFile(null);
     }
+    setErrors({});
   }, [category, isOpen]);
 
   // ========================================
   // EVENT HANDLERS
   // ========================================
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
-      return;
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB');
-      return;
-    }
-
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview('');
-    if (!isEdit) {
-      setExistingImage('');
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Category name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Category name must be at least 2 characters';
+    } else if (formData.name.trim().length > 100) {
+      newErrors.name = 'Category name must not exceed 100 characters';
     }
+
+    if (!isEdit && !imageFile && !existingImage) {
+      newErrors.image = 'Category image is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    if (!formData.name.trim()) {
-      toast.error('Category name is required');
-      return;
-    }
-
-    if (!isEdit && !imageFile && !existingImage) {
-      toast.error('Category image is required');
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
       return;
     }
 
@@ -158,16 +162,31 @@ const CategoryEditModal = ({ category, isOpen, onClose, onSuccess }) => {
           id: category._id,
           formData: formDataToSend,
         }).unwrap();
-        toast.success('Category updated successfully');
+        toast.success('Category updated successfully! 🎉');
       } else {
         await createCategory(formDataToSend).unwrap();
-        toast.success('Category created successfully');
+        toast.success('Category created successfully! 🎉');
       }
 
       onSuccess();
     } catch (error) {
       console.error('Submit error:', error);
-      toast.error(error?.data?.message || `Failed to ${isEdit ? 'update' : 'create'} category`);
+
+      // Better error handling
+      let errorMessage = `Failed to ${isEdit ? 'update' : 'create'} category`;
+
+      if (error?.data?.error) {
+        errorMessage = error.data.error;
+        // Check for duplicate name
+        if (error.data.error.includes('Duplicate') || error.data.stack?.includes('E11000')) {
+          errorMessage = `A category with the name "${formData.name}" already exists. Please use a different name.`;
+          setErrors({ name: 'This category name is already in use' });
+        }
+      } else if (error?.data?.message) {
+        errorMessage = error.data.message;
+      }
+
+      toast.error(errorMessage);
     }
   };
 
@@ -181,166 +200,190 @@ const CategoryEditModal = ({ category, isOpen, onClose, onSuccess }) => {
   // RENDER
   // ========================================
 
-  const displayImage = imagePreview || existingImage;
+  const displayImage = imageFile || existingImage;
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title={isEdit ? 'Edit Category' : 'Create Category'}
+      title={
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive to-sage-green flex items-center justify-center">
+            <FolderOpen className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-text-dark">
+              {isEdit ? 'Edit Category' : 'Create New Category'}
+            </h2>
+            <p className="text-sm text-text-muted">
+              {isEdit
+                ? 'Update category details and settings'
+                : 'Add a new product category to your catalog'}
+            </p>
+          </div>
+        </div>
+      }
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Image Upload */}
-        <FormField label="Category Image (Required)">
-          <div className="space-y-3">
-            {displayImage ? (
-              <div className="relative group">
-                <div className="aspect-video rounded-2xl overflow-hidden border-2 border-gray-200">
-                  <img
-                    src={displayImage}
-                    alt="Category preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute top-3 right-3 p-2 bg-tomato-red/90 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-tomato-red"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <label className="block cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-                <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-muted-olive transition-colors">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-text-dark font-medium mb-1">
-                    Click to upload category image
-                  </p>
-                  <p className="text-sm text-text-muted">
-                    PNG, JPG up to 5MB
-                  </p>
-                </div>
-              </label>
-            )}
-            {!displayImage && (
-              <p className="text-xs text-tomato-red">
-                * Category image is required
+        {/* Image Upload Section */}
+        <FormSection
+          title="Category Image"
+          description="Upload a representative image for this category"
+          icon={null}
+          variant="glass"
+        >
+          <ImageUploadZone
+            value={displayImage}
+            onChange={setImageFile}
+            onRemove={() => {
+              setImageFile(null);
+              if (!isEdit) setExistingImage('');
+            }}
+            required={!isEdit}
+            label=""
+            maxSize={5 * 1024 * 1024}
+          />
+          {errors.image && (
+            <p className="text-sm text-tomato-red mt-2 flex items-center gap-1">
+              {errors.image}
+            </p>
+          )}
+        </FormSection>
+
+        {/* Basic Information */}
+        <FormSection
+          title="Basic Information"
+          description="Category name and description"
+          icon={Info}
+          variant="glass"
+        >
+          {/* Name */}
+          <FormField label="Category Name" required error={errors.name}>
+            <Input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              placeholder="e.g., Vegetables, Fruits, Dairy Products"
+              minLength={2}
+              maxLength={100}
+              className="w-full"
+            />
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-text-muted">
+                Must be unique and descriptive
               </p>
-            )}
-          </div>
-        </FormField>
+              <p className="text-xs text-text-muted">
+                {formData.name.length}/100
+              </p>
+            </div>
+          </FormField>
 
-        {/* Name */}
-        <FormField label="Category Name (Required)">
-          <Input
-            type="text"
-            value={formData.name}
-            onChange={(e) =>
-              setFormData({ ...formData, name: e.target.value })
-            }
-            placeholder="e.g., Vegetables, Fruits, Dairy"
-            required
-            minLength={2}
-            maxLength={100}
-            className="w-full"
-          />
-          <p className="text-xs text-text-muted mt-1">
-            2-100 characters, unique name
-          </p>
-        </FormField>
+          {/* Description */}
+          <FormField label="Description (Optional)">
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Brief description of this category..."
+              rows={3}
+              maxLength={500}
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive resize-none transition-all"
+            />
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-text-muted">
+                Helps users understand what products belong here
+              </p>
+              <p className="text-xs text-text-muted">
+                {formData.description.length}/500
+              </p>
+            </div>
+          </FormField>
+        </FormSection>
 
-        {/* Description */}
-        <FormField label="Description (Optional)">
-          <textarea
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            placeholder="Brief description of this category..."
-            rows={3}
-            maxLength={500}
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive resize-none"
-          />
-          <p className="text-xs text-text-muted mt-1">
-            Optional, max 500 characters
-          </p>
-        </FormField>
+        {/* Organization Settings */}
+        <FormSection
+          title="Organization"
+          description="Configure category hierarchy and status"
+          icon={Settings}
+          variant="glass"
+        >
+          {/* Parent Category */}
+          <FormField label="Parent Category (Optional)">
+            <select
+              name="parentCategory"
+              value={formData.parentCategory}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-all"
+            >
+              <option value="">None (Top-level category)</option>
+              {availableParents.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.parentCategory ? `${cat.parentCategory.name} > ` : ''}
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-text-muted mt-1">
+              Create sub-categories by selecting a parent
+            </p>
+          </FormField>
 
-        {/* Parent Category */}
-        <FormField label="Parent Category (Optional)">
-          <select
-            value={formData.parentCategory}
-            onChange={(e) =>
-              setFormData({ ...formData, parentCategory: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive"
-          >
-            <option value="">None (Top-level category)</option>
-            {availableParents.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.parentCategory ? `${cat.parentCategory.name} > ` : ''}
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-text-muted mt-1">
-            Select a parent for hierarchical organization
-          </p>
-        </FormField>
-
-        {/* Active Status */}
-        <FormField label="Status">
-          <div className="flex items-center gap-3">
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.isActive}
-                onChange={(e) =>
-                  setFormData({ ...formData, isActive: e.target.checked })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-muted-olive/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage-green"></div>
+          {/* Active Status */}
+          <div className="flex items-start gap-3 p-4 rounded-xl border border-sage-green/20 bg-mint-fresh/5">
+            <input
+              type="checkbox"
+              id="isActive"
+              name="isActive"
+              checked={formData.isActive}
+              onChange={handleInputChange}
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
+            />
+            <label htmlFor="isActive" className="flex-1 cursor-pointer">
+              <div className="font-medium text-text-dark">
+                Active Category
+              </div>
+              <p className="text-sm text-text-muted">
+                Active categories are visible to vendors and can be used for products
+              </p>
             </label>
-            <span className="text-sm text-text-dark">
-              {formData.isActive ? 'Active' : 'Inactive'}
-            </span>
           </div>
-          <p className="text-xs text-text-muted mt-1">
-            Inactive categories won't appear in product selection
-          </p>
-        </FormField>
+        </FormSection>
 
-        {/* Form Actions */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200"
+        >
           <Button
             type="button"
             variant="outline"
             onClick={handleClose}
             disabled={isSaving}
+            className="min-w-[120px]"
           >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isSaving}
-            className="bg-gradient-secondary text-white min-w-[120px]"
+            className="bg-gradient-secondary text-white min-w-[120px] flex items-center justify-center gap-2"
           >
-            {isSaving
-              ? 'Saving...'
-              : isEdit
-              ? 'Update Category'
-              : 'Create Category'}
+            {isSaving ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                {isEdit ? 'Updating...' : 'Creating...'}
+              </>
+            ) : (
+              <>
+                <Check className="w-4 h-4" />
+                {isEdit ? 'Update Category' : 'Create Category'}
+              </>
+            )}
           </Button>
-        </div>
+        </motion.div>
       </form>
     </Modal>
   );

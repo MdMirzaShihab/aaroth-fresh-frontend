@@ -17,6 +17,7 @@ import {
   X,
   ChevronRight,
   Database,
+  MapPin,
 } from 'lucide-react';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
@@ -76,6 +77,12 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           icon: FolderOpen,
           path: '/admin/categories',
           description: 'Category Structure',
+        },
+        {
+          label: 'Markets',
+          icon: MapPin,
+          path: '/admin/markets',
+          description: 'Market Locations',
         },
         {
           label: 'Listings',

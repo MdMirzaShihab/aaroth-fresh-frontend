@@ -59,6 +59,9 @@ const ProductsManagementPage = lazy(
 const CategoriesManagementPage = lazy(
   () => import('./pages/admin/catalog/categories/CategoriesManagementPage')
 );
+const MarketsManagementPage = lazy(
+  () => import('./pages/admin/catalog/markets/MarketManagementPage')
+);
 const ListingsManagementPage = lazy(
   () => import('./pages/admin/listings/ListingManagementPage')
 );
@@ -316,6 +319,14 @@ const App = () => {
               element={
                 <Suspense fallback={<PageLoader />}>
                   <CategoriesManagementPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="markets"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <MarketsManagementPage />
                 </Suspense>
               }
             />
