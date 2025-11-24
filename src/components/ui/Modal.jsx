@@ -5,57 +5,53 @@ import { cva } from 'class-variance-authority';
 import { cn } from '../../utils';
 import { useTheme } from '../../hooks/useTheme';
 
-// Dynamic modal variants with dark mode support
+// Dynamic modal variants with dark mode support - Enhanced glassmorphism
 const getModalVariants = (isDarkMode) =>
   cva(
     // Base modal classes with enhanced glassmorphism and mobile optimization
     cn(
-      'rounded-3xl border animate-scale-in max-h-[90vh] overflow-y-auto',
-      isDarkMode ? 'glass-5-dark shadow-dark-depth-3' : 'glass-5 shadow-depth-5'
+      'rounded-3xl border animate-scale-in flex flex-col backdrop-blur-xl',
+      isDarkMode
+        ? 'bg-gray-900/95 border-gray-700/50 shadow-2xl shadow-black/50'
+        : 'bg-white/95 border-gray-200/50 shadow-2xl shadow-black/10'
     ),
     {
       variants: {
         size: {
-          sm: 'w-full max-w-md mx-4',
-          default: 'w-full max-w-lg mx-4',
-          lg: 'w-full max-w-2xl mx-4',
-          xl: 'w-full max-w-4xl mx-4',
-          full: 'w-full mx-4 h-[90vh]',
+          sm: 'w-full max-w-md',
+          default: 'w-full max-w-lg',
+          lg: 'w-full max-w-2xl',
+          xl: 'w-full max-w-4xl',
+          full: 'w-full h-[90vh]',
           // Mobile-first: full width on mobile, constrained on desktop
           responsive:
-            'w-full mx-4 sm:max-w-md sm:mx-auto md:max-w-lg lg:max-w-xl',
-        },
-        position: {
-          center: 'flex items-center justify-center',
-          top: 'flex items-start justify-center pt-16',
-          bottom: 'flex items-end justify-center pb-16',
+            'w-full sm:max-w-md md:max-w-lg lg:max-w-xl',
         },
       },
       defaultVariants: {
         size: 'responsive',
-        position: 'center',
       },
     }
   );
 
 // Enhanced backdrop variants with olive accents and dark mode support
 const getBackdropVariants = (isDarkMode) =>
-  cva('fixed inset-0 z-50 transition-all duration-300', {
+  cva('fixed inset-0 z-[999] transition-all duration-300', {
     variants: {
       blur: {
         none: isDarkMode ? 'bg-black/70' : 'bg-black/50',
         light: isDarkMode
-          ? 'bg-black/40 backdrop-blur-sm'
-          : 'bg-black/30 backdrop-blur-sm',
+          ? 'bg-black/40 backdrop-blur-md'
+          : 'bg-black/30 backdrop-blur-md',
         medium: isDarkMode
-          ? 'bg-black/60 backdrop-blur-md'
-          : 'bg-black/40 backdrop-blur-md',
+          ? 'bg-black/60 backdrop-blur-xl'
+          : 'bg-black/40 backdrop-blur-xl',
         heavy: isDarkMode
-          ? 'bg-black/70 backdrop-blur-lg'
-          : 'bg-black/50 backdrop-blur-lg',
+          ? 'bg-black/70 backdrop-blur-2xl'
+          : 'bg-black/50 backdrop-blur-2xl',
         olive: isDarkMode
-          ? 'bg-dark-olive-bg/20 backdrop-blur-md'
-          : 'bg-muted-olive/10 backdrop-blur-md',
+          ? 'bg-dark-olive-bg/30 backdrop-blur-xl'
+          : 'bg-muted-olive/20 backdrop-blur-xl',
       },
     },
     defaultVariants: {
@@ -151,24 +147,36 @@ const Modal = ({
 
   const modalContent = (
     <div
-      className={cn(backdropVariants({ blur }), backdropClassName)}
+      className={cn(
+        backdropVariants({ blur }),
+        'flex items-center justify-center p-4',
+        // Add safe-area padding for notched devices
+        'supports-[padding:env(safe-area-inset-bottom)]:p-[max(1rem,env(safe-area-inset-top))_max(1rem,env(safe-area-inset-right))_max(1rem,env(safe-area-inset-bottom))_max(1rem,env(safe-area-inset-left))]',
+        backdropClassName
+      )}
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
       aria-describedby={description ? 'modal-description' : undefined}
     >
-      <div className={cn(modalVariants({ size, position }))}>
+      <div
+        className={cn(
+          modalVariants({ size }),
+          'max-h-[90vh]',
+          className
+        )}
+      >
         <div
           ref={modalRef}
-          className={cn('relative focus:outline-none', className)}
+          className="relative focus:outline-none flex flex-col max-h-[90vh]"
           tabIndex={-1}
         >
-          {/* Modal Header */}
+          {/* Modal Header - Sticky with Glass Effect */}
           {(title || showCloseButton) && (
             <div
               className={cn(
-                'flex items-center justify-between p-6 pb-4',
+                'flex items-center justify-between p-6 pb-4 flex-shrink-0 border-b border-gray-200/30 bg-white/40 backdrop-blur-sm rounded-t-3xl',
                 headerClassName
               )}
             >
@@ -203,10 +211,10 @@ const Modal = ({
             </div>
           )}
 
-          {/* Modal Content */}
+          {/* Modal Content - Scrollable */}
           <div
             className={cn(
-              'px-6',
+              'px-4 sm:px-6 py-6 overflow-y-auto flex-1',
               !title && !showCloseButton && 'pt-6',
               contentClassName
             )}
@@ -289,7 +297,7 @@ const Drawer = ({
   return createPortal(
     <div
       className={cn(
-        'fixed inset-0 z-50 bg-black/40 backdrop-blur-md transition-all duration-300 flex',
+        'fixed inset-0 z-[999] bg-black/40 backdrop-blur-md transition-all duration-300 flex',
         positionClasses[position]
       )}
       onClick={(e) => e.target === e.currentTarget && onClose()}
@@ -298,21 +306,21 @@ const Drawer = ({
     >
       <div
         className={cn(
-          'glass-5 shadow-depth-5 border overflow-y-auto',
+          'glass-5 shadow-depth-5 border flex flex-col',
           drawerClasses[position],
           animationClasses[position]
         )}
       >
         {/* Drawer Handle for mobile */}
         {(position === 'bottom' || position === 'top') && (
-          <div className="flex justify-center p-4">
+          <div className="flex justify-center p-4 flex-shrink-0">
             <div className="w-12 h-1 bg-gray-300 rounded-full" />
           </div>
         )}
 
-        {/* Drawer Header */}
+        {/* Drawer Header - Sticky */}
         {title && (
-          <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200">
+          <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200 flex-shrink-0">
             <h2 className="text-xl font-semibold text-text-dark">{title}</h2>
             <button
               onClick={onClose}
@@ -324,8 +332,8 @@ const Drawer = ({
           </div>
         )}
 
-        {/* Drawer Content */}
-        <div className="p-6">{children}</div>
+        {/* Drawer Content - Scrollable */}
+        <div className="p-6 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>,
     document.body

@@ -229,52 +229,19 @@ const ProductEditModal = ({ product, isOpen, onClose, onSuccess }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive to-sage-green flex items-center justify-center">
-            <Package className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold text-text-dark">
-              {isEdit ? 'Edit Product' : 'Create New Product'}
-            </h2>
-            <p className="text-sm text-text-muted">
-              {isEdit
-                ? 'Update product details and images'
-                : 'Add a new product to your catalog'}
-            </p>
-          </div>
-        </div>
+      title={isEdit ? 'Edit Product' : 'Create New Product'}
+      description={
+        isEdit
+          ? 'Update product details and images'
+          : 'Add a new product to your catalog'
       }
       size="lg"
-      contentClassName="!px-0"
     >
-      <form onSubmit={handleSubmit} className="space-y-6 px-6">
-        {/* Image Upload Section */}
-        <FormSection
-          title="Product Images"
-          description="Upload up to 5 images - first image will be the primary"
-          icon={ImageIcon}
-          variant="glass"
-        >
-          <ImageUploadZone
-            values={allImages}
-            onMultipleChange={handleImagesChange}
-            multiple
-            maxFiles={5}
-            required
-            label=""
-          />
-          {errors.images && (
-            <p className="text-sm text-tomato-red mt-2">{errors.images}</p>
-          )}
-        </FormSection>
-
-        {/* Basic Information */}
+      <form onSubmit={handleSubmit} className="space-y-10">
+        {/* Basic Information - Most Important First */}
         <FormSection
           title="Basic Information"
           description="Product name and description"
-          icon={Info}
           variant="glass"
         >
           <div className="space-y-4">
@@ -328,7 +295,6 @@ const ProductEditModal = ({ product, isOpen, onClose, onSuccess }) => {
         <FormSection
           title="Classification"
           description="Categorize and configure product availability"
-          icon={Settings}
           variant="glass"
         >
           <div className="space-y-4">
@@ -428,7 +394,7 @@ const ProductEditModal = ({ product, isOpen, onClose, onSuccess }) => {
             {/* Active Status */}
             <motion.div
               whileHover={{ scale: 1.01 }}
-              className="flex items-start gap-4 p-5 rounded-2xl border-2 border-sage-green/30 bg-gradient-to-br from-mint-fresh/10 to-sage-green/5 cursor-pointer transition-all hover:shadow-glow-green/10"
+              className="flex items-start gap-4 p-5 rounded-2xl border border-sage-green/20 bg-gradient-to-br from-mint-fresh/20 to-sage-green/10 backdrop-blur-sm cursor-pointer transition-all hover:shadow-md hover:border-sage-green/30"
             >
               <input
                 type="checkbox"
@@ -436,7 +402,7 @@ const ProductEditModal = ({ product, isOpen, onClose, onSuccess }) => {
                 name="isActive"
                 checked={formData.isActive}
                 onChange={handleInputChange}
-                className="mt-1 w-5 h-5 rounded-lg border-2 border-sage-green/50 text-bottle-green focus:ring-2 focus:ring-bottle-green/20 cursor-pointer transition-all"
+                className="mt-1 w-11 h-11 rounded-xl border-2 border-sage-green/40 text-bottle-green focus:ring-2 focus:ring-sage-green/30 focus:border-sage-green cursor-pointer transition-all touch-target shadow-sm"
               />
               <div className="flex-1">
                 <label htmlFor="isActive" className="font-semibold text-text-dark mb-1 cursor-pointer block">
@@ -451,25 +417,44 @@ const ProductEditModal = ({ product, isOpen, onClose, onSuccess }) => {
           </div>
         </FormSection>
 
-        {/* Action Buttons */}
+        {/* Product Images - Last Section */}
+        <FormSection
+          title="Product Images"
+          description="Upload up to 5 images - first image will be the primary"
+          variant="glass"
+        >
+          <ImageUploadZone
+            values={allImages}
+            onMultipleChange={handleImagesChange}
+            multiple
+            maxFiles={5}
+            required
+            label=""
+          />
+          {errors.images && (
+            <p className="text-sm text-tomato-red mt-2">{errors.images}</p>
+          )}
+        </FormSection>
+
+        {/* Action Buttons - Mobile-First Layout with Glass Footer */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-gray-200"
+          className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-end gap-3 pt-8 mt-2 border-t border-gray-200/30 bg-gradient-to-t from-white/60 to-transparent backdrop-blur-sm rounded-b-2xl -mx-4 sm:-mx-6 px-4 sm:px-6 pb-2"
         >
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
             disabled={isSaving}
-            className="min-w-[120px]"
+            className="w-full sm:w-auto sm:min-w-[120px] touch-target"
           >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isSaving}
-            className="bg-gradient-secondary text-white min-w-[120px] flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-gradient-secondary text-white sm:min-w-[140px] flex items-center justify-center gap-2 touch-target"
           >
             {isSaving ? (
               <>

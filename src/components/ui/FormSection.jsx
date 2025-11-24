@@ -1,6 +1,7 @@
 /**
- * FormSection - Elegant section divider for forms
- * Creates visual hierarchy with glassmorphism and organic design
+ * FormSection - Enhanced glassmorphism section divider for forms
+ * Creates visual hierarchy with subtle glass effects and breathing room
+ * Balances minimalism with visual appeal
  */
 
 import React from 'react';
@@ -12,12 +13,12 @@ const FormSection = ({
   icon: Icon,
   children,
   className = '',
-  variant = 'glass', // 'glass' | 'outlined' | 'filled'
+  variant = 'glass', // 'glass' | 'minimal' | 'outlined'
 }) => {
   const variants = {
-    glass: 'glass-1 border border-sage-green/20 shadow-glow-green/5',
-    outlined: 'border-2 border-sage-green/30',
-    filled: 'bg-mint-fresh/5 border border-mint-fresh/20',
+    glass: 'bg-gradient-to-br from-white/60 to-white/40 backdrop-blur-md border border-gray-200/40 rounded-2xl p-6 shadow-sm',
+    minimal: 'border-t border-gray-200/80 pt-6',
+    outlined: 'border border-gray-200/60 rounded-2xl p-6 bg-white/30',
   };
 
   return (
@@ -25,26 +26,21 @@ const FormSection = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-2xl p-6 ${variants[variant]} ${className}`}
+      className={`${variants[variant]} ${className}`}
     >
       {(title || description) && (
-        <div className="mb-6 pb-4 border-b border-sage-green/20">
-          {Icon && (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-muted-olive/20 to-sage-green/20 flex items-center justify-center mb-3">
-              <Icon className="w-5 h-5 text-bottle-green" />
-            </div>
-          )}
+        <div className="mb-6">
           {title && (
-            <h3 className="text-lg font-semibold text-text-dark mb-1">
+            <h3 className="text-base font-semibold text-text-dark mb-1.5 flex items-center gap-2">
               {title}
             </h3>
           )}
           {description && (
-            <p className="text-sm text-text-muted">{description}</p>
+            <p className="text-sm text-text-muted/80 leading-relaxed">{description}</p>
           )}
         </div>
       )}
-      <div className="space-y-4">{children}</div>
+      <div className="space-y-5">{children}</div>
     </motion.div>
   );
 };
