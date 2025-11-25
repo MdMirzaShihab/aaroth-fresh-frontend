@@ -5,69 +5,45 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+// Custom base query that handles both relative and absolute URLs
+const customBaseQuery = fetchBaseQuery({
+  baseUrl: '/api/v1/vendor-dashboard/listings',
+  prepareHeaders: (headers, { getState }) => {
+    const token = getState().auth?.token;
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`);
+    }
+    headers.set('content-type', 'application/json');
+    return headers;
+  },
+});
+
+// Wrapper to handle absolute URLs by bypassing baseUrl
+const baseQueryWithAbsoluteUrls = async (args, api, extraOptions) => {
+  const url = typeof args === 'string' ? args : args.url;
+
+  // If URL starts with '/api/', treat it as absolute and create new base query
+  if (url && url.startsWith('/api/')) {
+    const absoluteBaseQuery = fetchBaseQuery({
+      prepareHeaders: (headers, { getState }) => {
+        const token = getState().auth?.token;
+        if (token) {
+          headers.set('authorization', `Bearer ${token}`);
+        }
+        headers.set('content-type', 'application/json');
+        return headers;
+      },
+    });
+    return absoluteBaseQuery(args, api, extraOptions);
+  }
+
+  // Otherwise use the custom base query with baseUrl
+  return customBaseQuery(args, api, extraOptions);
+};
+
 const vendorListingsApi = createApi({
   reducerPath: 'vendorListingsApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api/v1/listings/vendor',
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth?.token;
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      headers.set('content-type', 'application/json');
-      return headers;
-    },
-    responseHandler: async (response) => {
-      const text = await response.text();
-      try {
-        const data = JSON.parse(text);
-
-        // Handle API errors based on documentation error codes
-        if (!response.ok) {
-          const error = new Error();
-          error.status = response.status;
-          error.data = data;
-
-          // Enhanced error messages based on API documentation
-          const errorMessages = {
-            // Common errors
-            LISTING_NOT_FOUND: 'Listing not found or not accessible',
-            PRODUCT_NOT_FOUND: 'Product not found or not accessible',
-            LISTING_EXISTS: 'Product already has an active listing',
-            NO_INVENTORY: 'No inventory available for this product',
-
-            // Validation errors
-            PRICE_VALIDATION_ERROR:
-              'Invalid pricing structure - check selling, minimum, and bulk prices',
-            INVENTORY_SYNC_REQUIRED:
-              'Listing inventory is out of sync - please refresh inventory first',
-            VALIDATION_ERROR: 'Please check your input and try again',
-
-            // Permission errors
-            INSUFFICIENT_PERMISSIONS:
-              'You do not have permission to perform this action',
-            INVALID_STATUS: 'Invalid listing status',
-
-            // File upload errors
-            FILE_TOO_LARGE: 'Image file size exceeds 5MB limit',
-            INVALID_FILE_TYPE: 'Only JPG, PNG, and WebP images are allowed',
-          };
-
-          error.message =
-            errorMessages[data.errorCode] ||
-            data.error ||
-            data.message ||
-            'An error occurred';
-          throw error;
-        }
-
-        return data;
-      } catch (parseError) {
-        if (parseError.status) throw parseError;
-        return text;
-      }
-    },
-  }),
+  baseQuery: baseQueryWithAbsoluteUrls,
   tagTypes: [
     'AllListings',
     'Listing',
@@ -292,7 +268,7 @@ const vendorListingsApi = createApi({
 
     getProductCatalog: builder.query({
       query: (params = {}) => ({
-        url: '/catalog',
+        url: '/api/v1/public/products',
         params,
       }),
       transformResponse: (response) => response.data,
@@ -300,8 +276,8 @@ const vendorListingsApi = createApi({
     }),
 
     getListingCategories: builder.query({
-      query: () => '/categories',
-      transformResponse: (response) => response.data.categories,
+      query: () => '/api/v1/public/categories',
+      transformResponse: (response) => response.data,
       providesTags: ['ListingCategories'],
     }),
 

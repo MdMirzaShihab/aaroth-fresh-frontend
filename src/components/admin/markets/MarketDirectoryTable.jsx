@@ -12,6 +12,8 @@ import {
   Users,
   Image as ImageIcon,
   MapPin,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -44,6 +46,7 @@ const MarketDirectoryTable = ({
   onPageChange,
   onRefresh,
 }) => {
+  const [viewMode, setViewMode] = useState('cards'); // 'table' or 'cards'
   const [deletingId, setDeletingId] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
 
@@ -194,8 +197,37 @@ const MarketDirectoryTable = ({
 
   return (
     <div className="space-y-6">
-      {/* Desktop Table View */}
-      <Card className="overflow-hidden glass hidden md:block z-0 shadow-lg shadow-bottle-green/5">
+      {/* View Toggle */}
+      <div className="flex items-center justify-end">
+        <div className="flex items-center bg-earthy-beige/20 rounded-2xl p-1">
+          <button
+            onClick={() => setViewMode('table')}
+            className={`px-3 py-2 rounded-xl transition-all duration-200 text-sm font-medium flex items-center gap-2 ${
+              viewMode === 'table'
+                ? 'bg-white text-muted-olive shadow-sm'
+                : 'text-text-muted hover:text-text-dark'
+            }`}
+          >
+            <List className="w-4 h-4" />
+            Table
+          </button>
+          <button
+            onClick={() => setViewMode('cards')}
+            className={`px-3 py-2 rounded-xl transition-all duration-200 text-sm font-medium flex items-center gap-2 ${
+              viewMode === 'cards'
+                ? 'bg-white text-muted-olive shadow-sm'
+                : 'text-text-muted hover:text-text-dark'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+            Cards
+          </button>
+        </div>
+      </div>
+
+      {/* Table View */}
+      {viewMode === 'table' && (
+        <Card className="overflow-hidden glass z-0 shadow-lg shadow-bottle-green/5">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gradient-to-r from-mint-fresh/10 to-bottle-green/10 border-b-2 border-bottle-green/20">
@@ -376,9 +408,11 @@ const MarketDirectoryTable = ({
           </table>
         </div>
       </Card>
+      )}
 
-      {/* Mobile Card View */}
-      <div className="md:hidden space-y-4">
+      {/* Cards View */}
+      {viewMode === 'cards' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {markets.map((market, index) => (
           <motion.div
             key={market._id}
@@ -393,7 +427,7 @@ const MarketDirectoryTable = ({
                   type="checkbox"
                   checked={selectedMarkets.includes(market._id)}
                   onChange={() => handleSelectMarket(market._id)}
-                  className="mt-1 w-5 h-5 rounded border-gray-300 text-bottle-green focus:ring-bottle-green touch-target"
+                  className="mt-1 w-4 h-4 rounded border-gray-300 text-bottle-green focus:ring-bottle-green"
                 />
 
                 {/* Image */}
@@ -475,7 +509,8 @@ const MarketDirectoryTable = ({
             </Card>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
 
       {/* Pagination */}
       {pagination.pages > 1 && (

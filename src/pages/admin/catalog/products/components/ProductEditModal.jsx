@@ -402,7 +402,7 @@ const ProductEditModal = ({ product, isOpen, onClose, onSuccess }) => {
                 name="isActive"
                 checked={formData.isActive}
                 onChange={handleInputChange}
-                className="mt-1 w-11 h-11 rounded-xl border-2 border-sage-green/40 text-bottle-green focus:ring-2 focus:ring-sage-green/30 focus:border-sage-green cursor-pointer transition-all touch-target shadow-sm"
+                className="mt-1 w-5 h-5 rounded border-2 border-sage-green/40 text-bottle-green focus:ring-2 focus:ring-sage-green/30 focus:border-sage-green cursor-pointer transition-all shadow-sm"
               />
               <div className="flex-1">
                 <label htmlFor="isActive" className="font-semibold text-text-dark mb-1 cursor-pointer block">

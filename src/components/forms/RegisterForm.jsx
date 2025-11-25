@@ -14,8 +14,7 @@ import {
   MapPin,
   AlertCircle,
 } from 'lucide-react';
-import { useRegisterMutation } from '../../store/slices/apiSlice';
-import { useGetAdminMarketsQuery } from '../../store/slices/admin/adminApiSlice';
+import { useRegisterMutation, useGetPublicMarketsQuery } from '../../store/slices/apiSlice';
 import { validateBangladeshPhone, formatPhoneForDisplay } from '../../utils';
 import { addNotification } from '../../store/slices/notificationSlice';
 
@@ -28,7 +27,7 @@ const RegisterForm = () => {
   const [register, { isLoading }] = useRegisterMutation();
 
   // Fetch active markets for vendor registration
-  const { data: marketsData } = useGetAdminMarketsQuery({
+  const { data: marketsData } = useGetPublicMarketsQuery({
     status: 'active',
     limit: 100,
   });

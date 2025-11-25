@@ -3,7 +3,7 @@
  * Displays listings in a table format with sorting, actions, and pagination
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Eye,
@@ -18,6 +18,8 @@ import {
   ArrowUpDown,
   Ban,
   Package,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { Card, Button } from '../../../../components/ui';
 import {
@@ -43,6 +45,8 @@ const ListingDirectoryTable = ({
   totalPages,
   onPageChange,
 }) => {
+  const [viewMode, setViewMode] = useState('cards'); // 'table' or 'cards'
+
   if (isLoading) {
     return (
       <Card className="p-8">
@@ -83,7 +87,38 @@ const ListingDirectoryTable = ({
   const someSelected = selectedListings.length > 0 && !allSelected;
 
   return (
-    <Card className="overflow-hidden z-0 shadow-lg shadow-sage-green/5">
+    <div className="space-y-6">
+      {/* View Toggle */}
+      <div className="flex items-center justify-end">
+        <div className="flex items-center bg-earthy-beige/20 rounded-2xl p-1 backdrop-blur-sm shadow-sm">
+          <button
+            onClick={() => setViewMode('table')}
+            className={`px-3 py-2 rounded-xl transition-all duration-200 text-sm font-medium flex items-center gap-2 ${
+              viewMode === 'table'
+                ? 'bg-white text-muted-olive shadow-sm'
+                : 'text-text-muted hover:text-text-dark'
+            }`}
+          >
+            <List className="w-4 h-4" />
+            Table
+          </button>
+          <button
+            onClick={() => setViewMode('cards')}
+            className={`px-3 py-2 rounded-xl transition-all duration-200 text-sm font-medium flex items-center gap-2 ${
+              viewMode === 'cards'
+                ? 'bg-white text-muted-olive shadow-sm'
+                : 'text-text-muted hover:text-text-dark'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+            Cards
+          </button>
+        </div>
+      </div>
+
+      {/* Table View */}
+      {viewMode === 'table' && (
+        <Card className="overflow-hidden z-0 shadow-lg shadow-sage-green/5">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-sage-green/10 to-muted-olive/10 border-b-2 border-sage-green/20 dark:bg-slate-800 dark:border-slate-700">
@@ -289,6 +324,172 @@ const ListingDirectoryTable = ({
         </div>
       </div>
     </Card>
+      )}
+
+      {/* Cards View */}
+      {viewMode === 'cards' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {listings.map((listing, index) => {
+            const statusBadge = getStatusBadge(listing.status);
+            const health = calculateListingHealth(listing);
+            const isSelected = selectedListings.includes(listing._id);
+
+            return (
+              <motion.div
+                key={listing._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card
+                  className={`p-5 glass hover:shadow-xl transition-all duration-200 ${
+                    isSelected ? 'ring-2 ring-mint-fresh' : ''
+                  }`}
+                >
+                  {/* Card Header: Image and Checkbox */}
+                  <div className="flex items-start gap-4 mb-4">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={(e) => onSelect(listing._id, e.target.checked)}
+                      className="mt-1 rounded border-slate-300 text-bottle-green focus:ring-bottle-green"
+                    />
+                    <div className="flex-1">
+                      {(listing.images?.[0]?.url || listing.images?.[0] || listing.primaryImage?.url || listing.primaryImage) ? (
+                        <img
+                          src={listing.images?.[0]?.url || listing.images?.[0] || listing.primaryImage?.url || listing.primaryImage}
+                          alt={listing.productId?.name || listing.product?.name || 'Product'}
+                          className="w-full h-32 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-32 rounded-xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                          <Package className="w-8 h-8 text-slate-400" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-slate-800 dark:text-white mb-1">
+                      {listing.productId?.name || listing.product?.name || 'Unknown Product'}
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      {listing.productId?.category?.name || listing.product?.category?.name || 'No Category'}
+                    </p>
+                  </div>
+
+                  {/* Vendor Info */}
+                  <div className="mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
+                    <p className="text-sm text-slate-800 dark:text-white">
+                      {listing.vendorId?.businessName || listing.vendor?.businessName || 'Unknown Vendor'}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {listing.vendorId?.email || listing.vendor?.email || ''}
+                    </p>
+                  </div>
+
+                  {/* Price */}
+                  <div className="mb-3">
+                    {listing.pricing && listing.pricing.length > 0 ? (
+                      <div>
+                        <p className="font-semibold text-slate-800 dark:text-white">
+                          {formatPrice(listing.pricing[0].pricePerUnit)}
+                        </p>
+                        {listing.pricing.length > 1 && (
+                          <p className="text-xs text-mint-fresh">
+                            +{listing.pricing.length - 1} more tier{listing.pricing.length > 2 ? 's' : ''}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="font-semibold text-slate-800 dark:text-white">
+                        {formatPrice(listing.price)}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Status and Badges */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border ${statusBadge.color}`}
+                    >
+                      {statusBadge.label}
+                    </span>
+                    {listing.featured && (
+                      <Star
+                        className="w-5 h-5 text-earthy-yellow"
+                        fill="currentColor"
+                      />
+                    )}
+                    {listing.isFlagged && (
+                      <Flag className="w-5 h-5 text-tomato-red" />
+                    )}
+                  </div>
+
+                  {/* Created Date */}
+                  <p className="text-xs text-slate-500 mb-4">
+                    Created: {formatListingDate(listing.createdAt)}
+                  </p>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onViewDetails(listing)}
+                      className="flex-1"
+                    >
+                      <Eye className="w-4 h-4 mr-1" />
+                      View
+                    </Button>
+                    <button
+                      onClick={() => onFeaturedToggle(listing._id)}
+                      className={`p-2 rounded-lg transition-colors ${
+                        listing.featured
+                          ? 'text-earthy-yellow bg-earthy-yellow/10'
+                          : 'text-slate-400 hover:text-earthy-yellow hover:bg-earthy-yellow/10'
+                      }`}
+                      title="Toggle Featured"
+                    >
+                      <Star
+                        className="w-4 h-4"
+                        fill={listing.featured ? 'currentColor' : 'none'}
+                      />
+                    </button>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Pagination - Shared between both views */}
+      <div className="flex items-center justify-between mt-6">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Page {currentPage} of {totalPages}
+        </p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

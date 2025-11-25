@@ -31,7 +31,7 @@ const ProductDirectoryTable = ({
   selectedProducts,
 }) => {
   const [actionMenuOpen, setActionMenuOpen] = useState(null);
-  const [viewMode, setViewMode] = useState('table'); // 'table' or 'cards'
+  const [viewMode, setViewMode] = useState('cards'); // 'table' or 'cards'
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {

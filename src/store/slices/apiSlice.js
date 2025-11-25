@@ -64,6 +64,7 @@ export const apiSlice = createApi({
     'Order',
     'Listing',
     'Category',
+    'Market',
     'Vendor',
     'Buyer',
     'Admin',
@@ -247,6 +248,19 @@ export const apiSlice = createApi({
         params,
       }),
       providesTags: ['Product', 'Listing'],
+    }),
+
+    // Public markets endpoint for registration
+    getPublicMarkets: builder.query({
+      query: (params = {}) => ({
+        url: '/public/markets',
+        params: {
+          status: params.status || 'active',
+          limit: params.limit || 100,
+          ...params,
+        },
+      }),
+      providesTags: ['Market'],
     }),
 
     // Listings endpoints
@@ -2868,6 +2882,7 @@ export const {
   useGetPublicListingsQuery,
   useGetPublicListingQuery,
   useGetFeaturedListingsQuery,
+  useGetPublicMarketsQuery,
 
   // Listings
   useGetListingsQuery,

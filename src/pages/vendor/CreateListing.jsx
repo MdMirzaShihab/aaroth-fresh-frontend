@@ -117,7 +117,7 @@ const CreateListing = () => {
 
   const { data: categoriesData } = useGetListingCategoriesQuery();
 
-  const products = productsData?.products || [];
+  const products = productsData || [];
   const categories = categoriesData || [];
 
   // Form data watchers
@@ -700,7 +700,7 @@ const CreateListing = () => {
               accept="image/*"
               multiple
               maxFiles={5}
-              onFilesSelected={handleImageUpload}
+              onFileSelect={handleImageUpload}
               className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-muted-olive transition-colors"
             />
 
