@@ -8,6 +8,7 @@ import comparisonReducer from './slices/comparisonSlice';
 import { apiSlice } from './slices/apiSlice';
 import { adminApiV2Slice } from './slices/admin/adminApiSlice';
 import { authMiddlewareWithRetry } from './middleware/authMiddleware';
+import { cartValidationMiddleware } from './middleware/cartValidationMiddleware';
 
 // Vendor API Slices
 import vendorAuthApi from './slices/vendor/vendorAuthApi';
@@ -47,7 +48,8 @@ export const store = configureStore({
       vendorListingsApi.middleware,
       vendorOrdersApi.middleware,
       vendorExtensionsApi.middleware,
-      authMiddlewareWithRetry
+      authMiddlewareWithRetry,
+      cartValidationMiddleware // Cart market validation
     ),
   devTools: process.env.NODE_ENV !== 'production',
 });

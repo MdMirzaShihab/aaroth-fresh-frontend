@@ -17,11 +17,13 @@ import {
 } from 'lucide-react';
 import {
   selectCart,
+  selectCartMarket,
   updateQuantity,
   removeFromCart,
   clearCart,
 } from '../../store/slices/cartSlice';
 import { selectAuth } from '../../store/slices/authSlice';
+import { addNotification } from '../../store/slices/notificationSlice';
 import {
   useCreateOrderMutation,
   useGetBuyerBudgetQuery
@@ -33,6 +35,7 @@ const PlaceOrder = () => {
   const dispatch = useDispatch();
   const { items: cartItems, total } = useSelector(selectCart);
   const { user } = useSelector(selectAuth);
+  const cartMarket = useSelector(selectCartMarket);
 
   // State management
   const [deliveryInfo, setDeliveryInfo] = useState({
@@ -95,6 +98,7 @@ const PlaceOrder = () => {
           price: item.price,
           vendorId: item.vendorId,
         })),
+        marketId: cartMarket.marketId, // Include market ID for backend validation
         deliveryAddress: deliveryInfo.address,
         phone: deliveryInfo.phone,
         notes: deliveryInfo.notes,
@@ -118,7 +122,27 @@ const PlaceOrder = () => {
       });
     } catch (error) {
       console.error('Failed to create order:', error);
-      // Handle error (could show a toast notification)
+
+      // Handle market validation errors from backend
+      if (error.data?.error?.includes('market') || error.data?.code === 'MARKET_MISMATCH') {
+        dispatch(
+          addNotification({
+            type: 'error',
+            title: 'Market Validation Failed',
+            message: error.data?.error || 'All items must be from the same market. Please check your cart.',
+            duration: 6000,
+          })
+        );
+      } else {
+        dispatch(
+          addNotification({
+            type: 'error',
+            title: 'Order Failed',
+            message: error.data?.message || 'Failed to place order. Please try again.',
+            duration: 5000,
+          })
+        );
+      }
     }
   };
 
@@ -215,6 +239,28 @@ const PlaceOrder = () => {
                   {cartItems.length} items
                 </span>
               </div>
+
+              {/* Market Badge - Show which market items are from */}
+              {cartMarket.marketId && (
+                <div className="mb-4 p-3 bg-muted-olive/10 border border-muted-olive/20 rounded-xl flex items-center justify-between animate-fade-in">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-olive" />
+                    <span className="text-sm text-text-dark dark:text-dark-text-primary">
+                      Ordering from: <strong className="text-muted-olive">{cartMarket.marketName}</strong>
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (confirm('Changing markets will clear your cart. Continue?')) {
+                        dispatch(clearCart());
+                      }
+                    }}
+                    className="text-xs text-muted-olive hover:underline transition-colors duration-200"
+                  >
+                    Change market
+                  </button>
+                </div>
+              )}
 
               <div className="space-y-4">
                 {cartItems.map((item) => (

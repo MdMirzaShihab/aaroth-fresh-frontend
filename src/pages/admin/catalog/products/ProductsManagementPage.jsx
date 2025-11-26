@@ -38,6 +38,7 @@ const ProductsManagementPage = () => {
   const [filters, setFilters] = useState({
     search: '',
     category: 'all',
+    marketId: '', // Market filter
     status: 'all',
     stockLevel: 'all',
     page: 1,

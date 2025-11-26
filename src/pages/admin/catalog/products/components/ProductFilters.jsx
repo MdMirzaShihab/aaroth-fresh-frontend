@@ -3,6 +3,7 @@ import { X, Filter } from 'lucide-react';
 import { Card } from '../../../../../components/ui/Card';
 import Button from '../../../../../components/ui/Button';
 import { useGetAdminCategoriesQuery } from '../../../../../store/slices/apiSlice';
+import MarketSelector from '../../../../../components/common/MarketSelector';
 
 const ProductFilters = ({ filters, onFiltersChange, onClose }) => {
   const { data: categoriesData } = useGetAdminCategoriesQuery({ limit: 100 });
@@ -12,6 +13,7 @@ const ProductFilters = ({ filters, onFiltersChange, onClose }) => {
     onFiltersChange({
       search: '',
       category: 'all',
+      marketId: '', // Clear market filter
       status: 'all',
       stockLevel: 'all',
       page: 1,
@@ -37,6 +39,19 @@ const ProductFilters = ({ filters, onFiltersChange, onClose }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Market Filter */}
+        <div>
+          <MarketSelector
+            value={filters.marketId}
+            onChange={(value) =>
+              onFiltersChange({ ...filters, marketId: value, page: 1 })
+            }
+            showAllOption
+            label="Market"
+            className="w-full"
+          />
+        </div>
+
         {/* Category Filter */}
         <div>
           <label className="block text-sm font-medium text-text-dark mb-2">

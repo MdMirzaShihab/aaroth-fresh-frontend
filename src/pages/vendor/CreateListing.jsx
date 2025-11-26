@@ -17,6 +17,7 @@ import {
   CheckCircle,
   Upload,
   X,
+  Search,
 } from 'lucide-react';
 import {
   useCreateListingMutation,
@@ -30,6 +31,7 @@ import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import FormField from '../../components/ui/FormField';
 import FileUpload from '../../components/ui/FileUpload';
+import MarketSelector from '../../components/common/MarketSelector';
 
 const CreateListing = () => {
   const navigate = useNavigate();
@@ -37,6 +39,8 @@ const CreateListing = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
+  const [productSearchTerm, setProductSearchTerm] = useState('');
+  const [showProductDropdown, setShowProductDropdown] = useState(false);
 
   // Form management
   const {
@@ -48,6 +52,7 @@ const CreateListing = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      marketId: '',
       pricing: [
         {
           pricePerBaseUnit: '',
@@ -65,16 +70,26 @@ const CreateListing = () => {
       ],
       availability: {
         quantityAvailable: '',
+        unit: '',
         harvestDate: '',
         expiryDate: '',
       },
-      deliveryOptions: [
-        {
-          type: 'pickup',
-          cost: 0,
-          timeRange: '30 minutes',
+      deliveryOptions: {
+        selfPickup: {
+          enabled: false,
+          address: '',
+          instructions: '',
         },
-      ],
+        delivery: {
+          enabled: true,
+          radius: '',
+          fee: '',
+          freeDeliveryMinimum: '',
+          estimatedTime: '',
+        },
+      },
+      minimumOrderQuantity: '',
+      maximumOrderQuantity: '',
       discount: {
         type: 'percentage',
         value: '',
@@ -87,7 +102,7 @@ const CreateListing = () => {
     },
   });
 
-  // Field arrays for dynamic forms
+  // Field arrays for dynamic forms (only pricing is an array)
   const {
     fields: pricingFields,
     append: appendPricing,
@@ -95,15 +110,6 @@ const CreateListing = () => {
   } = useFieldArray({
     control,
     name: 'pricing',
-  });
-
-  const {
-    fields: deliveryFields,
-    append: appendDelivery,
-    remove: removeDelivery,
-  } = useFieldArray({
-    control,
-    name: 'deliveryOptions',
   });
 
   // API mutations and queries
@@ -125,6 +131,17 @@ const CreateListing = () => {
   const watchedPricing = watch('pricing');
   const watchedAvailability = watch('availability');
 
+  // Filter products based on search term
+  const filteredProducts = products.filter(product => {
+    const searchLower = productSearchTerm.toLowerCase();
+    const productName = product.name?.toLowerCase() || '';
+    const categoryName = product.category?.name?.toLowerCase() || '';
+    return productName.includes(searchLower) || categoryName.includes(searchLower);
+  });
+
+  // Get selected product details
+  const selectedProduct = products.find(p => p.id === watchedProduct);
+
   // Unit options
   const unitOptions = [
     { value: 'kg', label: 'Kilogram (kg)' },
@@ -136,11 +153,12 @@ const CreateListing = () => {
     { value: 'ml', label: 'Milliliter (ml)' },
   ];
 
-  // Quality grade options
+  // Quality grade options (must match backend enum)
   const qualityGradeOptions = [
     { value: 'Premium', label: 'Premium' },
+    { value: 'Grade A', label: 'Grade A' },
+    { value: 'Grade B', label: 'Grade B' },
     { value: 'Standard', label: 'Standard' },
-    { value: 'Economy', label: 'Economy' },
   ];
 
   // Certification options
@@ -212,8 +230,14 @@ const CreateListing = () => {
     setIsSubmitting(true);
 
     try {
-      // First create the listing with JSON data
+      // Transform certifications from array of strings to array of objects
+      const transformedCertifications = data.certifications?.length > 0
+        ? data.certifications.map(cert => ({ name: cert }))
+        : [];
+
+      // Build listing data
       const listingData = {
+        marketId: data.marketId,
         productId: data.productId,
         pricing: data.pricing,
         qualityGrade: data.qualityGrade,
@@ -222,9 +246,15 @@ const CreateListing = () => {
         deliveryOptions: data.deliveryOptions,
         minimumOrderValue: data.minimumOrderValue,
         leadTime: data.leadTime,
-        certifications: data.certifications,
+        certifications: transformedCertifications,
         ...(data.discount.value && { discount: data.discount }),
       };
+
+      // Add order quantity limits if pack-based selling is disabled
+      if (!data.pricing[0]?.enablePackSelling) {
+        listingData.minimumOrderQuantity = parseFloat(data.minimumOrderQuantity);
+        listingData.maximumOrderQuantity = parseFloat(data.maximumOrderQuantity);
+      }
 
       const result = await createListing(listingData).unwrap();
 
@@ -249,7 +279,7 @@ const CreateListing = () => {
         })
       );
 
-      navigate('/vendor/listings');
+      navigate('/vendor/listings/manage');
     } catch (error) {
       console.error('Failed to create listing:', error);
       dispatch(
@@ -277,6 +307,18 @@ const CreateListing = () => {
     };
   }, []);
 
+  // Close product dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProductDropdown && !event.target.closest('.product-selector')) {
+        setShowProductDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProductDropdown]);
+
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
       {/* Header */}
@@ -301,6 +343,26 @@ const CreateListing = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Market Selection */}
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
+            Market Location
+          </h2>
+
+          <MarketSelector
+            name="marketId"
+            register={register}
+            error={errors.marketId?.message}
+            required
+            label="Select Market"
+          />
+
+          <p className="text-sm text-text-muted dark:text-gray-400 mt-2">
+            Choose the market where this product will be available
+          </p>
+        </Card>
+
         {/* Product Selection */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
@@ -314,19 +376,141 @@ const CreateListing = () => {
               error={errors.productId?.message}
               required
             >
-              <select
-                {...register('productId', {
-                  required: 'Please select a product',
-                })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
-              >
-                <option value="">Choose a product...</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} ({product.category?.name})
-                  </option>
-                ))}
-              </select>
+              <div className="relative product-selector">
+                {/* Hidden input for form validation */}
+                <input
+                  type="hidden"
+                  {...register('productId', {
+                    required: 'Please select a product',
+                  })}
+                />
+
+                {/* Search input or selected product display */}
+                {selectedProduct ? (
+                  <div className="border border-gray-200 rounded-2xl p-3 bg-white">
+                    <div className="flex items-center gap-3">
+                      {/* Product Image */}
+                      <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                        {selectedProduct.images?.[0]?.url ? (
+                          <img
+                            src={selectedProduct.images[0].url}
+                            alt={selectedProduct.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Package className="w-6 h-6 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-text-dark truncate">
+                          {selectedProduct.name}
+                        </div>
+                        {selectedProduct.category?.name && (
+                          <div className="text-sm text-text-muted truncate">
+                            {selectedProduct.category.name}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Clear Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setValue('productId', '');
+                          setProductSearchTerm('');
+                          setShowProductDropdown(true);
+                        }}
+                        className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      value={productSearchTerm}
+                      onChange={(e) => {
+                        setProductSearchTerm(e.target.value);
+                        setShowProductDropdown(true);
+                      }}
+                      onFocus={() => setShowProductDropdown(true)}
+                      placeholder="Search for a product..."
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
+                    />
+                  </div>
+                )}
+
+                {/* Dropdown list */}
+                {showProductDropdown && !selectedProduct && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-lg max-h-80 overflow-y-auto">
+                    {productsLoading ? (
+                      <div className="px-4 py-3 text-sm text-text-muted flex items-center gap-2">
+                        <LoadingSpinner size="sm" />
+                        Loading products...
+                      </div>
+                    ) : filteredProducts.length > 0 ? (
+                      filteredProducts.map((product) => (
+                        <button
+                          key={product.id}
+                          type="button"
+                          onClick={() => {
+                            setValue('productId', product.id);
+                            setShowProductDropdown(false);
+                            setProductSearchTerm('');
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-mint-fresh/10 transition-colors border-b border-gray-100 last:border-b-0"
+                        >
+                          <div className="flex items-center gap-3">
+                            {/* Product Image */}
+                            <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                              {product.images?.[0]?.url ? (
+                                <img
+                                  src={product.images[0].url}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Package className="w-5 h-5 text-gray-400" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Product Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-text-dark truncate">
+                                {product.name}
+                              </div>
+                              {product.category?.name && (
+                                <div className="text-sm text-text-muted truncate">
+                                  {product.category.name}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-8 text-center">
+                        <Package className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                        <div className="text-sm text-text-muted">
+                          No products found matching "{productSearchTerm}"
+                        </div>
+                        <div className="text-xs text-text-muted mt-1">
+                          Try searching with a different term
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </FormField>
 
             <FormField
@@ -640,6 +824,92 @@ const CreateListing = () => {
           </div>
         </Card>
 
+        {/* Order Quantity Limits - Only shown when pack-based selling is disabled */}
+        {!watch('pricing.0.enablePackSelling') && (
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              Order Quantity Limits
+            </h2>
+
+            <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-3 mb-6">
+              <p className="text-sm text-blue-800 flex items-center gap-2">
+                <Info className="w-4 h-4 flex-shrink-0" />
+                These limits apply when pack-based selling is disabled. Buyers must order within these quantity ranges.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="Minimum Order Quantity"
+                error={errors.minimumOrderQuantity?.message}
+                required
+                hint={`In ${watch('pricing.0.unit') || 'units'}`}
+              >
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register('minimumOrderQuantity', {
+                    required: !watch('pricing.0.enablePackSelling')
+                      ? 'Minimum order quantity is required when not using pack-based selling'
+                      : false,
+                    min: {
+                      value: 0,
+                      message: 'Minimum quantity cannot be negative',
+                    },
+                    validate: value => {
+                      const availableQty = parseFloat(watch('availability.quantityAvailable'));
+                      if (availableQty && parseFloat(value) > availableQty) {
+                        return 'Minimum order quantity cannot exceed available quantity';
+                      }
+                      return true;
+                    }
+                  })}
+                  placeholder="10"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
+                />
+              </FormField>
+
+              <FormField
+                label="Maximum Order Quantity"
+                error={errors.maximumOrderQuantity?.message}
+                required
+                hint={`In ${watch('pricing.0.unit') || 'units'}`}
+              >
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register('maximumOrderQuantity', {
+                    required: !watch('pricing.0.enablePackSelling')
+                      ? 'Maximum order quantity is required when not using pack-based selling'
+                      : false,
+                    min: {
+                      value: 0,
+                      message: 'Maximum quantity cannot be negative',
+                    },
+                    validate: value => {
+                      const minQty = parseFloat(watch('minimumOrderQuantity'));
+                      const availableQty = parseFloat(watch('availability.quantityAvailable'));
+
+                      if (minQty && parseFloat(value) < minQty) {
+                        return 'Maximum must be greater than or equal to minimum';
+                      }
+
+                      if (availableQty && parseFloat(value) > availableQty) {
+                        return 'Maximum order quantity cannot exceed available quantity';
+                      }
+
+                      return true;
+                    }
+                  })}
+                  placeholder="100"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
+                />
+              </FormField>
+            </div>
+          </Card>
+        )}
+
         {/* Availability */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
@@ -647,7 +917,7 @@ const CreateListing = () => {
             Availability & Stock
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <FormField
               label="Available Quantity"
               error={errors.availability?.quantityAvailable?.message}
@@ -662,6 +932,26 @@ const CreateListing = () => {
                 placeholder="100"
                 className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
               />
+            </FormField>
+
+            <FormField
+              label="Unit"
+              error={errors.availability?.unit?.message}
+              required
+            >
+              <select
+                {...register('availability.unit', {
+                  required: 'Unit is required',
+                })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
+              >
+                <option value="">Select unit...</option>
+                {unitOptions.filter(opt => opt.value !== 'pack').map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </FormField>
 
             <FormField
@@ -738,88 +1028,73 @@ const CreateListing = () => {
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
             <Truck className="w-5 h-5" />
-            Delivery Options
+            Delivery Configuration
           </h2>
 
-          <div className="space-y-6">
-            {deliveryFields.map((field, index) => (
-              <div
-                key={field.id}
-                className="border border-gray-200 rounded-2xl p-6"
+          <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-3 mb-6">
+            <p className="text-sm text-blue-800 flex items-center gap-2">
+              <Info className="w-4 h-4 flex-shrink-0" />
+              Configure delivery options for your products. All deliveries will be handled by Aaroth Fresh delivery service.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                label="Delivery Radius (km)"
+                error={errors.deliveryOptions?.delivery?.radius?.message}
+                hint="Maximum distance for delivery"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-medium text-text-dark">
-                    Delivery Option {index + 1}
-                  </h3>
-                  {deliveryFields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeDelivery(index)}
-                      className="text-tomato-red border-tomato-red hover:bg-tomato-red hover:text-white"
-                    >
-                      <Minus className="w-4 h-4 mr-1" />
-                      Remove
-                    </Button>
-                  )}
-                </div>
+                <input
+                  type="number"
+                  step="0.1"
+                  {...register('deliveryOptions.delivery.radius')}
+                  placeholder="10"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
+                />
+              </FormField>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField label="Type" required>
-                    <select
-                      {...register(`deliveryOptions.${index}.type`, {
-                        required: 'Type is required',
-                      })}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
-                    >
-                      <option value="pickup">Pickup</option>
-                      <option value="delivery">Delivery</option>
-                    </select>
-                  </FormField>
+              <FormField
+                label="Delivery Fee (৳)"
+                error={errors.deliveryOptions?.delivery?.fee?.message}
+                hint="Standard delivery charge"
+              >
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register('deliveryOptions.delivery.fee')}
+                  placeholder="50.00"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
+                />
+              </FormField>
 
-                  <FormField label="Cost (৳)" required>
-                    <input
-                      type="number"
-                      step="0.01"
-                      {...register(`deliveryOptions.${index}.cost`, {
-                        required: 'Cost is required',
-                        min: { value: 0, message: 'Cost must be 0 or greater' },
-                      })}
-                      placeholder="0.00"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                    />
-                  </FormField>
+              <FormField
+                label="Free Delivery Minimum (৳)"
+                error={errors.deliveryOptions?.delivery?.freeDeliveryMinimum?.message}
+                hint="Order amount for free delivery"
+              >
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register('deliveryOptions.delivery.freeDeliveryMinimum')}
+                  placeholder="500.00"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
+                />
+              </FormField>
 
-                  <FormField label="Time Range" required>
-                    <input
-                      type="text"
-                      {...register(`deliveryOptions.${index}.timeRange`, {
-                        required: 'Time range is required',
-                      })}
-                      placeholder="2-4 hours"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                    />
-                  </FormField>
-                </div>
-              </div>
-            ))}
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                appendDelivery({
-                  type: 'pickup',
-                  cost: 0,
-                  timeRange: '30 minutes',
-                })
-              }
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add Delivery Option
-            </Button>
+              <FormField
+                label="Estimated Delivery Time"
+                error={errors.deliveryOptions?.delivery?.estimatedTime?.message}
+                hint="Expected delivery timeframe"
+              >
+                <input
+                  type="text"
+                  {...register('deliveryOptions.delivery.estimatedTime')}
+                  placeholder="2-4 hours"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
+                />
+              </FormField>
+            </div>
           </div>
         </Card>
 

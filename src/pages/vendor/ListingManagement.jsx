@@ -43,12 +43,15 @@ import Pagination from '../../components/ui/Pagination';
 import ListingStatusToggle from '../../components/vendor/ListingStatusToggle';
 import ListingBulkActions from '../../components/vendor/ListingBulkActions';
 import SEOOptimizationPanel from '../../components/vendor/SEOOptimizationPanel';
+import MarketSelector from '../../components/common/MarketSelector';
+import { useMarketFilter } from '../../utils/urlState';
 
 const ListingManagement = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [marketFilter, setMarketFilter] = useMarketFilter(); // Market filter from URL
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
   const [selectedListings, setSelectedListings] = useState(new Set());
@@ -69,6 +72,7 @@ const ListingManagement = () => {
     limit: itemsPerPage,
     search: searchTerm || undefined,
     status: statusFilter !== 'all' ? statusFilter : undefined,
+    marketId: marketFilter || undefined, // Market filter
     sortBy,
     sortOrder,
   });
@@ -382,7 +386,7 @@ const ListingManagement = () => {
 
         {/* Expanded Filters */}
         {showFilters && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
             <div>
               <label className="block text-sm font-medium text-text-dark mb-2">
                 Status
@@ -398,6 +402,17 @@ const ListingManagement = () => {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Market Filter - NEW */}
+            <div>
+              <MarketSelector
+                value={marketFilter}
+                onChange={setMarketFilter}
+                showAllOption
+                label="Market"
+                className="w-full"
+              />
             </div>
 
             <div>
@@ -471,10 +486,8 @@ const ListingManagement = () => {
               ? 'No listings match your search criteria.'
               : "You haven't created any listings yet."
           }
-          action={{
-            label: 'Create Your First Listing',
-            onClick: () => navigate('/vendor/listings/create'),
-          }}
+          actionLabel="Create Your First Listing"
+          onAction={() => navigate('/vendor/listings/create')}
         />
       ) : (
         <>
@@ -497,6 +510,9 @@ const ListingManagement = () => {
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-text-dark">
                       Product
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-text-dark">
+                      Market
                     </th>
                     <th
                       className="px-6 py-4 text-left text-sm font-semibold text-text-dark cursor-pointer hover:text-muted-olive"
@@ -562,6 +578,14 @@ const ListingManagement = () => {
                             </p>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {listing.marketId && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs font-medium rounded-lg">
+                            <MapPin className="w-3 h-3" />
+                            {listing.marketId?.name || listing.market?.name || 'Market'}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <div>
@@ -687,9 +711,17 @@ const ListingManagement = () => {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-medium text-text-dark dark:text-white line-clamp-1">
-                        {listing.product?.name}
-                      </h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-text-dark dark:text-white line-clamp-1">
+                          {listing.product?.name}
+                        </h3>
+                        {listing.marketId && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs font-medium rounded-lg mt-1">
+                            <MapPin className="w-3 h-3" />
+                            {listing.marketId?.name || listing.market?.name || 'Market'}
+                          </span>
+                        )}
+                      </div>
                       <ListingStatusToggle listing={listing} variant="badge" />
                     </div>
 

@@ -87,6 +87,8 @@ const ProductDetail = () => {
       image: imageUrls[0],
       vendorId: listing.vendorId,
       vendorName: vendor.businessName || vendor.name,
+      marketId: listing.marketId?._id || listing.marketId, // Market ID for validation
+      marketName: listing.marketId?.name || listing.market?.name || 'Market', // Market name for display
       unit,
       quantity: actualQuantity, // Total quantity in base units
       productId: listing.productId,

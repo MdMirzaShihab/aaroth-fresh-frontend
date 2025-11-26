@@ -42,11 +42,14 @@ import {
 import { LineChart, BarChart, DoughnutChart } from '../../components/ui/charts/ChartJS';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+import MarketBreakdown from '../../components/vendor/MarketBreakdown';
+import MarketSelector from '../../components/common/MarketSelector';
 
 const VendorDashboardEnhanced = () => {
   const { user } = useSelector(selectAuth);
   const [filters, setFilters] = useState({
     dateRange: { type: 'month' },
+    marketId: '', // Market filter for analytics
   });
 
   // Business verification hook (updated for three-state system)
@@ -77,6 +80,7 @@ const VendorDashboardEnhanced = () => {
     useGetDashboardOverviewQuery(
       {
         period: filters.dateRange.type,
+        marketId: filters.marketId || undefined, // Optional market filter
       },
       {
         skip: !canAccessDashboard,
@@ -87,6 +91,7 @@ const VendorDashboardEnhanced = () => {
     useGetRevenueAnalyticsQuery(
       {
         period: filters.dateRange.type,
+        marketId: filters.marketId || undefined, // Optional market filter
       },
       {
         skip: !canAccessDashboard,
@@ -97,6 +102,7 @@ const VendorDashboardEnhanced = () => {
     useGetOrderAnalyticsQuery(
       {
         period: filters.dateRange.type,
+        marketId: filters.marketId || undefined, // Optional market filter
       },
       {
         skip: !canAccessDashboard,
@@ -108,6 +114,7 @@ const VendorDashboardEnhanced = () => {
       {
         status: 'active',
         limit: 10,
+        marketId: filters.marketId || undefined,
       },
       {
         skip: !canAccessDashboard,
@@ -119,6 +126,7 @@ const VendorDashboardEnhanced = () => {
       {
         status: 'all',
         limit: 5,
+        marketId: filters.marketId || undefined,
       },
       {
         skip: !canAccessDashboard,
@@ -129,6 +137,7 @@ const VendorDashboardEnhanced = () => {
     useGetCustomerAnalyticsQuery(
       {
         period: filters.dateRange.type,
+        marketId: filters.marketId || undefined,
       },
       {
         skip: !canAccessDashboard,
@@ -267,6 +276,31 @@ const VendorDashboardEnhanced = () => {
 
           {/* Only show analytics if user can access dashboard */}
           <CapabilityGate capability="canAccessDashboard">
+            {/* Analytics Filters */}
+            <Card className="p-4 mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-text-dark mb-1">
+                    Filter Analytics by Market
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    View performance metrics for specific markets
+                  </p>
+                </div>
+                <div className="w-full sm:w-64">
+                  <MarketSelector
+                    value={filters.marketId}
+                    onChange={(marketId) =>
+                      setFilters({ ...filters, marketId })
+                    }
+                    showAllOption
+                    label=""
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </Card>
+
             {/* KPI Cards - Updated for new backend data structure */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <KPICard
@@ -475,6 +509,16 @@ const VendorDashboardEnhanced = () => {
                 )}
               </Card>
             </div>
+
+            {/* Market Breakdown - Performance by Market */}
+            {overview?.marketBreakdown && overview.marketBreakdown.length > 0 && (
+              <div className="mb-8">
+                <MarketBreakdown
+                  marketBreakdown={overview.marketBreakdown}
+                  isLoading={overviewLoading}
+                />
+              </div>
+            )}
 
             {/* Customer Insights - Updated for new backend structure */}
             <Card className="p-6">

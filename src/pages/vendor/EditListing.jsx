@@ -34,6 +34,7 @@ import Button from '../../components/ui/Button';
 import FormField from '../../components/ui/FormField';
 import FileUpload from '../../components/ui/FileUpload';
 import EmptyState from '../../components/ui/EmptyState';
+import MarketSelector from '../../components/common/MarketSelector';
 
 const EditListing = () => {
   const { id: listingId } = useParams();
@@ -77,6 +78,7 @@ const EditListing = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      marketId: '',
       pricing: [
         {
           pricePerBaseUnit: '',
@@ -182,6 +184,7 @@ const EditListing = () => {
     if (listing) {
       // Set form values
       reset({
+        marketId: listing.marketId?._id || listing.marketId || listing.market?._id || '',
         productId: listing.product?.id || listing.productId,
         pricing: listing.pricing || [
           {
@@ -280,6 +283,7 @@ const EditListing = () => {
     try {
       // First update the listing with JSON data
       const updateData = {
+        marketId: data.marketId,
         productId: data.productId,
         pricing: data.pricing,
         qualityGrade: data.qualityGrade,
@@ -339,7 +343,7 @@ const EditListing = () => {
         })
       );
 
-      navigate('/vendor/listings');
+      navigate('/vendor/listings/manage');
     } catch (error) {
       console.error('Failed to update listing:', error);
       dispatch(
@@ -383,7 +387,7 @@ const EditListing = () => {
         description="The listing you're looking for doesn't exist or you don't have permission to edit it."
         action={{
           label: 'Back to Listings',
-          onClick: () => navigate('/vendor/listings'),
+          onClick: () => navigate('/vendor/listings/manage'),
         }}
       />
     );
@@ -395,7 +399,7 @@ const EditListing = () => {
       <div className="flex items-center gap-4">
         <Button
           variant="outline"
-          onClick={() => navigate('/vendor/listings')}
+          onClick={() => navigate('/vendor/listings/manage')}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -413,6 +417,26 @@ const EditListing = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Market Selection */}
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
+            Market Location
+          </h2>
+
+          <MarketSelector
+            name="marketId"
+            register={register}
+            error={errors.marketId?.message}
+            required
+            label="Select Market"
+          />
+
+          <p className="text-sm text-text-muted dark:text-gray-400 mt-2">
+            Choose the market where this product will be available
+          </p>
+        </Card>
+
         {/* Product Selection */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
@@ -1039,7 +1063,7 @@ const EditListing = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate('/vendor/listings')}
+              onClick={() => navigate('/vendor/listings/manage')}
               className="sm:w-auto w-full"
             >
               Cancel

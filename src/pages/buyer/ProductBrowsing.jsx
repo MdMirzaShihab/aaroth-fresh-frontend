@@ -35,6 +35,8 @@ import {
 } from '../../store/slices/comparisonSlice';
 import { formatCurrency, debounce } from '../../utils';
 import BulkOrderModal from '../../components/buyer/BulkOrderModal';
+import MarketSelector from '../../components/common/MarketSelector';
+import { useMarketFilter } from '../../utils/urlState';
 
 const ProductBrowsing = () => {
   const navigate = useNavigate();
@@ -47,6 +49,7 @@ const ProductBrowsing = () => {
   // State management
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [marketFilter, setMarketFilter] = useMarketFilter(); // Market filter from URL
   const [sortBy, setSortBy] = useState('relevance');
   const [viewMode, setViewMode] = useState('grid');
   const [filters, setFilters] = useState({
@@ -71,6 +74,7 @@ const ProductBrowsing = () => {
   } = useGetListingsQuery({
     search: searchQuery,
     category: selectedCategory,
+    marketId: marketFilter || undefined, // Market filter
     sortBy,
     ...filters,
     limit: 50,
@@ -419,6 +423,14 @@ const ProductBrowsing = () => {
             <span className="truncate">{product.vendorName}</span>
           </div>
 
+          {/* Market Badge */}
+          {product.marketName && (
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs font-medium rounded-lg">
+              <MapPin className="w-3 h-3" />
+              {product.marketName}
+            </span>
+          )}
+
           {/* Rating */}
           {product.rating && (
             <div className="flex items-center gap-1">
@@ -504,6 +516,16 @@ const ProductBrowsing = () => {
               </div>
             )}
           </div>
+
+          {/* Market Badge */}
+          {product.marketName && (
+            <div className="mb-2">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted-olive/10 text-muted-olive text-xs font-medium rounded-lg">
+                <MapPin className="w-3 h-3" />
+                {product.marketName}
+              </span>
+            </div>
+          )}
 
           <div className="flex items-center justify-between">
             <div>
@@ -660,6 +682,16 @@ const ProductBrowsing = () => {
         {showFilters && (
           <div className="mt-6 pt-6 border-t border-muted-olive/10 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Market Filter */}
+              <div>
+                <MarketSelector
+                  value={marketFilter}
+                  onChange={setMarketFilter}
+                  showAllOption
+                  label="Market Location"
+                  className="w-full"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-text-dark mb-2">
                   Min Price
@@ -691,23 +723,6 @@ const ProductBrowsing = () => {
                     }))
                   }
                   placeholder="1000"
-                  className="w-full px-3 py-2 glass-layer-1 dark:glass-1-dark border-0 rounded-xl focus:outline-none focus:glass-layer-2 dark:focus:glass-2-dark focus:shadow-glow-green/20 dark:focus:shadow-dark-glow-olive transition-all duration-300"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  value={filters.location}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      location: e.target.value,
-                    }))
-                  }
-                  placeholder="Near me"
                   className="w-full px-3 py-2 glass-layer-1 dark:glass-1-dark border-0 rounded-xl focus:outline-none focus:glass-layer-2 dark:focus:glass-2-dark focus:shadow-glow-green/20 dark:focus:shadow-dark-glow-olive transition-all duration-300"
                 />
               </div>

@@ -20,18 +20,26 @@ import {
 import {
   useGetPublicProductQuery,
   useGetPublicListingsQuery,
+  useGetPublicMarketsQuery,
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
 const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('overview');
+  const [selectedMarket, setSelectedMarket] = useState(''); // Market filter
 
   const {
     data: productData,
     isLoading: productLoading,
     error: productError,
-  } = useGetPublicProductQuery(productId, { skip: !productId });
+  } = useGetPublicProductQuery(
+    { id: productId, marketId: selectedMarket || undefined },
+    { skip: !productId }
+  );
+
+  const { data: marketsData } = useGetPublicMarketsQuery({});
+  const markets = marketsData?.data || [];
 
   const { data: listingsData, isLoading: listingsLoading } =
     useGetPublicListingsQuery(
@@ -41,6 +49,20 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
 
   const product = productData?.data;
   const listings = product?.listings || [];
+
+  // Extract unique markets from listings
+  const availableMarkets = React.useMemo(() => {
+    const marketSet = new Set();
+    listings.forEach((listing) => {
+      if (listing.marketId) {
+        marketSet.add(JSON.stringify({
+          _id: listing.marketId._id || listing.marketId,
+          name: listing.marketId.name || listing.market?.name || 'Market',
+        }));
+      }
+    });
+    return Array.from(marketSet).map((m) => JSON.parse(m));
+  }, [listings]);
 
   // Format price for display
   const formatPrice = (price) => {
@@ -533,6 +555,27 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
 
               {activeTab === 'vendors' && (
                 <>
+                  {/* Market Filter */}
+                  {availableMarkets.length > 1 && (
+                    <div className="mb-4 p-3 bg-gray-50 rounded-xl">
+                      <label className="block text-sm font-medium text-text-dark mb-2">
+                        Show prices from:
+                      </label>
+                      <select
+                        value={selectedMarket}
+                        onChange={(e) => setSelectedMarket(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive transition-colors"
+                      >
+                        <option value="">All Markets</option>
+                        {availableMarkets.map((market) => (
+                          <option key={market._id} value={market._id}>
+                            {market.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
                   {listingsLoading ? (
                     <LoadingSpinner text="Loading vendor information..." />
                   ) : listings.length > 0 ? (
@@ -548,7 +591,16 @@ const ProductModal = ({ productId, isOpen, onClose, onSignUpClick }) => {
                                 {listing.vendorId?.businessName ||
                                   'Local Vendor'}
                               </h6>
-                              <p className="text-text-muted text-sm">
+                              {/* Market Badge */}
+                              {listing.marketId && (
+                                <div className="flex items-center gap-1 text-xs text-muted-olive mt-1">
+                                  <MapPin className="w-3 h-3" />
+                                  <span>
+                                    {listing.marketId.name || listing.market?.name}
+                                  </span>
+                                </div>
+                              )}
+                              <p className="text-text-muted text-sm mt-1">
                                 Quality: {listing.qualityGrade}
                               </p>
                             </div>

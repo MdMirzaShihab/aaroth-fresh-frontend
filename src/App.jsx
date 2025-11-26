@@ -421,7 +421,7 @@ const App = () => {
               }
             />
             <Route
-              path="listings"
+              path="listings/manage"
               element={
                 <Suspense fallback={<PageLoader />}>
                   <ListingManagement />

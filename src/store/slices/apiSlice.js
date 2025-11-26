@@ -224,8 +224,11 @@ export const apiSlice = createApi({
     }),
 
     getPublicProduct: builder.query({
-      query: (id) => `/public/products/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Product', id }],
+      query: ({ id, marketId }) => ({
+        url: `/public/products/${id}`,
+        params: marketId ? { marketId } : {},
+      }),
+      providesTags: (result, error, { id }) => [{ type: 'Product', id }],
     }),
 
     // Public listings endpoint

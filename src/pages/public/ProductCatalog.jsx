@@ -28,11 +28,14 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import ProductCard from '../../components/public/ProductCard';
 import ProductModal from '../../components/public/ProductModal';
+import MarketSelector from '../../components/common/MarketSelector';
+import { useMarketFilter } from '../../utils/urlState';
 
 const ProductCatalog = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [marketFilter, setMarketFilter] = useMarketFilter(); // Market filter from URL
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('name'); // 'name', 'price', 'popularity', 'newest'
@@ -64,6 +67,7 @@ const ProductCatalog = () => {
   const { data: listingsData, isLoading: listingsLoading } =
     useGetPublicListingsQuery({
       limit: 100, // Get more listings to properly aggregate
+      marketId: marketFilter || undefined, // Market filter
     });
 
   // Always fetch public products as the primary data source
@@ -468,6 +472,17 @@ const ProductCatalog = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Market Filter - NEW */}
+                    <div>
+                      <MarketSelector
+                        value={marketFilter}
+                        onChange={setMarketFilter}
+                        showAllOption
+                        label="Market Location"
+                        className="w-full"
+                      />
+                    </div>
+
                     {/* Price Range */}
                     <div>
                       <label className="block text-sm font-medium text-text-dark mb-2">

@@ -5,6 +5,8 @@ const initialState = {
   total: 0,
   itemCount: 0,
   isOpen: false,
+  marketId: null, // Track which market items are from
+  marketName: null, // For display in error messages
 };
 
 const cartSlice = createSlice({
@@ -13,6 +15,31 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const item = action.payload;
+
+      // STRICT MARKET VALIDATION - Prevent cross-market items
+      if (item.marketId) {
+        // Check if cart already has items from a different market
+        if (state.marketId && state.marketId !== item.marketId) {
+          // Store error information for middleware to handle
+          state.lastError = {
+            type: 'MARKET_MISMATCH',
+            message: `Cannot add items from different markets. Your cart contains items from ${state.marketName}. Please checkout or clear your cart first.`,
+            currentMarket: state.marketName,
+            attemptedMarket: item.marketName,
+          };
+          return; // Block the addition
+        }
+
+        // Set market if this is the first item
+        if (!state.marketId) {
+          state.marketId = item.marketId;
+          state.marketName = item.marketName || 'Selected Market';
+        }
+      }
+
+      // Clear any previous errors
+      delete state.lastError;
+
       const existingItem = state.items.find((i) => i.id === item.id);
 
       if (existingItem) {
@@ -40,6 +67,38 @@ const cartSlice = createSlice({
         console.error('addBulkToCart expects an array of items');
         return;
       }
+
+      // MARKET VALIDATION for bulk add
+      // Check if all items are from the same market
+      const firstItemMarket = bulkItems[0]?.marketId;
+      const allSameMarket = bulkItems.every((item) => item.marketId === firstItemMarket);
+
+      if (!allSameMarket) {
+        state.lastError = {
+          type: 'MARKET_MISMATCH',
+          message: 'Cannot add items from different markets in bulk operation.',
+        };
+        return;
+      }
+
+      // Check against existing cart market
+      if (firstItemMarket && state.marketId && state.marketId !== firstItemMarket) {
+        state.lastError = {
+          type: 'MARKET_MISMATCH',
+          message: `Cannot add items from different markets. Your cart contains items from ${state.marketName}.`,
+          currentMarket: state.marketName,
+        };
+        return;
+      }
+
+      // Set market if this is the first addition
+      if (firstItemMarket && !state.marketId) {
+        state.marketId = firstItemMarket;
+        state.marketName = bulkItems[0]?.marketName || 'Selected Market';
+      }
+
+      // Clear any previous errors
+      delete state.lastError;
 
       bulkItems.forEach((item) => {
         const existingItem = state.items.find((i) => i.id === item.id);
@@ -121,6 +180,9 @@ const cartSlice = createSlice({
       state.items = [];
       state.total = 0;
       state.itemCount = 0;
+      state.marketId = null; // Reset market tracking
+      state.marketName = null; // Reset market name
+      delete state.lastError; // Clear any errors
     },
     toggleCart: (state) => {
       state.isOpen = !state.isOpen;
@@ -180,5 +242,10 @@ export const selectCartItems = (state) => state.cart.items;
 export const selectCartTotal = (state) => state.cart.total;
 export const selectCartItemCount = (state) => state.cart.itemCount;
 export const selectCartIsOpen = (state) => state.cart.isOpen;
+export const selectCartMarket = (state) => ({
+  marketId: state.cart.marketId,
+  marketName: state.cart.marketName,
+});
+export const selectCartLastError = (state) => state.cart.lastError;
 
 export default cartSlice.reducer;
