@@ -17,8 +17,13 @@ import {
 } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
+import HeroSection from '../../components/public/HeroSection';
+import { useProductFilters } from '../../hooks/useProductFilters';
 
 const Homepage = () => {
+  // Filter state management
+  const { filters, updateFilter } = useProductFilters();
+
   // Fetch real data from APIs
   const {
     data: featuredData,
@@ -55,42 +60,13 @@ const Homepage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-earthy-beige via-white to-sage-green/10 py-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-muted-olive font-medium mb-6">
-              <Leaf className="w-4 h-4" />
-              Fresh • Local • Organic
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-text-dark mb-6">
-              Fresh Vegetables
-              <br />
-              <span className="text-muted-olive">Direct from Farms</span>
-            </h1>
-            <p className="text-xl text-text-muted mb-8 max-w-2xl mx-auto">
-              Connect with local vegetable vendors and get the freshest produce
-              delivered to your buyer. Quality guaranteed.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/register"
-              className="bg-gradient-primary text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center gap-2 justify-center touch-target"
-            >
-              Get Started
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              to="/products"
-              className="bg-white border border-gray-200 text-text-dark px-8 py-4 rounded-2xl font-semibold hover:border-muted-olive/30 transition-all duration-200 flex items-center gap-2 justify-center touch-target"
-            >
-              Browse Products
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* New Hero Section with Search & Category Filters */}
+      <HeroSection
+        searchValue={filters.search}
+        onSearchChange={(value) => updateFilter('search', value)}
+        selectedCategory={filters.category}
+        onCategorySelect={(id) => updateFilter('category', id)}
+      />
 
       {/* Features Section */}
       <section className="py-20 px-4">

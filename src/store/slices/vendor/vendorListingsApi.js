@@ -13,7 +13,9 @@ const customBaseQuery = fetchBaseQuery({
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
-    headers.set('content-type', 'application/json');
+    // Don't set content-type - let browser handle it automatically
+    // For JSON requests, RTK Query will set 'application/json'
+    // For FormData requests, browser will set 'multipart/form-data' with boundary
     return headers;
   },
 });
@@ -30,7 +32,7 @@ const baseQueryWithAbsoluteUrls = async (args, api, extraOptions) => {
         if (token) {
           headers.set('authorization', `Bearer ${token}`);
         }
-        headers.set('content-type', 'application/json');
+        // Don't set content-type - let browser handle it automatically
         return headers;
       },
     });

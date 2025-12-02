@@ -32,6 +32,8 @@ const PublicHomepage = lazy(() => import('./pages/public/Homepage'));
 const ProductCatalog = lazy(() => import('./pages/public/ProductCatalog'));
 const VendorDirectory = lazy(() => import('./pages/public/VendorDirectory'));
 const AboutPage = lazy(() => import('./pages/public/AboutPage'));
+const FilterTestPage = lazy(() => import('./components/public/FilterTestPage'));
+const HeroTestPage = lazy(() => import('./components/public/HeroTestPage'));
 
 // Auth Pages
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
@@ -231,6 +233,8 @@ const App = () => {
           <Route path="/products" element={<ProductCatalog />} />
           <Route path="/vendors" element={<VendorDirectory />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/filter-test" element={<FilterTestPage />} />
+          <Route path="/hero-test" element={<HeroTestPage />} />
 
           {/* Authentication Routes - Only for non-authenticated users */}
           <Route

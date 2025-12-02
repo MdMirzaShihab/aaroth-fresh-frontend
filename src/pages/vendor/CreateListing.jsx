@@ -11,7 +11,6 @@ import {
   Calendar,
   MapPin,
   Truck,
-  Percent,
   Info,
   AlertTriangle,
   CheckCircle,
@@ -23,9 +22,9 @@ import {
   useCreateListingMutation,
   useGetProductCatalogQuery,
   useGetListingCategoriesQuery,
-  useUploadListingImagesMutation,
 } from '../../store/slices/vendor/vendorListingsApi';
 import { addNotification } from '../../store/slices/notificationSlice';
+import { createListingFormData } from '../../utils/listingFormData';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -62,15 +61,11 @@ const CreateListing = () => {
           packUnit: 'pack',
           minimumPacks: 1,
           maximumPacks: '',
-          bulkDiscount: {
-            minQuantity: '',
-            discountPercentage: '',
-          },
         },
       ],
       availability: {
         quantityAvailable: '',
-        unit: '',
+        unit: 'kg', // Set default unit to prevent empty string
         harvestDate: '',
         expiryDate: '',
       },
@@ -81,11 +76,11 @@ const CreateListing = () => {
           instructions: '',
         },
         delivery: {
-          enabled: true,
-          radius: '',
+          enabled: true, // Home delivery is the primary option
           fee: '',
-          freeDeliveryMinimum: '',
-          estimatedTime: '',
+          freeDeliveryMinimumQuantity: '',
+          freeDeliveryMinimumUnit: 'kg', // Will match pricing unit
+          estimatedDeliveryTime: '2-4 hours', // Required field
         },
       },
       minimumOrderQuantity: '',
@@ -97,8 +92,6 @@ const CreateListing = () => {
       },
       certifications: [],
       qualityGrade: 'Standard',
-      minimumOrderValue: '',
-      leadTime: '2-4 hours',
     },
   });
 
@@ -114,7 +107,6 @@ const CreateListing = () => {
 
   // API mutations and queries
   const [createListing] = useCreateListingMutation();
-  const [uploadImages] = useUploadListingImagesMutation();
 
   const { data: productsData, isLoading: productsLoading } =
     useGetProductCatalogQuery({
@@ -214,8 +206,9 @@ const CreateListing = () => {
     );
   };
 
-  // Form submission
+  // Form submission with single-step FormData upload
   const onSubmit = async (data) => {
+    // Validate images
     if (imageFiles.length === 0) {
       dispatch(
         addNotification({
@@ -230,12 +223,16 @@ const CreateListing = () => {
     setIsSubmitting(true);
 
     try {
-      // Transform certifications from array of strings to array of objects
-      const transformedCertifications = data.certifications?.length > 0
-        ? data.certifications.map(cert => ({ name: cert }))
-        : [];
+      // Set free delivery minimum unit to match pricing unit
+      const deliveryOptionsWithUnit = {
+        ...data.deliveryOptions,
+        delivery: {
+          ...data.deliveryOptions.delivery,
+          freeDeliveryMinimumUnit: data.pricing[0]?.unit || 'kg'
+        }
+      };
 
-      // Build listing data
+      // Build listing data object
       const listingData = {
         marketId: data.marketId,
         productId: data.productId,
@@ -243,33 +240,22 @@ const CreateListing = () => {
         qualityGrade: data.qualityGrade,
         availability: data.availability,
         description: data.description,
-        deliveryOptions: data.deliveryOptions,
-        minimumOrderValue: data.minimumOrderValue,
-        leadTime: data.leadTime,
-        certifications: transformedCertifications,
-        ...(data.discount.value && { discount: data.discount }),
+        deliveryOptions: deliveryOptionsWithUnit,
+        certifications: data.certifications || [],
+        ...(data.discount?.value && { discount: data.discount }),
       };
 
       // Add order quantity limits if pack-based selling is disabled
       if (!data.pricing[0]?.enablePackSelling) {
-        listingData.minimumOrderQuantity = parseFloat(data.minimumOrderQuantity);
-        listingData.maximumOrderQuantity = parseFloat(data.maximumOrderQuantity);
+        listingData.minimumOrderQuantity = data.minimumOrderQuantity;
+        listingData.maximumOrderQuantity = data.maximumOrderQuantity;
       }
 
-      const result = await createListing(listingData).unwrap();
+      // Create FormData with all listing data and images in single request
+      const formData = createListingFormData(listingData, imageFiles);
 
-      // Then upload images if listing was created successfully
-      if (result.listing && imageFiles.length > 0) {
-        const imageFormData = new FormData();
-        imageFiles.forEach((file) => {
-          imageFormData.append('images', file);
-        });
-
-        await uploadImages({
-          listingId: result.listing.id,
-          imagesFormData: imageFormData,
-        }).unwrap();
-      }
+      // Submit FormData to backend (single-step upload)
+      const result = await createListing(formData).unwrap();
 
       dispatch(
         addNotification({
@@ -765,39 +751,6 @@ const CreateListing = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Bulk Discount */}
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <h4 className="font-medium text-text-dark mb-3 flex items-center gap-2">
-                    <Percent className="w-4 h-4" />
-                    Bulk Discount (Optional)
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField label="Minimum Quantity">
-                      <input
-                        type="number"
-                        {...register(
-                          `pricing.${index}.bulkDiscount.minQuantity`
-                        )}
-                        placeholder="10"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                      />
-                    </FormField>
-
-                    <FormField label="Discount Percentage">
-                      <input
-                        type="number"
-                        step="0.1"
-                        max="50"
-                        {...register(
-                          `pricing.${index}.bulkDiscount.discountPercentage`
-                        )}
-                        placeholder="5.0"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                      />
-                    </FormField>
-                  </div>
-                </div>
               </div>
             ))}
 
@@ -813,7 +766,6 @@ const CreateListing = () => {
                   packUnit: 'pack',
                   minimumPacks: 1,
                   maximumPacks: '',
-                  bulkDiscount: { minQuantity: '', discountPercentage: '' },
                 })
               }
               className="flex items-center gap-2"
@@ -1024,40 +976,44 @@ const CreateListing = () => {
           </div>
         </Card>
 
-        {/* Delivery Options */}
+        {/* Delivery Options - Home Delivery Only */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
             <Truck className="w-5 h-5" />
-            Delivery Configuration
+            Home Delivery Configuration
           </h2>
 
           <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-3 mb-6">
             <p className="text-sm text-blue-800 flex items-center gap-2">
               <Info className="w-4 h-4 flex-shrink-0" />
-              Configure delivery options for your products. All deliveries will be handled by Aaroth Fresh delivery service.
+              Configure delivery options. Delivery area is based on market location (district/subdistrict). Fee applies uniformly across all delivery locations.
             </p>
           </div>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
-                label="Delivery Radius (km)"
-                error={errors.deliveryOptions?.delivery?.radius?.message}
-                hint="Maximum distance for delivery"
+                label="Estimated Delivery Time"
+                error={errors.deliveryOptions?.delivery?.estimatedDeliveryTime?.message}
+                required
+                hint="Time from order to delivery"
               >
-                <input
-                  type="number"
-                  step="0.1"
-                  {...register('deliveryOptions.delivery.radius')}
-                  placeholder="10"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                />
+                <select
+                  {...register('deliveryOptions.delivery.estimatedDeliveryTime', {
+                    required: 'Estimated delivery time is required',
+                  })}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
+                >
+                  <option value="2-4 hours">2-4 hours</option>
+                  <option value="same day">Same day</option>
+                  <option value="next day">Next day</option>
+                </select>
               </FormField>
 
               <FormField
                 label="Delivery Fee (৳)"
                 error={errors.deliveryOptions?.delivery?.fee?.message}
-                hint="Standard delivery charge"
+                hint="Set to 0 for free delivery"
               >
                 <input
                   type="number"
@@ -1069,90 +1025,58 @@ const CreateListing = () => {
               </FormField>
 
               <FormField
-                label="Free Delivery Minimum (৳)"
-                error={errors.deliveryOptions?.delivery?.freeDeliveryMinimum?.message}
-                hint="Order amount for free delivery"
+                label={`Free Delivery Minimum Quantity (${watch('pricing.0.unit') || 'units'})`}
+                error={errors.deliveryOptions?.delivery?.freeDeliveryMinimumQuantity?.message}
+                hint="Quantity needed for free delivery"
               >
                 <input
                   type="number"
                   step="0.01"
-                  {...register('deliveryOptions.delivery.freeDeliveryMinimum')}
-                  placeholder="500.00"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                />
-              </FormField>
-
-              <FormField
-                label="Estimated Delivery Time"
-                error={errors.deliveryOptions?.delivery?.estimatedTime?.message}
-                hint="Expected delivery timeframe"
-              >
-                <input
-                  type="text"
-                  {...register('deliveryOptions.delivery.estimatedTime')}
-                  placeholder="2-4 hours"
+                  {...register('deliveryOptions.delivery.freeDeliveryMinimumQuantity')}
+                  placeholder="100"
                   className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
                 />
               </FormField>
             </div>
+
+            {watch('deliveryOptions.delivery.fee') > 0 && watch('deliveryOptions.delivery.freeDeliveryMinimumQuantity') > 0 && (
+              <div className="bg-mint-fresh/10 border border-mint-fresh/30 rounded-xl p-4">
+                <p className="text-sm text-bottle-green flex items-center gap-2">
+                  <Info className="w-4 h-4 flex-shrink-0" />
+                  Orders of {watch('deliveryOptions.delivery.freeDeliveryMinimumQuantity')} {watch('pricing.0.unit') || 'units'} or more will get free delivery (৳0 fee).
+                </p>
+              </div>
+            )}
           </div>
         </Card>
 
-        {/* Additional Settings */}
+        {/* Certifications */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-text-dark dark:text-white mb-6 flex items-center gap-2">
             <Info className="w-5 h-5" />
-            Additional Settings
+            Certifications (Optional)
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField label="Minimum Order Value (৳)">
-              <input
-                type="number"
-                step="0.01"
-                {...register('minimumOrderValue')}
-                placeholder="250.00"
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-              />
-            </FormField>
-
-            <FormField label="Lead Time">
-              <select
-                {...register('leadTime')}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 bg-white"
-              >
-                <option value="immediate">Immediate</option>
-                <option value="30 minutes">30 minutes</option>
-                <option value="1-2 hours">1-2 hours</option>
-                <option value="2-4 hours">2-4 hours</option>
-                <option value="same day">Same day</option>
-                <option value="next day">Next day</option>
-              </select>
-            </FormField>
-
-            <div className="md:col-span-2">
-              <FormField label="Certifications">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {certificationOptions.map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        value={option.value}
-                        {...register('certifications')}
-                        className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
-                      />
-                      <span className="text-sm text-text-dark">
-                        {option.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </FormField>
+          <FormField label="Product Certifications">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {certificationOptions.map((option) => (
+                <label
+                  key={option.value}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value={option.value}
+                    {...register('certifications')}
+                    className="w-4 h-4 text-muted-olive border-gray-300 rounded focus:ring-muted-olive"
+                  />
+                  <span className="text-sm text-text-dark">
+                    {option.label}
+                  </span>
+                </label>
+              ))}
             </div>
-          </div>
+          </FormField>
         </Card>
 
         {/* Submit Actions */}
