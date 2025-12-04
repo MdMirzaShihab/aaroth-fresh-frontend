@@ -12,6 +12,7 @@ import {
 import ProductCard from './ProductCard';
 import LoadingSpinner, { CardSkeleton } from '../ui/LoadingSpinner';
 import { useGetPublicListingsQuery } from '../../store/slices/apiSlice';
+import { useProductFilters } from '../../hooks/useProductFilters';
 
 /**
  * ProductGrid Component
@@ -67,16 +68,19 @@ const ProductGrid = ({
   const observerRef = useRef(null);
   const loadMoreRef = useRef(null);
 
+  // Get API query format from filters
+  const { apiQuery } = useProductFilters();
+
   // RTK Query - fetch listings
   const { data, isLoading, isFetching, error, refetch } =
     useGetPublicListingsQuery(
       {
-        ...filters,
+        ...apiQuery,
         page: currentPage,
         limit: initialLimit,
       },
       {
-        skip: !filters, // Skip if no filters provided
+        skip: !apiQuery, // Skip if no query provided
       }
     );
 

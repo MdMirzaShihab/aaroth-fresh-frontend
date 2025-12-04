@@ -19,7 +19,6 @@ import LoadingSpinner from '../ui/LoadingSpinner';
  * - Category filter with product counts
  * - Price range filter (min/max)
  * - Market/location filter
- * - Seasonal and organic toggles
  * - Collapsible sections with smooth animations
  * - Mobile and desktop responsive
  *
@@ -114,9 +113,7 @@ const FilterSidebar = ({
         {(filters.category !== 'all' ||
           filters.minPrice ||
           filters.maxPrice ||
-          filters.market ||
-          filters.organic ||
-          filters.seasonal) && (
+          filters.market) && (
           <button
             onClick={clearFilters}
             className="text-sm text-tomato-red hover:text-tomato-red/80 font-medium transition-colors"
@@ -295,62 +292,7 @@ const FilterSidebar = ({
           )}
         </FilterSection>
 
-        {/* Product Attributes */}
-        <FilterSection title="Product Attributes" icon={Leaf} section="attributes">
-          <div className="space-y-3">
-            {/* Organic Filter */}
-            <label className="flex items-center justify-between p-3 rounded-2xl cursor-pointer hover:bg-sage-green/10 transition-colors touch-target">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={filters.organic}
-                  onChange={(e) => updateFilter('organic', e.target.checked)}
-                  className="sr-only"
-                />
-                <div
-                  className={cn(
-                    'w-5 h-5 rounded border-2 flex items-center justify-center transition-colors',
-                    filters.organic
-                      ? 'border-muted-olive bg-muted-olive'
-                      : 'border-gray-300'
-                  )}
-                >
-                  {filters.organic && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-text-dark">Organic</div>
-                  <div className="text-xs text-text-muted">Certified organic products</div>
-                </div>
-              </div>
-            </label>
-
-            {/* Seasonal Filter */}
-            <label className="flex items-center justify-between p-3 rounded-2xl cursor-pointer hover:bg-sage-green/10 transition-colors touch-target">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={filters.seasonal}
-                  onChange={(e) => updateFilter('seasonal', e.target.checked)}
-                  className="sr-only"
-                />
-                <div
-                  className={cn(
-                    'w-5 h-5 rounded border-2 flex items-center justify-center transition-colors',
-                    filters.seasonal
-                      ? 'border-muted-olive bg-muted-olive'
-                      : 'border-gray-300'
-                  )}
-                >
-                  {filters.seasonal && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-text-dark">In Season</div>
-                  <div className="text-xs text-text-muted">Currently in season</div>
-                </div>
-              </div>
-            </label>
-          </div>
-        </FilterSection>
+        {/* Product Attributes - Removed: Organic and Seasonal filters not supported by backend */}
       </div>
 
       {/* Mobile Apply Button */}

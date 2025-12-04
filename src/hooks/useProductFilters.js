@@ -39,8 +39,6 @@ export const useProductFilters = () => {
       minPrice: searchParams.get('minPrice') || '',
       maxPrice: searchParams.get('maxPrice') || '',
       market: searchParams.get('market') || '',
-      organic: searchParams.get('organic') === 'true',
-      seasonal: searchParams.get('seasonal') === 'true',
       sortBy: searchParams.get('sort') || 'createdAt',
       sortOrder: searchParams.get('order') || 'desc',
       page: parseInt(searchParams.get('page') || '1', 10),
@@ -85,13 +83,10 @@ export const useProductFilters = () => {
     if (filters.maxPrice) query.maxPrice = parseFloat(filters.maxPrice);
     if (filters.market) query.marketId = filters.market;
 
-    // Boolean filters - only include if true
-    if (filters.organic) query.organic = true;
-    if (filters.seasonal) query.inSeason = true;
-
-    // Sorting
-    query.sort = filters.sortBy;
-    query.order = filters.sortOrder;
+    // Sorting - backend uses '-' prefix for descending order
+    const sortField = filters.sortBy || 'createdAt';
+    const sortOrder = filters.sortOrder || 'desc';
+    query.sort = sortOrder === 'desc' ? `-${sortField}` : sortField;
 
     // Pagination
     query.page = filters.page;
@@ -107,9 +102,7 @@ export const useProductFilters = () => {
       filters.category !== 'all' ||
       filters.minPrice !== '' ||
       filters.maxPrice !== '' ||
-      filters.market !== '' ||
-      filters.organic === true ||
-      filters.seasonal === true
+      filters.market !== ''
     );
   }, [filters]);
 
@@ -120,8 +113,6 @@ export const useProductFilters = () => {
     if (filters.category && filters.category !== 'all') count++;
     if (filters.minPrice || filters.maxPrice) count++;
     if (filters.market) count++;
-    if (filters.organic) count++;
-    if (filters.seasonal) count++;
     return count;
   }, [filters]);
 
@@ -138,10 +129,6 @@ export const useProductFilters = () => {
         return `Max: ৳${value}`;
       case 'market':
         return 'Market filter';
-      case 'organic':
-        return 'Organic';
-      case 'seasonal':
-        return 'In Season';
       default:
         return value;
     }

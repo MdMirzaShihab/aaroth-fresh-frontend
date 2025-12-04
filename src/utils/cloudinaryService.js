@@ -314,6 +314,118 @@ export const TRANSFORMATION_PRESETS = {
   categoryIcon: { width: 100, height: 100, crop: 'fill', quality: 'auto' },
 };
 
+/**
+ * Generate optimized video URLs with transformations
+ * @param {string} publicId - Cloudinary public ID
+ * @param {Object} transformations - Video transformation options
+ * @returns {string} Optimized video URL
+ */
+export const getOptimizedVideoUrl = (publicId, transformations = {}) => {
+  if (!publicId) return null;
+
+  const baseUrl = `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/video/upload`;
+
+  // Build transformation string
+  const transforms = [];
+
+  if (transformations.width) transforms.push(`w_${transformations.width}`);
+  if (transformations.height) transforms.push(`h_${transformations.height}`);
+  if (transformations.crop) transforms.push(`c_${transformations.crop}`);
+  if (transformations.quality) transforms.push(`q_${transformations.quality}`);
+  if (transformations.format) transforms.push(`f_${transformations.format}`);
+
+  // Default optimizations
+  transforms.push('q_auto', 'f_auto');
+
+  const transformString =
+    transforms.length > 0 ? `/${transforms.join(',')}` : '';
+
+  return `${baseUrl}${transformString}/${publicId}`;
+};
+
+/**
+ * Get video thumbnail URL (first frame)
+ * @param {string} videoUrl - Cloudinary video URL
+ * @returns {string} Thumbnail URL
+ */
+export const getVideoThumbnailUrl = (videoUrl) => {
+  if (!videoUrl) return null;
+
+  // Extract first frame as thumbnail
+  return videoUrl.replace('/upload/', '/upload/so_0/');
+};
+
+/**
+ * Validate video file before upload
+ * @param {File} file - Video file
+ * @param {Object} constraints - Validation constraints
+ * @returns {Object} Validation result
+ */
+export const validateVideoFile = (file, constraints = {}) => {
+  const errors = [];
+
+  // Default constraints
+  const {
+    maxSizeInMB = 10,
+    allowedFormats = ['mp4', 'webm', 'mov'],
+    maxDurationSeconds = 10,
+  } = constraints;
+
+  // Check file type
+  const fileExtension = file.name.split('.').pop().toLowerCase();
+  if (!allowedFormats.includes(fileExtension)) {
+    errors.push(
+      `Invalid video format. Allowed formats: ${allowedFormats.join(', ')}`
+    );
+  }
+
+  // Check file size
+  const fileSizeInMB = file.size / (1024 * 1024);
+  if (fileSizeInMB > maxSizeInMB) {
+    errors.push(`Video file too large. Maximum size: ${maxSizeInMB}MB`);
+  }
+
+  // Note: Duration validation requires video metadata which needs to be loaded
+  // This can be done client-side using HTML5 video element
+  if (file.type.startsWith('video/')) {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+
+    return new Promise((resolve) => {
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+
+        if (video.duration > maxDurationSeconds) {
+          errors.push(
+            `Video too long. Maximum duration: ${maxDurationSeconds} seconds`
+          );
+        }
+
+        resolve({
+          isValid: errors.length === 0,
+          errors,
+          duration: video.duration,
+        });
+      };
+
+      video.onerror = () => {
+        errors.push('Unable to read video metadata');
+        resolve({
+          isValid: false,
+          errors,
+        });
+      };
+
+      video.src = URL.createObjectURL(file);
+    });
+  }
+
+  return Promise.resolve({
+    isValid: errors.length === 0,
+    errors,
+  });
+};
+
 export default {
   uploadImageToCloudinary,
   getOptimizedImageUrl,
@@ -322,5 +434,8 @@ export default {
   validateImageFile,
   getPlaceholderImageUrl,
   batchUploadImages,
+  getOptimizedVideoUrl,
+  getVideoThumbnailUrl,
+  validateVideoFile,
   TRANSFORMATION_PRESETS,
 };
