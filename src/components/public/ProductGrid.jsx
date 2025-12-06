@@ -281,6 +281,14 @@ const ProductGrid = ({
       });
     }
 
+    if (filters.product && filters.product !== 'all') {
+      chips.push({
+        key: 'product',
+        label: getFilterLabel('product', filters.product),
+        value: filters.product,
+      });
+    }
+
     if (filters.minPrice || filters.maxPrice) {
       let priceLabel;
       if (filters.minPrice && filters.maxPrice) {

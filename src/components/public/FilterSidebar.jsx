@@ -7,10 +7,12 @@ import {
   DollarSign,
   X,
   Check,
+  Package,
 } from 'lucide-react';
 import { cn } from '../../utils';
 import { useGetCategoriesQuery, useGetPublicMarketsQuery } from '../../store/slices/apiSlice';
 import LoadingSpinner from '../ui/LoadingSpinner';
+import ProductFilterAutocomplete from './ProductFilterAutocomplete';
 
 /**
  * FilterSidebar Component
@@ -39,6 +41,7 @@ const FilterSidebar = ({
   // Collapsible section state
   const [expandedSections, setExpandedSections] = useState({
     category: true,
+    products: true,
     price: true,
     market: true,
     attributes: true,
@@ -61,7 +64,7 @@ const FilterSidebar = ({
 
   // Filter section header component
   const FilterSection = ({ title, icon: Icon, section, children }) => (
-    <div className="border-b border-gray-200/50 last:border-0">
+    <div className="border-b border-gray-200/50 dark:border-dark-border/50 last:border-0 transition-colors duration-300">
       <button
         onClick={() => toggleSection(section)}
         className="w-full flex items-center justify-between p-4 hover:bg-muted-olive/5 transition-colors duration-200 touch-target"
@@ -69,13 +72,13 @@ const FilterSidebar = ({
         aria-controls={`filter-section-${section}`}
       >
         <div className="flex items-center gap-3">
-          {Icon && <Icon className="w-5 h-5 text-muted-olive" />}
-          <span className="font-semibold text-text-dark">{title}</span>
+          {Icon && <Icon className="w-5 h-5 text-muted-olive dark:text-dark-sage-accent transition-colors duration-300" />}
+          <span className="font-semibold text-text-dark dark:text-dark-text-primary transition-colors duration-300">{title}</span>
         </div>
         {expandedSections[section] ? (
-          <ChevronUp className="w-5 h-5 text-text-muted" />
+          <ChevronUp className="w-5 h-5 text-text-muted dark:text-dark-text-muted transition-colors duration-300" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-text-muted" />
+          <ChevronDown className="w-5 h-5 text-text-muted dark:text-dark-text-muted transition-colors duration-300" />
         )}
       </button>
 
@@ -93,19 +96,19 @@ const FilterSidebar = ({
   return (
     <div
       className={cn(
-        'bg-white rounded-3xl overflow-hidden',
-        mobile ? 'border-0' : 'border border-gray-200 shadow-soft',
+        'glass-3 rounded-3xl backdrop-blur-xl overflow-hidden',
+        mobile ? 'border-0' : 'border-2 border-white/30 shadow-depth-2',
         className
       )}
       role="complementary"
       aria-label="Product filters"
     >
       {/* Header */}
-      <div className="p-6 pb-4 border-b border-gray-200/50 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-text-dark flex items-center gap-2">
+      <div className="p-6 pb-4 border-b border-gray-200/50 dark:border-dark-border/50 flex items-center justify-between transition-colors duration-300">
+        <h2 className="text-xl font-bold text-text-dark dark:text-dark-text-primary flex items-center gap-2 transition-colors duration-300">
           <span>Filters</span>
           {filters.category !== 'all' && (
-            <span className="text-xs bg-muted-olive/20 text-muted-olive px-2 py-1 rounded-full">
+            <span className="text-xs bg-muted-olive/20 dark:bg-dark-sage-accent/20 text-muted-olive dark:text-dark-sage-accent px-2 py-1 rounded-full border border-transparent dark:border-dark-sage-accent/30 transition-colors duration-300">
               Active
             </span>
           )}
@@ -116,7 +119,7 @@ const FilterSidebar = ({
           filters.market) && (
           <button
             onClick={clearFilters}
-            className="text-sm text-tomato-red hover:text-tomato-red/80 font-medium transition-colors"
+            className="text-sm text-tomato-red dark:text-red-400 hover:text-tomato-red/80 dark:hover:text-red-300 font-medium transition-colors"
             aria-label="Clear all filters"
           >
             Clear all
@@ -125,7 +128,7 @@ const FilterSidebar = ({
       </div>
 
       {/* Filter Sections */}
-      <div className="divide-y divide-gray-200/50">
+      <div className="divide-y divide-gray-200/50 dark:divide-dark-border/50">
         {/* Category Filter */}
         <FilterSection title="Categories" icon={Leaf} section="category">
           {categoriesLoading ? (
@@ -137,8 +140,8 @@ const FilterSidebar = ({
               {/* All Categories Option */}
               <label
                 className={cn(
-                  'flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-200 hover:bg-sage-green/10 touch-target',
-                  filters.category === 'all' && 'bg-sage-green/20 ring-2 ring-sage-green/30'
+                  'flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-200 hover:bg-sage-green/10 dark:hover:bg-dark-sage-accent/10 touch-target',
+                  filters.category === 'all' && 'bg-sage-green/20 dark:bg-dark-sage-accent/20 ring-2 ring-sage-green/30 dark:ring-dark-sage-accent/40'
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -216,6 +219,15 @@ const FilterSidebar = ({
               )}
             </div>
           )}
+        </FilterSection>
+
+        {/* Products Filter */}
+        <FilterSection title="Products" icon={Package} section="products">
+          <ProductFilterAutocomplete
+            selectedCategory={filters.category}
+            selectedProduct={filters.product || 'all'}
+            onProductSelect={(productId) => updateFilter('product', productId)}
+          />
         </FilterSection>
 
         {/* Price Range Filter */}

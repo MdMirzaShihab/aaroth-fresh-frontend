@@ -36,6 +36,7 @@ export const useProductFilters = () => {
     return {
       search: searchParams.get('search') || '',
       category: searchParams.get('category') || 'all',
+      product: searchParams.get('product') || 'all',
       minPrice: searchParams.get('minPrice') || '',
       maxPrice: searchParams.get('maxPrice') || '',
       market: searchParams.get('market') || '',
@@ -79,6 +80,7 @@ export const useProductFilters = () => {
     // Only include non-empty values
     if (filters.search) query.search = filters.search;
     if (filters.category && filters.category !== 'all') query.category = filters.category;
+    if (filters.product && filters.product !== 'all') query.productId = filters.product;
     if (filters.minPrice) query.minPrice = parseFloat(filters.minPrice);
     if (filters.maxPrice) query.maxPrice = parseFloat(filters.maxPrice);
     if (filters.market) query.marketId = filters.market;
@@ -100,6 +102,7 @@ export const useProductFilters = () => {
     return (
       filters.search !== '' ||
       filters.category !== 'all' ||
+      filters.product !== 'all' ||
       filters.minPrice !== '' ||
       filters.maxPrice !== '' ||
       filters.market !== ''
@@ -111,6 +114,7 @@ export const useProductFilters = () => {
     let count = 0;
     if (filters.search) count++;
     if (filters.category && filters.category !== 'all') count++;
+    if (filters.product && filters.product !== 'all') count++;
     if (filters.minPrice || filters.maxPrice) count++;
     if (filters.market) count++;
     return count;
@@ -123,6 +127,8 @@ export const useProductFilters = () => {
         return `Search: "${value}"`;
       case 'category':
         return `Category: ${value}`;
+      case 'product':
+        return `Product: ${value}`;
       case 'minPrice':
         return `Min: ৳${value}`;
       case 'maxPrice':
@@ -140,6 +146,8 @@ export const useProductFilters = () => {
       // Special handling for price range
       updateFilter('minPrice', '');
       updateFilter('maxPrice', '');
+    } else if (key === 'product') {
+      updateFilter('product', 'all');
     } else {
       updateFilter(key, '');
     }

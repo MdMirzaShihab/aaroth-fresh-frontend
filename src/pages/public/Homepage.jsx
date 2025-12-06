@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import {
-  Leaf,
-  Users,
-  ShoppingCart,
-  ArrowRight,
-  Star,
-  TrendingUp,
   Package,
   Filter,
   X,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import {
   useGetFeaturedProductsQuery,
   useGetCategoriesQuery,
 } from '../../store/slices/apiSlice';
+import { toggleTheme, selectThemeMode } from '../../store/slices/themeSlice';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { Card } from '../../components/ui/Card';
 import HeroSection from '../../components/public/HeroSection';
@@ -23,6 +20,14 @@ import FilterSidebar from '../../components/public/FilterSidebar';
 import { useProductFilters } from '../../hooks/useProductFilters';
 
 const Homepage = () => {
+  // Theme management
+  const dispatch = useDispatch();
+  const themeMode = useSelector(selectThemeMode);
+
+  const handleThemeToggle = () => {
+    dispatch(toggleTheme());
+  };
+
   // Mobile filter drawer state
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
@@ -96,7 +101,20 @@ const Homepage = () => {
   }, [showMobileFilters]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-dark-bg transition-colors duration-300 relative">
+      {/* Floating Theme Toggle Button */}
+      <button
+        onClick={handleThemeToggle}
+        className="fixed top-6 right-6 z-50 w-14 h-14 rounded-2xl glass-3 dark:bg-dark-glass-olive border-2 border-white/40 dark:border-dark-sage-accent/40 shadow-depth-2 dark:shadow-dark-depth-2 hover:shadow-glow-olive dark:hover:shadow-dark-glow-olive flex items-center justify-center text-text-dark dark:text-dark-text-primary hover:scale-110 active:scale-95 transition-all duration-300 touch-target group"
+        aria-label={`Switch to ${themeMode === 'light' ? 'dark' : 'light'} mode`}
+      >
+        {themeMode === 'light' ? (
+          <Moon className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+        ) : (
+          <Sun className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+        )}
+      </button>
+
       {/* New Hero Section with Search & Category Filters */}
       <HeroSection
         searchValue={filters.search}
@@ -105,67 +123,14 @@ const Homepage = () => {
         onCategorySelect={(id) => updateFilter('category', id)}
       />
 
-      {/* Features Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-dark mb-4">
-              Why Choose Aaroth Fresh?
-            </h2>
-            <p className="text-xl text-text-muted max-w-2xl mx-auto">
-              We connect buyers with local farmers for the freshest ingredients
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass rounded-3xl p-8 text-center hover:shadow-soft transition-all duration-200">
-              <div className="w-16 h-16 bg-sage-green/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Leaf className="w-8 h-8 text-muted-olive" />
-              </div>
-              <h3 className="text-xl font-semibold text-text-dark mb-4">
-                Farm Fresh
-              </h3>
-              <p className="text-text-muted">
-                Direct from local farms to your kitchen. No middlemen, maximum
-                freshness.
-              </p>
-            </div>
-
-            <div className="glass rounded-3xl p-8 text-center hover:shadow-soft transition-all duration-200">
-              <div className="w-16 h-16 bg-earthy-yellow/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-earthy-brown" />
-              </div>
-              <h3 className="text-xl font-semibold text-text-dark mb-4">
-                Local Vendors
-              </h3>
-              <p className="text-text-muted">
-                Support local farmers and get access to seasonal specialties.
-              </p>
-            </div>
-
-            <div className="glass rounded-3xl p-8 text-center hover:shadow-soft transition-all duration-200">
-              <div className="w-16 h-16 bg-gradient-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <ShoppingCart className="w-8 h-8 text-muted-olive" />
-              </div>
-              <h3 className="text-xl font-semibold text-text-dark mb-4">
-                Easy Ordering
-              </h3>
-              <p className="text-text-muted">
-                Simple ordering process with reliable delivery to your buyer.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Featured Products Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 px-4 bg-white dark:bg-dark-bg transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-dark mb-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-text-dark dark:text-dark-text-primary mb-4 transition-colors duration-300">
               Featured Products
             </h2>
-            <p className="text-xl text-text-muted max-w-2xl mx-auto">
+            <p className="text-lg text-text-muted dark:text-dark-text-muted max-w-2xl mx-auto transition-colors duration-300">
               Discover premium quality produce from our verified vendors
             </p>
           </div>
@@ -188,11 +153,12 @@ const Homepage = () => {
           {!featuredLoading &&
             !featuredError &&
             featuredProducts.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {featuredProducts.slice(0, 6).map((product) => (
+              <div className="flex lg:grid overflow-x-auto lg:overflow-visible snap-x snap-mandatory scrollbar-hide lg:grid-cols-4 gap-6 pb-4 lg:pb-0">
+                {featuredProducts.slice(0, 4).map((product, index) => (
                   <Card
                     key={product.id}
-                    className="overflow-hidden hover:shadow-lg transition-all duration-200"
+                    className="glass-3 dark:bg-dark-glass-olive border-2 border-white/30 dark:border-dark-sage-accent/30 shadow-depth-3 dark:shadow-dark-depth-2 overflow-hidden hover:shadow-glow-olive dark:hover:shadow-dark-glow-olive hover:-translate-y-3 hover:scale-105 transition-all duration-500 snap-center flex-shrink-0 w-80 lg:w-auto animate-fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="aspect-video bg-gradient-to-br from-sage-green/20 to-muted-olive/20 rounded-t-2xl relative overflow-hidden">
                       {product.images && product.images.length > 0 ? (
@@ -212,30 +178,30 @@ const Homepage = () => {
                     </div>
 
                     <div className="p-6">
-                      <h3 className="text-xl font-semibold text-text-dark mb-2">
+                      <h3 className="text-xl font-semibold text-text-dark dark:text-dark-text-primary mb-2 transition-colors duration-300">
                         {product.name}
                       </h3>
-                      <p className="text-text-muted mb-4">
+                      <p className="text-text-muted dark:text-dark-text-muted mb-4 transition-colors duration-300">
                         {product.category?.name || 'Fresh Produce'}
                       </p>
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-lg font-bold text-muted-olive">
+                          <span className="text-lg font-bold text-muted-olive dark:text-dark-sage-accent transition-colors duration-300">
                             {product.averagePrice
                               ? `৳${product.averagePrice.toFixed(2)}`
                               : 'Price on request'}
                           </span>
-                          <span className="text-sm text-text-muted">
+                          <span className="text-sm text-text-muted dark:text-dark-text-muted transition-colors duration-300">
                             per {product.unit}
                           </span>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-text-muted">
+                          <div className="text-sm text-text-muted dark:text-dark-text-muted transition-colors duration-300">
                             {product.vendorName}
                           </div>
                           {product.qualityGrade && (
-                            <div className="text-xs text-muted-olive mt-1">
+                            <div className="text-xs text-muted-olive dark:text-dark-sage-accent mt-1 transition-colors duration-300">
                               {product.qualityGrade}
                             </div>
                           )}
@@ -257,32 +223,29 @@ const Homepage = () => {
                 </p>
               </div>
             )}
-
-          {/* View All Products Button */}
-          <div className="text-center mt-12">
-            <a
-              href="#browse-all-products"
-              className="inline-flex items-center gap-2 bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-lg transition-all duration-200 touch-target"
-            >
-              View All Products
-              <ArrowRight className="w-5 h-5" />
-            </a>
-          </div>
         </div>
       </section>
 
-      {/* Browse All Products Section - NEW */}
+      {/* Browse All Products Section - MAIN FOCUS */}
       <section
         id="browse-all-products"
-        className="py-20 px-4 bg-gradient-to-br from-sage-green/5 to-earthy-beige/20"
+        className="relative py-20 px-4 bg-gradient-to-br from-sage-green/5 via-white to-earthy-beige/10 dark:from-dark-sage-accent/5 dark:via-dark-bg dark:to-dark-olive-bg/20 overflow-hidden transition-colors duration-300"
       >
-        <div className="max-w-7xl mx-auto">
+        {/* Floating Background Orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-sage-green/10 dark:bg-dark-sage-accent/10 rounded-full blur-3xl animate-float" />
+          <div
+            className="absolute bottom-20 right-10 w-96 h-96 bg-muted-olive/5 dark:bg-dark-cedar-warm/8 rounded-full blur-3xl animate-float"
+            style={{ animationDelay: '1s', animationDuration: '4s' }}
+          />
+        </div>
+        <div className="relative max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-dark mb-4">
-              Browse All Products
+            <h2 className="text-3xl md:text-4xl font-bold text-text-dark dark:text-dark-text-primary mb-4 transition-colors duration-300">
+              Explore Fresh Produce
             </h2>
-            <p className="text-xl text-text-muted max-w-2xl mx-auto">
-              Explore our full catalog with advanced filtering
+            <p className="text-lg text-text-muted dark:text-dark-text-muted max-w-2xl mx-auto transition-colors duration-300">
+              Browse thousands of products with smart filtering
             </p>
           </div>
 
@@ -404,139 +367,9 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Categories Preview Section */}
-      {categories.length > 0 && (
-        <section className="py-20 px-4 bg-gradient-to-br from-sage-green/5 to-earthy-beige/20">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-text-dark mb-4">
-                Product Categories
-              </h2>
-              <p className="text-xl text-text-muted max-w-2xl mx-auto">
-                Browse by category to find exactly what you need
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {categories.slice(0, 8).map((category) => (
-                <Link
-                  key={category.id}
-                  to="/products"
-                  className="glass rounded-3xl p-6 text-center hover:shadow-soft transition-all duration-200 group"
-                >
-                  <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
-                    <Leaf className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-text-dark mb-2">
-                    {category.name}
-                  </h3>
-                  <p className="text-sm text-text-muted">
-                    {category.productCount || 0} products
-                  </p>
-                </Link>
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <Link
-                to="/products"
-                className="inline-flex items-center gap-2 text-muted-olive hover:text-muted-olive/80 font-medium transition-colors"
-              >
-                View All Categories
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Stats Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-dark mb-4">
-              Growing Every Day
-            </h2>
-            <p className="text-xl text-text-muted max-w-2xl mx-auto">
-              Join our thriving marketplace community
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div className="glass rounded-3xl p-8">
-              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-4xl font-bold text-muted-olive mb-2">
-                {categories.length > 0
-                  ? categories.reduce(
-                      (total, cat) => total + (cat.productCount || 0),
-                      0
-                    ) || categories.length * 10
-                  : '150+'}
-              </div>
-              <div className="text-text-muted">Local Vendors</div>
-            </div>
-            <div className="glass rounded-3xl p-8">
-              <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <ShoppingCart className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-4xl font-bold text-muted-olive mb-2">5+</div>
-              <div className="text-text-muted">Buyers</div>
-            </div>
-            <div className="glass rounded-3xl p-8">
-              <div className="w-16 h-16 bg-sage-green/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-muted-olive" />
-              </div>
-              <div className="text-4xl font-bold text-muted-olive mb-2">
-                100+
-              </div>
-              <div className="text-text-muted">Orders Delivered</div>
-            </div>
-            <div className="glass rounded-3xl p-8">
-              <div className="w-16 h-16 bg-earthy-yellow/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-earthy-brown" />
-              </div>
-              <div className="text-4xl font-bold text-muted-olive mb-2">
-                4.8
-              </div>
-              <div className="text-text-muted flex items-center justify-center gap-1">
-                <Star className="w-4 h-4 text-earthy-yellow fill-current" />
-                Rating
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="glass rounded-3xl p-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-text-dark mb-4">
-              Ready to Get Fresh?
-            </h2>
-            <p className="text-xl text-text-muted mb-8">
-              Join hundreds of buyers already using Aaroth Fresh
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/register"
-                className="bg-gradient-primary text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center gap-2 justify-center touch-target"
-              >
-                Start Ordering
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/vendors"
-                className="bg-gradient-secondary text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center gap-2 justify-center touch-target"
-              >
-                Become a Vendor
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Stats Section - REMOVED */}
+      {/* Categories Preview Section - REMOVED */}
+      {/* Final CTA Section - REMOVED */}
     </div>
   );
 };

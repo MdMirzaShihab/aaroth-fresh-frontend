@@ -84,7 +84,7 @@ const ProductCard = ({
 
   return (
     <Card
-      className={`overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group ${className}`}
+      className={`glass-2 dark:bg-dark-glass-olive border border-white/20 dark:border-dark-sage-accent/20 shadow-soft dark:shadow-dark-depth-1 overflow-hidden hover:shadow-glow-sage dark:hover:shadow-dark-glow-olive hover:-translate-y-2 hover:border-sage-green/30 dark:hover:border-dark-sage-accent/50 transition-all duration-400 cursor-pointer group ${className}`}
       onClick={onClick}
     >
       {/* Product Image */}
@@ -127,7 +127,7 @@ const ProductCard = ({
 
         {/* Vendor count */}
         <div className="absolute top-3 right-3">
-          <span className="bg-white/90 backdrop-blur-sm text-muted-olive text-xs px-2 py-1 rounded-full font-medium">
+          <span className="bg-white/90 dark:bg-dark-glass-olive backdrop-blur-sm text-muted-olive dark:text-dark-sage-accent text-xs px-2 py-1 rounded-full font-medium border border-transparent dark:border-dark-sage-accent/30 transition-colors duration-300">
             {product.activeListingsCount || product.vendorCount || 0} vendors
           </span>
         </div>
@@ -149,17 +149,17 @@ const ProductCard = ({
       <div className="p-4">
         {/* Product Name & Category */}
         <div className="mb-3">
-          <h3 className="font-semibold text-text-dark mb-1 group-hover:text-muted-olive transition-colors line-clamp-2">
+          <h3 className="font-semibold text-text-dark dark:text-dark-text-primary mb-1 group-hover:text-muted-olive dark:group-hover:text-dark-sage-accent transition-colors line-clamp-2">
             {product.name}
           </h3>
-          <p className="text-text-muted text-sm">
+          <p className="text-text-muted dark:text-dark-text-muted text-sm transition-colors duration-300">
             {product.category?.name || 'Fresh Produce'}
             {product.variety && (
-              <span className="text-text-muted/60"> • {product.variety}</span>
+              <span className="text-text-muted/60 dark:text-dark-text-muted/60"> • {product.variety}</span>
             )}
           </p>
           {product.origin && (
-            <p className="text-text-muted/80 text-xs flex items-center gap-1 mt-1">
+            <p className="text-text-muted/80 dark:text-dark-text-muted/80 text-xs flex items-center gap-1 mt-1 transition-colors duration-300">
               <MapPin className="w-3 h-3" />
               {product.origin}
             </p>
@@ -171,11 +171,11 @@ const ProductCard = ({
           <div className="flex items-center justify-between mb-1">
             {product.priceRange ? (
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-muted-olive">
+                <span className="text-lg font-bold text-muted-olive dark:text-dark-sage-accent transition-colors duration-300">
                   {formatPrice(product.priceRange.min)} -{' '}
                   {formatPrice(product.priceRange.max)}
                 </span>
-                <span className="text-xs text-text-muted">
+                <span className="text-xs text-text-muted dark:text-dark-text-muted transition-colors duration-300">
                   per {product.standardUnits?.[0]?.name || 'unit'}
                 </span>
               </div>
