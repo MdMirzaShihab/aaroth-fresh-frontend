@@ -118,11 +118,6 @@ const ProductGrid = ({
     setCurrentPage(1);
     setHasMore(true);
     setAllProducts([]);
-
-    // Scroll to top on filter change for better UX
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
   }, [
     filters.search,
     filters.category,

@@ -361,6 +361,10 @@ export default {
           minHeight: '44px',
           minWidth: '44px',
         },
+        '.touch-target-large': {
+          minHeight: '48px',
+          minWidth: '48px',
+        },
 
         // Professional Shadows
         '.professional-shadow': {

@@ -65,12 +65,16 @@ export const useProductFilters = () => {
       newParams.set('page', '1');
     }
 
-    setSearchParams(newParams);
+    // Prevent React Router from scrolling to top on URL changes
+    setSearchParams(newParams, {
+      replace: true,
+      preventScrollReset: true
+    });
   };
 
   // Clear all filters
   const clearFilters = () => {
-    setSearchParams({});
+    setSearchParams({}, { replace: true, preventScrollReset: true });
   };
 
   // Build API query object from filters
