@@ -27,6 +27,8 @@ import {
   useGetBuyerBudgetQuery
 } from '../../store/slices/apiSlice';
 import { formatCurrency, formatPhoneForDisplay } from '../../utils';
+import ControlledBDAddressForm from '../../components/address/ControlledBDAddressForm';
+import { formatBDAddress } from '../../utils/addressFormatter';
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
@@ -34,14 +36,29 @@ const PlaceOrder = () => {
   const { items: cartItems, total } = useSelector(selectCart);
   const { user } = useSelector(selectAuth);
 
+  // Helper to extract address from user profile (handles both populated and ObjectId references)
+  const extractUserAddress = () => {
+    const addr = user?.buyerAddress || {};
+    return {
+      division: addr.division?._id || addr.division || '',
+      district: addr.district?._id || addr.district || '',
+      upazila: addr.upazila?._id || addr.upazila || '',
+      union: addr.union?._id || addr.union || '',
+      street: addr.street || '',
+      landmark: addr.landmark || '',
+      postalCode: addr.postalCode || '',
+    };
+  };
+
   // State management
   const [deliveryInfo, setDeliveryInfo] = useState({
-    address: user?.buyerAddress || '',
+    address: extractUserAddress(),
     phone: user?.phone || '',
     notes: '',
     preferredDeliveryTime: 'asap',
     customDeliveryTime: '',
   });
+  const [addressErrors, setAddressErrors] = useState({});
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [step, setStep] = useState(1); // 1: Cart Review, 2: Delivery, 3: Payment, 4: Confirmation
 
@@ -84,6 +101,33 @@ const PlaceOrder = () => {
     dispatch(removeFromCart(itemId));
   };
 
+  // Validate delivery address
+  const validateDeliveryAddress = () => {
+    const errors = {};
+    const addr = deliveryInfo.address;
+
+    if (!addr.division) errors.division = 'Division is required';
+    if (!addr.district) errors.district = 'District is required';
+    if (!addr.upazila) errors.upazila = 'Upazila is required';
+    if (!addr.street || addr.street.trim().length < 5) {
+      errors.street = 'Street address must be at least 5 characters';
+    }
+    if (!addr.postalCode || !/^\d{4}$/.test(addr.postalCode)) {
+      errors.postalCode = 'Valid 4-digit postal code is required';
+    }
+
+    setAddressErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Handle step 2 to 3 transition with validation
+  const handleContinueToPayment = () => {
+    if (!validateDeliveryAddress() || !deliveryInfo.phone) {
+      return;
+    }
+    setStep(3);
+  };
+
   const handleSubmitOrder = async () => {
     if (cartItems.length === 0) return;
 
@@ -95,7 +139,15 @@ const PlaceOrder = () => {
           price: item.price,
           vendorId: item.vendorId,
         })),
-        deliveryAddress: deliveryInfo.address,
+        deliveryAddress: {
+          division: deliveryInfo.address.division,
+          district: deliveryInfo.address.district,
+          upazila: deliveryInfo.address.upazila,
+          union: deliveryInfo.address.union || undefined,
+          street: deliveryInfo.address.street,
+          landmark: deliveryInfo.address.landmark || undefined,
+          postalCode: deliveryInfo.address.postalCode,
+        },
         phone: deliveryInfo.phone,
         notes: deliveryInfo.notes,
         preferredDeliveryTime:
@@ -318,23 +370,24 @@ const PlaceOrder = () => {
               </h2>
 
               <div className="space-y-6">
-                {/* Delivery Address */}
-                <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
+                {/* Delivery Address - BD Address Form */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-text-dark dark:text-dark-text-primary flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-olive" />
                     Delivery Address
-                  </label>
-                  <textarea
-                    value={deliveryInfo.address}
-                    onChange={(e) =>
+                  </h3>
+                  <ControlledBDAddressForm
+                    address={deliveryInfo.address}
+                    onAddressChange={(newAddress) =>
                       setDeliveryInfo((prev) => ({
                         ...prev,
-                        address: e.target.value,
+                        address: newAddress,
                       }))
                     }
-                    placeholder="Enter your complete delivery address"
-                    rows={3}
-                    className="w-full px-4 py-3 glass-layer-1 dark:glass-1-dark border-0 rounded-2xl focus:outline-none focus:glass-layer-2 dark:focus:glass-2-dark focus:shadow-glow-green/20 dark:focus:shadow-dark-sage-accent/20 transition-all duration-300 placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60 text-text-dark dark:text-dark-text-primary"
-                    required
+                    errors={addressErrors}
+                    required={true}
+                    includeUnion={true}
+                    includeLandmark={true}
                   />
                 </div>
 
@@ -447,8 +500,8 @@ const PlaceOrder = () => {
                   Back to Cart
                 </button>
                 <button
-                  onClick={() => setStep(3)}
-                  disabled={!deliveryInfo.address || !deliveryInfo.phone}
+                  onClick={handleContinueToPayment}
+                  disabled={!deliveryInfo.address.division || !deliveryInfo.phone}
                   className="bg-gradient-primary text-white px-6 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
                 >
                   Continue to Payment
@@ -585,7 +638,7 @@ const PlaceOrder = () => {
                     <div className="flex items-start gap-2">
                       <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                       <span className="text-text-muted dark:text-dark-text-muted">
-                        {deliveryInfo.address}
+                        {formatBDAddress(deliveryInfo.address)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">

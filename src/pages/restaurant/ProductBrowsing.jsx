@@ -34,6 +34,7 @@ import {
   selectComparisonCount,
 } from '../../store/slices/comparisonSlice';
 import { formatCurrency, debounce } from '../../utils';
+import { formatShortAddress } from '../../utils/addressFormatter';
 import BulkOrderModal from '../../components/buyer/BulkOrderModal';
 import MarketSelector from '../../components/common/MarketSelector';
 import { useMarketFilter } from '../../utils/urlState';
@@ -143,7 +144,7 @@ const ProductBrowsing = () => {
 
         // Vendor properties (from nested object)
         vendorName: vendor.businessName || vendor.name || listing.vendorName,
-        vendorLocation: vendor.address?.city || vendor.location,
+        vendorLocation: formatShortAddress(vendor.address) || vendor.location || 'Not specified',
         vendorRating: vendor.rating?.average || 0,
 
         // Additional useful properties

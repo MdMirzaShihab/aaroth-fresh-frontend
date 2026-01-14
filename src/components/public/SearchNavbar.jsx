@@ -104,7 +104,7 @@ const SearchNavbar = ({
 
         {/* Category Pills */}
         {!categoriesLoading && topCategories.length > 0 && (
-          <div className="flex overflow-x-auto gap-3 justify-start md:justify-center scrollbar-hide snap-x snap-mandatory pb-2">
+          <div className="flex overflow-x-auto gap-3 justify-start md:justify-center scrollbar-hide snap-x snap-mandatory p-2">
             <button
               onClick={() => onCategorySelect && onCategorySelect('all')}
               className={cn(

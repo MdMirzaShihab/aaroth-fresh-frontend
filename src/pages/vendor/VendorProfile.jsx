@@ -19,6 +19,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import { selectAuth } from '../../store/slices/authSlice';
+import ControlledBDAddressForm from '../../components/address/ControlledBDAddressForm';
+import { extractAddressIds } from '../../utils/addressFormatter';
 
 const VendorProfile = () => {
   const { user } = useSelector(selectAuth);
@@ -36,11 +38,13 @@ const VendorProfile = () => {
     description: user?.vendor?.description || '',
     specialties: user?.vendor?.specialties || [],
     businessAddress: user?.vendor?.businessAddress || {
+      division: '',
+      district: '',
+      upazila: '',
+      union: '',
       street: '',
-      city: '',
-      area: '',
-      postalCode: '',
       landmark: '',
+      postalCode: '',
     },
     contactPerson: user?.vendor?.contactPerson || '',
     phone: user?.vendor?.phone || user?.phone || '',
@@ -80,13 +84,10 @@ const VendorProfile = () => {
     }));
   };
 
-  const handleAddressChange = (field, value) => {
+  const handleAddressChange = (newAddress) => {
     setVendorData((prev) => ({
       ...prev,
-      businessAddress: {
-        ...prev.businessAddress,
-        [field]: value,
-      },
+      businessAddress: newAddress,
     }));
   };
 
@@ -148,13 +149,25 @@ const VendorProfile = () => {
         return;
       }
 
-      if (!vendorData.businessAddress.street || !vendorData.businessAddress.city) {
-        alert('Complete business address is required');
+      if (
+        !vendorData.businessAddress.division ||
+        !vendorData.businessAddress.district ||
+        !vendorData.businessAddress.upazila ||
+        !vendorData.businessAddress.street ||
+        !vendorData.businessAddress.postalCode
+      ) {
+        alert('Complete business address is required (division, district, upazila, street, postal code)');
         return;
       }
 
+      // Extract ObjectIds from address (in case backend sent populated refs)
+      const vendorDataToSend = {
+        ...vendorData,
+        businessAddress: extractAddressIds(vendorData.businessAddress),
+      };
+
       // In production: Call API mutation
-      // await updateVendorProfile(vendorData).unwrap();
+      // await updateVendorProfile(vendorDataToSend).unwrap();
 
       setIsEditing(false);
       alert('Profile updated successfully');
@@ -398,73 +411,14 @@ const VendorProfile = () => {
                 <MapPin className="w-5 h-5 text-muted-olive" />
                 Business Address
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-text-dark mb-2">
-                    Street Address *
-                  </label>
-                  <input
-                    type="text"
-                    value={vendorData.businessAddress.street}
-                    onChange={(e) => handleAddressChange('street', e.target.value)}
-                    disabled={!isEditing}
-                    className="w-full px-4 py-3 rounded-2xl glass-layer-2 border border-sage-green/20 focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 disabled:opacity-60 transition-all duration-200"
-                    placeholder="Enter street address"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
-                    City *
-                  </label>
-                  <input
-                    type="text"
-                    value={vendorData.businessAddress.city}
-                    onChange={(e) => handleAddressChange('city', e.target.value)}
-                    disabled={!isEditing}
-                    className="w-full px-4 py-3 rounded-2xl glass-layer-2 border border-sage-green/20 focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 disabled:opacity-60 transition-all duration-200"
-                    placeholder="Enter city"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
-                    Area/Locality
-                  </label>
-                  <input
-                    type="text"
-                    value={vendorData.businessAddress.area}
-                    onChange={(e) => handleAddressChange('area', e.target.value)}
-                    disabled={!isEditing}
-                    className="w-full px-4 py-3 rounded-2xl glass-layer-2 border border-sage-green/20 focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 disabled:opacity-60 transition-all duration-200"
-                    placeholder="Enter area"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
-                    Postal Code
-                  </label>
-                  <input
-                    type="text"
-                    value={vendorData.businessAddress.postalCode}
-                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                    disabled={!isEditing}
-                    className="w-full px-4 py-3 rounded-2xl glass-layer-2 border border-sage-green/20 focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 disabled:opacity-60 transition-all duration-200"
-                    placeholder="Enter postal code"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2">
-                    Landmark
-                  </label>
-                  <input
-                    type="text"
-                    value={vendorData.businessAddress.landmark}
-                    onChange={(e) => handleAddressChange('landmark', e.target.value)}
-                    disabled={!isEditing}
-                    className="w-full px-4 py-3 rounded-2xl glass-layer-2 border border-sage-green/20 focus:border-muted-olive focus:ring-2 focus:ring-muted-olive/20 disabled:opacity-60 transition-all duration-200"
-                    placeholder="Nearby landmark"
-                  />
-                </div>
-              </div>
+              <ControlledBDAddressForm
+                address={vendorData.businessAddress}
+                onAddressChange={handleAddressChange}
+                disabled={!isEditing}
+                required={true}
+                includeUnion={true}
+                includeLandmark={true}
+              />
             </div>
           </div>
         )}

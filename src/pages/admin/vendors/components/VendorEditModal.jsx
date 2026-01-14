@@ -6,6 +6,7 @@ import Button from '../../../../components/ui/Button';
 import { useUpdateVendorMutation } from '../../../../services/admin/vendorsService';
 import { useGetAdminMarketsQuery } from '../../../../store/slices/admin/adminApiSlice';
 import toast from 'react-hot-toast';
+import ControlledBDAddressForm from '../../../../components/address/ControlledBDAddressForm';
 
 const VendorEditModal = ({
   vendor,
@@ -14,22 +15,32 @@ const VendorEditModal = ({
   onVendorUpdate,
   isLoading = false,
 }) => {
+  // Helper to extract BD address from vendor (handles both populated and ObjectId references)
+  const extractVendorAddress = (vendorData) => {
+    const addr = vendorData?.address || {};
+    return {
+      division: addr.division?._id || addr.division || '',
+      district: addr.district?._id || addr.district || '',
+      upazila: addr.upazila?._id || addr.upazila || '',
+      union: addr.union?._id || addr.union || '',
+      street: addr.street || '',
+      landmark: addr.landmark || '',
+      postalCode: addr.postalCode || '',
+    };
+  };
+
   const [formData, setFormData] = useState({
     businessName: vendor?.businessName || '',
     businessType: vendor?.businessType || '',
     businessDescription: vendor?.businessDescription || '',
     email: vendor?.email || '',
     phone: vendor?.phone || '',
-    address: {
-      street: vendor?.address?.street || '',
-      city: vendor?.address?.city || '',
-      state: vendor?.address?.state || '',
-      postalCode: vendor?.address?.postalCode || '',
-    },
+    address: extractVendorAddress(vendor),
     businessRegistrationNumber: vendor?.businessRegistrationNumber || '',
     businessLicenseNumber: vendor?.businessLicenseNumber || '',
     yearsInBusiness: vendor?.yearsInBusiness || '',
   });
+  const [addressErrors, setAddressErrors] = useState({});
 
   const [selectedMarkets, setSelectedMarkets] = useState([]);
 
@@ -60,14 +71,12 @@ const VendorEditModal = ({
     }));
   }, []);
 
-  const handleAddressChange = useCallback((field, value) => {
+  const handleAddressChange = useCallback((newAddress) => {
     setFormData(prev => ({
       ...prev,
-      address: {
-        ...prev.address,
-        [field]: value,
-      },
+      address: newAddress,
     }));
+    setAddressErrors({});
   }, []);
 
   const handleMarketToggle = (marketId) => {
@@ -282,52 +291,14 @@ const VendorEditModal = ({
                       <MapPin className="w-5 h-5 text-muted-olive" />
                       Address Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-text-dark mb-2">
-                          Street Address
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.address.street}
-                          onChange={(e) => handleAddressChange('street', e.target.value)}
-                          className="w-full p-3 rounded-2xl border border-white/20 bg-white/5 backdrop-blur-sm focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10 text-text-dark placeholder-text-muted"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-text-dark mb-2">
-                          City
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.address.city}
-                          onChange={(e) => handleAddressChange('city', e.target.value)}
-                          className="w-full p-3 rounded-2xl border border-white/20 bg-white/5 backdrop-blur-sm focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10 text-text-dark placeholder-text-muted"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-text-dark mb-2">
-                          State/Province
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.address.state}
-                          onChange={(e) => handleAddressChange('state', e.target.value)}
-                          className="w-full p-3 rounded-2xl border border-white/20 bg-white/5 backdrop-blur-sm focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10 text-text-dark placeholder-text-muted"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-text-dark mb-2">
-                          Postal Code
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.address.postalCode}
-                          onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                          className="w-full p-3 rounded-2xl border border-white/20 bg-white/5 backdrop-blur-sm focus:border-muted-olive/50 focus:ring-2 focus:ring-muted-olive/10 text-text-dark placeholder-text-muted"
-                        />
-                      </div>
-                    </div>
+                    <ControlledBDAddressForm
+                      address={formData.address}
+                      onAddressChange={handleAddressChange}
+                      errors={addressErrors}
+                      required={true}
+                      includeUnion={true}
+                      includeLandmark={true}
+                    />
                   </div>
 
                   {/* Market Selection */}

@@ -98,7 +98,8 @@ const MarketSelector = ({
               {market.name}
             </p>
             <p className="text-xs text-text-muted dark:text-gray-400">
-              {market.location?.city || 'Location'}
+              {market.location?.district?.name?.en || market.location?.city || 'Location'}
+              {market.location?.division?.name?.en && `, ${market.location.division.name.en}`}
             </p>
           </div>
         </div>
@@ -164,7 +165,8 @@ const MarketSelector = ({
 
           {markets?.map((market) => (
             <option key={market._id} value={market._id}>
-              {market.name} - {market.location?.city || 'Location'}
+              {market.name} - {market.location?.district?.name?.en || market.location?.city || 'Location'}
+              {market.location?.division?.name?.en && `, ${market.location.division.name.en}`}
             </option>
           ))}
         </select>

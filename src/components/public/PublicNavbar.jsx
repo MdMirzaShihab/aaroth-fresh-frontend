@@ -89,18 +89,18 @@ const PublicNavbar = ({ themeMode = 'light', onThemeToggle, className }) => {
               )}
             </button>
 
-            {/* Sign In Link */}
+            {/* Sign In Button - Always visible (priority) */}
             <button
               onClick={() => navigate('/login')}
-              className="hidden sm:flex px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-medium text-muted-olive dark:text-dark-text-primary bg-white/60 dark:bg-dark-glass-olive backdrop-blur-xl hover:bg-white/80 dark:hover:bg-dark-glass-sage hover:shadow-soft dark:hover:shadow-dark-depth-2 border-2 border-sage-green/20 dark:border-dark-sage-accent/25 hover:border-sage-green/30 dark:hover:border-dark-sage-accent/35 transition-all duration-200 touch-target"
+              className="bg-gradient-secondary text-white px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-semibold shadow-soft hover:shadow-depth-3 dark:shadow-dark-depth-1 dark:hover:shadow-dark-glow-olive hover:scale-105 active:scale-100 transition-all duration-200 touch-target text-sm md:text-base border-2 border-white/20 dark:border-dark-sage-accent/30 backdrop-blur-sm"
             >
               Sign In
             </button>
 
-            {/* Sign Up Button */}
+            {/* Sign Up Link - Hidden on mobile */}
             <button
               onClick={() => navigate('/register')}
-              className="bg-gradient-secondary text-white px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-semibold shadow-soft hover:shadow-depth-3 dark:shadow-dark-depth-1 dark:hover:shadow-dark-glow-olive hover:scale-105 active:scale-100 transition-all duration-200 touch-target text-sm md:text-base border-2 border-white/20 dark:border-dark-sage-accent/30 backdrop-blur-sm"
+              className="hidden sm:flex px-4 md:px-6 py-2 md:py-2.5 rounded-2xl font-medium text-muted-olive dark:text-dark-text-primary bg-white/60 dark:bg-dark-glass-olive backdrop-blur-xl hover:bg-white/80 dark:hover:bg-dark-glass-sage hover:shadow-soft dark:hover:shadow-dark-depth-2 border-2 border-sage-green/20 dark:border-dark-sage-accent/25 hover:border-sage-green/30 dark:hover:border-dark-sage-accent/35 transition-all duration-200 touch-target"
             >
               Sign Up
             </button>

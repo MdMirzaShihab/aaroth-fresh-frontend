@@ -23,6 +23,7 @@ import {
 import { useGetListingByIdQuery } from '../../store/slices/apiSlice';
 import { addToCart } from '../../store/slices/cartSlice';
 import { formatCurrency } from '../../utils';
+import { formatShortAddress } from '../../utils/addressFormatter';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const ProductDetail = () => {
@@ -317,7 +318,7 @@ const ProductDetail = () => {
                 </p>
                 <p className="text-text-muted dark:text-gray-300 text-sm flex items-center gap-1">
                   <MapPin className="w-3 h-3" />
-                  {vendor.address?.city || 'Local Vendor'}
+                  {formatShortAddress(vendor.address) || 'Local Vendor'}
                 </p>
               </div>
             </div>

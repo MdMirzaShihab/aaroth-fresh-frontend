@@ -4,6 +4,7 @@
  */
 
 import { format } from 'date-fns';
+import { formatBDAddress } from '../../utils/addressFormatter';
 
 /**
  * Transform buyer data for admin management
@@ -20,7 +21,7 @@ export const transformBuyersData = (rawData) => {
     cuisineType: buyer.cuisineType || 'Not specified',
     verificationStatus: buyer.verificationStatus || 'pending',
     isActive: buyer.isActive,
-    location: formatAddress(buyer.address),
+    location: formatBDAddress(buyer.address),
     businessLicense: buyer.businessLicense,
     totalOrders: buyer.totalOrders || 0,
     totalSpent: buyer.totalSpent || 0,
@@ -42,21 +43,6 @@ export const transformBuyersData = (rawData) => {
     managersCount: buyer.managersCount || 0,
     availableActions: getBuyerActions(buyer),
   }));
-};
-
-/**
- * Format business address for display
- */
-export const formatAddress = (address) => {
-  if (!address) return 'Not provided';
-
-  const parts = [];
-  if (address.street) parts.push(address.street);
-  if (address.city) parts.push(address.city);
-  if (address.state) parts.push(address.state);
-  if (address.zipCode) parts.push(address.zipCode);
-
-  return parts.join(', ');
 };
 
 /**

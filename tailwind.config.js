@@ -3,6 +3,14 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class', // Enable class-based dark mode
   theme: {
+    screens: {
+      'xs': '475px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         // Primary Colors (Minimalistic Earth-Tech Fusion)
@@ -12,11 +20,14 @@ export default {
         'earthy-tan': '#E6D5B8',
 
         // Secondary Colors (Sophisticated Olive-Centered Palette)
+        'bottle-green': '#5A7052', // Rich bottle green for headings and accents
+        'mint-fresh': '#A8D5BA', // Fresh mint for success states and highlights
         'muted-olive': '#7f8966', // Primary secondary (unchanged)
         'sage-green': '#9CAF88', // Lighter, softer complement to muted-olive
         'dusty-cedar': '#A0826D', // Warm earth tone that bridges olive and brown tones
 
         // Utility Colors (Enhanced Futuristic Neutrals)
+        'background': '#FAF8F3', // Main background color (warm off-white)
         'text-dark': '#3A2A1F',
         'text-light': '#FFFFFF',
         'text-muted': '#6B7280',

@@ -14,22 +14,34 @@ import {
 } from 'lucide-react';
 import { selectAuth } from '../../store/slices/authSlice';
 import { useUpdateBuyerProfileMutation } from '../../store/slices/apiSlice';
+import ControlledBDAddressForm from '../../components/address/ControlledBDAddressForm';
+import { formatBDAddress } from '../../utils/addressFormatter';
 
 const BuyerProfile = () => {
   const { user } = useSelector(selectAuth);
 
+  // Helper to extract BD address from user profile (handles both populated and ObjectId references)
+  const extractBuyerAddress = () => {
+    const addr = user?.buyer?.buyerAddress || {};
+    return {
+      division: addr.division?._id || addr.division || '',
+      district: addr.district?._id || addr.district || '',
+      upazila: addr.upazila?._id || addr.upazila || '',
+      union: addr.union?._id || addr.union || '',
+      street: addr.street || '',
+      landmark: addr.landmark || '',
+      postalCode: addr.postalCode || '',
+    };
+  };
+
   // State management
   const [isEditing, setIsEditing] = useState(false);
+  const [addressErrors, setAddressErrors] = useState({});
 
   // Buyer profile form state - only buyer business data
   const [buyerData, setBuyerData] = useState({
     buyerName: user?.buyer?.buyerName || '',
-    buyerAddress: user?.buyer?.buyerAddress || {
-      street: '',
-      city: '',
-      area: '',
-      postalCode: '',
-    },
+    buyerAddress: extractBuyerAddress(),
     buyerType: user?.buyer?.buyerType || '',
     description: user?.buyer?.description || '',
     operatingHours: user?.buyer?.operatingHours || {
@@ -47,6 +59,25 @@ const BuyerProfile = () => {
   const [updateBuyerProfile, { isLoading: isUpdating }] =
     useUpdateBuyerProfileMutation();
 
+  // Validate BD address
+  const validateAddress = () => {
+    const errors = {};
+    const addr = buyerData.buyerAddress;
+
+    if (!addr.division) errors.division = 'Division is required';
+    if (!addr.district) errors.district = 'District is required';
+    if (!addr.upazila) errors.upazila = 'Upazila is required';
+    if (!addr.street || addr.street.trim().length < 5) {
+      errors.street = 'Street address must be at least 5 characters';
+    }
+    if (!addr.postalCode || !/^\d{4}$/.test(addr.postalCode)) {
+      errors.postalCode = 'Valid 4-digit postal code is required';
+    }
+
+    setAddressErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleBuyerSave = async () => {
     try {
       // Validate required fields
@@ -55,17 +86,25 @@ const BuyerProfile = () => {
         return;
       }
 
-      if (
-        !buyerData.buyerAddress.street ||
-        !buyerData.buyerAddress.city
-      ) {
-        alert('Buyer address is required');
+      if (!validateAddress()) {
+        alert('Please complete all required address fields');
         return;
       }
 
-      // Send only buyer-specific data to the API
+      // Send only buyer-specific data to the API with BD address format
       await updateBuyerProfile({
-        buyer: buyerData,
+        buyer: {
+          ...buyerData,
+          buyerAddress: {
+            division: buyerData.buyerAddress.division,
+            district: buyerData.buyerAddress.district,
+            upazila: buyerData.buyerAddress.upazila,
+            union: buyerData.buyerAddress.union || undefined,
+            street: buyerData.buyerAddress.street,
+            landmark: buyerData.buyerAddress.landmark || undefined,
+            postalCode: buyerData.buyerAddress.postalCode,
+          },
+        },
       }).unwrap();
 
       setIsEditing(false);
@@ -209,98 +248,31 @@ const BuyerProfile = () => {
 
           {/* Buyer Address */}
           <div>
-            <h4 className="text-lg font-semibold text-text-dark mb-4">
+            <h4 className="text-lg font-semibold text-text-dark dark:text-dark-text-primary mb-4 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-muted-olive" />
               Buyer Address
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-text-dark mb-2">
-                  Street Address *
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    value={buyerData.buyerAddress?.street || ''}
-                    onChange={(e) =>
-                      setBuyerData((prev) => ({
-                        ...prev,
-                        buyerAddress: {
-                          ...prev.buyerAddress,
-                          street: e.target.value,
-                        },
-                      }))
-                    }
-                    disabled={!isEditing}
-                    className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
-                    placeholder="Street address"
-                  />
-                </div>
+            {isEditing ? (
+              <ControlledBDAddressForm
+                address={buyerData.buyerAddress}
+                onAddressChange={(newAddress) =>
+                  setBuyerData((prev) => ({
+                    ...prev,
+                    buyerAddress: newAddress,
+                  }))
+                }
+                errors={addressErrors}
+                required={true}
+                includeUnion={true}
+                includeLandmark={true}
+              />
+            ) : (
+              <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
+                <p className="text-text-dark dark:text-dark-text-primary">
+                  {formatBDAddress(buyerData.buyerAddress) || 'No address set'}
+                </p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
-                  City *
-                </label>
-                <input
-                  type="text"
-                  value={buyerData.buyerAddress?.city || ''}
-                  onChange={(e) =>
-                    setBuyerData((prev) => ({
-                      ...prev,
-                      buyerAddress: {
-                        ...prev.buyerAddress,
-                        city: e.target.value,
-                      },
-                    }))
-                  }
-                  disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
-                  placeholder="City"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
-                  Area
-                </label>
-                <input
-                  type="text"
-                  value={buyerData.buyerAddress?.area || ''}
-                  onChange={(e) =>
-                    setBuyerData((prev) => ({
-                      ...prev,
-                      buyerAddress: {
-                        ...prev.buyerAddress,
-                        area: e.target.value,
-                      },
-                    }))
-                  }
-                  disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
-                  placeholder="Area"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  value={buyerData.buyerAddress?.postalCode || ''}
-                  onChange={(e) =>
-                    setBuyerData((prev) => ({
-                      ...prev,
-                      buyerAddress: {
-                        ...prev.buyerAddress,
-                        postalCode: e.target.value,
-                      },
-                    }))
-                  }
-                  disabled={!isEditing}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 dark:focus:ring-dark-sage-accent/20 focus:border-muted-olive dark:focus:border-dark-sage-accent transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-700 text-text-dark dark:text-dark-text-primary placeholder:text-text-muted/60 dark:placeholder:text-dark-text-muted/60"
-                  placeholder="Postal code"
-                />
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Operating Hours */}

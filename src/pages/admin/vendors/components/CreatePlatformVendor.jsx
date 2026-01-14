@@ -23,6 +23,7 @@ import Button from '../../../../components/ui/Button';
 import toast from 'react-hot-toast';
 import { PlatformVendorName } from '../../../../types/vendor';
 import { useGetAdminMarketsQuery } from '../../../../store/slices/admin/adminApiSlice';
+import ControlledBDAddressForm from '../../../../components/address/ControlledBDAddressForm';
 
 const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,13 +36,17 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
     password: '',
     confirmPassword: '',
     address: {
+      division: '',
+      district: '',
+      upazila: '',
+      union: '',
       street: '',
-      city: '',
-      area: '',
+      landmark: '',
       postalCode: '',
     },
     tradeLicenseNo: '',
   });
+  const [addressErrors, setAddressErrors] = useState({});
 
   const [errors, setErrors] = useState({});
 
@@ -64,19 +69,14 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
     }
   }, [errors]);
 
-  const handleAddressChange = useCallback((field, value) => {
+  const handleAddressChange = useCallback((newAddress) => {
     setFormData((prev) => ({
       ...prev,
-      address: {
-        ...prev.address,
-        [field]: value,
-      },
+      address: newAddress,
     }));
-    // Clear error for this field
-    if (errors[`address.${field}`]) {
-      setErrors((prev) => ({ ...prev, [`address.${field}`]: null }));
-    }
-  }, [errors]);
+    // Clear address errors when address changes
+    setAddressErrors({});
+  }, []);
 
   const handleMarketToggle = (marketId) => {
     setSelectedMarkets((prev) =>
@@ -88,6 +88,7 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
 
   const validateForm = () => {
     const newErrors = {};
+    const newAddressErrors = {};
 
     // Manager details validation
     if (!formData.name.trim() || formData.name.length < 2) {
@@ -110,21 +111,25 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    // Address validation
-    if (!formData.address.street.trim() || formData.address.street.length < 5) {
-      newErrors['address.street'] = 'Street address must be at least 5 characters';
+    // BD Address validation
+    if (!formData.address.division) {
+      newAddressErrors.division = 'Division is required';
     }
 
-    if (!formData.address.city.trim() || formData.address.city.length < 2) {
-      newErrors['address.city'] = 'City is required';
+    if (!formData.address.district) {
+      newAddressErrors.district = 'District is required';
     }
 
-    if (!formData.address.area.trim() || formData.address.area.length < 2) {
-      newErrors['address.area'] = 'Area is required';
+    if (!formData.address.upazila) {
+      newAddressErrors.upazila = 'Upazila is required';
     }
 
-    if (!formData.address.postalCode.trim() || !/^\d{4}$/.test(formData.address.postalCode)) {
-      newErrors['address.postalCode'] = 'Postal code must be 4 digits';
+    if (!formData.address.street?.trim() || formData.address.street.length < 5) {
+      newAddressErrors.street = 'Street address must be at least 5 characters';
+    }
+
+    if (!formData.address.postalCode?.trim() || !/^\d{4}$/.test(formData.address.postalCode)) {
+      newAddressErrors.postalCode = 'Postal code must be 4 digits';
     }
 
     // Market validation
@@ -133,7 +138,8 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setAddressErrors(newAddressErrors);
+    return Object.keys(newErrors).length === 0 && Object.keys(newAddressErrors).length === 0;
   };
 
   const handleSubmit = useCallback(
@@ -161,9 +167,12 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
           phone,
           password: formData.password,
           address: {
+            division: formData.address.division,
+            district: formData.address.district,
+            upazila: formData.address.upazila,
+            union: formData.address.union || undefined,
             street: formData.address.street.trim(),
-            city: formData.address.city.trim(),
-            area: formData.address.area.trim(),
+            landmark: formData.address.landmark?.trim() || undefined,
             postalCode: formData.address.postalCode.trim(),
           },
           tradeLicenseNo: formData.tradeLicenseNo.trim() || undefined,
@@ -193,10 +202,19 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
             phone: '',
             password: '',
             confirmPassword: '',
-            address: { street: '', city: '', area: '', postalCode: '' },
+            address: {
+              division: '',
+              district: '',
+              upazila: '',
+              union: '',
+              street: '',
+              landmark: '',
+              postalCode: '',
+            },
             tradeLicenseNo: '',
           });
           setSelectedMarkets([]);
+          setAddressErrors({});
         } else {
           toast.error(result.message || 'Failed to create platform vendor');
         }
@@ -441,94 +459,14 @@ const CreatePlatformVendor = ({ isOpen, onClose, onSuccess }) => {
                   Business Address
                 </h3>
 
-                <div className="space-y-4">
-                  {/* Street */}
-                  <div>
-                    <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
-                      Street Address *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.address.street}
-                      onChange={(e) => handleAddressChange('street', e.target.value)}
-                      placeholder="Enter street address"
-                      className={`w-full px-4 py-3 rounded-xl bg-earthy-beige/30 dark:bg-dark-input border-2 ${
-                        errors['address.street']
-                          ? 'border-tomato-red/50'
-                          : 'border-transparent focus:border-muted-olive'
-                      } transition-all`}
-                    />
-                    {errors['address.street'] && (
-                      <p className="text-tomato-red text-xs mt-1">{errors['address.street']}</p>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* City */}
-                    <div>
-                      <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
-                        City *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.address.city}
-                        onChange={(e) => handleAddressChange('city', e.target.value)}
-                        placeholder="e.g., Dhaka"
-                        className={`w-full px-4 py-3 rounded-xl bg-earthy-beige/30 dark:bg-dark-input border-2 ${
-                          errors['address.city']
-                            ? 'border-tomato-red/50'
-                            : 'border-transparent focus:border-muted-olive'
-                        } transition-all`}
-                      />
-                      {errors['address.city'] && (
-                        <p className="text-tomato-red text-xs mt-1">{errors['address.city']}</p>
-                      )}
-                    </div>
-
-                    {/* Area */}
-                    <div>
-                      <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
-                        Area *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.address.area}
-                        onChange={(e) => handleAddressChange('area', e.target.value)}
-                        placeholder="e.g., Gulshan"
-                        className={`w-full px-4 py-3 rounded-xl bg-earthy-beige/30 dark:bg-dark-input border-2 ${
-                          errors['address.area']
-                            ? 'border-tomato-red/50'
-                            : 'border-transparent focus:border-muted-olive'
-                        } transition-all`}
-                      />
-                      {errors['address.area'] && (
-                        <p className="text-tomato-red text-xs mt-1">{errors['address.area']}</p>
-                      )}
-                    </div>
-
-                    {/* Postal Code */}
-                    <div>
-                      <label className="block text-sm font-medium text-text-dark dark:text-dark-text-primary mb-2">
-                        Postal Code *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.address.postalCode}
-                        onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                        placeholder="1212"
-                        maxLength="4"
-                        className={`w-full px-4 py-3 rounded-xl bg-earthy-beige/30 dark:bg-dark-input border-2 ${
-                          errors['address.postalCode']
-                            ? 'border-tomato-red/50'
-                            : 'border-transparent focus:border-muted-olive'
-                        } transition-all`}
-                      />
-                      {errors['address.postalCode'] && (
-                        <p className="text-tomato-red text-xs mt-1">{errors['address.postalCode']}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <ControlledBDAddressForm
+                  address={formData.address}
+                  onAddressChange={handleAddressChange}
+                  errors={addressErrors}
+                  required={true}
+                  includeUnion={true}
+                  includeLandmark={true}
+                />
               </Card>
 
               {/* Market Selection */}

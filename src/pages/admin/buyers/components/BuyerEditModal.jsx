@@ -17,11 +17,26 @@ import {
 import { useUpdateBuyerMutation } from '../../../../store/slices/apiSlice';
 import { addNotification } from '../../../../store/slices/notificationSlice';
 import Button from '../../../../components/ui/Button';
+import ControlledBDAddressForm from '../../../../components/address/ControlledBDAddressForm';
 
 const BuyerEditModal = ({ buyer, isOpen, onClose }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
-  
+
+  // Helper to extract BD address from buyer (handles both populated and ObjectId references)
+  const extractBuyerAddress = (buyerData) => {
+    const addr = buyerData?.address || {};
+    return {
+      division: addr.division?._id || addr.division || '',
+      district: addr.district?._id || addr.district || '',
+      upazila: addr.upazila?._id || addr.upazila || '',
+      union: addr.union?._id || addr.union || '',
+      street: addr.street || '',
+      landmark: addr.landmark || '',
+      postalCode: addr.postalCode || '',
+    };
+  };
+
   // Form state
   const [formData, setFormData] = useState({
     businessName: buyer.businessName || '',
@@ -30,12 +45,7 @@ const BuyerEditModal = ({ buyer, isOpen, onClose }) => {
     phone: buyer.phone || buyer.userId?.phone || '',
     email: buyer.email || buyer.userId?.email || '',
     website: buyer.website || '',
-    address: {
-      street: buyer.address?.street || '',
-      area: buyer.address?.area || '',
-      city: buyer.address?.city || '',
-      postalCode: buyer.address?.postalCode || '',
-    },
+    address: extractBuyerAddress(buyer),
     businessHours: buyer.businessHours || {
       monday: { open: '09:00', close: '21:00', closed: false },
       tuesday: { open: '09:00', close: '21:00', closed: false },
@@ -53,7 +63,17 @@ const BuyerEditModal = ({ buyer, isOpen, onClose }) => {
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(buyer.logo || null);
   const [errors, setErrors] = useState({});
+  const [addressErrors, setAddressErrors] = useState({});
   const [activeSection, setActiveSection] = useState('basic');
+
+  // Handle address changes from ControlledBDAddressForm
+  const handleAddressChange = (newAddress) => {
+    setFormData(prev => ({
+      ...prev,
+      address: newAddress,
+    }));
+    setAddressErrors({});
+  };
 
   const [updateBuyer, { isLoading }] = useUpdateBuyerMutation();
 
@@ -163,6 +183,7 @@ const BuyerEditModal = ({ buyer, isOpen, onClose }) => {
   // Form validation
   const validateForm = () => {
     const newErrors = {};
+    const newAddressErrors = {};
 
     // Required fields
     if (!formData.businessName.trim()) {
@@ -183,17 +204,26 @@ const BuyerEditModal = ({ buyer, isOpen, onClose }) => {
       newErrors.email = 'Invalid email format';
     }
 
-    // Address validation
-    if (!formData.address.street.trim()) {
-      newErrors['address.street'] = 'Street address is required';
+    // BD Address validation
+    if (!formData.address.division) {
+      newAddressErrors.division = 'Division is required';
     }
-
-    if (!formData.address.city.trim()) {
-      newErrors['address.city'] = 'City is required';
+    if (!formData.address.district) {
+      newAddressErrors.district = 'District is required';
+    }
+    if (!formData.address.upazila) {
+      newAddressErrors.upazila = 'Upazila is required';
+    }
+    if (!formData.address.street?.trim() || formData.address.street.length < 5) {
+      newAddressErrors.street = 'Street address must be at least 5 characters';
+    }
+    if (!formData.address.postalCode?.trim() || !/^\d{4}$/.test(formData.address.postalCode)) {
+      newAddressErrors.postalCode = 'Valid 4-digit postal code is required';
     }
 
     setErrors(newErrors || {});
-    return Object.keys(newErrors || {}).length === 0;
+    setAddressErrors(newAddressErrors || {});
+    return Object.keys(newErrors || {}).length === 0 && Object.keys(newAddressErrors || {}).length === 0;
   };
 
   // Handle form submission
@@ -509,56 +539,14 @@ const BuyerEditModal = ({ buyer, isOpen, onClose }) => {
                   <label className="block text-sm font-medium text-text-dark mb-3">
                     Address <span className="text-tomato-red">*</span>
                   </label>
-                  <div className="space-y-4">
-                    <div>
-                      <input
-                        type="text"
-                        value={formData.address.street}
-                        onChange={(e) => handleInputChange('address.street', e.target.value)}
-                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 ${
-                          errors['address.street'] ? 'border-tomato-red/50 bg-tomato-red/5' : 'border-gray-200'
-                        }`}
-                        placeholder="Street address"
-                      />
-                      {errors['address.street'] && (
-                        <p className="text-tomato-red text-sm mt-2 flex items-center gap-2">
-                          <AlertTriangle className="w-4 h-4" />
-                          {errors['address.street']}
-                        </p>
-                      )}
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <input
-                        type="text"
-                        value={formData.address.area}
-                        onChange={(e) => handleInputChange('address.area', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                        placeholder="Area/District"
-                      />
-                      <input
-                        type="text"
-                        value={formData.address.city}
-                        onChange={(e) => handleInputChange('address.city', e.target.value)}
-                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20 ${
-                          errors['address.city'] ? 'border-tomato-red/50 bg-tomato-red/5' : 'border-gray-200'
-                        }`}
-                        placeholder="City"
-                      />
-                      <input
-                        type="text"
-                        value={formData.address.postalCode}
-                        onChange={(e) => handleInputChange('address.postalCode', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-muted-olive/20"
-                        placeholder="Postal Code"
-                      />
-                    </div>
-                    {errors['address.city'] && (
-                      <p className="text-tomato-red text-sm mt-2 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        {errors['address.city']}
-                      </p>
-                    )}
-                  </div>
+                  <ControlledBDAddressForm
+                    address={formData.address}
+                    onAddressChange={handleAddressChange}
+                    errors={addressErrors}
+                    required={true}
+                    includeUnion={true}
+                    includeLandmark={true}
+                  />
                 </div>
               </div>
             )}

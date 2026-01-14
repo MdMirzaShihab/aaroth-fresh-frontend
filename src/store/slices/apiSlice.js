@@ -2853,6 +2853,71 @@ export const apiSlice = createApi({
         'Product',
       ],
     }),
+
+    // ================================
+    // LOCATION HIERARCHY SYSTEM (Bangladesh Address)
+    // ================================
+
+    // Get all divisions
+    getDivisions: builder.query({
+      query: ({ lang = 'en' } = {}) => ({
+        url: '/locations/divisions',
+        params: { lang, active: true },
+      }),
+      transformResponse: (response) => response.data,
+      providesTags: ['Divisions'],
+    }),
+
+    // Get districts by division
+    getDistricts: builder.query({
+      query: ({ divisionId, lang = 'en' }) => ({
+        url: `/locations/districts/${divisionId}`,
+        params: { lang, active: true },
+      }),
+      transformResponse: (response) => response.data,
+      providesTags: (result, error, { divisionId }) => [
+        { type: 'Districts', id: divisionId },
+      ],
+    }),
+
+    // Get upazilas by district
+    getUpazilas: builder.query({
+      query: ({ districtId, lang = 'en' }) => ({
+        url: `/locations/upazilas/${districtId}`,
+        params: { lang, active: true },
+      }),
+      transformResponse: (response) => response.data,
+      providesTags: (result, error, { districtId }) => [
+        { type: 'Upazilas', id: districtId },
+      ],
+    }),
+
+    // Get unions by upazila
+    getUnions: builder.query({
+      query: ({ upazilaId, lang = 'en' }) => ({
+        url: `/locations/unions/${upazilaId}`,
+        params: { lang, active: true },
+      }),
+      transformResponse: (response) => response.data,
+      providesTags: (result, error, { upazilaId }) => [
+        { type: 'Unions', id: upazilaId },
+      ],
+    }),
+
+    // Search locations
+    searchLocations: builder.query({
+      query: ({ query, lang = 'en' }) => ({
+        url: '/locations/search',
+        params: { q: query, lang },
+      }),
+      transformResponse: (response) => response.data,
+    }),
+
+    // Get location by postal code
+    getLocationByPostalCode: builder.query({
+      query: (postalCode) => `/locations/postal-code/${postalCode}`,
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -3145,4 +3210,12 @@ export const {
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
+
+  // Location Hierarchy System
+  useGetDivisionsQuery,
+  useGetDistrictsQuery,
+  useGetUpazilasQuery,
+  useGetUnionsQuery,
+  useSearchLocationsQuery,
+  useGetLocationByPostalCodeQuery,
 } = apiSlice;
