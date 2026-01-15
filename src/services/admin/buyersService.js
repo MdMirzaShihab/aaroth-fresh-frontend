@@ -54,6 +54,13 @@ export const formatDate = (dateString) => {
 };
 
 /**
+ * Format address for display
+ */
+export const formatAddress = (address) => {
+  return formatBDAddress(address);
+};
+
+/**
  * Calculate average order value
  */
 const calculateAverageOrderValue = (buyer) => {
