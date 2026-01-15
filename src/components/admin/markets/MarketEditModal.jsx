@@ -16,6 +16,7 @@ import { Input } from '../../ui/Input';
 import FormField from '../../ui/FormField';
 import ImageUploadZone from '../../ui/ImageUploadZone';
 import FormSection from '../../ui/FormSection';
+import ControlledBDAddressForm from '../../address/ControlledBDAddressForm';
 
 // API Hooks
 import {
@@ -23,18 +24,19 @@ import {
   useUpdateMarketMutation,
 } from '../../../store/slices/admin/adminApiSlice';
 
-// Cities list
-const CITIES = [
-  'Dhaka',
-  'Chittagong',
-  'Sylhet',
-  'Rajshahi',
-  'Khulna',
-  'Barishal',
-  'Rangpur',
-  'Mymensingh',
-  'Nationwide',
-];
+// Helper to extract location from market data (handles both populated and ObjectId)
+const extractMarketLocation = (market) => {
+  const loc = market?.location || {};
+  return {
+    division: loc.division?._id || loc.division || '',
+    district: loc.district?._id || loc.district || '',
+    upazila: loc.upazila?._id || loc.upazila || '',
+    union: loc.union?._id || loc.union || '',
+    street: loc.address || '',
+    landmark: loc.landmark || '',
+    postalCode: loc.postalCode || '',
+  };
+};
 
 const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
   const isEditMode = Boolean(market);
@@ -46,9 +48,15 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    address: '',
-    city: '',
-    district: '',
+    location: {
+      division: '',
+      district: '',
+      upazila: '',
+      union: '',
+      street: '',
+      landmark: '',
+      postalCode: '',
+    },
     coordinates: '',
     isActive: true,
   });
@@ -76,9 +84,7 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
       setFormData({
         name: market.name || '',
         description: market.description || '',
-        address: market.location?.address || '',
-        city: market.location?.city || '',
-        district: market.location?.district || '',
+        location: extractMarketLocation(market),
         coordinates: market.location?.coordinates
           ? `${market.location.coordinates[0]}, ${market.location.coordinates[1]}`
           : '',
@@ -91,9 +97,15 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
       setFormData({
         name: '',
         description: '',
-        address: '',
-        city: '',
-        district: '',
+        location: {
+          division: '',
+          district: '',
+          upazila: '',
+          union: '',
+          street: '',
+          landmark: '',
+          postalCode: '',
+        },
         coordinates: '',
         isActive: true,
       });
@@ -139,12 +151,21 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
       newErrors.image = 'Market image is required';
     }
 
-    if (!formData.address) {
-      newErrors.address = 'Market address is required';
+    // BD Address validation
+    if (!formData.location.division) {
+      newErrors['location.division'] = 'Division is required';
     }
-
-    if (!formData.city) {
-      newErrors.city = 'City is required';
+    if (!formData.location.district) {
+      newErrors['location.district'] = 'District is required';
+    }
+    if (!formData.location.upazila) {
+      newErrors['location.upazila'] = 'Upazila is required';
+    }
+    if (!formData.location.street?.trim()) {
+      newErrors['location.street'] = 'Street address is required';
+    }
+    if (!formData.location.postalCode || !/^\d{4}$/.test(formData.location.postalCode)) {
+      newErrors['location.postalCode'] = 'Valid 4-digit postal code is required';
     }
 
     setErrors(newErrors);
@@ -175,10 +196,20 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
       const apiFormData = new FormData();
       apiFormData.append('name', formData.name.trim());
       apiFormData.append('description', formData.description.trim());
-      apiFormData.append('address', formData.address.trim());
-      apiFormData.append('city', formData.city);
-      apiFormData.append('district', formData.district.trim());
       apiFormData.append('isActive', formData.isActive);
+
+      // BD Location fields
+      apiFormData.append('location.division', formData.location.division);
+      apiFormData.append('location.district', formData.location.district);
+      apiFormData.append('location.upazila', formData.location.upazila);
+      if (formData.location.union) {
+        apiFormData.append('location.union', formData.location.union);
+      }
+      apiFormData.append('location.address', formData.location.street.trim());
+      if (formData.location.landmark?.trim()) {
+        apiFormData.append('location.landmark', formData.location.landmark.trim());
+      }
+      apiFormData.append('location.postalCode', formData.location.postalCode);
 
       if (coordinates) {
         apiFormData.append('coordinates', JSON.stringify(coordinates));
@@ -281,7 +312,7 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
           icon={Info}
           variant="glass"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             {/* Name */}
             <FormField label="Market Name" required error={errors.name}>
               <Input
@@ -300,44 +331,27 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
               </div>
             </FormField>
 
-            {/* City */}
-            <FormField label="City" required error={errors.city}>
-              <select
-                name="city"
-                value={formData.city}
+            {/* Description */}
+            <FormField label="Description (Optional)">
+              <textarea
+                name="description"
+                value={formData.description}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-bottle-green/20 focus:border-bottle-green transition-all"
-              >
-                <option value="">Select City</option>
-                {CITIES.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
+                placeholder="Brief description of the market..."
+                rows={3}
+                maxLength={500}
+                className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive resize-none transition-all"
+              />
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-xs text-text-muted">
+                  What makes this market unique?
+                </p>
+                <p className="text-xs text-text-muted">
+                  {formData.description.length}/500
+                </p>
+              </div>
             </FormField>
           </div>
-
-          {/* Description */}
-          <FormField label="Description (Optional)">
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Brief description of the market..."
-              rows={3}
-              maxLength={500}
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-muted-olive/20 focus:border-muted-olive resize-none transition-all"
-            />
-            <div className="flex items-center justify-between mt-1">
-              <p className="text-xs text-text-muted">
-                What makes this market unique?
-              </p>
-              <p className="text-xs text-text-muted">
-                {formData.description.length}/500
-              </p>
-            </div>
-          </FormField>
         </FormSection>
 
         {/* Location Details */}
@@ -348,31 +362,29 @@ const MarketEditModal = ({ isOpen, onClose, market = null, onSuccess }) => {
           variant="glass"
         >
           <div className="space-y-4">
-            {/* Address */}
-            <FormField label="Address" required error={errors.address}>
-              <Input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                placeholder="Enter full address"
-              />
-            </FormField>
-
-            {/* District */}
-            <FormField label="District (Optional)">
-              <Input
-                type="text"
-                name="district"
-                value={formData.district}
-                onChange={handleInputChange}
-                placeholder="Enter district name"
-              />
-            </FormField>
+            {/* BD Address Form */}
+            <ControlledBDAddressForm
+              address={formData.location}
+              onAddressChange={(newAddress) =>
+                setFormData((prev) => ({ ...prev, location: newAddress }))
+              }
+              errors={{
+                division: errors['location.division'],
+                district: errors['location.district'],
+                upazila: errors['location.upazila'],
+                union: errors['location.union'],
+                street: errors['location.street'],
+                landmark: errors['location.landmark'],
+                postalCode: errors['location.postalCode'],
+              }}
+              required={true}
+              includeUnion={true}
+              includeLandmark={true}
+            />
 
             {/* Coordinates */}
             <FormField
-              label="Coordinates (Optional)"
+              label="GPS Coordinates (Optional)"
               helpText="Format: longitude, latitude (e.g., 90.4152, 23.7104)"
             >
               <Input

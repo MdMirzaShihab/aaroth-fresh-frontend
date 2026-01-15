@@ -10,6 +10,7 @@ import { Outlet } from 'react-router-dom';
 import AdminSidebar from '../Sidebar/AdminSidebar';
 import AdminHeader from '../Header/AdminHeader';
 import Breadcrumb from '../Breadcrumb/Breadcrumb';
+import MobileNavigation from '../../../layout/MobileNavigation';
 
 // Inner layout component that uses the context
 const AdminLayoutInner = ({ children }) => {
@@ -63,13 +64,16 @@ const AdminLayoutInner = ({ children }) => {
         <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
 
         {/* Main content */}
-        <main className="flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8 pb-24 lg:pb-8">
           <div className="max-w-7xl mx-auto space-y-6">
             <Breadcrumb />
             {children || <Outlet />}
           </div>
         </main>
       </div>
+
+      {/* Mobile Navigation */}
+      <MobileNavigation />
     </div>
   );
 };
